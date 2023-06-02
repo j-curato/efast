@@ -198,4 +198,14 @@ class MyHelper extends BaseObject
         $f_property_custodian_query = $property_custodian_query->all();
         return $f_property_custodian_query;
     }
+    public static function getCashDisbursementAcicNo($id)
+    {
+        return Yii::$app->db->createCommand("SELECT acics.serial_number FROM cash_disbursement
+            JOIN acics_cash_items ON cash_disbursement.id = acics_cash_items.fk_cash_disbursement_id
+            JOIN acics ON acics_cash_items.fk_acic_id = acics.id
+            WHERE acics_cash_items.is_deleted = 0
+            AND cash_disbursement.id = :id
+            ")->bindValue(':id', $id)
+            ->queryScalar();
+    }
 }

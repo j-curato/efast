@@ -276,15 +276,18 @@ class AcicsController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             $cashItems = Yii::$app->request->post('cashItems') ?? [];
-
             $uniqueCashItems = array_map("unserialize", array_unique(array_map("serialize", $cashItems)));
             $cashRcvItms =  Yii::$app->request->post('cshRcvItems') ?? [];
+
 
             try {
                 $txn  = Yii::$app->db->beginTransaction();
                 $model->id  = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
                 if (empty($cashItems)) {
                     throw new ErrorException('Cash Disbursements is Required');
+                }
+                if (empty($cashRcvItms)) {
+                    throw new ErrorException('Cash Receive is Required');
                 }
                 $model->serial_number = $this->getSerialNum($model->date_issued);
                 if (!$model->validate()) {
@@ -338,6 +341,9 @@ class AcicsController extends Controller
                 $txn  = Yii::$app->db->beginTransaction();
                 if (empty($cashItems)) {
                     throw new ErrorException('Cash Disbursements is Required');
+                }
+                if (empty($cashRcvItms)) {
+                    throw new ErrorException('Cash Receive is Required');
                 }
                 $model->serial_number = $this->getSerialNum($model->date_issued);
                 if (!$model->validate()) {

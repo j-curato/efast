@@ -2,6 +2,8 @@
 
 namespace frontend\controllers;
 
+use app\components\helpers\MyHelper;
+use app\models\CashDisbursement;
 use Yii;
 use app\models\LddapAdas;
 use app\models\LddapAdasSearch;
@@ -99,9 +101,12 @@ class LddapAdasController extends Controller
      */
     public function actionView($id)
     {
+
+        $model =  $this->findModel($id);
         return $this->render('view', [
-            'model' => $this->findModel($id),
-            'cashDetails' => $this->cashDetails($id)
+            'model' => $model,
+            'cashDetails' => $this->cashDetails($id),
+            'acic_no' => MyHelper::getCashDisbursementAcicNo($model->fk_cash_disbursement_id)
         ]);
     }
 
@@ -110,18 +115,18 @@ class LddapAdasController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
-    {
-        $model = new LddapAdas();
+    // public function actionCreate()
+    // {
+    //     $model = new LddapAdas();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
+    //     if ($model->load(Yii::$app->request->post()) && $model->save()) {
+    //         return $this->redirect(['view', 'id' => $model->id]);
+    //     }
 
-        return $this->render('create', [
-            'model' => $model,
-        ]);
-    }
+    //     return $this->render('create', [
+    //         'model' => $model,
+    //     ]);
+    // }
 
     /**
      * Updates an existing LddapAdas model.
@@ -130,18 +135,18 @@ class LddapAdasController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
+    // public function actionUpdate($id)
+    // {
+    //     $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
+    //     if ($model->load(Yii::$app->request->post()) && $model->save()) {
+    //         return $this->redirect(['view', 'id' => $model->id]);
+    //     }
 
-        return $this->render('update', [
-            'model' => $model,
-        ]);
-    }
+    //     return $this->render('update', [
+    //         'model' => $model,
+    //     ]);
+    // }
 
     /**
      * Deletes an existing LddapAdas model.
@@ -150,12 +155,12 @@ class LddapAdasController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
+    // public function actionDelete($id)
+    // {
+    //     $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
-    }
+    //     return $this->redirect(['index']);
+    // }
 
     /**
      * Finds the LddapAdas model based on its primary key value.

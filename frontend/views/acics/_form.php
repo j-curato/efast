@@ -1,6 +1,7 @@
 <?php
 
 use app\models\Books;
+use app\models\VwCashDisbursementsInBankSearch;
 use app\models\VwCashReceivedSearch;
 use app\models\VwGdNoAcicChksSearch;
 use aryelds\sweetalert\SweetAlertAsset;
@@ -20,11 +21,12 @@ use yii\widgets\ActiveForm;
 
 $cshItmRowNum = 0;
 $cshRcvItmRowNum = 0;
+$cnclItmRow = 0;
 ?>
 
 <div class="accics-form panel panel-default">
 
-    <ul>
+    <ul class="notes">
         <li>Notes</li>
         <li>Click the name of the table to open or close it.</li>
     </ul>
@@ -57,7 +59,7 @@ $cshRcvItmRowNum = 0;
     <table class="table " id="cash_itms_tbl">
 
         <thead>
-            <tr class="warning">
+            <tr class="info">
                 <th colspan="7" class="ctr">
                     Cash Disbursements
                 </th>
@@ -68,6 +70,8 @@ $cshRcvItmRowNum = 0;
             <th>ADA No.</th>
             <th>Issuance Date</th>
             <th>Book Name</th>
+            <th>Amount</th>
+
         </thead>
         <tbody>
             <?php
@@ -143,6 +147,44 @@ $cshRcvItmRowNum = 0;
             ?>
         </tbody>
     </table>
+
+    <table class="table " id="cancelled_cash_items">
+
+        <thead>
+            <tr class="danger">
+                <th colspan="7" class="ctr">
+                    Cancel Cash Disbursements
+                </th>
+            </tr>
+            <th>Reporting Period</th>
+            <th>Mode of Payment</th>
+            <th>Check No.</th>
+            <th>ADA No.</th>
+            <th>Issuance Date</th>
+            <th>Book Name</th>
+        </thead>
+        <tbody>
+            <?php
+
+            // foreach ($cashItems as $itm) {
+            //     echo "<tr>
+            //         <td style='display:none'>
+            //             <input type='text' value='{$itm['item_id']}' name='cashItems[$cshItmRowNum][item_id]'></input>
+            //             <input type='text' value='{$itm['cash_id']}' name='cashItems[$cshItmRowNum][cash_id]'></input>
+            //         </td>
+            //         <td>{$itm['reporting_period']}</td>
+            //         <td>{$itm['mode_name']}</td>
+            //         <td>{$itm['check_or_ada_no']}</td>
+            //         <td>{$itm['ada_number']}</td>
+            //         <td>{$itm['issuance_date']}</td>
+            //         <td>{$itm['book_name']}</td>
+            //         <td><button type='button' class='remove btn-xs btn-danger' onclick='remove(this)'><i class='fa fa-minus'></i></button></td>
+            //     </tr>";
+            //     $cshItmRowNum++;
+            // }
+            ?>
+        </tbody>
+    </table>
     <div class="row">
         <div class="form-group col-sm-1 col-sm-offset-5">
             <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
@@ -153,6 +195,7 @@ $cshRcvItmRowNum = 0;
 
     <?php
     $checksSearchModel = new VwGdNoAcicChksSearch();
+    $checksSearchModel->type = 'acic';
     $checksDataProvider = $checksSearchModel->search(Yii::$app->request->queryParams);
     $checksDataProvider->pagination = ['pageSize' => 10];
     $checksCols = [
@@ -179,6 +222,10 @@ $cshRcvItmRowNum = 0;
         'ada_number',
         'issuance_date',
         'book_name',
+        [
+            'attribute' => 'bookFilter',
+            'hidden' => true
+        ]
     ];
     $cshRcvSearchModel = new VwCashReceivedSearch();
     $cshRcvSearchModel->type = 'acic';
@@ -224,6 +271,41 @@ $cshRcvItmRowNum = 0;
         ],
 
     ];
+    $cashInBankSearchModel = new VwCashDisbursementsInBankSearch();
+    $cashInBankSearchModel->type = 'acic';
+    $cshInBankDataProvider = $cashInBankSearchModel->search(Yii::$app->request->queryParams);
+    $cshInBankDataProvider->pagination = ['pageSize' => 10];
+    $cshInBankCols = [
+
+        [
+            'label' => 'Actions',
+            'format' => 'raw',
+            'value' => function ($model) {
+                return Html::input('text', 'cancelItems[cash_id]', $model->id, ['class' => 'cncl_cash_id']);
+            },
+            'hidden' => true
+        ],
+
+        [
+            'label' => 'Actions',
+            'format' => 'raw',
+            'value' => function ($model) {
+                return Html::button(Icon::show('plus', ['framework' => Icon::FA]), ['class' => 'btn-xs btn-primary add-action', 'onClick' => 'AddCancelItem(this)']);
+            },
+        ],
+
+        'reporting_period',
+        'mode_name',
+        'check_or_ada_no',
+        'ada_number',
+        'issuance_date',
+        'book_name',
+        [
+            'attribute' => 'bookFilter',
+            'hidden' => true
+        ]
+
+    ];
 
     ?>
 
@@ -240,8 +322,8 @@ $cshRcvItmRowNum = 0;
                     'pjax' => true,
                     'export' => false,
                 ]),
-                'contentOptions' => ['class' => ''],
-                'options' => ['class' => 'panel-primary'],
+                'contentOptions' => ['class' => 'out'],
+                'options' => ['class' => 'panel-info'],
             ],
         ],
     ])
@@ -260,8 +342,28 @@ $cshRcvItmRowNum = 0;
                     'pjax' => true,
                     'export' => false,
                 ]),
-                'contentOptions' => ['class' => ''],
-                'options' => ['class' => 'panel-warning'],
+                'contentOptions' => ['class' => 'out'],
+                'options' => ['class' => 'panel-success'],
+            ],
+        ],
+    ])
+    ?>
+    <?=
+    Collapse::widget([
+        'items' => [
+            [
+                'label' => 'List of Cash Disbursements With ACIC in Bank',
+                'content' => GridView::widget([
+                    'dataProvider' => $cshInBankDataProvider,
+                    'filterModel' => $cashInBankSearchModel,
+
+
+                    'columns' => $cshInBankCols,
+                    'pjax' => true,
+                    'export' => false,
+                ]),
+                'contentOptions' => ['class' => 'out'],
+                'options' => ['class' => 'panel-danger'],
             ],
         ],
     ])
@@ -283,6 +385,10 @@ $cshRcvItmRowNum = 0;
         width: 5rem;
         padding: 0;
     }
+
+    .notes>li {
+        color: red;
+    }
 </style>
 <?php
 
@@ -292,6 +398,17 @@ $this->registerJsFile("@web/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsse
 <script>
     let cshItmRowNum = <?= $cshItmRowNum ?>;
     let cshRcvItmRowNum = <?= $cshRcvItmRowNum ?>;
+    let cnclItmRow = <?= $cnclItmRow ?>;
+
+    function AddCancelItem(ths) {
+        const clone = $(ths).closest('tr').clone()
+        clone.find('.cncl_cash_id').attr('name', `cancelItems[${cnclItmRow}][cash_id]`)
+        clone.find('.add-action').parent().remove()
+        clone.append("<td><button type='button' class='remove btn-xs btn-danger' onclick='remove(this)'><i class='fa fa-minus'></i></button></td>")
+        $('#cancelled_cash_items tbody').append(clone)
+
+        cnclItmRow++
+    }
 
     function AddCashItem(ths) {
         const clone = $(ths).closest('tr').clone()
@@ -334,10 +451,42 @@ $this->registerJsFile("@web/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsse
         window.onload = function() {
             $('input[name^="VwCashReceivedSearch[bookFilter]').val(book_name).trigger('change')
             $('input[name^="VwCashReceivedSearch[validityFilter]').val(acic_date).trigger('change')
+            let x = 0
+            $(document).ajaxComplete(function() {
+
+                if (x == 0) {
+                    $('input[name^="VwGdNoAcicChksSearch[bookFilter]').val(book_name).trigger('change')
+                    x = 1
+                    let y = 0
+                    $(document).ajaxComplete(function() {
+                        if (y == 0) {
+                            $('input[name^="VwCashDisbursementsInBankSearch[bookFilter]').val(book_name).trigger('change')
+                            y = 1
+                        }
+                    });
+                }
+            });
+
         };
         $('#acics-fk_book_id').change(() => {
             const book = $('#acics-fk_book_id :selected').text()
             $('input[name^="VwCashReceivedSearch[bookFilter]').val(book).trigger('change')
+            let x = 0
+            $(document).ajaxComplete(function() {
+                if (x == 0) {
+                    const book_name = $('#book_id :selected').text()
+                    $('input[name^="VwGdNoAcicChksSearch[bookFilter]').val(book).trigger('change')
+                    x = 1
+                    let y = 0
+                    $(document).ajaxComplete(function() {
+                        if (y == 0) {
+                            const book_name = $('#book_id :selected').text()
+                            $('input[name^="VwCashDisbursementsInBankSearch[bookFilter]').val(book).trigger('change')
+                            y = 1
+                        }
+                    });
+                }
+            });
         })
         $('#acics-date_issued').change(() => {
             const date = $('#acics-date_issued').val()

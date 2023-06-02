@@ -10,6 +10,8 @@ $this->title = $model->serial_number;
 $this->params['breadcrumbs'][] = ['label' => 'Lddap Adas', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
+
+
 ?>
 <div class="lddap-adas-view">
     <div class="container">
@@ -234,7 +236,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <td colspan="4" class="no-bdr" style="padding: 0;"></td>
                     <td colspan="2" class="no-bdr" style="padding: 0;"> <span>ACIC #</span><br></td>
-                    <td colspan="2" class="no-bdr" style="padding: 0;"></td>
+                    <td colspan="2" class="no-bdr" style="padding: 0;"><?= $acic_no ?? '' ?></td>
                 </tr>
             </tbody>
         </table>

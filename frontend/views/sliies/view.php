@@ -133,13 +133,13 @@ $blnk = "                <tr>
                 <?= $model->cashDisbursement->is_cancelled == false ?  $rowDta : $blnk ?>
                 <tr>
                     <th colspan="2">
-                        No. of pcs of LDDAP-ADA: <u><?= $ttlDvs ?></u>
+                        No. of pcs of LDDAP-ADA: <u>&emsp; &emsp; <?= $ttlDvs ?>&emsp; &emsp; </u>
                     </th>
                     <td colspan="7">
-                        <span>Total Amount: <b><u><?= number_format($ttl, 2) ?></u></b></span><br>
+                        <span>Total Amount: <b><u>&emsp; <?= number_format($ttl, 2) ?>&emsp; </u></b></span><br>
                         <span>Amount in Words:
                             <u>
-                                <b>
+                                <b>&emsp;
                                     <?php
                                     echo Yii::$app->memem->convertNumberToWords($ttl);
                                     echo ' Pesos ';
@@ -150,6 +150,7 @@ $blnk = "                <tr>
                                         echo ' Centavos';
                                     }
                                     ?>
+                                    &emsp;
                                 </b>
                             </u>
                         </span>
@@ -258,8 +259,17 @@ $blnk = "                <tr>
                         <span>Signature Over Printed Name:</span>
                     </td>
                 </tr>
+
             </tbody>
         </table>
+        <div class="foot">
+            <br>
+            <span>Check No.</span>
+            <span><?= $model->cashDisbursement->check_or_ada_no ?></span>
+            <br>
+            <span>ACIC No.</span>
+            <span><?= MyHelper::getCashDisbursementAcicNo($model->fk_cash_disbursement_id) ?></span>
+        </div>
     </div>
 
 
@@ -293,11 +303,21 @@ $blnk = "                <tr>
         text-align: right;
     }
 
+    .foot {
+        width: 25%;
+        text-align: left;
+        float: right;
+    }
+
     @media print {
 
         .btn,
         .main-footer {
             display: none;
+        }
+
+        .foot {
+            font-size: 10px;
         }
 
         th,

@@ -59,4 +59,8 @@ class AcicsCashItems extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Acics::class, ['id' => 'fk_acic_id']);
     }
+    public function getCashDisbursement()
+    {
+        return $this->hasOne(CashDisbursement::class, ['id' => 'cash_disbursement']);
+    }
 }

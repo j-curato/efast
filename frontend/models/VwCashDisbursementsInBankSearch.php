@@ -4,12 +4,12 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\VwGdNoAcicChks;
+use app\models\VwCashDisbursementsInBank;
 
 /**
- * VwGdNoAcicChksSearch represents the model behind the search form of `app\models\VwGdNoAcicChks`.
+ * VwCashDisbursementsInBankSearch represents the model behind the search form of `app\models\VwCashDisbursementsInBank`.
  */
-class VwGdNoAcicChksSearch extends VwGdNoAcicChks
+class VwCashDisbursementsInBankSearch extends VwCashDisbursementsInBank
 {
     public $type;
     public $bookFilter;
@@ -51,10 +51,9 @@ class VwGdNoAcicChksSearch extends VwGdNoAcicChks
      */
     public function search($params)
     {
-        $query = VwGdNoAcicChks::find();
+        $query = VwCashDisbursementsInBank::find();
 
         // add conditions that should always apply here
-        $query->andWhere('reporting_period >="2023-04"');
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);

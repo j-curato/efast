@@ -131,4 +131,8 @@ class CashDisbursement extends \yii\db\ActiveRecord
     {
         return $this->hasOne(LddapAdas::class, ['fk_cash_disbursement_id' => 'id']);
     }
+    public function getAcicItem()
+    {
+        return $this->hasMany(AcicsCashItems::class, ['fk_cash_disbursement_id' => 'id']);
+    }
 }

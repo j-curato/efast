@@ -29,10 +29,11 @@ class m230601_030207_update_vw_good_cash_disbursements_view extends Migration
         WHERE 
             cash_disbursement.is_cancelled = 0
             
-            AND NOT EXISTS (SELECT cash_disbursement.parent_disbursement
+            AND NOT EXISTS (SELECT cncl_chks.parent_disbursement
             FROM cash_disbursement as cncl_chks 
             WHERE cncl_chks.parent_disbursement = cash_disbursement.id 
             AND cncl_chks.is_cancelled = 1 
+            AND cncl_chks.parent_disbursement IS NOT NULL
             ) 
 
             AND NOT EXISTS (

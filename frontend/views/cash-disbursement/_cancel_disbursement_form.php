@@ -51,64 +51,7 @@ use yii\helpers\Html;
 
             </div>
             <?php
-            // $gridColumn = [
-
-            //     [
-
-            //         'class' => '\kartik\grid\CheckboxColumn',
-            //         'checkboxOptions' => function ($model) {
-            //             return ['value' => $model->id,  'style' => 'width:20px;', 'class' => 'checkbox', 'name' => 'disbursement_id'];
-            //         }
-            //     ],
-
-            //     [
-            //         "label" => "Book",
-            //         "attribute" => "book_id",
-            //         "value" => "book.name"
-            //     ],
-            //     'reporting_period',
-            //     'mode_of_payment',
-            //     'check_or_ada_no',
-            //     'ada_number',
-            //     'issuance_date',
-            //     [
-            //         'label' => "DV Number",
-            //         "attribute" => "dv_aucs_id",
-            //         'value' => 'dvAucs.dv_number'
-            //     ],
-            //     [
-            //         'label' => "Payee",
-            //         "attribute" => "dvAucs.payee.account_name"
-            //     ],
-            //     [
-            //         'label' => "Particular",
-            //         "attribute" => "dvAucs.particular"
-            //     ],
-            //     [
-            //         'label' => "Amount Disbursed",
-            //         'format' => ['decimal', 2],
-            //         'value' => function ($model) {
-            //             $query = (new \yii\db\Query())
-            //                 ->select(["SUM(dv_aucs_entries.amount_disbursed) as total_disbursed"])
-            //                 ->from('dv_aucs')
-            //                 ->join("LEFT JOIN", "dv_aucs_entries", "dv_aucs.id = dv_aucs_entries.dv_aucs_id")
-            //                 ->andWhere("dv_aucs.id =:id", ['id' => $model->dv_aucs_id])
-            //                 ->andWhere("dv_aucs_entries.is_deleted =0")
-            //                 ->one();
-
-            //             return $query['total_disbursed'];
-            //         }
-            //     ],
-            //     [
-            //         'label' => 'Good/Cancelled',
-            //         'attribute' => 'is_cancelled',
-            //         'value' => function ($model) {
-            //             $model->is_cancelled ? $q = 'cancelled' : $q = 'Good';
-            //             return $q;
-            //         }
-            //     ],
-
-            // ];
+            
             $gridColumn = [
                 [
 
