@@ -167,6 +167,7 @@ if (!empty($model->object_code)) {
                             "replacement to stale shecks" =>  "Replacement to Stale Checks",
                             'replacement of check issued' =>  'Replacement of Check Issued',
                             'payroll' =>  'Payroll',
+                            'remittance' =>  'Remittance',
                         ],
                         'value' => $transaction_type,
                         'pluginOptions' => [
