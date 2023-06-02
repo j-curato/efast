@@ -34,9 +34,7 @@ if (!empty($model->inspectedBy->f_name)) {
     $inspected_by_position = $model->inspectedBy->position;
 }
 $po_date = '';
-// echo $model->po_date;
 if (!empty($model->po_date)) {
-
     $po_date =  DateTime::createFromFormat('Y-m-d', $model->po_date)->format('F d, Y');
 }
 
