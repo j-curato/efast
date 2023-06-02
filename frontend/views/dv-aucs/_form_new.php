@@ -980,7 +980,7 @@ SweetAlertAsset::register($this);
                     type: 'POST',
                     url: window.location.pathname + '?r=chart-of-accounts/search-accounting-code&id=' + base_uacs,
                     data: {
-                        '_csrf-frontend': '<?= $csrfToken ?>'
+                        _csrf: '<?= $csrfToken ?>'
                     },
                     success: function(data) {
                         const res = JSON.parse(data)
