@@ -424,6 +424,8 @@
                                         Yii::$app->user->can('super-user') ?     ['label' => 'Employees', 'icon' => 'circle-o', 'url' => ['/employee'],] : [],
                                         Yii::$app->user->can('super-user') ?     ['label' => 'Transfer Type', 'icon' => 'circle-o', 'url' => ['/transfer-type'],] : [],
                                         Yii::$app->user->can('super-user') ?     ['label' => 'Property Articles', 'icon' => 'circle-o', 'url' => ['/property-articles'],] : [],
+                                        ['label' => 'City/Municipality', 'icon' => 'circle-o', 'url' => ['/citymun'],],
+
                                     ],
                                 ],
                                 [
