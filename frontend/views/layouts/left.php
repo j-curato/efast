@@ -238,6 +238,7 @@
                                         ['label' => 'Fund Source Type', 'icon' => 'circle-o', 'url' => ['/fund-source-type'],],
                                         ['label' => 'Report Type', 'icon' => 'circle-o', 'url' => ['/report-type'],],
                                         ['label' => 'Divisions', 'icon' => 'circle-o', 'url' => ['/divisions'],],
+                                        ['label' => 'Offices', 'icon' => 'circle-o', 'url' => ['/office'],],
                                         ['label' => 'Division/Program/Unit', 'icon' => 'circle-o', 'url' => ['/division-program-unit'],],
 
 
