@@ -8,7 +8,7 @@ use kartik\grid\GridView;
 /* @var $searchModel app\models\AccicsSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'ACCIC`s';
+$this->title = 'ACIC`s';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="accics-index">
@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'panel' => [
             'type' => 'primary',
-            'heading' => 'ACCIC`s'
+            'heading' => 'ACIC`s'
         ],
         'columns' => [
 
