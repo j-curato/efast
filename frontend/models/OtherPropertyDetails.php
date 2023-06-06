@@ -87,4 +87,12 @@ class OtherPropertyDetails extends \yii\db\ActiveRecord
     {
         return $this->hasOne(ChartOfAccounts::class, ['id' => 'fk_chart_of_account_id']);
     }
+    public function getAssetSubAccount()
+    {
+        return $this->hasOne(SubAccounts1::class, ['id' => 'fk_sub_account1_id']);
+    }
+    public function getDepreciationSubAccount()
+    {
+        return $this->hasOne(SubAccounts1::class, ['id' => 'fk_depreciation_sub_account1_id']);
+    }
 }

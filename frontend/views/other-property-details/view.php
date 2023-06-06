@@ -37,11 +37,12 @@ $first_month =  $propertyDetails['date'];
         <span><b> Date Acquired:</b></span>
         <span><?= $propertyDetails['date'] ?></span>
         <br>
-        <span></span>
+        <span><b> Asset Sub Account:</b></span>
+        <span><?= !empty($model->assetSubAccount->object_code) ? $model->assetSubAccount->object_code . '-' . $model->assetSubAccount->name : '' ?></span>
         <br>
-        <!-- <span><b> Accountable Officer:</b></span>
-        <span></span>
-        <br> -->
+        <span><b> Depreciation Sub Account:</b></span>
+        <span><?= !empty($model->depreciationSubAccount->object_code) ? $model->depreciationSubAccount->object_code . '-' . $model->depreciationSubAccount->name : '' ?></span>
+        <br>
     </div>
 
     <table id="computation_table">
@@ -129,9 +130,9 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/views/other-prope
         var endDate = new Date('2025-03-01');
         let c = 1
         while (startDate <= endDate) {
-            var year = startDate.getFullYear(); 
+            var year = startDate.getFullYear();
             var month = startDate.getMonth();
-            console.log(year + '-' + (month )); // Or perform any other action with the year and month
+            console.log(year + '-' + (month)); // Or perform any other action with the year and month
             startDate.setFullYear(startDate.getFullYear() + 1);
             console.log(c)
             c++
