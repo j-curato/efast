@@ -981,7 +981,21 @@ class PrPurchaseRequestController extends Controller
             FROM pr_purchase_request_item
             WHERE pr_purchase_request_item.is_deleted = 0
             GROUP BY pr_purchase_request_item.fk_ppmp_cse_item_id) as ppmp_in_pr ON supplemental_ppmp_cse.id = ppmp_in_pr.fk_ppmp_cse_item_id
-                 WHERE supplemental_ppmp_cse.id = :id")
+                 WHERE supplemental_ppmp_cse.id = :id
+                 AND  (IFNULL(supplemental_ppmp_cse.jan_qty,0)+
+                IFNULL(supplemental_ppmp_cse.feb_qty,0)+
+              IFNULL(supplemental_ppmp_cse.mar_qty,0)+
+              IFNULL(supplemental_ppmp_cse.apr_qty,0)+
+              IFNULL(supplemental_ppmp_cse.may_qty,0)+
+              IFNULL(supplemental_ppmp_cse.jun_qty,0)+
+              IFNULL(supplemental_ppmp_cse.jul_qty,0)+
+              IFNULL(supplemental_ppmp_cse.aug_qty,0)+
+              IFNULL(supplemental_ppmp_cse.sep_qty,0)+
+              IFNULL(supplemental_ppmp_cse.oct_qty,0)+
+              IFNULL(supplemental_ppmp_cse.nov_qty,0)+
+              IFNULL(supplemental_ppmp_cse.dec_qty,0)
+            )* IFNULL(supplemental_ppmp_cse.amount,0) - IFNULL(ppmp_in_pr.total_pr_amt,0)
+                 ")
                     ->bindValue(':id', $id)
                     ->queryAll();
             } else if ($type === 'non_cse') {
@@ -1014,6 +1028,7 @@ class PrPurchaseRequestController extends Controller
 									 ) as item_in_pr_total ON supplemental_ppmp_non_cse_items.id = item_in_pr_total.fk_ppmp_non_cse_item_id
                 WHERE supplemental_ppmp_non_cse.id =  :id
                 AND supplemental_ppmp_non_cse_items.is_deleted  !=1
+                AND IFNULL(supplemental_ppmp_non_cse_items.amount,0) - IFNULL(item_in_pr_total.total_pr_amt,0)>0
                 $sql
                 
                 ", $params)
@@ -1053,7 +1068,7 @@ class PrPurchaseRequestController extends Controller
                 AND supplemental_ppmp.fk_division_id = :division_id
                 AND supplemental_ppmp_non_cse_items.is_deleted = 0
                 AND supplemental_ppmp_non_cse.is_deleted = 0
-                
+                AND IFNULL(supplemental_ppmp_non_cse_items.amount,0) - IFNULL(item_in_pr_total.total_pr_amt,0)  >0
                 ")
                     ->bindValue(':office_id', $office_id)
                     ->bindValue(':division_id', $division_id)
