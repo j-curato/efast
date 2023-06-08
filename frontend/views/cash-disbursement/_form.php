@@ -369,6 +369,7 @@ SweetAlertAsset::register($this);
 $js = <<< JS
 $("#CashDisbursement").on("beforeSubmit", function (event) {
     event.preventDefault();
+    $(".submit_cash").attr('disabled',true)
     var form = $(this);
     $.ajax({
         url: form.attr("action"),
@@ -376,6 +377,7 @@ $("#CashDisbursement").on("beforeSubmit", function (event) {
         data: form.serialize(),
         success: function (data) {
             let res = JSON.parse(data)
+            $(".submit_cash").attr('disabled',false)
             swal({
                 icon: 'error',
                 title: res.error_message,
