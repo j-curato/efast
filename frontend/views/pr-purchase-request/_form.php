@@ -88,7 +88,7 @@ $user_data = Yii::$app->memem->getUserData();
             <li>PPMPs are created in Supplemental PPMP Module </li>
             <li>The total of the Allotment table and the Specification table total must be equal. </li>
             <li>If the balance of the Stock reaches zero, it will no longer be displayed in the selected PPMP.</li>
-            <?= Yii::$app->user->can('super-user') ? '<li>Select the Office, Division, and Budget year before selecting PPMPs.</li>' : '' ?>
+            <?= Yii::$app->user->can('super-user') ? '<li>Select the Office, Division, and Budget year first before selecting PPMPs.</li>' : '' ?>
         </ul>
     </div>
     <div>
