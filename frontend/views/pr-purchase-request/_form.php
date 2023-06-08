@@ -79,23 +79,27 @@ if (!empty($model->fk_supplemental_ppmp_noncse_id)) {
 $user_data = Yii::$app->memem->getUserData();
 ?>
 
-<div class="pr-purchase-request-form" style="padding:3rem">
 
-    <div class="panel panel-body shadow p-3 mb-5 bg-white rounded">
-        <div>
-            <ul class="warning">
-                <li>Select Budget Year Before Selecting Project</li>
-                <li>Projects are created in Supplemental PPMP Module </li>
-                <li>Allotment and Specification Total Must be Equal </li>
-            </ul>
-        </div>
+<div class="panel panel-body shadow p-3 mb-5 bg-white rounded">
+    <div class="pr-purchase-request-form" style="padding:3rem">
+        <ul class="warning">
+            <li>Notes</li>
+            <li>Select Budget Year Before Selecting PPMPs</li>
+            <li>PPMPs are created in Supplemental PPMP Module </li>
+            <li>The total of the Allotment table and the Specification table total must be equal. </li>
+            <li>If the balance of the Stock reaches zero, it will no longer be displayed in the selected PPMP.</li>
+            <?= Yii::$app->user->can('super-user') ? '<li>Please select the Office, Division, and Budget year before selecting PPMPs.</li>' : '' ?>
+        </ul>
+    </div>
+    <div>
+
         <?= Html::beginForm([$action, 'id' => $model->id], 'post', ['id' => 'pr_form']); ?>
-        <?php
-        if (YIi::$app->user->can('super-user')) {
 
-        ?>
-            <label for="row">Project Filter</label>
-            <div class="row">
+        <div class="row">
+            <?php
+            if (YIi::$app->user->can('super-user')) {
+
+            ?>
                 <div class="col-sm-2">
                     <label for="office_id">Office </label>
                     <?= Select2::widget([
@@ -121,9 +125,7 @@ $user_data = Yii::$app->memem->getUserData();
                     ]) ?>
                 </div>
 
-            </div>
-        <?php } ?>
-        <div class="row">
+            <?php } ?>
             <div class="col-sm-2">
                 <label for="budget_year">Budget Year</label>
                 <?php
@@ -746,11 +748,7 @@ $user_data = Yii::$app->memem->getUserData();
 
     .warning li {
         color: red;
-        font-size: 10px;
-    }
-
-    ul {
-        list-style-type: none;
+        font-size: 12px;
     }
 </style>
 <?php
