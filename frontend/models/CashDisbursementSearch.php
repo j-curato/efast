@@ -17,8 +17,8 @@ class CashDisbursementSearch extends CashDisbursement
     public function rules()
     {
         return [
-            [['id', 'book_id'], 'integer'],
-            [['reporting_period','dv_aucs_id', 'mode_of_payment', 'check_or_ada_no', 'is_cancelled', 'issuance_date','ada_number'], 'safe'],
+            [['id'], 'integer'],
+            [['reporting_period', 'dv_aucs_id', 'mode_of_payment', 'check_or_ada_no', 'is_cancelled', 'issuance_date', 'ada_number', 'book_id'], 'safe'],
         ];
     }
 
@@ -49,18 +49,18 @@ class CashDisbursementSearch extends CashDisbursement
         ]);
 
         $this->load($params);
-            $query->joinWith('dvAucs');
+        $query->joinWith('dvAucs');
         if (!$this->validate()) {
             // uncomment the following line if you do not want to return any records when validation fails
             // $query->where('0=1');
             return $dataProvider;
         }
         $query->joinWith('dvAucs');
+        $query->joinWith('book');
 
         // grid filtering conditions
         $query->andFilterWhere([
             'cash_disbursement.id' => $this->id,
-            'book_id' => $this->book_id,
         ]);
 
         $query->andFilterWhere(['like', 'cash_disbursement.reporting_period', $this->reporting_period])
@@ -69,7 +69,8 @@ class CashDisbursementSearch extends CashDisbursement
             ->andFilterWhere(['like', 'ada_number', $this->ada_number])
             ->andFilterWhere(['like', 'cash_disbursement.is_cancelled', $this->is_cancelled])
             ->andFilterWhere(['like', 'dv_aucs.dv_number', $this->dv_aucs_id])
-            ->andFilterWhere(['like', 'cash_disbursement.issuance_date', $this->issuance_date]);
+            ->andFilterWhere(['like', 'cash_disbursement.issuance_date', $this->issuance_date])
+            ->andFilterWhere(['like', 'books.name', $this->book_id]);
 
         return $dataProvider;
     }
