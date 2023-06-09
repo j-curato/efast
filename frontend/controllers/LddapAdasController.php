@@ -58,11 +58,16 @@ class LddapAdasController extends Controller
     {
         $qry = Yii::$app->db->createCommand("SELECT 
         dv_aucs_index.payee,
+        dv_aucs_index.account_num,
+        dv_aucs_index.orsNums,
+        dv_aucs_index.bank_name,
+        
         chart_of_accounts.uacs,
         chart_of_accounts.general_ledger,
         dv_aucs_index.ttlAmtDisbursed,
         dv_aucs_index.ttlTax,
         dv_aucs_index.grossAmt
+
         
         FROM lddap_adas
         JOIN cash_disbursement ON lddap_adas.fk_cash_disbursement_id = cash_disbursement.id

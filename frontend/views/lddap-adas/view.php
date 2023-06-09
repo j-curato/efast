@@ -70,8 +70,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 foreach ($cashDetails as $itm) {
                     echo "<tr>
                         <td>{$itm['payee']}</td>
-                        <td></td>
-                        <td></td>
+                        <td>{$itm['account_num']}</td>
+                        <td>{$itm['orsNums']}</td>
                         <td>{$itm['uacs']}</td>
                         <td class='amt'>" . number_format($itm['grossAmt'], 2) . "</td>
                         <td></td>
