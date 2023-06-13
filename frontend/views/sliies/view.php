@@ -80,12 +80,14 @@ $blnk = "                <tr>
                 <tr>
                     <th class="no-bdr">DEPARTMENT</th>
                     <th colspan="5" class="no-bdr">: DEPARTMENT OF TRADE AND INDUSTRY</th>
-                    <th class="no-bdr">SLIIE No.: <?= $model->serial_number ?></th>
-                    <th colspan="2" class="no-bdr"></th>
+                    <th class="no-bdr">SLIIE No.:</th>
+                    <th colspan="2" class="no-bdr"> <?= $model->serial_number ?></th>
                 </tr>
                 <tr>
                     <th class="no-bdr">AGENCY</th>
-                    <th colspan="8" class="no-bdr">: D5138</th>
+                    <th colspan="5" class="no-bdr">: D5138</th>
+                    <th class="no-bdr">MDS Account No.</th>
+                    <th colspan="2" class="no-bdr">: <?= $model->cashDisbursement->book->account_number ?? '' ?></th>
                 </tr>
                 <tr>
                     <th class="no-bdr">OPERATING UNIT</th>
