@@ -2,11 +2,13 @@
 
 namespace frontend\controllers;
 
+use app\models\AcicCancelledItems;
 use app\models\AcicCashReceiveItems;
 use Yii;
 use app\models\Acics;
 use app\models\AcicsCashItems;
 use app\models\AcicsSearch;
+use app\models\CashDisbursement;
 use DateTime;
 use ErrorException;
 use yii\filters\AccessControl;
@@ -56,7 +58,26 @@ class AcicsController extends Controller
             ],
         ];
     }
-
+    private function getCancelledItemsDetails($id)
+    {
+        return Yii::$app->db->createCommand("SELECT 
+                acic_cancelled_items.id  as item_id,
+                cash_disbursement.id as cash_id,
+                cash_disbursement.check_or_ada_no,
+                cash_disbursement.reporting_period,
+                cash_disbursement.ada_number,
+                cash_disbursement.issuance_date,
+                books.`name` as book_name,
+                mode_of_payments.`name` as mode_name
+                FROM acic_cancelled_items 
+                JOIN cash_disbursement ON acic_cancelled_items.fk_cash_disbursement_id = cash_disbursement.id
+                LEFT JOIN books ON cash_disbursement.book_id = books.id
+                LEFT JOIN mode_of_payments ON cash_disbursement.fk_mode_of_payment_id = mode_of_payments.id
+                WHERE 
+                acic_cancelled_items.fk_acic_id = :id")
+            ->bindValue(':id', $id)
+            ->queryAll();
+    }
     private function getSerialNum($period)
     {
         $yr = DateTime::createFromFormat('Y-m-d', $period)->format('Y');
@@ -236,6 +257,102 @@ class AcicsController extends Controller
             ->queryAll();
         return $qry;
     }
+    private function insCancelledItems($model_id, $items, $is_update = false)
+    {
+
+
+
+        try {
+            foreach ($items as $itm) {
+                $cash_id = $itm['cash_id'];
+                $chkIfCanceled = Yii::$app->db->createCommand("SELECT EXISTS(
+                    SELECT cash_disbursement.id
+                    FROM cash_disbursement
+                    WHERE `parent_disbursement` =  :parent_id  AND is_cancelled = 1)")
+                    ->bindValue(':parent_id', $cash_id)
+                    ->queryScalar();
+                if (intval($chkIfCanceled) === 1) {
+                    throw new ErrorException('Check Already Cancelled');
+                }
+                $new_id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                Yii::$app->db->createCommand("INSERT INTO cash_disbursement
+                (
+                   id,
+                   book_id,
+                   dv_aucs_id,
+                   reporting_period,
+                   mode_of_payment,
+                   check_or_ada_no,
+                   is_cancelled,
+                   issuance_date,
+                   ada_number,
+                   begin_time,
+                   out_time,
+                   parent_disbursement,
+                   fk_mode_of_payment_id,
+                   fk_ro_check_range_id
+               )
+                SELECT
+                :new_id,
+                book_id,
+                dv_aucs_id,
+                reporting_period,
+                mode_of_payment,
+                check_or_ada_no,
+                1 as is_cancelled,
+                issuance_date,
+                ada_number,
+                begin_time,
+                out_time,
+                id,
+                fk_mode_of_payment_id,
+                fk_ro_check_range_id
+                FROM cash_disbursement
+                WHERE id  = :cash_id")
+                    ->bindValue(':cash_id', $cash_id)
+                    ->bindValue(':new_id', $new_id)
+                    ->execute();
+                Yii::$app->db->createCommand("INSERT INTO cash_disbursement_items (fk_cash_disbursement_id,
+                    fk_chart_of_account_id,
+                    fk_dv_aucs_id
+                    )
+                    SELECT 
+                    :new_id,
+                        cash_disbursement_items.fk_chart_of_account_id,
+                        cash_disbursement_items.fk_dv_aucs_id
+                        FROM cash_disbursement_items
+                        WHERE 
+                        cash_disbursement_items.fk_cash_disbursement_id = :id
+                        AND cash_disbursement_items.is_deleted = 0")
+                    ->bindValue(':id', $cash_id)
+                    ->bindValue(':new_id', $new_id)
+                    ->execute();
+                $model = new AcicCancelledItems();
+                $model->fk_acic_id = $model_id;
+                $model->fk_cash_disbursement_id = $new_id;
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Cancelled Model Save Failed');
+                }
+            }
+
+
+
+            // $insSliie = $this->createSliie($new_model->id, DateTime::createFromFormat('Y-m-d', $new_model->issuance_date)->format('Y-m'));
+            // if ($insSliie !== true) {
+            //     throw new ErrorException($insSliie);
+            // }
+            // $insLddapAda = $this->createLddapAda($new_model->id, DateTime::createFromFormat('Y-m-d', $new_model->issuance_date)->format('Y-m'));
+            // if ($insLddapAda !== true) {
+            //     throw new ErrorException($insLddapAda);
+            // }
+            return true;
+        } catch (ErrorException $e) {
+            return json_encode(['isSuccess' => false, 'cancelled' => 'cancel', 'error' => $e->getMessage()]);
+        }
+    }
     /**
      * Lists all Acics models.
      * @return mixed
@@ -261,7 +378,8 @@ class AcicsController extends Controller
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
-            'cashItems' => $this->getViewCashItems($id)
+            'cashItems' => $this->getViewCashItems($id),
+            'cancelledItems' => $this->getCancelledItemsDetails($id)
         ]);
     }
 
@@ -278,7 +396,8 @@ class AcicsController extends Controller
             $cashItems = Yii::$app->request->post('cashItems') ?? [];
             $uniqueCashItems = array_map("unserialize", array_unique(array_map("serialize", $cashItems)));
             $cashRcvItms =  Yii::$app->request->post('cshRcvItems') ?? [];
-
+            $cancellItems =  Yii::$app->request->post('cancelItems') ?? [];
+            // return var_dump($cancellItems);
 
             try {
                 $txn  = Yii::$app->db->beginTransaction();
@@ -308,6 +427,11 @@ class AcicsController extends Controller
 
                     throw new ErrorException($insCashRcvItms);
                 }
+                $inCnclItms = $this->insCancelledItems($model->id, $cancellItems);
+                if ($inCnclItms !== true) {
+                    throw new ErrorException($inCnclItms);
+                }
+
 
                 $txn->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
@@ -336,7 +460,7 @@ class AcicsController extends Controller
             $cashItems = Yii::$app->request->post('cashItems') ?? [];
             $uniqueCashItems = array_map("unserialize", array_unique(array_map("serialize", $cashItems)));
             $cashRcvItms =  Yii::$app->request->post('cshRcvItems') ?? [];
-
+            $cancellItems =  Yii::$app->request->post('cancelItems') ?? [];
             try {
                 $txn  = Yii::$app->db->beginTransaction();
                 if (empty($cashItems)) {
@@ -362,6 +486,10 @@ class AcicsController extends Controller
 
                     throw new ErrorException($insCashRcvItms);
                 }
+                $inCnclItms = $this->insCancelledItems($model->id, $cancellItems);
+                if ($inCnclItms !== true) {
+                    throw new ErrorException($inCnclItms);
+                }
 
                 $txn->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
@@ -375,6 +503,7 @@ class AcicsController extends Controller
             'model' => $model,
             'cashItems' => $this->getCashItems($model->id),
             'cashRcvItems' => $this->getCashRcvItems($model->id),
+            'cancelledItems' => $this->getCancelledItemsDetails($id)
 
         ]);
     }

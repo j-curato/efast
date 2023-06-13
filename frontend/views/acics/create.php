@@ -16,6 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'cashItems' => [],
         'cashRcvItems' => [],
+        'cancelledItems' => [],
     ]) ?>
 
 </div>

@@ -166,22 +166,18 @@ $cnclItmRow = 0;
         <tbody>
             <?php
 
-            // foreach ($cashItems as $itm) {
-            //     echo "<tr>
-            //         <td style='display:none'>
-            //             <input type='text' value='{$itm['item_id']}' name='cashItems[$cshItmRowNum][item_id]'></input>
-            //             <input type='text' value='{$itm['cash_id']}' name='cashItems[$cshItmRowNum][cash_id]'></input>
-            //         </td>
-            //         <td>{$itm['reporting_period']}</td>
-            //         <td>{$itm['mode_name']}</td>
-            //         <td>{$itm['check_or_ada_no']}</td>
-            //         <td>{$itm['ada_number']}</td>
-            //         <td>{$itm['issuance_date']}</td>
-            //         <td>{$itm['book_name']}</td>
-            //         <td><button type='button' class='remove btn-xs btn-danger' onclick='remove(this)'><i class='fa fa-minus'></i></button></td>
-            //     </tr>";
-            //     $cshItmRowNum++;
-            // }
+            foreach ($cancelledItems as $cItm) {
+                echo "<tr>
+                    
+                    <td>{$cItm['reporting_period']}</td>
+                    <td>{$cItm['mode_name']}</td>
+                    <td>{$cItm['check_or_ada_no']}</td>
+                    <td>{$cItm['ada_number']}</td>
+                    <td>{$cItm['issuance_date']}</td>
+                    <td>{$cItm['book_name']}</td>
+                </tr>";
+                $cshItmRowNum++;
+            }
             ?>
         </tbody>
     </table>
@@ -196,6 +192,9 @@ $cnclItmRow = 0;
     <?php
     $checksSearchModel = new VwGdNoAcicChksSearch();
     $checksSearchModel->type = 'acic';
+    if (!empty($model->book->name)) {
+        $checksSearchModel->bookFilter = $model->book->name;
+    }
     $checksDataProvider = $checksSearchModel->search(Yii::$app->request->queryParams);
     $checksDataProvider->pagination = ['pageSize' => 10];
     $checksCols = [
@@ -229,6 +228,12 @@ $cnclItmRow = 0;
     ];
     $cshRcvSearchModel = new VwCashReceivedSearch();
     $cshRcvSearchModel->type = 'acic';
+    if (!empty($model->book->name)) {
+        $cshRcvSearchModel->bookFilter = $model->book->name;
+    }
+    if (!empty($model->date_issued)) {
+        $cshRcvSearchModel->validityFilter = $model->date_issued;
+    }
     $cshRcvDataProvider = $cshRcvSearchModel->search(Yii::$app->request->queryParams);
     $cshRcvDataProvider->pagination = ['pageSize' => 10];
     $cshRcvCols = [
@@ -255,7 +260,11 @@ $cnclItmRow = 0;
         'valid_from',
         'valid_to',
         'purpose',
-        'amount',
+        [
+            'attribute' => 'amount',
+            'format' => ['decimal',],
+            'hAlign' => 'right'
+        ],
         'document_receive_name',
         'book_name',
         'mfo_name',
@@ -273,6 +282,9 @@ $cnclItmRow = 0;
     ];
     $cashInBankSearchModel = new VwCashDisbursementsInBankSearch();
     $cashInBankSearchModel->type = 'acic';
+    if (!empty($model->book->name)) {
+        $cashInBankSearchModel->bookFilter = $model->book->name;
+    }
     $cshInBankDataProvider = $cashInBankSearchModel->search(Yii::$app->request->queryParams);
     $cshInBankDataProvider->pagination = ['pageSize' => 10];
     $cshInBankCols = [
@@ -425,7 +437,7 @@ $this->registerJsFile("@web/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsse
         clone.find('.csh_rcv_id').attr('name', `cshRcvItems[${cshRcvItmRowNum}][csh_rcv_id]`)
         clone.find('.add-action').parent().remove()
         clone.append(`<td>
-            <input type='text' class='mask-amount amount form-control' onkeyup='updateMainAmount(this)'>
+            <input type='text' class='mask-amount amount form-control' onkeyup='updateMainAmount(this)' required>
             <input type='hidden' name='cshRcvItems[${cshRcvItmRowNum}][amount]' class='amount main-amount' >
         </td>`)
         clone.append("<td><button type='button' class='remove btn-xs btn-danger' onclick='remove(this)'><i class='fa fa-minus'></i></button></td>")

@@ -155,7 +155,15 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td class="ctr" style="width: 20%;">Remarks</td>
                 </tr>
                 <?php
-                for ($i = 0; $i < 10; $i++) {
+                foreach ($cancelledItems as $cItm) {
+                    $dteIsue = DateTime::createFromFormat('Y-m-d', $cItm['issuance_date'])->format('F d, Y');
+                    echo "<tr>
+                            <td class='ctr'>{$cItm['check_or_ada_no']}</td>
+                            <td class='ctr'>{$dteIsue}</td>
+                            <td></td>
+                        </tr>";
+                }
+                for ($i = count($cancelledItems); $i < 10; $i++) {
                     echo "<tr>
                         <td></td>
                         <td></td>
