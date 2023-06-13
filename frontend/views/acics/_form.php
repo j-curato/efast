@@ -221,6 +221,7 @@ $cnclItmRow = 0;
         'ada_number',
         'issuance_date',
         'book_name',
+        'ttl',
         [
             'attribute' => 'bookFilter',
             'hidden' => true
