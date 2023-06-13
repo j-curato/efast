@@ -31,8 +31,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <th class="no-bdr">AGENCY</th>
                     <th class="no-bdr" colspan="4">: D5138</th>
-                    <th class="no-bdr">MDS 101 ACCT#</th>
-                    <th class="no-bdr" colspan="2">: 2036-9001-41</th>
+                    <th class="no-bdr">MDS Account No.</th>
+                    <th class="no-bdr" colspan="2">: <?= $model->cashDisbursement->book->account_number ?? '' ?></th>
                 </tr>
                 <tr>
                     <th class="no-bdr">OPERATING UNIT</th>
