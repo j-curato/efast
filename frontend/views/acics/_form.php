@@ -224,7 +224,6 @@ $cnclItmRow = 0;
         [
             'attribute' => 'ttl',
             'format' => ['decimal', 2],
-            'hAlign' => 'right'
         ],
         [
             'attribute' => 'bookFilter',
