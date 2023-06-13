@@ -40,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
                     <th class="no-bdr">FUND CODE</th>
-                    <th class="no-bdr" colspan="7">: 101</th>
+                    <th class="no-bdr" colspan="7">:<?= $model->cashDisbursement->book->name ?? '' ?></th>
                 </tr>
                 <tr>
                     <th class="no-bdr" colspan="">MDS-GSB BRANCH/MDS SUB ACCOUNT NO.</th>
@@ -226,7 +226,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <td colspan="4" class="no-bdr" style="padding: 0;"></td>
                     <td colspan="2" class="no-bdr" style="padding: 0;"> <span>NCA No. / NCA Date</span><br></td>
-                    <td colspan="2" class="no-bdr" style="padding: 0;"></td>
+                    <td colspan="2" class="no-bdr" style="padding: 0;">:</td>
                 </tr>
                 <tr>
                     <td colspan="4" class="no-bdr" style="padding: 0;"></td>
@@ -236,7 +236,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <td colspan="4" class="no-bdr" style="padding: 0;"></td>
                     <td colspan="2" class="no-bdr" style="padding: 0;"> <span>ACIC #</span><br></td>
-                    <td colspan="2" class="no-bdr" style="padding: 0;"><?= $acic_no ?? '' ?></td>
+                    <td colspan="2" class="no-bdr" style="padding: 0;">:<?= $acic_no ?? '' ?></td>
                 </tr>
             </tbody>
         </table>
