@@ -223,6 +223,11 @@ $cnclItmRow = 0;
         'book_name',
         'ttl',
         [
+            'attribute' => 'ttl',
+            'format' => ['decimal', 2],
+            'hAlign' => 'right'
+        ],
+        [
             'attribute' => 'bookFilter',
             'hidden' => true
         ]

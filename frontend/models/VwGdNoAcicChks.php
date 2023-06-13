@@ -49,6 +49,7 @@ class VwGdNoAcicChks extends \yii\db\ActiveRecord
             'issuance_date' => 'Issuance Date',
             'book_name' => 'Book Name',
             'reporting_period' => 'Reporting Period',
+            'ttl' => 'Total',
         ];
     }
 }
