@@ -20,7 +20,7 @@ AND parent_disbursement IS NOT NULL
 ),
 checkTtlAmt as (
 SELECT 
-cash_disbursement_items.id,
+cash_disbursement_items.fk_cash_disbursement_id,
 SUM(dv_aucs_index.grossAmt) as ttl
 FROM cash_disbursement_items
 JOIN dv_aucs_index ON cash_disbursement_items.fk_dv_aucs_id = dv_aucs_index.id
@@ -41,7 +41,7 @@ checkTtlAmt.ttl
 FROM cash_disbursement
 LEFT JOIN books ON cash_disbursement.book_id = books.id
 LEFT JOIN mode_of_payments ON cash_disbursement.fk_mode_of_payment_id = mode_of_payments.id
-LEFT JOIN checkTtlAmt ON cash_disbursement.id  = checkTtlAmt.id
+LEFT JOIN checkTtlAmt ON cash_disbursement.id  = checkTtlAmt.fk_cash_disbursement_id
 WHERE 
 NOT EXISTS(SELECT * FROM cte_CancelledChecks WHERE cte_CancelledChecks.parent_disbursement = cash_disbursement.id)
 AND cash_disbursement.is_cancelled = 0
