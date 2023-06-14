@@ -379,6 +379,7 @@ class CashDisbursementController extends Controller
 
             try {
                 $txn = Yii::$app->db->beginTransaction();
+                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
                 if (empty($items)) {
                     throw new ErrorException('Items is Required');
                 }
@@ -540,18 +541,18 @@ class CashDisbursementController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
-    {
-        $model =  $this->findModel($id);
-        if ($model->is_cancelled === 1) {
-            $model->delete();
-        } else {
-            return $this->redirect(['index']);
-        }
-        // $this->findModel($id)->delete();
+    // public function actionDelete($id)
+    // {
+    //     $model =  $this->findModel($id);
+    //     if ($model->is_cancelled === 1) {
+    //         $model->delete();
+    //     } else {
+    //         return $this->redirect(['index']);
+    //     }
+    //     // $this->findModel($id)->delete();
 
-        return $this->redirect(['cancel-disbursement-index']);
-    }
+    //     return $this->redirect(['cancel-disbursement-index']);
+    // }
 
     /**
      * Finds the CashDisbursement model based on its primary key value.
@@ -971,7 +972,6 @@ class CashDisbursementController extends Controller
             $reporting_period = YIi::$app->request->post('reporting_period');
             $selected = YIi::$app->request->post('selection');
             $model = CashDisbursement::findOne($selected[0]);
-
             $query = Yii::$app->db->createCommand("SELECT EXISTS(
                 SELECT *
                 FROM cash_disbursement
@@ -985,6 +985,7 @@ class CashDisbursementController extends Controller
                     throw new ErrorException('Check Already Cancelled');
                 }
                 $new_model  = new CashDisbursement();
+                $new_model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
                 $new_model->book_id = $model->book_id;
                 $new_model->dv_aucs_id = $model->dv_aucs_id;
                 $new_model->reporting_period = $reporting_period;
