@@ -75,11 +75,11 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td>{$itm['uacs']}</td>
                         <td class='amt'>" . number_format($itm['grossAmt'], 2) . "</td>
                         <td></td>
-                        <td class='amt'>" . number_format($itm['grossAmt'], 2) . "</td>
+                        <td class='amt'>" . number_format($itm['ttlAmtDisbursed'], 2) . "</td>
                         <td></td>
                     </tr>";
                     $ttlGrs += floatval($itm['grossAmt']);
-                    $ttlNet += floatval($itm['grossAmt']);
+                    $ttlNet += floatval($itm['ttlAmtDisbursed']);
                 }
                 ?>
                 <tr>
