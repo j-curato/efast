@@ -185,12 +185,14 @@ class CashDisbursementController extends Controller
     {
         $d = DateTime::createFromFormat('Y-m-d', $issuance_date);
 
-        $ada_number = Yii::$app->db->createCommand("CALL GetAdaNum(:yr)")
-            ->bindValue(':yr', $d->format('Y'))
+        $ada_number = Yii::$app->db->createCommand("SELECT 
+        CAST(SUBSTRING_INDEX(cash_disbursement.ada_number,'-',-1)AS UNSIGNED) +1  as lst
+        FROM cash_disbursement WHERE ada_number LIKE :yr
+        ORDER BY lst DESC LIMIT 1")
+            ->bindValue(':yr', $d->format('Y') . '%')
             ->queryScalar();
         $new_num = '';
         if (strlen($ada_number) < 5) {
-
             $new_num = str_repeat(0, 5 - strlen($ada_number));
         }
         $new_num .= $ada_number;
@@ -395,6 +397,14 @@ class CashDisbursementController extends Controller
                 }
                 if ($mode_of_payment_name == 'lbp check w/ ada' || $mode_of_payment_name == 'echeck w/ ada') {
                     $model->ada_number = $this->getAdaNumber($model->issuance_date);
+                    $insSliie = $this->createSliie($model->id, DateTime::createFromFormat('Y-m-d', $model->issuance_date)->format('Y-m'));
+                    if ($insSliie !== true) {
+                        throw new ErrorException($insSliie);
+                    }
+                    $insLddapAda = $this->createLddapAda($model->id, DateTime::createFromFormat('Y-m-d', $model->issuance_date)->format('Y-m'));
+                    if ($insLddapAda !== true) {
+                        throw new ErrorException($insLddapAda);
+                    }
                 }
 
                 $model->check_or_ada_no = $model_check_num;
@@ -409,14 +419,7 @@ class CashDisbursementController extends Controller
                 if ($insItms !== true) {
                     throw new ErrorException($insItms);
                 }
-                $insSliie = $this->createSliie($model->id, DateTime::createFromFormat('Y-m-d', $model->issuance_date)->format('Y-m'));
-                if ($insSliie !== true) {
-                    throw new ErrorException($insSliie);
-                }
-                $insLddapAda = $this->createLddapAda($model->id, DateTime::createFromFormat('Y-m-d', $model->issuance_date)->format('Y-m'));
-                if ($insLddapAda !== true) {
-                    throw new ErrorException($insLddapAda);
-                }
+
                 Yii::$app->db->createCommand("UPDATE advances_entries 
                     LEFT JOIN advances ON advances_entries.advances_id  = advances.id
                     SET advances_entries.is_deleted = 0,
@@ -494,6 +497,14 @@ class CashDisbursementController extends Controller
                 if ($old_mode_of_payment_name == 'lbp check w/o ada' || $old_mode_of_payment_name == 'echeck w/o ada') {
                     if ($mode_of_payment_name == 'lbp check w/ ada' || $mode_of_payment_name == 'echeck w/ ada') {
                         $model->ada_number = $this->getAdaNumber($model->issuance_date);
+                        $insSliie = $this->createSliie($model->id, DateTime::createFromFormat('Y-m-d', $model->issuance_date)->format('Y-m'));
+                        if ($insSliie !== true) {
+                            throw new ErrorException($insSliie);
+                        }
+                        $insLddapAda = $this->createLddapAda($model->id, DateTime::createFromFormat('Y-m-d', $model->issuance_date)->format('Y-m'));
+                        if ($insLddapAda !== true) {
+                            throw new ErrorException($insLddapAda);
+                        }
                     }
                 }
                 if (!$model->validate()) {
@@ -1021,14 +1032,14 @@ class CashDisbursementController extends Controller
                     ->bindValue(':id', $model->id)
                     ->bindValue(':new_id', $new_model->id)
                     ->execute();
-                $insSliie = $this->createSliie($new_model->id, DateTime::createFromFormat('Y-m-d', $new_model->issuance_date)->format('Y-m'));
-                if ($insSliie !== true) {
-                    throw new ErrorException($insSliie);
-                }
-                $insLddapAda = $this->createLddapAda($new_model->id, DateTime::createFromFormat('Y-m-d', $new_model->issuance_date)->format('Y-m'));
-                if ($insLddapAda !== true) {
-                    throw new ErrorException($insLddapAda);
-                }
+                // $insSliie = $this->createSliie($new_model->id, DateTime::createFromFormat('Y-m-d', $new_model->issuance_date)->format('Y-m'));
+                // if ($insSliie !== true) {
+                //     throw new ErrorException($insSliie);
+                // }
+                // $insLddapAda = $this->createLddapAda($new_model->id, DateTime::createFromFormat('Y-m-d', $new_model->issuance_date)->format('Y-m'));
+                // if ($insLddapAda !== true) {
+                //     throw new ErrorException($insLddapAda);
+                // }
                 $txn->commit();
                 $this->redirect(['view', 'id' => $new_model->id]);
             } catch (ErrorException $e) {
