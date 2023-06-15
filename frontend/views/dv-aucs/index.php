@@ -207,9 +207,22 @@ $this->params['breadcrumbs'][] = $this->title;
         'natureOfTxn',
         'mrdName',
         'payee',
-        'ttlAmtDisbursed',
-        'ttlTax',
-        'grossAmt',
+
+        [
+            'attribute' => 'ttlAmtDisbursed',
+            'format' => ['decimal', 2],
+            'hAlign' => 'right'
+        ],
+        [
+            'attribute' => 'ttlTax',
+            'format' => ['decimal', 2],
+            'hAlign' => 'right'
+        ],
+        [
+            'attribute' => 'grossAmt',
+            'format' => ['decimal', 2],
+            'hAlign' => 'right'
+        ],
         'orsNums',
         'txnType',
 
