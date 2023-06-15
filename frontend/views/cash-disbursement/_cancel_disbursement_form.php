@@ -51,7 +51,7 @@ use yii\helpers\Html;
 
             </div>
             <?php
-            
+
             $gridColumn = [
                 [
 
@@ -78,6 +78,7 @@ use yii\helpers\Html;
                 ],
 
                 'export' => false,
+                'pjax' => true,
                 'toggleDataContainer' => ['class' => 'btn-group mr-2'],
                 'columns' => $gridColumn
             ]); ?>

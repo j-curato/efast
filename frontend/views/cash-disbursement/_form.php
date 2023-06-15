@@ -24,7 +24,6 @@ use yii\widgets\ActiveForm;
 
 $dv = [];
 $check_ranges = [];
-echo $model->fk_ro_check_range_id;
 if (!empty($model->fk_ro_check_range_id)) {
     $check_ranges = ArrayHelper::map(Yii::$app->db->createCommand("SELECT id, CONCAT(ro_check_ranges.from,'-',ro_check_ranges.to) as rng FROM ro_check_ranges WHERE id = :id")
         ->bindValue(':id', $model->fk_ro_check_range_id)
