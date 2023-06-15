@@ -5740,12 +5740,14 @@ class ReportController extends \yii\web\Controller
 
             $act_usr_id  = !empty(MyHelper::post('act_usr_id')) ? MyHelper::post('act_usr_id') : null;
             $actbl_ofr  = !empty(MyHelper::post('actbl_ofr')) ? MyHelper::post('actbl_ofr') : null;
-            if (empty($act_usr_id) && empty($actbl_ofr)) {
-                return json_encode('');
-            }
+            $office  = !empty(MyHelper::post('office')) ? MyHelper::post('office') : null;
+            // if (empty($act_usr_id) && empty($actbl_ofr)) {
+            //     return json_encode('');
+            // }
             $qry = new Query();
             $qry->select([
                 "property.property_number",
+                "location.location",
                 'par.par_number',
                 new Expression('IFNULL(property_articles.article_name,property.article) as article_name'),
                 'property.description',
@@ -5767,6 +5769,8 @@ class ReportController extends \yii\web\Controller
                 ->join('LEFT JOIN', 'employee_search_view as act_usr', 'par.fk_actual_user = act_usr.employee_id')
                 ->join('LEFT JOIN', 'employee_search_view as rcv_by', 'par.fk_received_by = rcv_by.employee_id')
                 ->join('LEFT JOIN',  'derecognition', 'property.id = derecognition.fk_property_id')
+                ->join('LEFT JOIN',  'location', 'par.fk_location_id = location.id')
+
                 ->andWhere('par.is_current_user = 1')
                 ->andWhere('derecognition.id IS NULL');
             if (!empty($act_usr_id)) {
@@ -5775,7 +5779,11 @@ class ReportController extends \yii\web\Controller
             if (!empty($actbl_ofr)) {
                 $qry->andWhere("par.fk_received_by= :actbl_ofr", ['actbl_ofr' => $actbl_ofr]);
             }
-            return json_encode($qry->all());
+            if (!empty($office)) {
+                $qry->andWhere("property.fk_office_id= :office", ['office' => $office]);
+            }
+            $qry->orderBy("location.id");
+            return json_encode($result = ArrayHelper::index($qry->all(), null, 'actble_ofr'));
         }
         return $this->render('user_properties');
     }

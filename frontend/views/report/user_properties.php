@@ -4,6 +4,7 @@
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
+use app\models\Office;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -21,6 +22,25 @@ $this->params['breadcrumbs'][] = $this->title;
     <form id="filter">
 
         <div class="row">
+            <?php
+
+            if (Yii::$app->user->can('super-user')) {
+
+            ?>
+                <div class="col-sm-3">
+                    <label for="actbl_ofr">Province</label>
+                    <?= Select2::widget([
+                        'name' => 'office',
+                        'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
+                        'pluginOptions' => [
+                            'allowClear' => true,
+
+                        ],
+
+                    ]) ?>
+                </div>
+            <?php } ?>
+
             <div class="col-sm-3">
                 <label for="actbl_ofr">Accountable Officer</label>
                 <?= Select2::widget([
@@ -78,9 +98,9 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
     </form>
-    <div class="con">
-
-        <table id="data_table">
+    <div class="con" id="con">
+        <!-- 
+        <table>
             <thead>
                 <th>Property Card No.</th>
                 <th>PAR No.</th>
@@ -96,7 +116,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th>Actual User</th>
             </thead>
             <tbody></tbody>
-        </table>
+        </table> -->
 
     </div>
 
@@ -144,8 +164,31 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
 <script>
     function display(data) {
         $('#data_table tbody').html('')
-        $.each(data, (key, val) => {
-            let r = `<tr>
+        $.each(data, (key, accountable) => {
+            let r = `
+            <table>
+            <thead>
+            <tr>
+                <th colspan='13'>${key}</th>
+            </tr>
+                <th>Property Card No.</th>
+                <th>PAR No.</th>
+                <th>Property No.</th>
+                <th>Article</th>
+                <th>Description</th>
+                <th>Serial Number</th>
+                <th>Date Acquired</th>
+                <th>Acquisation Cost</th>
+                <th>Serviceable/UnSeviceable</th>
+                <th>Accountable Officer</th>
+                <th>Actual User</th>
+                <th>location</th>
+                <th>Remarks</th>
+            </thead>
+            <tbody>`;
+            $.each(accountable, (key2, val) => {
+
+                r += `<tr>
                 <td>${val.pc_num}</td>
                 <td>${val.par_number}</td>
                 <td>${val.property_number}</td>
@@ -157,8 +200,15 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
                 <td>${val.isServiceable}</td>
                 <td>${val.actble_ofr}</td>
                 <td>${val.actual_user}</td>
+                <td>${val.location}</td>
+                <td style='width:150px'></td>
             </tr>`
-            $('#data_table tbody').append(r)
+
+            })
+            r += `</tbody></table>`
+            $('#con ').append(r)
+            $('#con').append(`<p style='page-break-after:always;'></p>`)
+
         })
 
     }

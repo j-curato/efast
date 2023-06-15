@@ -63,8 +63,9 @@ class ItMaintenanceRequestController extends Controller
             WHERE 
             it_maintenance_request.serial_number LIKE :yr
             ORDER BY ser_num DESC LIMIT 1")
-            ->bindValue(':yr', $dte->format('Y') . '%')
+            ->bindValue(':yr', '%' . $dte->format('Y') . '%')
             ->queryScalar();
+
         if (empty($qry)) {
             $qry = 1;
         }
