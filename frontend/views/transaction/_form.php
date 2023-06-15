@@ -253,6 +253,8 @@ if ($model->type == 'single' || $model->type == 'multiple') {
             </tr>
             <tr>
 
+                <th>Budget YEar</th>
+                <th>Allotment No.</th>
                 <th>Book</th>
                 <th>Office</th>
                 <th>Division</th>
