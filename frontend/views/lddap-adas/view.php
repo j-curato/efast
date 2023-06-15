@@ -67,6 +67,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php
                 $ttlGrs = 0;
                 $ttlNet = 0;
+                $ttlTax = 0;
                 foreach ($cashDetails as $itm) {
                     echo "<tr>
                         <td>{$itm['payee']}</td>
@@ -74,12 +75,13 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td>{$itm['orsNums']}</td>
                         <td>{$itm['uacs']}</td>
                         <td class='amt'>" . number_format($itm['grossAmt'], 2) . "</td>
-                        <td></td>
+                        <td class='amt'>" . number_format($itm['ttlTax'], 2) . "</td>
                         <td class='amt'>" . number_format($itm['ttlAmtDisbursed'], 2) . "</td>
                         <td></td>
                     </tr>";
                     $ttlGrs += floatval($itm['grossAmt']);
                     $ttlNet += floatval($itm['ttlAmtDisbursed']);
+                    $ttlTax += floatval($itm['ttlTax']);
                 }
                 ?>
                 <tr>
@@ -88,7 +90,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th></th>
                     <th></th>
                     <th class="amt"><?= number_format($ttlGrs, 2) ?></th>
-                    <th></th>
+                    <th class="amt"><?= number_format($ttlTax, 2) ?></th>
                     <th class="amt"><?= number_format($ttlNet, 2) ?></th>
                     <th></th>
                 </tr>
@@ -112,7 +114,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th></th>
                     <th></th>
                     <th class="amt"><?= number_format($ttlGrs, 2) ?></th>
-                    <th></th>
+                    <th class="amt"><?= number_format($ttlTax, 2) ?></th>
                     <th class="amt"><?= number_format($ttlNet, 2) ?></th>
                     <th></th>
                 </tr>
