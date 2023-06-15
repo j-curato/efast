@@ -165,15 +165,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <th colspan="8" class="no-bdr">TOTAL AMOUNT:
 
-                        <span><?php echo Yii::$app->memem->convertNumberToWords($ttlNet) . ' Pesos';
-                                $dcl = round(fmod($ttlNet, 1) * 100);
-                                if ($dcl > 0) {
-                                    echo ' And ';
-                                    echo Yii::$app->memem->convertNumberToWords($dcl);
-                                    echo ' Centavos';
-                                }
+                        <u>&emsp; <?php echo Yii::$app->memem->convertNumberToWords($ttlNet) . ' Pesos';
+                                    $dcl = round(fmod($ttlNet, 1) * 100);
+                                    if ($dcl > 0) {
+                                        echo ' And ';
+                                        echo Yii::$app->memem->convertNumberToWords($dcl);
+                                        echo ' Centavos';
+                                    }
 
-                                ?></span>
+                                    ?>&emsp;</u>
                     </th>
                 </tr>
                 <tr>

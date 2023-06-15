@@ -135,7 +135,7 @@ $blnk = "                <tr>
                 <?= $model->cashDisbursement->is_cancelled == false ?  $rowDta : $blnk ?>
                 <tr>
                     <th colspan="2">
-                        No. of pcs of LDDAP-ADA: <u>&emsp; &emsp; <?= $ttlDvs ?>&emsp; &emsp; </u>
+                        No. of pcs of LDDAP-ADA: <u>&emsp; <?= $ttlDvs ?> &emsp; </u>
                     </th>
                     <td colspan="7">
                         <span>Total Amount: <b><u>&emsp; <?= number_format($ttl, 2) ?>&emsp; </u></b></span><br>
@@ -212,7 +212,7 @@ $blnk = "                <tr>
                                 <br>
                                 <br>
                                 <u><b>
-                                       GAY A. TIDALGO, CESO IV
+                                        GAY A. TIDALGO, CESO IV
                                     </b>
                                 </u>
                                 <br>
