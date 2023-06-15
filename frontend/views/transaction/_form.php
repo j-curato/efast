@@ -253,7 +253,7 @@ if ($model->type == 'single' || $model->type == 'multiple') {
             </tr>
             <tr>
 
-                <th>Budget YEar</th>
+                <th>Budget Year</th>
                 <th>Allotment No.</th>
                 <th>Book</th>
                 <th>Office</th>
@@ -276,6 +276,8 @@ if ($model->type == 'single' || $model->type == 'multiple') {
                     echo "<tr>
                         <td style='display:none;'><input type='text' class='entry_id' name='items[{$row_number}][item_id]' value='{$item['item_id']}'></td>
                         <td style='display:none;'><input type='text' class='entry_id' name='items[{$row_number}][allotment_id]' value='{$item['allotment_entry_id']}'></td>
+                        <td>{$item['budget_year']}</td>
+                        <td>{$item['allotmentNumber']}</td>
                         <td>{$item['book']}</td>
                         <td>{$item['office_name']}</td>
                         <td>{$item['division']}</td>
