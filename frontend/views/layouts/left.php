@@ -368,6 +368,7 @@
                                         ['label' => 'LDDAP-ADA`s', 'icon' => 'circle-o', 'url' => ['/lddap-adas'],],
                                         ['label' => 'ACIC`s', 'icon' => 'circle-o', 'url' => ['/acics'],],
                                         ['label' => 'ACIC in Bank', 'icon' => 'circle-o', 'url' => ['/acic-in-bank'],],
+                                        ['label' => 'RCI', 'icon' => 'circle-o', 'url' => ['/rci'],],
                                         ['label' => 'Cash Received', 'icon' => 'circle-o', 'url' => ['/cash-received'],],
                                         ['label' => 'Laps Amounts', 'icon' => 'circle-o', 'url' => ['/cash-adjustment'],],
                                         ['label' => 'Cancel Disbursement', 'icon' => 'circle-o', 'url' => ['/cash-disbursement/cancel-disbursement-index'],],
@@ -534,6 +535,7 @@
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Job Request', 'icon' => 'circle-o', 'url' => ['/maintenance-job-request'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Pre-Repair Inspection', 'icon' => 'circle-o', 'url' => ['/pre-repair-inspection'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Trip Ticket', 'icon' => 'circle-o', 'url' => ['/trip-ticket'],] : [],
+                                Yii::$app->user->can('super-user') ?     ['label' => 'IT Helpdesk', 'icon' => 'circle-o', 'url' => ['/it-maintenance-request'],] : [],
 
                             ],
                         ] : [],
