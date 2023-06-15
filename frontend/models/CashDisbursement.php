@@ -53,7 +53,8 @@ class CashDisbursement extends \yii\db\ActiveRecord
                 'dv_aucs_id',
                 'is_cancelled',
                 'fk_ro_check_range_id',
-                'fk_mode_of_payment_id'
+                'fk_mode_of_payment_id',
+                'is_deleted'
             ], 'integer'],
             [[
                 'reporting_period',
@@ -87,7 +88,9 @@ class CashDisbursement extends \yii\db\ActiveRecord
             'begin_time' => 'Begin Time',
             'out_time' => 'Out Time',
             'fk_ro_check_range_id' => 'Check Range',
-            'fk_mode_of_payment_id' => 'Mode of Payment'
+            'fk_mode_of_payment_id' => 'Mode of Payment',
+
+            'is_deleted' => 'is Deleted'
         ];
     }
 

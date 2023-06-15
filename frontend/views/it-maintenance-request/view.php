@@ -49,7 +49,7 @@ $actnd_by = MyHelper::getEmployee($model->fk_worked_by, 'one');
             </tr>
             <tr>
                 <th>Office:</th>
-                <td><?= $model->divisions->division ?></td>
+                <td><?= strtoupper($model->divisions->division) ?></td>
                 <th>Serial No.:</th>
                 <td><?= $model->serial_number ?></td>
             </tr>
@@ -62,13 +62,12 @@ $actnd_by = MyHelper::getEmployee($model->fk_worked_by, 'one');
             </tr>
 
             <tr>
-                <th colspan="2" class="ctr"> DESCRIPTION</th>
+                <th colspan="2" class="ctr"> DESCRIPTION </th>
                 <th colspan="2" class="ctr">ACTION TAKEN</th>
             </tr>
             <tr>
-
-                <td colspan="2" style="height: 15rem;"> <?= $model->description ?></td>
-                <td colspan="2"><?= $model->action_taken ?></td>
+                <td colspan="2" style="height: 2%;width:50%"> <?= $model->description ?></td>
+                <td colspan="2" style="height: 15rem;width:50%"><?= $model->action_taken ?></td>
             </tr>
             <tr>
                 <th colspan="4" class='ctr'>Acceptance</th>

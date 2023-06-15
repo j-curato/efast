@@ -94,7 +94,7 @@ if (!empty($model->id)) {
                 ?>
             </div>
             <div class="col-sm-2">
-                <label for="document_recieve">Document Recive</label>
+                <label for="document_receive">Document Receive</label>
                 <?php
 
                 $data = Yii::$app->db->createCommand("SELECT 'all' as id, 'ALL' as `name`
@@ -159,7 +159,7 @@ if (!empty($model->id)) {
                 <tr>
 
                     <th rowspan="2"> MFO/PAP </th>
-                    <th rowspan="2"> Document Recieve</th>
+                    <th rowspan="2"> Document Receive</th>
                     <th rowspan="2">Prev Allotment</th>
                     <th rowspan="2">Current Allotment</th>
                     <th colspan="3">Obligation</th>

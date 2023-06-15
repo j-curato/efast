@@ -26,6 +26,7 @@ class m230516_030328_create_vw_undisburesedDvs_view extends Migration
         LEFT JOIN cash_disbursement_items ON cash_disbursement.id = cash_disbursement_items.fk_cash_disbursement_id
         WHERE 
         NOT EXISTS(SELECT * FROM cte_CancelledChecks WHERE cte_CancelledChecks.parent_disbursement = cash_disbursement.id)
+        AND cash_disbursement.is_cancelled = 0
         )
         SELECT dv_aucs_index.* FROM dv_aucs_index 
         LEFT JOIN cte_GoodChecks ON dv_aucs_index.id = cte_GoodChecks.fk_dv_aucs_id

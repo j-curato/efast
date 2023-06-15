@@ -38,7 +38,7 @@ if (!empty($model->id)) {
                 <tr>
 
                     <th rowspan="2"> MFO/PAP </th>
-                    <th rowspan="2"> Document Recieve</th>
+                    <th rowspan="2"> Document Receive</th>
                     <th rowspan="2">Prev. Allotment</th>
                     <th rowspan="2">Current Allotment</th>
                     <th colspan="3">Obligation</th>
