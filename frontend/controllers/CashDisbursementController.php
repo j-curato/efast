@@ -244,12 +244,15 @@ class CashDisbursementController extends Controller
     {
         try {
 
+
             $sliieModel = new Sliies();
             $sliieModel->fk_cash_disbursement_id = $model_id;
             $sliieModel->serial_number = $this->sliieSerialNum($period);
+
             if (!$sliieModel->validate()) {
                 throw new ErrorException(json_encode($sliieModel->errors));
             }
+
             if (!$sliieModel->save(false)) {
                 throw new ErrorException('SLIIE Model Save Failed');
             }
@@ -265,6 +268,7 @@ class CashDisbursementController extends Controller
             $lddapAdaModel = new LddapAdas();
             $lddapAdaModel->fk_cash_disbursement_id = $model_id;
             $lddapAdaModel->serial_number = $this->lddapAdaSerialNum($period);
+
             if (!$lddapAdaModel->validate()) {
                 throw new ErrorException(json_encode($lddapAdaModel->errors));
             }
@@ -395,16 +399,20 @@ class CashDisbursementController extends Controller
                         throw new ErrorException('Items Cannot be more than one');
                     }
                 }
+
+
                 if ($mode_of_payment_name == 'lbp check w/ ada' || $mode_of_payment_name == 'echeck w/ ada') {
                     $model->ada_number = $this->getAdaNumber($model->issuance_date);
                     $insSliie = $this->createSliie($model->id, DateTime::createFromFormat('Y-m-d', $model->issuance_date)->format('Y-m'));
                     if ($insSliie !== true) {
                         throw new ErrorException($insSliie);
                     }
+
                     $insLddapAda = $this->createLddapAda($model->id, DateTime::createFromFormat('Y-m-d', $model->issuance_date)->format('Y-m'));
                     if ($insLddapAda !== true) {
                         throw new ErrorException($insLddapAda);
                     }
+                    throw new ErrorException('Items is Required');
                 }
 
                 $model->check_or_ada_no = $model_check_num;
@@ -419,7 +427,17 @@ class CashDisbursementController extends Controller
                 if ($insItms !== true) {
                     throw new ErrorException($insItms);
                 }
-
+                if ($mode_of_payment_name == 'lbp check w/ ada' || $mode_of_payment_name == 'echeck w/ ada') {
+                    $insSliie = $this->createSliie($model->id, DateTime::createFromFormat('Y-m-d', $model->issuance_date)->format('Y-m'));
+                    if ($insSliie !== true) {
+                        throw new ErrorException($insSliie);
+                    }
+                    $insLddapAda = $this->createLddapAda($model->id, DateTime::createFromFormat('Y-m-d', $model->issuance_date)->format('Y-m'));
+                    if ($insLddapAda !== true) {
+                        throw new ErrorException($insLddapAda);
+                    }
+                    throw new ErrorException('Items is Required');
+                }
                 Yii::$app->db->createCommand("UPDATE advances_entries 
                     LEFT JOIN advances ON advances_entries.advances_id  = advances.id
                     SET advances_entries.is_deleted = 0,
@@ -517,7 +535,18 @@ class CashDisbursementController extends Controller
                 if ($insItms !== true) {
                     throw new ErrorException($insItms);
                 }
-
+                if ($old_mode_of_payment_name == 'lbp check w/o ada' || $old_mode_of_payment_name == 'echeck w/o ada') {
+                    if ($mode_of_payment_name == 'lbp check w/ ada' || $mode_of_payment_name == 'echeck w/ ada') {
+                        $insSliie = $this->createSliie($model->id, DateTime::createFromFormat('Y-m-d', $model->issuance_date)->format('Y-m'));
+                        if ($insSliie !== true) {
+                            throw new ErrorException($insSliie);
+                        }
+                        $insLddapAda = $this->createLddapAda($model->id, DateTime::createFromFormat('Y-m-d', $model->issuance_date)->format('Y-m'));
+                        if ($insLddapAda !== true) {
+                            throw new ErrorException($insLddapAda);
+                        }
+                    }
+                }
                 Yii::$app->db->createCommand("UPDATE advances_entries 
                     LEFT JOIN advances ON advances_entries.advances_id  = advances.id
                     SET advances_entries.is_deleted = 0,
