@@ -61,7 +61,7 @@ class PoTransaction extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'po_responsibility_center_id' => 'Responsibility Center ID',
+            'po_responsibility_center_id' => 'Responsibility Center ',
             'payee' => 'Payee',
             'particular' => 'Particular',
             'amount' => 'Gross Amount',
