@@ -424,7 +424,6 @@ class CashDisbursementController extends Controller
                     if ($insLddapAda !== true) {
                         throw new ErrorException($insLddapAda);
                     }
-                    throw new ErrorException('Items is Required');
                 }
                 Yii::$app->db->createCommand("UPDATE advances_entries 
                     LEFT JOIN advances ON advances_entries.advances_id  = advances.id
