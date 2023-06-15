@@ -106,6 +106,8 @@ class AcicsController extends Controller
         cash_disbursement.issuance_date,
         dv_aucs_index.payee,
         dv_aucs_index.grossAmt,
+        dv_aucs_index.ttlTax,
+        dv_aucs_index.ttlAmtDisbursed,
         chart_of_accounts.uacs,
         chart_of_accounts.general_ledger
         

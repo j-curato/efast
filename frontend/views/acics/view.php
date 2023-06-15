@@ -44,12 +44,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     <br>
                 </td>
                 <td colspan="2" class="no-bdr">
-                    <span> Bank Account No.: ______________________</span> <br>
+                    <span> Bank Account No.: <b><u>&emsp;<?= $model->book->account_number ?? '' ?> &emsp;</u></b></span> <br>
                     <span>Date: <b> <u>&emsp;&emsp;<?= DateTime::createFromFormat('Y-m-d', $model->date_issued)->format('F d, Y') ?>&emsp;&emsp;</u></b></span>
                     <br>
                     <br>
                 </td>
-                <td colspan="" class="no-bdr">
+                <td colspan="" class="no-bdr" style="min-width:130px">
                     <span>ACIC No.</span><br>
                     <span>Organization Code:</span><br>
                     <span>Fund Cluste</span><br>
@@ -84,12 +84,12 @@ $this->params['breadcrumbs'][] = $this->title;
             $cashItemsTtlAmt = 0;
             $checkNumCnt = count(array_unique(array_column($cashItems, 'check_or_ada_no')));
             foreach ($cashItems as $itm) {
-                $cashItemsTtlAmt += floatval($itm['grossAmt']);
+                $cashItemsTtlAmt += floatval($itm['ttlAmtDisbursed']);
                 echo "<tr>
                 <td>{$itm['check_or_ada_no']}</td>
                 <td>{$itm['issuance_date']}</td>
                 <td>{$itm['payee']}</td>
-                <td class='amt'>" . number_format($itm['grossAmt'], 2) . "</td>
+                <td class='amt'>" . number_format($itm['ttlAmtDisbursed'], 2) . "</td>
                 <td>{$itm['uacs']}-{$itm['general_ledger']}</td>
                 <td></td>
                 <td></td>
