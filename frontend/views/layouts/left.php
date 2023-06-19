@@ -556,32 +556,63 @@
                             'label' => 'Province',
                             'url' => '#',
                             'items' => [
-                                Yii::$app->user->can('province') ?  ['label' => 'Advances Report Types', 'icon' => 'circle-o', 'url' => ['/advances-report-types'],] : [],
-                                Yii::$app->user->can('province') ?  ['label' => 'Bank Account', 'icon' => 'circle-o', 'url' => ['/bank-account'],] : [],
-                                Yii::$app->user->can('po_check_range') ?  ['label' => 'Check Range', 'icon' => 'circle-o', 'url' => ['/check-range'],] : [],
-                                Yii::$app->user->can('po_asignatory') ?     ['label' => 'PO Asignatory', 'icon' => 'circle-o', 'url' => ['/po-assignatory'],] : [],
-                                Yii::$app->user->can('po_responsibility_center') ?     ['label' => 'PO Responsibility Center', 'icon' => 'circle-o', 'url' => ['/po-responsibility-center'],] : [],
-                                Yii::$app->user->can('advances') ?     ['label' => 'Advances', 'icon' => 'circle-o', 'url' => ['/advances'],] : [],
-                                Yii::$app->user->can('liquidation') ?     ['label' => 'Liquidation', 'icon' => 'circle-o', 'url' => ["/liquidation"],] : [],
-                                Yii::$app->user->can('liquidation') ?     ['label' => 'Cancelled Check', 'icon' => 'circle-o', 'url' => ['/liquidation/cancelled-check-index'],] : [],
-                                Yii::$app->user->can('advances_liquidation') ?     ['label' => 'Advances/Liquidation', 'icon' => 'circle-o', 'url' => ['/report/advances-liquidation'],] : [],
-                                Yii::$app->user->can('po_transaction') ?     ['label' => 'PO Transaction', 'icon' => 'circle-o', 'url' => ['/po-transaction'],] : [],
-                                Yii::$app->user->can('po_cibr') ?     ['label' => 'CIBR', 'icon' => 'circle-o', 'url' => ['/cibr'],] : [],
-                                Yii::$app->user->can('po_cdr') ?     ['label' => 'CDR', 'icon' => 'circle-o', 'url' => ['/cdr'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'FUR', 'icon' => 'circle-o', 'url' => ['/fur'],] : [],
-                                Yii::$app->user->can('province') ?     ['label' => 'ROD', 'icon' => 'circle-o', 'url' => ['/rod'],] : [],
-                                Yii::$app->user->can('fund_source_fur') ?     ['label' => 'Fund Source FUR', 'icon' => 'circle-o', 'url' => ['/report/fund-source-fur'],] : [],
-                                Yii::$app->user->can('summary_fund_source_fur') ?     ['label' => 'Summary Fund Source FUR', 'icon' => 'circle-o', 'url' => ['/report/summary-fund-source-fur'],] : [],
-                                Yii::$app->user->can('summary_fund_source_fur') ?     ['label' => 'Summary Budget Year FUR', 'icon' => 'circle-o', 'url' => ['/report/budget-year-fur'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Pending Transmittal', 'icon' => 'circle-o', 'url' => ['/po-transmittal/pending-at-ro'],] : [],
-                                Yii::$app->user->can('po_transmittal') ? ['label' => 'Transmittal', 'icon' => 'circle-o', 'url' => ['/po-transmittal'],] : [],
-                                Yii::$app->user->can('po_transmittal') ? ['label' => 'Returned DV`s', 'icon' => 'circle-o', 'url' => ['/po-transmittal/returned-liquidation'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'PO Transmittal to COA', 'icon' => 'circle-o', 'url' => ['/po-transmittal-to-coa'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Positions', 'icon' => 'circle-o', 'url' => ['/employee-position'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Alphalist', 'icon' => 'circle-o', 'url' => ['/alphalist'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'MLP', 'icon' => 'circle-o', 'url' => ['/monthly-liquidation-program'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Adequacy of Resource', 'icon' => 'circle-o', 'url' => ['/report/province-adequacy'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'PO Transmittal Summary', 'icon' => 'circle-o', 'url' => ['/report/po-transmittal-summary'],] : [],
+                                [
+                                    'label' => 'Master Records',
+                                    'icon' => 'circle-o',
+                                    'url' => '#',
+                                    'items' => [
+                                        Yii::$app->user->can('province') ?  ['label' => 'Advances Report Types', 'icon' => 'circle-o', 'url' => ['/advances-report-types'],] : [],
+                                        Yii::$app->user->can('province') ?  ['label' => 'Bank Account', 'icon' => 'circle-o', 'url' => ['/bank-account'],] : [],
+                                        Yii::$app->user->can('po_check_range') ?  ['label' => 'Check Range', 'icon' => 'circle-o', 'url' => ['/check-range'],] : [],
+                                        Yii::$app->user->can('po_asignatory') ?     ['label' => 'PO Asignatory', 'icon' => 'circle-o', 'url' => ['/po-assignatory'],] : [],
+                                        Yii::$app->user->can('po_responsibility_center') ?     ['label' => 'PO Responsibility Center', 'icon' => 'circle-o', 'url' => ['/po-responsibility-center'],] : [],
+                                    ],
+                                ],
+                                [
+                                    'label' => 'Transactions',
+                                    'icon' => 'circle-o',
+                                    'url' => '#',
+                                    'items' => [
+                                        Yii::$app->user->can('advances') ?     ['label' => 'Advances', 'icon' => 'circle-o', 'url' => ['/advances'],] : [],
+                                        Yii::$app->user->can('po_transaction') ?     ['label' => 'PO Transaction', 'icon' => 'circle-o', 'url' => ['/po-transaction'],] : [],
+                                        Yii::$app->user->can('liquidation') ?     ['label' => 'Liquidation', 'icon' => 'circle-o', 'url' => ["/liquidation"],] : [],
+                                        Yii::$app->user->can('liquidation') ?     ['label' => 'Cancelled Check', 'icon' => 'circle-o', 'url' => ['/liquidation/cancelled-check-index'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Pending Transmittal', 'icon' => 'circle-o', 'url' => ['/po-transmittal/pending-at-ro'],] : [],
+                                        Yii::$app->user->can('po_transmittal') ? ['label' => 'Transmittal', 'icon' => 'circle-o', 'url' => ['/po-transmittal'],] : [],
+                                        Yii::$app->user->can('po_transmittal') ? ['label' => 'Returned DV`s', 'icon' => 'circle-o', 'url' => ['/po-transmittal/returned-liquidation'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'PO Transmittal to COA', 'icon' => 'circle-o', 'url' => ['/po-transmittal-to-coa'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Positions', 'icon' => 'circle-o', 'url' => ['/employee-position'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Alphalist', 'icon' => 'circle-o', 'url' => ['/alphalist'],] : [],
+                                    ],
+                                ],
+                                [
+                                    'label' => 'Reports',
+                                    'icon' => 'circle-o',
+                                    'url' => '#',
+                                    'items' => [
+                                        Yii::$app->user->can('po_cibr') ?     ['label' => 'CIBR', 'icon' => 'circle-o', 'url' => ['/cibr'],] : [],
+                                        Yii::$app->user->can('po_cdr') ?     ['label' => 'CDR', 'icon' => 'circle-o', 'url' => ['/cdr'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'FUR', 'icon' => 'circle-o', 'url' => ['/fur'],] : [],
+                                        Yii::$app->user->can('province') ?     ['label' => 'ROD', 'icon' => 'circle-o', 'url' => ['/rod'],] : [],
+                                        Yii::$app->user->can('fund_source_fur') ?     ['label' => 'Fund Source FUR', 'icon' => 'circle-o', 'url' => ['/report/fund-source-fur'],] : [],
+                                        Yii::$app->user->can('summary_fund_source_fur') ?     ['label' => 'Summary Fund Source FUR', 'icon' => 'circle-o', 'url' => ['/report/summary-fund-source-fur'],] : [],
+                                        Yii::$app->user->can('summary_fund_source_fur') ?     ['label' => 'Summary Budget Year FUR', 'icon' => 'circle-o', 'url' => ['/report/budget-year-fur'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'MLP', 'icon' => 'circle-o', 'url' => ['/monthly-liquidation-program'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'Adequacy of Resource', 'icon' => 'circle-o', 'url' => ['/report/province-adequacy'],] : [],
+                                        Yii::$app->user->can('advances_liquidation') ?     ['label' => 'Advances/Liquidation', 'icon' => 'circle-o', 'url' => ['/report/advances-liquidation'],] : [],
+
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'PO Transmittal Summary', 'icon' => 'circle-o', 'url' => ['/report/po-transmittal-summary'],] : [],
+                                    ],
+                                ],
+
+
+
+
+
+
+
+
+
 
                             ],
                         ] : ['label' => ''],
