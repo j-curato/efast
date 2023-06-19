@@ -916,7 +916,7 @@ class DvAucsController extends Controller
             $fund_source_type_id = Yii::$app->db->createCommand("SELECT fund_source_type.id FROM fund_source_type WHERE fund_source_type.name  = :_type")
                 ->bindValue(':_type', $report_type[$i])
                 ->queryOne();
-            $report_type_id = Yii::$app->db->createCommand("SELECT advances_report_type.id FROM advances_report_type WHERE advances_report_type.name  = :_type")
+            $report_type_id = Yii::$app->db->createCommand("SELECT advances_report_types.id FROM advances_report_types WHERE advances_report_types.name  = :_type")
                 ->bindValue(':_type', $report_type[$i])
                 ->queryOne();
             $ad_entry->fund_source_type = $fund_source_type[$i];
