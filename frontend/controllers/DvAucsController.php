@@ -928,7 +928,7 @@ class DvAucsController extends Controller
 
             $ad_entry->book_id = intval($book_id);
             $ad_entry->fk_fund_source_type_id = $fund_source_type_id;
-            $ad_entry->fk_report_type_id = $report_type_id;
+            $ad_entry->fk_advances_report_type_id = $report_type_id;
             if ($ad_entry->save(false)) {
             } else {
                 return false;
