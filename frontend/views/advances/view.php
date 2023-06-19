@@ -6,14 +6,13 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\Advances */
 
-$this->title = $model->id;
+$this->title = $model->nft_number;
 $this->params['breadcrumbs'][] = ['label' => 'Advances', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="advances-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
     <?php if (Yii::$app->user->can('create_advances')) { ?>
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>

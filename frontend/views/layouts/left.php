@@ -556,6 +556,7 @@
                             'label' => 'Province',
                             'url' => '#',
                             'items' => [
+                                Yii::$app->user->can('province') ?  ['label' => 'Advances Report Types', 'icon' => 'circle-o', 'url' => ['/advances-report-types'],] : [],
                                 Yii::$app->user->can('province') ?  ['label' => 'Bank Account', 'icon' => 'circle-o', 'url' => ['/bank-account'],] : [],
                                 Yii::$app->user->can('po_check_range') ?  ['label' => 'Check Range', 'icon' => 'circle-o', 'url' => ['/check-range'],] : [],
                                 Yii::$app->user->can('po_asignatory') ?     ['label' => 'PO Asignatory', 'icon' => 'circle-o', 'url' => ['/po-assignatory'],] : [],

@@ -94,6 +94,7 @@ class DvAucs extends \yii\db\ActiveRecord
             'fk_remittance_id' => 'Remittance Number',
             'book_id' => 'Book',
             'recieved_at' => 'Receive at',
+            'nature_of_transaction_id' => 'Nature of Transaction',
         ];
     }
 

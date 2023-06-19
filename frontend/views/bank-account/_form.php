@@ -1,6 +1,8 @@
 <?php
 
+use app\models\Office;
 use kartik\select2\Select2;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -12,33 +14,14 @@ use yii\widgets\ActiveForm;
 <div class="bank-account-form">
 
     <?php $form = ActiveForm::begin(); ?>
-
-    <?= $form->field($model, 'account_number')->textInput(['maxlength' => true]) ?>
-    <?= $form->field($model, 'account_name')->textInput(['maxlength' => true]) ?>
-
-
     <?php
     $province = Yii::$app->user->identity->province;
-    if (
-        $province === 'adn' ||
-        $province === 'ads' ||
-        $province === 'pdi' ||
-        $province === 'sdn' ||
-        $province === 'sds'
-    ) {
-    } else {
-
+    if (Yii::$app->user->can('super-user')) {
     ?>
-        <?= $form->field($model, 'province')->widget(
+        <?= $form->field($model, 'fk_office_id')->widget(
             Select2::class,
             [
-                'data' => [
-                    'adn' => 'ADN',
-                    'ads' => 'ADS',
-                    'pdi' => 'PDI',
-                    'sdn' => 'SDN',
-                    'sds' => 'SDS',
-                ],
+                'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
                 'pluginOptions' => [
                     'placeholder' => 'Select Province'
                 ]
@@ -46,6 +29,11 @@ use yii\widgets\ActiveForm;
 
         ) ?>
     <?php } ?>
+    <?= $form->field($model, 'account_number')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'account_name')->textInput(['maxlength' => true]) ?>
+
+
+
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

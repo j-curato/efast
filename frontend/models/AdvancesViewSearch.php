@@ -17,27 +17,25 @@ class AdvancesViewSearch extends AdvancesView
      */
     public function rules()
     {
-        $province = 'province';
-        if (\Yii::$app->user->identity->province !== 'ro_admin') {
-            $province = '';
-        }
+
         return [
 
             [[
-                'check_date', 'check_number', 'dv_number', 'particular', 'reporting_period',
+                'check_date',
+                'check_number', 'dv_number', 'particular', 'reporting_period',
                 'nft_number',
-                'r_center_name',
+                // 'r_center_name',
                 'mode_of_payment',
                 'payee',
                 'particular',
                 'book_name',
-                $province,
                 'fund_source',
                 'report_type',
                 'object_code',
                 'account_title',
                 'fund_source_type',
-                'bank_account'
+                'bank_account',
+                'province'
 
             ], 'safe'],
             [['total_liquidation'], 'number'],
@@ -63,17 +61,11 @@ class AdvancesViewSearch extends AdvancesView
     public function search($params)
     {
         $province = Yii::$app->user->identity->province;
-        $q = AdvancesView::find();
-        if (
-            $province === 'adn' ||
-            $province === 'sdn' ||
-            $province === 'sds' ||
-            $province === 'sdn' ||
-            $province === 'pdi'
-        ) {
-            $q->where('province LIKE :province', ['province' => $province]);
+        $query = AdvancesView::find();
+        if (!Yii::$app->user->can('super-user')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $query->andWhere('province = :province', ['province' => $user_data->office->office_name]);
         }
-        $query = $q;
 
         // add conditions that should always apply here
 
@@ -98,7 +90,7 @@ class AdvancesViewSearch extends AdvancesView
 
         $query
             ->andFilterWhere(['like', 'nft_number', $this->nft_number])
-            ->andFilterWhere(['like', 'r_center_name', $this->r_center_name])
+            // ->andFilterWhere(['like', 'r_center_name', $this->r_center_name])
             ->andFilterWhere(['like', 'mode_of_payment', $this->mode_of_payment])
             ->andFilterWhere(['like', 'dv_number', $this->dv_number])
             ->andFilterWhere(['like', 'check_number', $this->check_number])
@@ -116,7 +108,8 @@ class AdvancesViewSearch extends AdvancesView
             ->andFilterWhere(['like', 'account_title', $this->account_title])
             ->andFilterWhere(['like', 'object_code', $this->object_code])
             ->andFilterWhere(['like', 'bank_account', $this->bank_account])
-            ->andFilterWhere(['like', 'check_date', $this->check_date]);
+            ->andFilterWhere(['like', 'check_date', $this->check_date])
+        ;
 
         return $dataProvider;
     }

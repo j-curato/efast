@@ -128,6 +128,113 @@ class DvAucsController extends Controller
 
         return parent::beforeAction($action);
     }
+    private function insAdvances($dv_id, $advances_id = '', $advances = [], $advances_items = [])
+    {
+        if (!empty($advances)) {
+            try {
+
+                if (!empty($advances_id)) {
+                    $adv = Advances::findOne($advances_id);
+
+                    $itemIds = array_column($advances_items, 'item_id');
+                    $params = [];
+                    $sql = '';
+                    if (!empty($itemIds)) {
+                        $sql = ' AND ';
+                        $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $itemIds], $params);
+                    }
+
+                    echo Yii::$app->db->createCommand("UPDATE advances_entries SET is_deleted = 1 
+                    WHERE 
+                     advances_entries.advances_id = :id
+                    $sql", $params)
+                        ->bindValue(':id', $advances_id)
+                        ->execute();
+                    // advances_entries.is_deleted = 9
+
+                } else {
+
+                    $adv = new Advances();
+                    $adv->nft_number = Yii::$app->memem->generateAdvancesNumber();
+                }
+                $adv->reporting_period  = $advances['reporting_period'];
+                $adv->bank_account_id = $advances['bank_account_id'];
+                $adv->dv_aucs_id = $dv_id;
+                if (!$adv->validate()) {
+                    throw new ErrorException(json_encode($adv->errors));
+                }
+                if (!$adv->save(false)) {
+                    throw new ErrorException('Advances Model Save Failed');
+                }
+
+                $insAdvItems = $this->insAdvancesItems($adv->id, $advances_items);
+                if ($insAdvItems !== true) {
+                    throw new ErrorException($insAdvItems);
+                }
+                return true;
+            } catch (ErrorException $e) {
+                return $e->getMessage();
+            }
+        }
+    }
+    private function insAdvancesItems($adv_id, $items)
+    {
+        try {
+            foreach ($items as $itm) {
+                if (!empty($itm['item_id'])) {
+                    $advItem = AdvancesEntries::findOne($itm['item_id']);
+                } else {
+
+                    $advItem = new AdvancesEntries();
+                }
+
+                $advItem->reporting_period  = $itm['reporting_period'];
+                $advItem->advances_id = $adv_id;
+                $advItem->amount = $itm['amount'];
+                $advItem->object_code = $itm['advances_object_code'];
+                $advItem->fund_source = $itm['fund_source'];
+                $advItem->is_deleted = 9;
+                $advItem->fk_fund_source_type_id = $itm['fund_source_type_id'];
+                $advItem->fk_advances_report_type_id = $itm['report_type_id'];
+
+                if (!$advItem->validate()) {
+                    throw new ErrorException(json_encode($advItem->errors));
+                }
+                if (!$advItem->save(false)) {
+                    throw new ErrorException('Advances Model Save Failed');
+                }
+            }
+
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
+    }
+    private function getAdvancesItems($id)
+    {
+        $qry = Yii::$app->db->createCommand("SELECT 
+        advances_entries.id,
+        advances_entries.fund_source,
+        advances_entries.amount,
+        advances_entries.reporting_period,
+        advances_entries.object_code,
+        advances_entries.fk_advances_report_type_id,
+        advances_entries.fk_fund_source_type_id,
+        fund_source_type.`name` as fund_source_type_name,
+        advances_report_types.`name` as report_type,
+        accounting_codes.account_title
+        FROM 
+        advances_entries
+        LEFT JOIN fund_source_type ON advances_entries.fk_fund_source_type_id  = fund_source_type.id
+        LEFT JOIN advances_report_types  ON advances_entries.fk_advances_report_type_id = advances_report_types.id
+        LEFT JOIN accounting_codes ON advances_entries.object_code = accounting_codes.object_code
+        WHERE advances_entries.advances_id = :id
+        AND advances_entries.is_deleted  = 9
+        ")
+            ->bindValue(':id', $id)
+            ->queryAll();
+        return $qry;
+    }
 
     /**
      * Lists all DvAucs models.
@@ -478,6 +585,28 @@ class DvAucsController extends Controller
             ->bindValue(':id', $id)
             ->queryAll();
     }
+    private function getDvEntries($id)
+    {
+        return Yii::$app->db->createCommand("SELECT 
+        dv_aucs_entries.id as item_id,
+        process_ors.serial_number,
+        `transaction`.particular,
+        payee.account_name as payee,
+        dv_aucs_entries.process_ors_id,
+        dv_aucs_entries.amount_disbursed,
+        dv_aucs_entries.vat_nonvat,
+        dv_aucs_entries.ewt_goods_services,
+        dv_aucs_entries.compensation,
+        dv_aucs_entries.other_trust_liabilities
+        FROM dv_aucs_entries
+        LEFT JOIN process_ors ON dv_aucs_entries.process_ors_id = process_ors.id
+        LEFT JOIN `transaction` ON process_ors.transaction_id = `transaction`.id
+        LEFT JOIN payee ON `transaction`.payee_id = payee.id
+        WHERE dv_aucs_entries.dv_aucs_id = :id
+        AND dv_aucs_entries.is_deleted = 0")
+            ->bindValue(':id', $id)
+            ->queryAll();
+    }
     private function insertDvAccItems($dv_id, $items = [])
     {
         // $item_ids = array_column($items, 'item_id');
@@ -511,7 +640,7 @@ class DvAucsController extends Controller
                 $acc_itm->dv_aucs_id = $dv_id;
                 $acc_itm->debit = $itm['debit'];
                 $acc_itm->credit = $itm['credit'];
-                $acc_itm->current_noncurrent = $itm['isCurrent'];
+                // $acc_itm->current_noncurrent = $itm['isCurrent'];
                 $acc_itm->object_code = $itm['object_code'];
                 if (!$acc_itm->validate()) {
                     throw new ErrorException(json_encode($acc_itm->errors));
@@ -528,6 +657,7 @@ class DvAucsController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        // $advancesModel = $this->findAdvancesModel($id);
         $oldModel = $model;
         // $validator = new \yii\validators\RequiredValidator();
         // $validator->attributes = [
@@ -538,6 +668,9 @@ class DvAucsController extends Controller
         // if ($model->load(Yii::$app->request->post())) {
         //     $items = !empty(Yii::$app->request->post('items')) ? Yii::$app->request->post('items') : [];
         //     $dvAccItems = !empty(Yii::$app->request->post('dvAccItems')) ? Yii::$app->request->post('dvAccItems') : [];
+
+        //     $advances = Yii::$app->request->post('advances') ?? [];
+        //     $advancesItems = Yii::$app->request->post('advancesItems') ?? [];
         //     try {
         //         $transaction = Yii::$app->db->beginTransaction();
         //         $t_type = strtolower(DvTransactionType::findOne($model->fk_dv_transaction_type_id)->name);
@@ -562,6 +695,10 @@ class DvAucsController extends Controller
         //         if ($ins_acc_entries !== true) {
         //             throw new ErrorException($ins_acc_entries);
         //         }
+        //         $insAdvances = $this->insAdvances($model->id, $advancesModel->id, $advances, $advancesItems);
+        //         if ($insAdvances !== true) {
+        //             throw new ErrorException($insAdvances);
+        //         }
         //         $transaction->commit();
         //     } catch (ErrorException $e) {
         //         $transaction->rollBack();
@@ -573,6 +710,9 @@ class DvAucsController extends Controller
         //     'model' => $model,
         //     'items' => $this->getDvItems($id),
         //     'accItems' => $this->getDVAccEntries($id),
+        //     'advancesModel' => $advancesModel,
+        //     'advancesItems' => !empty($advancesModel->id) ? $this->getAdvancesItems($advancesModel->id) : []
+
         // ]);
         if ($_POST) {
             $transaction = YIi::$app->db->beginTransaction();
@@ -741,7 +881,8 @@ class DvAucsController extends Controller
             'accounting_entries' => $accounting_entries,
             'dv_items' => $dv_items,
             'items' => $this->getDvItems($id),
-            'accEntryItems' => $this->getDvAccountingEntries($id)
+            'accEntryItems' => $this->getDvAccountingEntries($id),
+            'dvEntries' => $this->getDvEntries($id)
         ]);
     }
     public function insertAdvancesEntries(
@@ -775,6 +916,9 @@ class DvAucsController extends Controller
             $fund_source_type_id = Yii::$app->db->createCommand("SELECT fund_source_type.id FROM fund_source_type WHERE fund_source_type.name  = :_type")
                 ->bindValue(':_type', $report_type[$i])
                 ->queryOne();
+            $report_type_id = Yii::$app->db->createCommand("SELECT advances_report_type.id FROM advances_report_type WHERE advances_report_type.name  = :_type")
+                ->bindValue(':_type', $report_type[$i])
+                ->queryOne();
             $ad_entry->fund_source_type = $fund_source_type[$i];
             $ad_entry->object_code = $object_codes[$i];
             $ad_entry->fund_source = trim($val, " \r\n\t");
@@ -784,6 +928,7 @@ class DvAucsController extends Controller
 
             $ad_entry->book_id = intval($book_id);
             $ad_entry->fk_fund_source_type_id = $fund_source_type_id;
+            $ad_entry->fk_report_type_id = $report_type_id;
             if ($ad_entry->save(false)) {
             } else {
                 return false;
@@ -851,6 +996,18 @@ class DvAucsController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+    protected function findAdvancesModel($id)
+    {
+        $adId = Yii::$app->db->createCommand("SELECT id FROM advances WHERE dv_aucs_id = :id")
+            ->bindValue(':id', $id)
+            ->queryScalar();
+        if (($model = Advances::findOne($adId)) !== null) {
+            return $model;
+        } else {
+
+            return new Advances();
+        }
     }
     public function actionGetDv()
     {

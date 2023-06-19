@@ -5,6 +5,8 @@ namespace frontend\controllers;
 use Yii;
 use app\models\BankAccount;
 use app\models\BankAccountSearch;
+use common\models\User;
+use ErrorException;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -99,13 +101,25 @@ class BankAccountController extends Controller
         $model = new BankAccount();
 
         if ($model->load(Yii::$app->request->post())) {
-            $model->id  = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+            try {
 
-            if ($model->province !== 'ro_admin') {
-                $model->province = Yii::$app->user->identity->province;
-            }
-            if ($model->save(false)) {
+                if (!Yii::$app->user->can('super-user')) {
+                    $currentUserId = Yii::$app->user->identity->id; // Assuming you are using Yii's built-in user authentication
+                    $user = User::findOne($currentUserId);
+
+                    $model->fk_office_id = $user->office->id ?? null;
+                    $model->province = $user->office->office_name ?? null;
+                }
+                $model->id  = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save Failed');
+                }
                 return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                return json_encode($e->getMessage());
             }
         }
 

@@ -362,6 +362,14 @@ class CashDisbursementController extends Controller
                 if (!$itmModel->save(false)) {
                     throw new ErrorException('itemModel Save Failed');
                 }
+                Yii::$app->db->createCommand("UPDATE advances_entries
+                JOIN advances ON advances_entries.advances_id = advances.id
+                SET advances_entries.is_deleted = 0
+                WHERE 
+                advances_entries.is_deleted = 9
+                AND advances.dv_aucs_id = :dv_id ")
+                    ->bindValue('dv_id', $itmModel->fk_dv_aucs_id)
+                    ->query();
             }
             return true;
         } catch (ErrorException $e) {

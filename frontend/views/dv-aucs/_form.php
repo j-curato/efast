@@ -19,8 +19,18 @@ use yii\widgets\ActiveForm;
 
 $payee = [];
 $accounting_entry_row = 0;
+$advancesItemRow = 1;
 if (!empty($model->payee_id)) {
     $payee = ArrayHelper::map(Payee::find()->where('id = :id', ['id' => $model->payee_id])->asArray()->all(), 'id', 'account_name');
+}
+$dv_object_code = [];
+
+if (!empty($model->object_code)) {
+
+    $q = Yii::$app->db->createCommand("SELECT object_code,CONCAT(object_code,'-',account_title) as account_title FROM accounting_codes WHERE object_code =:object_code")
+        ->bindValue(':object_code', $model->object_code)
+        ->queryAll();
+    $dv_object_code = ArrayHelper::map($q, 'object_code', 'account_title');
 }
 ?>
 
@@ -59,7 +69,28 @@ if (!empty($model->payee_id)) {
             ]) ?>
         </div>
         <div class="col-sm-3">
-            <?= $form->field($model, 'object_code')->textInput(['maxlength' => true]) ?>
+            <?= $form->field($model, 'object_code')->widget(Select2::class, [
+                'data' => $dv_object_code,
+                'value' => !empty($model->object_code) ?? '',
+                'options' => ['placeholder' => 'Search for a UACS ...'],
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'minimumInputLength' => 1,
+                    'language' => [
+                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                    ],
+                    'ajax' => [
+                        'url' => Yii::$app->request->baseUrl . '?r=chart-of-accounts/search-accounting-code',
+                        'dataType' => 'json',
+                        'delay' => 250,
+                        'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                        'cache' => true
+                    ],
+                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                ],
+            ]) ?>
 
         </div>
     </div>
@@ -146,7 +177,7 @@ if (!empty($model->payee_id)) {
                         <td> {$val['payee_name']}</td>
                         <td> {$val['total']}</td>
                         <td>
-                            <input type='text'  class='form-control mask-amount' onkeyup='UpdateMainAmount(this)' value='{$val['amount_disbursed']}'/>
+                            <input type='text'  class='form-control mask-amount' onkeyup='UpdateMainAmount(this)' value='" . number_format($val['amount_disbursed'], 2) . "'/>
                             <input  name='items[$itemRow][amount_disbursed]' type='hidden'  class='amount_disbursed main-amount' value='{$val['amount_disbursed']}'/>
                         </td>
                         <td> 
@@ -165,11 +196,7 @@ if (!empty($model->payee_id)) {
                                 <input type='text'  class='form-control mask-amount' onkeyup='UpdateMainAmount(this)' value='{$val['other_trust_liabilities']}'/>
                                 <input  type='hidden' name='items[$itemRow][other_trust_liabilities]' class='liabilities main-amount' value='{$val['other_trust_liabilities']}'/>
                             </td>
-                            <td>
-                                <button  type='button' class='btn-xs btn-danger' onclick='RemoveItem(this)'>
-                                    <i class='glyphicon glyphicon-minus'></i>
-                                </button>
-                            </td>
+                     
                         </tr>";
                 $itemRow++;
             }
@@ -206,16 +233,197 @@ if (!empty($model->payee_id)) {
                     <a class="btn btn-primary insert_entry" onclick="addEntry()" type="button" style="float: right;">Insert Entry</a>
                 </td>
             </tr>
-            <th>Current/Non-Current</th>
+
             <th>Object Code / Account Title</th>
             <th>Debit</th>
             <th>Credit</th>
         </thead>
         <tbody>
+            <?php
 
+            foreach ($accItems as $itm) {
+
+
+
+                echo "<tr>
+                        <td>
+                        <input type='text' name='dvAccItems[$accounting_entry_row][acc_entry_id]' class='' value='{$itm['acc_entry_id']}'>
+                        <select required name='dvAccItems[$accounting_entry_row][object_code]' class='object-codes form-control' style='width: 100%'>
+                            <option value='{$itm['object_code']}'>{$itm['object_code']}-{$itm['account_title']}</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type='text' class='mask-amount form-control' placeholder='Debit' onkeyup='UpdateMainAmount(this)' value='{$itm['debit']}'>
+                        <input type='hidden' name='dvAccItems[$accounting_entry_row][debit]' class='debit main-amount' value='{$itm['debit']}'>
+                    </td>
+                    <td>
+                        <input type='text' class='mask-amount form-control' placeholder='Credit' onkeyup='UpdateMainAmount(this)' value='{$itm['credit']}'>
+                        <input type='hidden' name='dvAccItems[$accounting_entry_row][credit]' class='credit main-amount' value='{$itm['credit']}'>
+                    </td>
+                    <td style='float:right;'>
+                        <a class='add_accounting_entry_row btn btn-primary btn-xs' type='button'><i class='fa fa-plus fa-fw'></i> </a>
+                        <a class='remove_this_accounting_entry_row btn btn-danger btn-xs ' type='button' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                    </td>
+                </tr>";
+                $accounting_entry_row++;
+            }
+            ?>
         </tbody>
     </table>
+    <table id="advances_table" style=" margin-top:3rem;" class="table">
+        <thead>
 
+
+            <tr>
+                <th colspan="4">
+                    <hr>
+                </th>
+            </tr>
+            <tr class="info">
+
+                <th colspan="4" style="text-align: center;">
+                    <h4 style="font-weight:bold;">ADVANCES</h4>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+
+            <tr>
+                <td>
+                    <div class="row">
+
+                        <?php
+                        $advances_province = '';
+                        $advances_parent_reporting_period = '';
+                        $advances_id = '';
+                        $bank_account_id = '';
+
+                        if (!empty($model->id)) {
+                            $advances_data = Yii::$app->db->createCommand("SELECT advances.province,advances.id,advances.reporting_period,
+                                    advances.bank_account_id
+                                                   FROM advances
+                                                   WHERE advances.dv_aucs_id = :dv_id")
+                                ->bindValue(":dv_id", $model->id)
+                                ->queryOne();
+                            if (!empty($advances_data)) {
+                                $advances_province = $advances_data['province'];
+                                $advances_parent_reporting_period = $advances_data['reporting_period'];
+                                $advances_id = $advances_data['id'];
+                                $bank_account_id = $advances_data['bank_account_id'];
+                            }
+                        }
+                        ?>
+                        <input type="hidden" value='<?= $advances_id ?>' name="advances_id">
+
+                        <div class="col-sm-3">
+                            <label for="advances_bank_account">Bank Account</label>
+                            <?php
+                            $bank_accounts_query = (new \yii\db\Query())
+                                ->select(['bank_account.id', "CONCAT(bank_account.account_number,'-',bank_account.province,'-',bank_account.account_name) as account_number"])
+                                ->from('bank_account');
+
+                            $bank_accounts = $bank_accounts_query->all();
+                            echo Select2::widget([
+                                'data' => ArrayHelper::map($bank_accounts, 'id', 'account_number'),
+                                'name' => 'advances[bank_account_id]',
+                                'value' => $advancesModel->bank_account_id,
+                                'pluginOptions' => [
+                                    'placeholder' => 'Select Bank Account'
+                                ]
+
+                            ]);
+                            ?>
+                        </div>
+                        <div class="col-sm-3">
+                            <label for="advances_parent_reporting_period">Reporting Period</label>
+                            <?php
+                            echo DatePicker::widget([
+                                'name' => 'advances[reporting_period]',
+                                'value' => $advancesModel->reporting_period,
+                                'pluginOptions' => [
+                                    'startView' => 'months',
+                                    'minViewMode' => 'months',
+                                    'format' => 'yyyy-mm',
+                                    'autoclose' => true
+                                ]
+                            ])
+                            ?>
+                        </div>
+                        <div class="col-sm-1 col-sm-offset-5">
+
+                            <button class="add-adv-item btn btn-success" type="button">Add Item</button>
+                        </div>
+                    </div>
+                </td>
+
+            </tr>
+            <?php
+            foreach ($advancesItems as $advItm) {
+                echo "<tr>
+                 <td>
+                     <div class='row'>
+                         <div class='col-sm-4'>
+                             <label>Reporting Period
+                                 <input  value='{$advItm['id']}' type='hidden' name='advancesItems[$advancesItemRow][item_id]' />
+                                 <input  value='{$advItm['reporting_period']}' type='month' name='advancesItems[$advancesItemRow][reporting_period]' class='advances_reporting_period' style='width: 100%;min-width:100%; max-width:100%'  />
+                             </label>
+                         </div>
+                         <div class='col-sm-4'>
+                             <label>Report Type
+                                 <select name='advancesItems[$advancesItemRow][report_type_id]' class='advances-report-type-select' style='width: 100%'>
+                                     <option value='{$advItm['fk_advances_report_type_id']}'>{$advItm['report_type']}</option>
+                                 </select>
+                             </label>
+                         </div>
+                         <div class='col-sm-4'>
+                             <label>Fund Source Type</label>
+ 
+                             <select name='advancesItems[$advancesItemRow][fund_source_type_id]' class='fund-source-type-select' style='width: 100%;min-width:100%; max-width:100%'>
+                                <option value='{$advItm['fk_fund_source_type_id']}'>{$advItm['fund_source_type_name']}</option>
+                             </select>
+                         </div>
+                     </div>
+                     <div class='row'>
+                         <div class='col-sm-4'>
+                             <label>Fund Source
+                                 <textarea name='advancesItems[$advancesItemRow][fund_source]' class='advances_fund_source' cols='10' rows='2' style='width: 100%;min-width:100%; max-width:100%'>{$advItm['fund_source']}</textarea>
+                             </label>
+                         </div>
+                         <div class='col-sm-4'>
+                             <label> Sub Account
+                                 <select name='advancesItems[$advancesItemRow][advances_object_code]' class='chart-of-accounts' style='width: 100%'>
+                                    <option value='{$advItm['object_code']}'>{$advItm['object_code']}-{$advItm['account_title']}</option>
+                                 </select>
+                             </label>
+                         </div>
+                         <div class='col-sm-4'>
+                             <label> Amount
+                                 <input type='text' class='form-control mask-amount advances_amount'  value='{$advItm['amount']}'>
+                                 <input type='hidden' name='advancesItems[$advancesItemRow][amount]' class='advances_unmask_amount main-amount' value='{$advItm['amount']}'>
+                             </label>
+                         </div>
+                     </div>
+                 </td>
+                 <td style='  text-align: center;width:100px'>
+                     <div class='row pull-center'>
+                         <a class='add-adv-item btn btn-primary btn-xs' type='button'><i class='fa fa-plus fa-fw'></i> </a>
+                         <a class='remove_this_row btn btn-danger btn-xs ' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                     </div>
+ 
+                 </td>
+             </tr>";
+                $advancesItemRow++;
+            }
+            ?>
+
+            <tr>
+                <td colspan="2">
+                    <hr>
+                </td>
+            </tr>
+        </tbody>
+
+    </table>
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
     </div>
@@ -223,18 +431,24 @@ if (!empty($model->payee_id)) {
     <?php ActiveForm::end(); ?>
 
 </div>
+<style>
+    label {
+        display: inherit;
+    }
+</style>
 <?php
 $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [JqueryAsset::class]]);
 $this->registerJsFile("@web/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 <script>
     let accounting_entry_row = <?= $accounting_entry_row ?>;
+    let advancesItemRow = <?= $advancesItemRow ?>;
+    let reportTypes = []
+    let fundSourceTypes = []
 
     function addEntry() {
         const new_row = `<tr>
-                <td>
-                    <input type="text" name="dvAccItems[${accounting_entry_row}][isCurrent]" placeholder="Current/NonCurrent" class='form-control'/>
-                </td>
+             
                 <td>
                     <select required name="dvAccItems[${accounting_entry_row}][object_code]" class="object-codes form-control" style="width: 100%">
                     </select>
@@ -257,9 +471,135 @@ $this->registerJsFile("@web/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsse
         ObjectCodesSelect()
         accounting_entry_row++;
     }
+
+    async function GetAdvancesReportTypes() {
+        await $.getJSON(window.location.pathname + '?r=advances-report-types/get-report-types')
+            .then(function(data) {
+                reportTypes = data
+            })
+        AdvancesReportTypeSelect()
+    }
+
+    async function GetFundSourceTypes() {
+        await $.getJSON(window.location.pathname + '?r=fund-source-type/get-fund-source-types')
+            .then(function(data) {
+                fundSourceTypes = data
+            })
+        FundSourceTypeSelect()
+
+    }
+
+    function FundSourceTypeSelect() {
+
+        $('.fund-source-type-select').select2({
+            data: fundSourceTypes,
+            placeholder: 'Select Fund Source Type'
+
+        });
+    }
+
+    function AdvancesReportTypeSelect() {
+
+        $('.advances-report-type-select').select2({
+            data: reportTypes,
+            placeholder: 'Select Reporty Type'
+
+        });
+    }
+
+    function addAdvancesItem() {
+
+    }
+
+    function updateMainAmt(ths) {
+        const amt = $(ths).maskMoney("unmasked")[0];
+        $(ths).closest('tr').find('.main-amount').val(amt)
+    }
     $(document).ready(() => {
 
+        GetAdvancesReportTypes()
+        GetFundSourceTypes()
+        accountingCodesSelect()
+        ObjectCodesSelect()
+        maskAmount()
+        $('#dvaucs-nature_of_transaction_id ').change(function() {
+            var nature_selected = $(this).children(':selected').text()
+            if (nature_selected == 'CA to SDOs/OPEX') {
+                $('#advances_table').show()
+            } else if (nature_selected == 'CA to Employees') {
+                $('#dv_object_code').show()
+                $('#advances_table').hide()
+            } else {
+                $('#advances_table').hide()
+                $('#dv_object_code').hide()
+            }
+        })
+        $('.mask-amount').on('keyup', function() {
+            const amt = $(this).maskMoney("unmasked")[0];
+            $(this).closest('tr').find('.main-amount').val(amt)
+        })
+        $('.add-adv-item').on('click', function() {
+            let r = `<tr>
+                <td>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <label>Reporting Period
+                                <input type='month' name='advancesItems[${advancesItemRow}][reporting_period]' class="advances_reporting_period" style="width: 100%;min-width:100%; max-width:100%" />
+                            </label>
+                        </div>
+                        <div class="col-sm-4">
+                            <label>Report Type
+                                <select name="advancesItems[${advancesItemRow}][report_type_id]" class="advances-report-type-select" style="width: 100%">
+                                    <option></option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="col-sm-4">
+                            <label>Fund Source Type</label>
 
+                            <select name="advancesItems[${advancesItemRow}][fund_source_type_id]" class="fund-source-type-select" style="width: 100%;min-width:100%; max-width:100%">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <label>Fund Source
+                                <textarea name="advancesItems[${advancesItemRow}][fund_source]" class="advances_fund_source" cols="10" rows="2" style="width: 100%;min-width:100%; max-width:100%"></textarea>
+                            </label>
+                        </div>
+                        <div class="col-sm-4">
+                            <label> Sub Account
+                                <select name="advancesItems[${advancesItemRow}][advances_object_code]" class="chart-of-accounts" style="width: 100%">
+                                    <option></option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="col-sm-4">
+                            <label> Amount
+                                <input type="text" class="form-control mask-amount advances_amount"  onkeyup='updateMainAmt(this)'>
+                                <input type="hidden" name="advancesItems[${advancesItemRow}][amount]" class="advances_unmask_amount main-amount">
+                            </label>
+                        </div>
+                    </div>
+                </td>
+                <td style='  text-align: center;width:100px'>
+                    <div class="row pull-right">
+                        <a class='add-adv-item btn btn-primary btn-xs' type='button'><i class='fa fa-plus fa-fw'></i> </a>
+                        <a class='remove_this_row btn btn-danger btn-xs ' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                    </div>
 
+                </td>
+            </tr>`
+            $('#advances_table tbody').append(r)
+            GetAdvancesReportTypes()
+            GetFundSourceTypes()
+            accountingCodesSelect()
+            maskAmount()
+            advancesItemRow++
+        })
+        $('.remove_this_row').click(function() {
+            $(this).closest('tr').remove()
+        })
     })
 </script>

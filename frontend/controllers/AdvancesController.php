@@ -83,6 +83,12 @@ class AdvancesController extends Controller
             ],
         ];
     }
+    private function getItems($id)
+    {
+        return YIi::$app->db->createCommand("SELECT * FROM advances_view WHERE id = :id")
+            ->bindValue(':id', $id)
+            ->queryAll();
+    }
 
     /**
      * Lists all Advances models.

@@ -28,15 +28,18 @@ class BankAccount extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['account_number'], 'required'],
+            [[
+                'account_number',
+                'account_name',
+                'fk_office_id'
+            ], 'required'],
+            [['fk_office_id'], 'integer'],
             [['created_at', 'account_name'], 'safe'],
             [['account_number', 'province'], 'string', 'max' => 255],
             [[
-                'id',
                 'account_number',
                 'account_name',
                 'province',
-                'created_at',
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
 
 
@@ -54,6 +57,7 @@ class BankAccount extends \yii\db\ActiveRecord
             'account_name' => 'Account Name',
             'province' => 'Province',
             'created_at' => 'Created At',
+            'fk_office_id' => 'Office',
 
         ];
     }

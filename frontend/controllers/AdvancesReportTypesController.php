@@ -2,21 +2,18 @@
 
 namespace frontend\controllers;
 
-use app\models\AdvancesEntries;
-use app\models\ChartOfAccounts;
 use Yii;
-use app\models\FundSourceType;
-use app\models\FundSourceTypeSearch;
-use yii\db\Query;
+use app\models\AdvancesReportTypes;
+use app\models\AdvancesReportTypesSearch;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * FundSourceTypeController implements the CRUD actions for FundSourceType model.
+ * AdvancesReportTypesController implements the CRUD actions for AdvancesReportTypes model.
  */
-class FundSourceTypeController extends Controller
+class AdvancesReportTypesController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -27,34 +24,25 @@ class FundSourceTypeController extends Controller
             'access' => [
                 'class' => AccessControl::class,
                 'only' => [
+                    'index',
+                    'view',
                     'update',
                     'delete',
-                    'view',
-                    'index',
                     'create',
-                    'all-fund-source-type',
-                    'search'
                 ],
+
                 'rules' => [
                     [
                         'actions' => [
+                            'index',
+                            'view',
                             'update',
                             'delete',
-                            'view',
-                            'index',
                             'create',
-                            'all-fund-source-type'
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
-                    ],
-                    [
-                        'actions' => [
-                            'search'
-                        ],
-                        'allow' => true,
-                        'roles' => ['@']
-                    ],
+                    ]
                 ]
             ],
             'verbs' => [
@@ -67,12 +55,12 @@ class FundSourceTypeController extends Controller
     }
 
     /**
-     * Lists all FundSourceType models.
+     * Lists all AdvancesReportTypes models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new FundSourceTypeSearch();
+        $searchModel = new AdvancesReportTypesSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -82,7 +70,7 @@ class FundSourceTypeController extends Controller
     }
 
     /**
-     * Displays a single FundSourceType model.
+     * Displays a single AdvancesReportTypes model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -95,18 +83,15 @@ class FundSourceTypeController extends Controller
     }
 
     /**
-     * Creates a new FundSourceType model.
+     * Creates a new AdvancesReportTypes model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new FundSourceType();
+        $model = new AdvancesReportTypes();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-
-
-
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -116,7 +101,7 @@ class FundSourceTypeController extends Controller
     }
 
     /**
-     * Updates an existing FundSourceType model.
+     * Updates an existing AdvancesReportTypes model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -125,15 +110,10 @@ class FundSourceTypeController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $modelOldName = $model->name;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-
-            AdvancesEntries::updateAll(['fund_source_type' => $model->name], "`fund_source_type` = '$modelOldName'");
-            // return json_encode($model->advancesEntries->);
             return $this->redirect(['view', 'id' => $model->id]);
         }
-
 
         return $this->renderAjax('update', [
             'model' => $model,
@@ -141,7 +121,7 @@ class FundSourceTypeController extends Controller
     }
 
     /**
-     * Deletes an existing FundSourceType model.
+     * Deletes an existing AdvancesReportTypes model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -155,50 +135,24 @@ class FundSourceTypeController extends Controller
     }
 
     /**
-     * Finds the FundSourceType model based on its primary key value.
+     * Finds the AdvancesReportTypes model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return FundSourceType the loaded model
+     * @return AdvancesReportTypes the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = FundSourceType::findOne($id)) !== null) {
+        if (($model = AdvancesReportTypes::findOne($id)) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function actionAllFundSourceType()
-    {
-        $na = (new \yii\db\Query())->select('*')->from('fund_source_type')->all();
-        return json_encode($na);
-    }
-    public function actionSearch($q = null, $id = null)
-    {
-        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-
-        $user_province = strtolower(Yii::$app->user->identity->province);
-
-        $out = ['results' => ['id' => '', 'text' => '']];
-        if (!is_null($q)) {
-            $query = new Query();
-            $query->select('fund_source_type.name as id, fund_source_type.name AS text')
-                ->from('fund_source_type')
-                ->where(['like', 'fund_source_type.name', $q]);
-
-            $command = $query->createCommand();
-            $data = $command->queryAll();
-            $out['results'] = array_values($data);
-        } elseif ($id > 0) {
-            $out['results'] = ['id' => $id, 'text' => ChartOfAccounts::find($id)->uacs];
-        }
-        return $out;
-    }
-    public function actionGetFundSourceTypes()
+    public function actionGetReportTypes()
     {
         if (Yii::$app->request->get()) {
-            $qry = Yii::$app->db->createCommand("SELECT id ,`name` as `text` FROM fund_source_type")->queryAll();
+            $qry = Yii::$app->db->createCommand("SELECT id ,`name` as `text` FROM advances_report_types")->queryAll();
             return json_encode($qry);
         }
     }

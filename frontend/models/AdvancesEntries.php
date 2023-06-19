@@ -37,24 +37,7 @@ class AdvancesEntries extends \yii\db\ActiveRecord
             [['amount'], 'number'],
             [['reporting_period'], 'required'],
 
-            [[
 
-                'id',
-                'advances_id',
-                'cash_disbursement_id',
-                'sub_account1_id',
-                'amount',
-                'object_code',
-                'fund_source',
-                'book_id',
-                'reporting_period',
-                'fund_source_type',
-                'division',
-                'advances_type',
-                'report_type',
-                'is_deleted',
-
-            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
             [['advances_id'], 'exist', 'skipOnError' => true, 'targetClass' => Advances::class, 'targetAttribute' => ['advances_id' => 'id']],
             [['cash_disbursement_id'], 'exist', 'skipOnError' => true, 'targetClass' => CashDisbursement::class, 'targetAttribute' => ['cash_disbursement_id' => 'id']],
             [['sub_account1_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubAccounts1::class, 'targetAttribute' => ['sub_account1_id' => 'id']],

@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\export\ExportMenu;
 use kartik\file\FileInput;
@@ -17,11 +18,10 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="advances-index">
 
     <?php if (Yii::$app->user->can('create_advances')) { ?>
-        <h1><?= Html::encode($this->title) ?></h1>
 
         <p>
             <?= Html::a('Create Advances', ['create'], ['class' => 'btn btn-success']) ?>
-            <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
+            <!-- <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button> -->
         </p>
 
         <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -75,7 +75,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
         // 'advances.nft_number',
         'nft_number',
-        'r_center_name',
         'province',
         'fund_source',
         'fund_source_type',
@@ -92,11 +91,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'format' => ['decimal', 2]
         ],
         [
-            'label' => 'Balance',
+            'attribute' => 'balance',
             'hAlign' => 'right',
-            'value' => function ($model) {
-                return $model->amount - $model->total_liquidation;
-            },
             'format' => ['decimal', 2]
         ],
         'dv_number',
@@ -116,17 +112,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'format' => 'raw',
             'value' => function ($model) {
 
-                $t = yii::$app->request->baseUrl . "/index.php?r=advances/update&id=$model->advances_id";
-                $r = yii::$app->request->baseUrl . "/index.php?r=advances/view&id=$model->advances_id";
-                $color = $model->is_deleted === 0 ? 'btn-danger' : 'btn-success';
-                return ' ' . Html::a('', $r, ['class' => 'btn-xs fa fa-eye']) . ' '
-                    . Html::a('', $t, ['class' => 'btn-xs fa fa-pencil'])
-                    . Html::button('', [
-                        'class' => 'btn-xs fa fa-ban disable_button ' . $color,
-                        'type' => 'button',
-                        'data-val' => $model->entry_id,
-                        'data-disable' => $model->is_deleted
-                    ]);
+                return  MyHelper::gridDefaultAction($model->id);
             }
         ],
 
@@ -171,8 +157,16 @@ $this->params['breadcrumbs'][] = $this->title;
             padding: 0;
         }
     </style> -->
-
+<style>
+    .grid-view td {
+        white-space: normal;
+        width: 20rem;
+        padding: 0;
+    }
+ 
+</style>
 <?php
+
 SweetAlertAsset::register($this);
 $script = <<<JS
 

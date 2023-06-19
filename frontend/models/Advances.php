@@ -33,22 +33,9 @@ class Advances extends \yii\db\ActiveRecord
     {
         return [
             [['province', 'report_type', 'reporting_period'], 'string', 'max' => 50],
-            [['particular'], 'string', 'max' => 500],
-            [['province', 'reporting_period'], 'required'],
-            [[
-                'id',
-                'province',
-                'report_type',
-                'particular',
-                'nft_number',
-                'created_at',
-                'reporting_period',
-                'book_id',
-                'advances_type',
-                'bank_account_id',
-                'dv_aucs_id',
+            [['bank_account_id', 'reporting_period'], 'required'],
+            [['bank_account_id'], 'integer'],
 
-            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 
@@ -61,12 +48,9 @@ class Advances extends \yii\db\ActiveRecord
             'id' => 'ID',
             'province' => 'Province',
             'report_type' => 'Report Type',
-            'particular' => 'Particular',
             'reporting_period' => 'Reporting Period',
             'nft_number' => 'NFT Number',
             'created_at' => 'Created At',
-            'book_id' => 'Book',
-            'advances_type' => 'Advances Type',
             'bank_account_id' => 'Bank Account',
             'dv_aucs_id' => 'Dv Aucs',
         ];

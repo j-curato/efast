@@ -40,7 +40,7 @@ class AdvancesView extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['advances_id'], 'integer'],
+            // [['advances_id'], 'integer'],
             [['particular'], 'string'],
             [['amount'], 'number'],
             [['book_name'], 'required'],
@@ -59,7 +59,7 @@ class AdvancesView extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'advances_id' => 'Row Number',
+            // 'advances_id' => 'Row Number',
             'nft_number' => 'Nft Number',
             'dv_number' => 'Dv Number',
             'mode_of_payment' => 'Mode Of Payment',
