@@ -29,7 +29,8 @@ class VwGdNoAcicChksSearch extends VwGdNoAcicChks
                 'ada_number',
                 'type',
                 'bookFilter',
-                'ttl',
+                'ttlDisbursed',
+                'ttlTax',
             ], 'safe'],
         ];
     }
@@ -86,7 +87,8 @@ class VwGdNoAcicChksSearch extends VwGdNoAcicChks
             ->andFilterWhere(['like', 'book_name', $this->book_name])
             ->andFilterWhere(['like', 'mode_name', $this->mode_name])
             ->andFilterWhere(['like', 'ada_number', $this->ada_number])
-            ->andFilterWhere(['like', 'ttl', $this->ttl])
+            ->andFilterWhere(['like', 'ttlDisbursed', $this->ttlDisbursed])
+            ->andFilterWhere(['like', 'ttlTax', $this->ttlTax])
             ->andFilterWhere(['like', 'check_or_ada_no', $this->check_or_ada_no]);
 
         return $dataProvider;
