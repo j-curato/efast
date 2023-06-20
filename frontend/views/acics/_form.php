@@ -489,6 +489,8 @@ $this->registerJsFile("@web/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsse
 
     function remove(ths) {
         $(ths).closest('tr').remove()
+        GetCashReceiveTotal()
+        GetCashItemsTotal()
     }
 
     function updateMainAmount(q) {
