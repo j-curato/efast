@@ -21,47 +21,54 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="dv-aucs-view">
 
-    <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade" id="dvLinkModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">UPLOAD SCANNED COPY</h4>
                 </div>
-                <div class='modal-body'>
+                <form id="add_link">
+                    <div class='modal-body'>
+                        <hr>
+                        <label for="ledger"> Insert Link</label>
 
-                    <?php
+                        <input type="text " style="display: none;" class="form-control" name="id" value='<?= $model->id ?>'>
 
-                    $form = ActiveForm::begin([
-                        // 'action' => ['transaction/import-transaction'],
-                        // 'method' => 'POST',
-                        'id' => 'import',
-                        'options' => [
-                            'enctype' => 'multipart/form-data',
-                        ], // important
-                    ]);
-
-                    // echo '<input type="file">';
-                    echo "<br>";
-                    echo "<input type='hidden' value='$model->id' name='id'>";
-                    echo FileInput::widget([
-                        'name' => 'file',
-                        // 'options' => ['multiple' => true],
-                        'id' => 'fileupload',
-                        'pluginOptions' => [
-                            'showPreview' => true,
-                            'showCaption' => true,
-                            'showRemove' => true,
-                            'showUpload' => true,
-                        ]
-                    ]);
-
-
-                    ActiveForm::end();
-
-                    ?>
-
+                        <input type="text " class="form-control" name="link" value='<?= $model->dv_link ?? '' ?>'>
+                    </div>
+                    <div class="row" style="margin: 10px;padding:12px">
+                        <div class="col-sm-1 col-sm-offset-5">
+                            <button type="submit" class="btn btn-success">Save</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="cashLInksModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
+                <table class="table">
+
+                    <tr>
+                        <th>Check No.</th>
+                        <th>Good/Cancelled</th>
+                        <th>Link</th>
+                    </tr>
+                    <?php foreach ($cashIds as $itm) {
+
+                        echo "<tr>
+                            <td class='ctr'>{$itm['check_or_ada_no']}</td>
+                            <td class='ctr'>";
+                        echo  $itm['is_cancelled'] == 0 ? 'Good' : 'Cancelled';
+                        echo "</td>
+                            <td class='ctr'>" . Html::a('Link', ['cash-disbursement/view', 'id' => $itm['id']]) . "</td>
+                        </tr>";
+                    } ?>
+                </table>
             </div>
         </div>
     </div>
@@ -70,14 +77,16 @@ $this->params['breadcrumbs'][] = $this->title;
         <p>
             <?= Html::a('Print', ['dv-form', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-            <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Add Link</button>
+
+
 
             <?php
 
-            if (!empty($model->cashDisbursement)) {
+            if (!empty($cashIds)) {
 
-                $t = yii::$app->request->baseUrl . "/index.php?r=cash-disbursement/view&id={$model->cashDisbursement->id}";
-                echo  Html::a('Cash Disbursement Link', $t, ['class' => 'btn btn-success ']);
+                // $t = yii::$app->request->baseUrl . "/index.php?r=cash-disbursement/view&id={$model->cashDisbursement->id}";
+                // echo  Html::a('Cash Disbursement Link', $t, ['class' => 'btn btn-success ']);
+                echo Html::button('Cash Disbursement Links', ['class' => 'btn btn-info', 'data-target' => "#cashLInksModal", 'data-toggle' => "modal"]);
             }
             if ($model->is_cancelled) {
                 echo "<button class='btn btn-success' id='cancel' style='margin:5px'>Activate</button>";
@@ -112,12 +121,17 @@ $this->params['breadcrumbs'][] = $this->title;
             } else {
                 echo "<button class='btn btn-danger' id='is_payable' style='margin:5px'>Payable</button>";
             }
-            if (!empty($model->dvAucsFile->id)) {
-                $dv_number =  "/scanned-dv" . "/" . $model->dv_number;
-                $path =  Url::base() . "/frontend"  . $dv_number . "/" . $model->dvAucsFile->file_name;
-                echo Html::a('Download Soft Copy ', $path, ['class' => 'btn btn-link ']);
-            } else {
-                echo '<button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload Soft Copy</button>';
+            // if (!empty($model->dvAucsFile->id)) {
+            //     $dv_number =  "/scanned-dv" . "/" . $model->dv_number;
+            //     $path =  Url::base() . "/frontend"  . $dv_number . "/" . $model->dvAucsFile->file_name;
+            //     echo Html::a('Download Soft Copy ', $path, ['class' => 'btn btn-link ']);
+            // } else {
+            //     echo '<button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload Soft Copy</button>';
+            // }
+
+            echo Html::a(empty($model->dv_link) ? 'Add File Link' : 'Update File Link', ['add-link', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']);
+            if (!empty($model->dv_link)) {
+                echo Html::a('DV Scanned Copy Link ', $model->dv_link, ['class' => 'btn btn-link', 'target' => '_blank']);
             }
             ?>
 
@@ -436,145 +450,155 @@ $this->params['breadcrumbs'][] = $this->title;
             </thead>
         </table>
     </div>
-    <style>
-        .head {
-            font-weight: bold;
-        }
 
-        #asig>td,
-        th {
-            border: 0;
-        }
+</div>
+<style>
+    .ctr {
+        text-align: center;
+    }
 
-        .total td {
-            font-weight: bold;
-        }
+    .head {
+        font-weight: bold;
+    }
 
-        .amount {
-            text-align: right;
-        }
+    #asig>td,
+    th {
+        border: 0;
+    }
 
-        .total {
-            background-color: #d5ff80;
-        }
+    .total td {
+        font-weight: bold;
+    }
 
-        .even {
-            background-color: #cce6ff;
-        }
+    .amount {
+        text-align: right;
+    }
 
-        .container {
-            padding: 15px
-        }
+    .total {
+        background-color: #d5ff80;
+    }
 
-        .q {
-            margin-top: 3rem;
-        }
+    .even {
+        background-color: #cce6ff;
+    }
 
-        .checkbox {
+    .container {
+        padding: 15px
+    }
 
-            margin-right: 4px;
-            margin-top: 6px;
-            height: 20px;
-            width: 20px;
-            border: 1px solid black;
-        }
+    .q {
+        margin-top: 3rem;
+    }
 
-        /* td {
+    .checkbox {
+
+        margin-right: 4px;
+        margin-top: 6px;
+        height: 20px;
+        width: 20px;
+        border: 1px solid black;
+    }
+
+    /* td {
             border: 1px solid black;
             padding: 1rem;
             white-space: nowrap;
         } */
 
-        table {
-            margin: 12px;
-            margin-left: auto;
-            margin-right: auto;
-            width: 100%;
+    table {
+        margin: 12px;
+        margin-left: auto;
+        margin-right: auto;
+        width: 100%;
+    }
+
+    table,
+    th,
+    td {
+        padding: 10px;
+    }
+
+    th {
+        text-align: center;
+    }
+
+    @media print {
+        .actions {
+            display: none;
+        }
+
+        .link {
+            display: none;
+        }
+
+        .btn {
+            display: none;
         }
 
         table,
         th,
         td {
-            padding: 10px;
+            border: 1px solid black;
+            padding: 8px;
+            font-size: 10px;
         }
 
-        th {
-            text-align: center;
+
+
+        @page {
+            size: auto;
+            margin: 0;
+            margin-top: 0.5cm;
         }
 
-        @media print {
-            .actions {
-                display: none;
-            }
-
-            .link {
-                display: none;
-            }
-
-            .btn {
-                display: none;
-            }
-
-            table,
-            th,
-            td {
-                border: 1px solid black;
-                padding: 8px;
-                font-size: 10px;
-            }
-
-
-
-            @page {
-                size: auto;
-                margin: 0;
-                margin-top: 0.5cm;
-            }
-
-            .container {
-                margin: 0;
-                top: 0;
-            }
-
-            .entity_name {
-                font-size: 5pt;
-            }
-
-            table,
-            th,
-            td {
-                border: 1px solid black;
-                padding: 5px;
-                background-color: white;
-            }
-
-
-            .container {
-
-                border: none;
-            }
-
-            .assig td {
-                border: 0;
-            }
-
-            .assig {
-                border: 0;
-            }
-
-            h1 {
-                font-size: 12px;
-            }
-
-
-            .main-footer {
-                display: none;
-            }
+        .container {
+            margin: 0;
+            top: 0;
         }
-    </style>
 
-</div>
+        .entity_name {
+            font-size: 5pt;
+        }
 
+        table,
+        th,
+        td {
+            border: 1px solid black;
+            padding: 5px;
+            background-color: white;
+        }
+
+
+        .container {
+
+            border: none;
+        }
+
+        .assig td {
+            border: 0;
+        }
+
+        .assig {
+            border: 0;
+        }
+
+        h1 {
+            font-size: 12px;
+        }
+
+
+        .main-footer {
+            display: none;
+        }
+    }
+</style>
+<?php
+
+$this->registerJsFile(
+    '@web/frontend/web/js/globalFunctions.js',
+    ['depends' => [\yii\web\JqueryAsset::class]]
+)
+?>
 <script>
     $(document).ready(function() {
 
@@ -589,6 +613,36 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
                 success: function(res) {
                     window.open(res)
+                }
+            })
+        })
+        $('#add_link').submit((e) => {
+            e.preventDefault();
+            $.ajax({
+                type: 'POST',
+                url: window.location.pathname + '?r=dv-aucs/add-link',
+                data: $("#add_link").serialize(),
+                success: function(data) {
+                    $('#uploadmodal').modal('toggle');
+                    var res = JSON.parse(data)
+
+                    if (res.isSuccess) {
+                        swal({
+                            title: 'Success',
+                            type: 'success',
+                            button: false,
+                            timer: 3000,
+                        }, function() {
+                            location.reload(true)
+                        })
+                    } else {
+                        swal({
+                            title: "Error Adding Fail",
+                            type: 'error',
+                            button: false,
+                            timer: 3000,
+                        })
+                    }
                 }
             })
         })

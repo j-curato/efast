@@ -50,7 +50,7 @@ class DvAucs extends \yii\db\ActiveRecord
             [['dv_number', 'object_code', 'in_timestamp'], 'string', 'max' => 255],
 
             [['reporting_period'], 'string', 'max' => 50],
-            [['particular'], 'string'],
+            [['particular', 'dv_link'], 'string'],
             [['recieved_at'], 'safe'],
             [[
                 'particular',
@@ -64,7 +64,6 @@ class DvAucs extends \yii\db\ActiveRecord
 
                 'particular',
                 'transaction_type',
-                'dv_link',
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
 
 
@@ -95,6 +94,8 @@ class DvAucs extends \yii\db\ActiveRecord
             'book_id' => 'Book',
             'recieved_at' => 'Receive at',
             'nature_of_transaction_id' => 'Nature of Transaction',
+            'dv_link' => 'DV Link',
+
         ];
     }
 

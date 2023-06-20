@@ -26,6 +26,7 @@ use app\models\DvAucsFile;
 use app\models\DvAucsIndexSearch;
 use app\models\DvTransactionType;
 use app\models\TrackingSheetIndexSearch;
+use app\models\VwNoFileLinkDvsSearch;
 use common\models\UploadForm;
 use phpDocumentor\Reflection\PseudoTypes\False_;
 use PHPUnit\Util\Log\JSON;
@@ -127,6 +128,20 @@ class DvAucsController extends Controller
         }
 
         return parent::beforeAction($action);
+    }
+    private function getCashDisbursementIds($id)
+    {
+        return Yii::$app->db->createCommand("SELECT cash_disbursement.id,
+        cash_disbursement.is_cancelled ,
+        cash_disbursement.check_or_ada_no 
+        FROM dv_aucs
+        LEFT JOIN cash_disbursement_items ON dv_aucs.id = cash_disbursement_items.fk_dv_aucs_id
+        LEFT JOIN cash_disbursement ON cash_disbursement_items.fk_cash_disbursement_id = cash_disbursement.id
+        WHERE 
+        cash_disbursement_items.is_deleted  = 0
+        AND dv_aucs.id  = :id
+        ")->bindValue(':id', $id)
+            ->queryAll();
     }
     private function insAdvances($dv_id, $advances_id = '', $advances = [], $advances_items = [])
     {
@@ -262,6 +277,7 @@ class DvAucsController extends Controller
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
+            'cashIds' => $this->getCashDisbursementIds($id)
         ]);
     }
 
@@ -1826,19 +1842,7 @@ class DvAucsController extends Controller
             'model' => $this->findModel($id),
         ]);
     }
-    public function actionAddLink()
-    {
-        if ($_POST) {
-            $link = $_POST['link'];
-            $id = $_POST['id'];
-            $dv  = DvAucs::findOne($id);
-            $dv->dv_link = $link;
-            if ($dv->save(false)) {
-                return json_encode(['isSuccess' => true, 'cancelled' => 'save success']);
-            }
-            return json_encode(['isSuccess' => true, 'cancelled' => $link]);
-        }
-    }
+
     public function actionTurnarroundTime()
     {
         $searchModel = new DvAucsSearch();
@@ -2374,5 +2378,40 @@ class DvAucsController extends Controller
             $out['pagination'] = ['more' => !empty($data) ? true : false];
         }
         return $out;
+    }
+    public function actionNoFileLinkDvs()
+    {
+        $searchModel = new VwNoFileLinkDvsSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider->sort = ['defaultOrder' => ['id' => SORT_DESC]];
+
+        return $this->render('no_file_link_index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+    public function actionAddLink($id)
+    {
+        $model = $this->findModel($id);
+        if (Yii::$app->request->post()) {
+            // $link = Yii::$app->request->post('link');
+            // $id = Yii::$app->request->post('id');
+            // $dv  = DvAucs::findOne($id);
+            $model->dv_link = Yii::$app->request->post('DvAucs')['dv_link'] ?? null;
+            try {
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save Failed');
+                }
+                return $this->redirect(Yii::$app->request->referrer);
+            } catch (ErrorException $e) {
+                return $e->getMessage();
+            }
+        }
+        return $this->renderAjax('_add_link_form', [
+            'model' => $model,
+        ]);
     }
 }
