@@ -401,6 +401,26 @@ class AcicsController extends Controller
             return json_encode(['isSuccess' => false, 'cancelled' => 'cancel', 'error' => $e->getMessage()]);
         }
     }
+    private function checkItemsIfBalance($uniqueCashItems, $casRcvItems)
+    {
+        $cashRcvAmts = array_column($casRcvItems, 'amount');
+        $cashRcvAmtsTtl = array_sum($cashRcvAmts);
+        $cash_ids = array_column($uniqueCashItems, 'cash_id');
+        $params = [];
+        $sql = ' AND ';
+        $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['IN', 'cash_disbursement.id', $cash_ids], $params);
+        $cashItemsTtl = Yii::$app->db->createCommand("  SELECT 
+        SUM(dv_aucs_index.ttlAmtDisbursed) as ttl
+         FROM cash_disbursement
+        JOIN cash_disbursement_items ON cash_disbursement.id = cash_disbursement_items.fk_cash_disbursement_id
+        JOIN dv_aucs_index ON cash_disbursement_items.fk_dv_aucs_id = dv_aucs_index.id
+        
+        WHERE cash_disbursement_items.is_deleted = 0
+        $sql", $params)
+            ->queryScalar();
+
+        return number_format($cashRcvAmtsTtl, 2) !== number_format($cashItemsTtl, 2) ? 'Cash disbursements and cash receipts totals must balance' : true;
+    }
     /**
      * Lists all Acics models.
      * @return mixed
@@ -512,6 +532,10 @@ class AcicsController extends Controller
             try {
                 $txn  = Yii::$app->db->beginTransaction();
 
+                $chkItm = $this->checkItemsIfBalance($uniqueCashItems, $cashRcvItms);
+                if ($chkItm !== true) {
+                    throw new ErrorException($chkItm);
+                }
                 if (empty($cashItems)) {
                     throw new ErrorException('Cash Disbursements is Required');
                 }
