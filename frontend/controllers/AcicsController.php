@@ -80,7 +80,8 @@ class AcicsController extends Controller
     }
     private function getSerialNum($period)
     {
-        $yr = DateTime::createFromFormat('Y-m-d', $period)->format('Y');
+        $dte = DateTime::createFromFormat('Y-m-d', $period);
+        $yr = $dte->format('Y');
         $qry  = Yii::$app->db->createCommand("SELECT 
             CAST(SUBSTRING_INDEX(acics.serial_number,'-',-1)AS UNSIGNED) +1 as ser_num
             FROM acics  
@@ -93,11 +94,11 @@ class AcicsController extends Controller
             $qry = 1;
         }
         $num = '';
-        if (strlen($qry) < 5) {
-            $num .= str_repeat(0, 5 - strlen($qry));
+        if (strlen($qry) < 3) {
+            $num .= str_repeat(0, 3 - strlen($qry));
         }
         $num .= $qry;
-        return $period . '-' . $num;
+        return $dte->format('y-m') . '-' . $num;
     }
     private function getViewCashItems($id)
     {
