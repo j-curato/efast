@@ -81,7 +81,7 @@ class AcicsController extends Controller
     private function getSerialNum($period)
     {
         $dte = DateTime::createFromFormat('Y-m-d', $period);
-        $yr = $dte->format('Y');
+        $yr = $dte->format('y');
         $qry  = Yii::$app->db->createCommand("SELECT 
             CAST(SUBSTRING_INDEX(acics.serial_number,'-',-1)AS UNSIGNED) +1 as ser_num
             FROM acics  
@@ -248,10 +248,23 @@ class AcicsController extends Controller
         cash_disbursement.check_or_ada_no,
         cash_disbursement.ada_number,
         cash_disbursement.issuance_date,
-        books.`name` as book_name
+        books.`name` as book_name,
+        cashTtl.ttlDisbursed,
+        cashTtl.ttlTax
          FROM 
         acics_cash_items
         JOIN cash_disbursement ON acics_cash_items.fk_cash_disbursement_id = cash_disbursement.id
+        LEFT JOIN  (
+        SELECT 
+        cash_disbursement_items.fk_cash_disbursement_id,
+        SUM(dv_aucs_index.ttlAmtDisbursed) as ttlDisbursed,
+        SUM(COALESCE(dv_aucs_index.ttlTax,0)) as ttlTax
+        FROM cash_disbursement_items
+        JOIN dv_aucs_index ON cash_disbursement_items.fk_dv_aucs_id = dv_aucs_index.id
+        WHERE 
+        cash_disbursement_items.is_deleted = 0
+        GROUP BY cash_disbursement_items.fk_cash_disbursement_id
+        ) as cashTtl ON cash_disbursement.id = cashTtl.fk_cash_disbursement_id
         LEFT JOIN books ON cash_disbursement.book_id = books.id
         LEFT JOIN mode_of_payments ON cash_disbursement.fk_mode_of_payment_id  = mode_of_payments.id
         WHERE acics_cash_items.is_deleted = 0 
