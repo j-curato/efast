@@ -222,7 +222,11 @@ $cnclItmRow = 0;
         'issuance_date',
         'book_name',
         [
-            'attribute' => 'ttl',
+            'attribute' => 'ttlDisbursed',
+            'format' => ['decimal', 2],
+        ],
+        [
+            'attribute' => 'ttlTax',
             'format' => ['decimal', 2],
         ],
         [
