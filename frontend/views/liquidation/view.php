@@ -69,10 +69,12 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php if (\Yii::$app->user->can('create_liquidation')) { ?>
             <p>
                 <?= Html::a('Re-Align/Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-
-                <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Add Link</button>
-
                 <?php
+
+                if (Yii::$app->user->can('super-user')) {
+                    echo Html::button(empty($model->document_link) ? 'Add File Link' : 'Update File Link', ['class' => "btn btn-success", 'data-target' => "#uploadmodal", 'data-toggle' => "modal"]);
+                }
+
                 $btn_clr = 'btn-danger';
                 $text = 'Exclude ';
 
@@ -104,7 +106,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 $document_link = '';
                 if (!empty($model->document_link)) {
                     $document_link = $model->document_link;
-                    echo Html::a('Soft Copy Link', $document_link, ['class' => 'btn btn-info ']);;
+                    echo Html::a('Soft Copy Link', $document_link, ['class' => 'btn btn-link ', 'target' => '_blank']);
                 }
                 ?>
                 <?= Html::a($text . ' in RAAF', ['exclude-raaf', 'id' => $model->id], [
@@ -126,14 +128,14 @@ $this->params['breadcrumbs'][] = $this->title;
                     <form id="add_link">
                         <div class='modal-body'>
                             <hr>
-                            <label for="ledger"> Insert Link</label>
+                            <label for="ledger"> Link</label>
 
                             <input type="text " style="display: none;" class="form-control" name="id" value='<?= $model->id ?>'>
 
                             <input type="text " class="form-control" name="link" value='<?= $document_link ?>'>
                         </div>
                         <div class="row" style="margin: 10px;padding:12px">
-                            <div class="col-sm-3">
+                            <div class="col-sm-3 col-sm-offset-5">
 
                                 <button type="submit" class="btn btn-success">Save</button>
                             </div>
