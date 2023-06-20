@@ -18,33 +18,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="dv-aucs-index">
 
-    <div class="modal fade" id="cashLInksModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                </div>
-                <table class="table">
-
-                    <tr>
-                        <th>Check No.</th>
-                        <th>Good/Cancelled</th>
-                        <th>Link</th>
-                    </tr>
-                    <?php foreach ($cashIds as $itm) {
-
-                        echo "<tr>
-                            <td class='ctr'>{$itm['check_or_ada_no']}</td>
-                            <td class='ctr'>";
-                        echo  $itm['is_cancelled'] == 0 ? 'Good' : 'Cancelled';
-                        echo "</td>
-                            <td class='ctr'>" . Html::a('Link', ['cash-disbursement/view', 'id' => $itm['id']]) . "</td>
-                        </tr>";
-                    } ?>
-                </table>
-            </div>
-        </div>
-    </div>
 
     <?php
 
@@ -56,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'value' => function ($model) {
 
                 return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id], ['class' => 'btn'])
-                    . Html::a('<i class="fa fa-pencil"></i>', ['view', 'id' => $model->id], ['class' => 'btn']);
+                    . Html::a('<i class="fa fa-pencil "></i>', ['add-link', 'id' => $model->id], ['class' => 'btn modalButtonUpdate']);
             }
         ]
 
@@ -115,7 +88,13 @@ $this->params['breadcrumbs'][] = $this->title;
         }
     </style>
 </div>
+<?php
 
+$this->registerJsFile(
+    '@web/frontend/web/js/globalFunctions.js',
+    ['depends' => [\yii\web\JqueryAsset::class]]
+)
+?>
 <script>
     $(document).ready(function() {
         $('#add_link').submit((e) => {
