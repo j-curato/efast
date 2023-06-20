@@ -17,6 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
         <p>
+            <?= Html::a('Create', ['create'], ['class' => 'btn btn-success']) ?>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 
         </p>

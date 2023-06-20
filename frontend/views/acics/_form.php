@@ -56,7 +56,7 @@ $cnclItmRow = 0;
     </div>
 
 
-    <table class="table " id="cash_itms_tbl">
+    <table class="table table-stripe" id="cash_itms_tbl">
 
         <thead>
             <tr class="info">
@@ -70,13 +70,17 @@ $cnclItmRow = 0;
             <th>ADA No.</th>
             <th>Issuance Date</th>
             <th>Book Name</th>
-            <th>Amount</th>
+            <th>Amount Disbursed</th>
+            <th>Tax Withheld</th>
 
         </thead>
         <tbody>
             <?php
-
+            $grdTtlDisbursed = 0;
+            $grdTtlTax = 0;
             foreach ($cashItems as $itm) {
+                $grdTtlDisbursed += floatval($itm['ttlDisbursed']);
+                $grdTtlTax += floatval($itm['ttlTax']);
                 echo "<tr>
                     <td style='display:none'>
                         <input type='text' value='{$itm['item_id']}' name='cashItems[$cshItmRowNum][item_id]'></input>
@@ -88,12 +92,21 @@ $cnclItmRow = 0;
                     <td>{$itm['ada_number']}</td>
                     <td>{$itm['issuance_date']}</td>
                     <td>{$itm['book_name']}</td>
+                    <td class='disbursed'>" . number_format($itm['ttlDisbursed'], 2) . "</td>
+                    <td class=''>" . number_format($itm['ttlTax'], 2) . "</td>
                     <td><button type='button' class='remove btn-xs btn-danger' onclick='remove(this)'><i class='fa fa-minus'></i></button></td>
                 </tr>";
                 $cshItmRowNum++;
             }
             ?>
         </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="6" class="ctr">Total</th>
+                <th class="cashItemsDisbursedGndTtl"><?= number_format($grdTtlDisbursed, 2) ?></th>
+                <th class="cashItemsTaxGndTtl"><?= number_format($grdTtlTax, 2) ?></th>
+            </tr>
+        </tfoot>
     </table>
     <table class="table" id="cash_rcv_itms_tbl">
 
@@ -118,8 +131,9 @@ $cnclItmRow = 0;
         <tbody>
 
             <?php
-
+            $cashRcvTtl = 0;
             foreach ($cashRcvItems as $itm) {
+                $cashRcvTtl += floatval($itm['amount']);
                 echo "<tr>
                         <td style='display:none'>
                             <input type='text' value='{$itm['cash_rcv_itm_id']}' name='cshRcvItems[$cshRcvItmRowNum][item_id]'></input>
@@ -130,15 +144,15 @@ $cnclItmRow = 0;
                         <td>{$itm['valid_from']}</td>
                         <td>{$itm['valid_to']}</td>
                         <td>{$itm['purpose']}</td>
-                        <td>{$itm['cash_amt']}</td>
+                        <td>" . number_format($itm['cash_amt'], 2) . "</td>
                         <td>{$itm['document_receive_name']}</td>
                         <td>{$itm['book_name']}</td>
                         <td>{$itm['mfo_name']}</td>
                         <td>{$itm['nca_no']}</td>
                         <td>{$itm['nta_no']}</td>
                         <td>
-                            <input type='text' class='mask-amount amount form-control' onkeyup='updateMainAmount(this)' value='{$itm['amount']}'>
-                            <input type='hidden' name='cshRcvItems[$cshRcvItmRowNum][amount]' class='amount main-amount' value='{$itm['amount']}' >
+                            <input type='text' class='mask-amount amount form-control' onkeyup='updateMainAmount(this)' value='" . number_format($itm['amount'], 2) . "'>
+                            <input type='hidden' name='cshRcvItems[$cshRcvItmRowNum][amount]' class='amount main-amount cash_receive_amt' value='{$itm['amount']}' >
                         </td>
                         <td><button type='button' class='remove btn-xs btn-danger' onclick='remove(this)'><i class='fa fa-minus'></i></button></td>
                     </tr>";
@@ -146,6 +160,12 @@ $cnclItmRow = 0;
             }
             ?>
         </tbody>
+        <tfoot>
+            <tr>
+                <th colspan="11" class="ctr">Total</th>
+                <th class="cashReceiveTtl"><?= number_format($cashRcvTtl, 2) ?></th>
+            </tr>
+        </tfoot>
     </table>
 
     <table class="table " id="cancelled_cash_items">
@@ -224,10 +244,12 @@ $cnclItmRow = 0;
         [
             'attribute' => 'ttlDisbursed',
             'format' => ['decimal', 2],
+            'contentOptions' => ['class' => 'disbursed'],
         ],
         [
             'attribute' => 'ttlTax',
             'format' => ['decimal', 2],
+            'contentOptions' => ['class' => 'tax'],
         ],
         [
             'attribute' => 'bookFilter',
@@ -438,6 +460,7 @@ $this->registerJsFile("@web/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsse
         $('#cash_itms_tbl tbody').append(clone)
 
         cshItmRowNum++
+        GetCashItemsTotal()
     }
 
     function AddCshRcvItem(ths) {
@@ -446,7 +469,7 @@ $this->registerJsFile("@web/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsse
         clone.find('.add-action').parent().remove()
         clone.append(`<td>
             <input type='text' class='mask-amount amount form-control' onkeyup='updateMainAmount(this)' required>
-            <input type='hidden' name='cshRcvItems[${cshRcvItmRowNum}][amount]' class='amount main-amount' >
+            <input type='hidden' name='cshRcvItems[${cshRcvItmRowNum}][amount]' class='amount main-amount cash_receive_amt' >
         </td>`)
         clone.append("<td><button type='button' class='remove btn-xs btn-danger' onclick='remove(this)'><i class='fa fa-minus'></i></button></td>")
         $('#cash_rcv_itms_tbl tbody').append(clone)
@@ -461,9 +484,43 @@ $this->registerJsFile("@web/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsse
 
     function updateMainAmount(q) {
         $(q).parent().find('.main-amount').val($(q).maskMoney('unmasked')[0])
+        GetCashReceiveTotal()
     }
 
+    function GetCashItemsTotal() {
+        let disbursedTtl = 0
+        let taxTtl = 0
 
+        $("#cash_itms_tbl .disbursed").each(function(key, val) {
+            disbursedTtl += parseFloat($(val).text().replace(/,/g, ''))
+        })
+        $("#cash_itms_tbl .tax").each(function(key, val) {
+            taxTtl += parseFloat($(val).text().replace(/,/g, ''))
+        })
+        if (isNaN(disbursedTtl)) {
+            disbursedTtl = 0
+        }
+        if (isNaN(taxTtl)) {
+            taxTtl = 0
+        }
+        $('.cashItemsDisbursedGndTtl').text(thousands_separators(disbursedTtl))
+        $('.cashItemsTaxGndTtl').text(thousands_separators(taxTtl))
+    }
+
+    function GetCashReceiveTotal() {
+        let ttl = 0
+
+
+        $("#cash_rcv_itms_tbl .cash_receive_amt").each(function(key, val) {
+            ttl += parseFloat($(val).val())
+        })
+
+        if (isNaN(ttl)) {
+            ttl = 0
+        }
+        $('.cashReceiveTtl').text(thousands_separators(ttl))
+
+    }
     $(document).ready(function() {
         maskAmount()
         let book_name = '<?= !empty($model->book->name) ? $model->book->name : '' ?>';
