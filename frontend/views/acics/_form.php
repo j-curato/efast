@@ -60,7 +60,7 @@ $cnclItmRow = 0;
 
         <thead>
             <tr class="info">
-                <th colspan="7" class="ctr">
+                <th colspan="9" class="ctr">
                     Cash Disbursements
                 </th>
             </tr>
@@ -101,7 +101,7 @@ $cnclItmRow = 0;
             ?>
         </tbody>
         <tfoot>
-            <tr>
+            <tr class="" style="background-color: #e9eff2;">
                 <th colspan="6" class="ctr">Total</th>
                 <th class="cashItemsDisbursedGndTtl"><?= number_format($grdTtlDisbursed, 2) ?></th>
                 <th class="cashItemsTaxGndTtl"><?= number_format($grdTtlTax, 2) ?></th>
@@ -120,12 +120,13 @@ $cnclItmRow = 0;
                 <th>Valid From</th>
                 <th>Valid to</th>
                 <th>Purpose</th>
-                <th>Amount</th>
                 <th>Document Receive</th>
                 <th>Book</th>
                 <th>MFO/PAP</th>
                 <th>NCA No.</th>
                 <th>NTA No.</th>
+                <th>Amount</th>
+                <th>Balance</th>
             </tr>
         </thead>
         <tbody>
@@ -144,12 +145,14 @@ $cnclItmRow = 0;
                         <td>{$itm['valid_from']}</td>
                         <td>{$itm['valid_to']}</td>
                         <td>{$itm['purpose']}</td>
-                        <td>" . number_format($itm['cash_amt'], 2) . "</td>
+                       
                         <td>{$itm['document_receive_name']}</td>
                         <td>{$itm['book_name']}</td>
                         <td>{$itm['mfo_name']}</td>
                         <td>{$itm['nca_no']}</td>
                         <td>{$itm['nta_no']}</td>
+                        <td>" . number_format($itm['cash_amt'], 2) . "</td>
+                        <td>" . number_format($itm['balance'], 2) . "</td>
                         <td>
                             <input type='text' class='mask-amount amount form-control' onkeyup='updateMainAmount(this)' value='" . number_format($itm['amount'], 2) . "'>
                             <input type='hidden' name='cshRcvItems[$cshRcvItmRowNum][amount]' class='amount main-amount cash_receive_amt' value='{$itm['amount']}' >
@@ -161,9 +164,9 @@ $cnclItmRow = 0;
             ?>
         </tbody>
         <tfoot>
-            <tr>
+            <tr style="background-color: #e9eff2;">
                 <th colspan="11" class="ctr">Total</th>
-                <th class="cashReceiveTtl"><?= number_format($cashRcvTtl, 2) ?></th>
+                <th class="cashReceiveTtl" colspan="2"><?= number_format($cashRcvTtl, 2) ?></th>
             </tr>
         </tfoot>
     </table>
@@ -290,16 +293,22 @@ $cnclItmRow = 0;
         'valid_from',
         'valid_to',
         'purpose',
-        [
-            'attribute' => 'amount',
-            'format' => ['decimal',],
-            'hAlign' => 'right'
-        ],
+
         'document_receive_name',
         'book_name',
         'mfo_name',
         'nca_no',
         'nta_no',
+        [
+            'attribute' => 'amount',
+            'format' => ['decimal',],
+            'hAlign' => 'right'
+        ],
+        [
+            'attribute' => 'balance',
+            'format' => ['decimal',],
+            'hAlign' => 'right'
+        ],
         [
             'attribute' => 'bookFilter',
             'hidden' => true
@@ -584,6 +593,7 @@ $("#Acics").on("beforeSubmit", function (event) {
         data: form.serialize(),
         success: function (data) {
             let res = JSON.parse(data)
+            console.log(res)
             swal({
                 icon: 'error',
                 title: res.error_message,

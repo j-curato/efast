@@ -142,7 +142,9 @@ class AcicsController extends Controller
         vw_cash_received.mfo_name,
         vw_cash_received.nca_no,
         vw_cash_received.nta_no,
-        vw_cash_received.amount as cash_amt
+        vw_cash_received.amount as cash_amt,
+        vw_cash_received.balance
+
         
         FROM acic_cash_receive_items
         JOIN vw_cash_received ON acic_cash_receive_items.fk_cash_receive_id = vw_cash_received.id
@@ -159,13 +161,13 @@ class AcicsController extends Controller
 
 
         try {
-
             if ($isUpdate === true && !empty(array_column($items, 'item_id'))) {
+
                 $itemIds = array_column($items, 'item_id');
                 $params = [];
                 $sql = ' AND ';
                 $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $itemIds], $params);
-                echo Yii::$app->db->createCommand("UPDATE acics_cash_items SET is_deleted = 1 
+                Yii::$app->db->createCommand("UPDATE acics_cash_items SET is_deleted = 1 
                 WHERE 
                 acics_cash_items.is_deleted = 0
                 AND acics_cash_items.fk_acic_id = :id
@@ -173,6 +175,7 @@ class AcicsController extends Controller
                     ->bindValue(':id', $model_id)
                     ->execute();
             }
+
             foreach ($items as $itm) {
 
                 if (!empty($itm['item_id'])) {
@@ -191,7 +194,6 @@ class AcicsController extends Controller
             }
             return true;
         } catch (ErrorException $e) {
-
             return $e->getMessage();
         }
     }
@@ -215,12 +217,16 @@ class AcicsController extends Controller
             }
 
             foreach ($items as $itm) {
-
+                $checkBal =  $this->checkCashReceiveBal($itm['csh_rcv_id'], $itm['item_id'] ?? null, $itm['amount']);
+                if ($checkBal !== true) {
+                    throw new ErrorException($checkBal);
+                }
                 if (!empty($itm['item_id'])) {
                     $model = AcicCashReceiveItems::findOne($itm['item_id']);
                 } else {
                     $model = new AcicCashReceiveItems();
                 }
+
                 $model->fk_acic_id = $model_id;
                 $model->fk_cash_receive_id = $itm['csh_rcv_id'];
                 $model->amount = $itm['amount'];
@@ -237,6 +243,32 @@ class AcicsController extends Controller
 
             return $e->getMessage();
         }
+    }
+    private function checkCashReceiveBal($cash_rcv_id, $acic_item_id = '', $amt)
+    {
+        $sql = '';
+        $params = [];
+        if (!empty($acic_item_id)) {
+            $sql = ' AND ';
+            $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'acic_cash_receive_items.id', $acic_item_id], $params);
+        }
+        $cashBal = Yii::$app->db->createCommand("SELECT 
+            cash_received.amount - COALESCE(ttlInAcic.ttl,0) as balance
+                    FROM cash_received
+            LEFT JOIN (SELECT 
+            acic_cash_receive_items.fk_cash_receive_id,
+            SUM(acic_cash_receive_items.amount) as ttl
+            FROM acic_cash_receive_items
+            WHERE acic_cash_receive_items.is_deleted = 0
+            $sql
+            GROUP BY
+            acic_cash_receive_items.fk_cash_receive_id) as ttlInAcic ON cash_received.id = ttlInAcic.fk_cash_receive_id
+            WHERE cash_received.id = :id", $params)
+            ->bindValue(':id', $cash_rcv_id)
+            ->queryScalar();
+
+        $bal  = floatval($cashBal) - floatval($amt);
+        return ($bal < 0) ? "Balance is Only " . number_format($cashBal, 2) : true;
     }
     private function getCashItems($id)
     {
@@ -479,6 +511,7 @@ class AcicsController extends Controller
             $cancellItems =  Yii::$app->request->post('cancelItems') ?? [];
             try {
                 $txn  = Yii::$app->db->beginTransaction();
+
                 if (empty($cashItems)) {
                     throw new ErrorException('Cash Disbursements is Required');
                 }
@@ -492,10 +525,13 @@ class AcicsController extends Controller
                 if (!$model->save(false)) {
                     throw new ErrorException('Model Save Failed');
                 }
+
                 $insCashItms = $this->insCashItems($model->id, $uniqueCashItems, true);
+
                 if ($insCashItms !== true) {
                     throw new ErrorException($insCashItms);
                 }
+
                 $insCashRcvItms = $this->insCashRcvItems($model->id, $cashRcvItms, true);
 
                 if ($insCashRcvItms !== true) {

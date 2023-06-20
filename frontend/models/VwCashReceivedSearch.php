@@ -76,10 +76,11 @@ class VwCashReceivedSearch extends VwCashReceived
             } else {
                 $query->andFilterWhere(['like', 'book_name', $this->bookFilter]);
                 $query->andWhere(":dt BETWEEN vw_cash_received.valid_from AND vw_cash_received.valid_to", [':dt' => $this->validityFilter]);
-            
+
                 // echo $query->createCommand()->getRawSql();
                 // die();
             }
+            $query->andWhere('balance> 0 ');
         }
 
         if (!$this->validate()) {
