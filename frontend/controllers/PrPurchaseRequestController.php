@@ -569,7 +569,7 @@ class PrPurchaseRequestController extends Controller
                     throw new ErrorException(json_encode('The sum of the allotments does not match the sum of the specifications.'));
                 }
                 if (!$model->validate()) {
-                    return json_encode(false);
+                    throw new ErrorException(json_encode($model->errors));
                 }
                 if (!$model->save(false)) {
                     throw new ErrorException('PR save failed');
