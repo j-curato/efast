@@ -373,4 +373,26 @@ class PoTransmittalController extends Controller
             'dataProvider' => $dataProvider
         ]);
     }
+    public function actionAddFileLink($id)
+    {
+        $model = $this->findModel($id);
+        if (Yii::$app->request->post()) {
+
+            $model->file_link = Yii::$app->request->post('PoTransmittal')['file_link'] ?? null;
+            try {
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save Failed');
+                }
+                return $this->redirect(Yii::$app->request->referrer);
+            } catch (ErrorException $e) {
+                return $e->getMessage();
+            }
+        }
+        return $this->renderAjax('_file_link_form', [
+            'model' => $model,
+        ]);
+    }
 }

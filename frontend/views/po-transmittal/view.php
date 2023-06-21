@@ -4,6 +4,7 @@ use app\models\Assignatory;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\web\JqueryAsset;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\PoTransmittal */
@@ -21,7 +22,12 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row as">
             <p>
                 <?= Html::a('Update', ['update', 'id' => $model->transmittal_number], ['class' => 'btn btn-primary']) ?>
+
                 <?php
+                echo Html::a(empty($model->file_link) ? 'Add File Link' : 'Update File Link', ['add-file-link', 'id' => $model->transmittal_number], ['class' => 'btn btn-primary modalButtonUpdate']);
+                if (!empty($model->file_link)) {
+                    echo Html::a('DV Scanned Copy Link ', $model->file_link, ['class' => 'btn btn-link', 'target' => '_blank']);
+                }
                 if (!empty($model->poTransmittalToCoa->po_transmittal_to_coa_number) && YIi::$app->user->can('super-user')) {
                     echo  Html::a('Transmittal to Coa Link', ['/po-transmittal-to-coa/view', 'id' => $model->poTransmittalToCoa->po_transmittal_to_coa_number], ['class' => 'btn btn-link']);
                 }
@@ -512,7 +518,9 @@ $this->params['breadcrumbs'][] = $this->title;
         }
     }
 </style>
-
+<?php
+$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [JqueryAsset::class]]);
+?>
 <!-- 
 <link href="/afms/frontend/web/js/select2.min.js" />
     <link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" /> -->
