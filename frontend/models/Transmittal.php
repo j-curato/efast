@@ -30,16 +30,10 @@ class Transmittal extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
+            [['transmittal_number', 'date'], 'required'],
             [['transmittal_number'], 'string', 'max' => 100],
             [['location', 'date'], 'string', 'max' => 20],
-            [[
-                'id',
-                'transmittal_number',
-                'location',
-                'date',
-                'created_at',
 
-            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

@@ -28,13 +28,9 @@ class TransmittalEntries extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['cash_disbursement_id', 'transmittal_id'], 'integer'],
-            [[
-                'id',
-                'cash_disbursement_id',
-                'transmittal_id',
+            [['transmittal_id', 'fk_dv_aucs_id'], 'required'],
+            [['fk_dv_aucs_id', 'transmittal_id'], 'integer'],
 
-            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
             [['cash_disbursement_id'], 'exist', 'skipOnError' => true, 'targetClass' => CashDisbursement::class, 'targetAttribute' => ['cash_disbursement_id' => 'id']],
             [['transmittal_id'], 'exist', 'skipOnError' => true, 'targetClass' => Transmittal::class, 'targetAttribute' => ['transmittal_id' => 'id']],
         ];
@@ -49,6 +45,7 @@ class TransmittalEntries extends \yii\db\ActiveRecord
             'id' => 'ID',
             'cash_disbursement_id' => 'Cash Disbursement ID',
             'transmital_id' => 'Transmital ID',
+            'fk_dv_aucs_id' => 'DV ID',
         ];
     }
 

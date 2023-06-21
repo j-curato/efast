@@ -11,10 +11,10 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="transmittal-create">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
-    <?= $this->render('_form_new', [
+    <?= $this->render('_form', [
         'model' => $model,
+        'items' => []
     ]) ?>
 
 </div>

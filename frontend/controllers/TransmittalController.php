@@ -6,6 +6,7 @@ use Yii;
 use app\models\Transmittal;
 use app\models\TransmittalEntries;
 use app\models\TransmittalSearch;
+use ErrorException;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -57,29 +58,81 @@ class TransmittalController extends Controller
     }
     private function getItems($id)
     {
-        return Yii::$app->db->createCommand("SELECT
-                dv_aucs.dv_number,
-                cash_disbursement.check_or_ada_no,
-                cash_disbursement.issuance_date,
-                payee.account_name as payee,
-                dv_aucs.particular,
-                ttlEntry.amtDisburse
-                FROM transmittal_entries
-                LEFT JOIN cash_disbursement ON transmittal_entries.cash_disbursement_id = cash_disbursement.id
-                LEFT JOIN dv_aucs  ON cash_disbursement.dv_aucs_id = dv_aucs.id
-                LEFT JOIN payee ON dv_aucs.payee_id = payee.id
-                LEFT JOIN (SELECT dv_aucs_entries.dv_aucs_id,
-                SUM(dv_aucs_entries.amount_disbursed) as amtDisburse
-                FROM 
-                dv_aucs_entries
-                WHERE 
-                dv_aucs_entries.is_deleted = 0
-                GROUP BY dv_aucs_entries.dv_aucs_id
-                ) as ttlEntry  ON dv_aucs.id  = ttlEntry.dv_aucs_id
-                WHERE 
-                transmittal_entries.transmittal_id = :id")
+        return Yii::$app->db->createCommand("SELECT 
+        transmittal_entries.id as item_id,
+        dv_aucs.id as dv_id,
+        cash_disbursement.issuance_date,
+        cash_disbursement.check_or_ada_no,
+        cash_disbursement.ada_number,
+        cash_disbursement.reporting_period,
+        payee.account_name as payee,
+        dv_aucs.particular,
+        dv_aucs.dv_number,
+        t_dv.amtDisbursed,
+        t_dv.taxWitheld,
+        cash_disbursement.is_cancelled
+        FROM transmittal_entries
+        
+        JOIN dv_aucs ON transmittal_entries.fk_dv_aucs_id = dv_aucs.id
+        JOIN cash_disbursement_items ON dv_aucs.id = cash_disbursement_items.fk_dv_aucs_id
+        JOIN cash_disbursement ON cash_disbursement_items.fk_cash_disbursement_id = cash_disbursement.id
+        LEFT JOIN payee ON dv_aucs.payee_id = payee.id
+        LEFT JOIN (SELECT 
+        dv_aucs_entries.dv_aucs_id,
+        SUM(dv_aucs_entries.amount_disbursed)as amtDisbursed,
+        SUM(COALESCE(dv_aucs_entries.vat_nonvat,0) + COALESCE(dv_aucs_entries.ewt_goods_services,0)+COALESCE(dv_aucs_entries.compensation,0))as taxWitheld
+        FROM dv_aucs_entries 
+        WHERE dv_aucs_entries.is_deleted = 0
+        GROUP BY dv_aucs_entries.dv_aucs_id ) as t_dv ON dv_aucs.id = t_dv.dv_aucs_id 
+        WHERE 
+         transmittal_entries.is_deleted = 0
+         AND transmittal_entries.transmittal_id = :id
+        ")
             ->bindValue(':id', $id)
             ->queryAll();
+    }
+    private function insertItems($model_id, $items, $is_update = false)
+    {
+        try {
+            if ($is_update === true) {
+
+                $itemIds = array_column($items, 'item_id');
+                $params = [];
+                $sql = '';
+                if (!empty($itemIds)) {
+                    $sql = ' AND ';
+                    $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $itemIds], $params);
+                }
+                Yii::$app->db->createCommand("UPDATE transmittal_entries SET is_deleted = 1 
+                WHERE 
+                transmittal_entries.is_deleted = 0
+                AND transmittal_entries.transmittal_id = :id
+                $sql", $params)
+                    ->bindValue(':id', $model_id)
+                    ->execute();
+            }
+            foreach ($items as $itm) {
+
+           
+                if (!empty($itm['item_id'])) {
+                    $mdl = TransmittalEntries::findOne($itm['item_id']);
+                } else {
+
+                    $mdl = new TransmittalEntries();
+                }
+                $mdl->transmittal_id = $model_id;
+                $mdl->fk_dv_aucs_id = $itm['dv_id'];
+                if (!$mdl->validate()) {
+                    throw new ErrorException(json_encode($mdl->errors));
+                }
+                if (!$mdl->save(false)) {
+                    throw new ErrorException('Item Model Save Failed');
+                }
+            }
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
     }
     /**
      * Lists all Transmittal models.
@@ -118,9 +171,25 @@ class TransmittalController extends Controller
     public function actionCreate()
     {
         $model = new Transmittal();
-
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post())) {
+            try {
+                $items = Yii::$app->request->post('items') ?? [];
+                $uniqueItems = array_map("unserialize", array_unique(array_map("serialize", $items)));
+                $model->transmittal_number =  $this->getTransmittalNumber($model->date);
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save Failed');
+                }
+                $insItem = $this->insertItems($model->id, $uniqueItems);
+                if ($insItem !== true) {
+                    throw new ErrorException($insItem);
+                }
+                return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                return $e->getMessage();
+            }
         }
 
         return $this->render('create', [
@@ -139,12 +208,29 @@ class TransmittalController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
+        if ($model->load(Yii::$app->request->post())) {
+            try {
+                $items = Yii::$app->request->post('items') ?? [];
+                $uniqueItems = array_map("unserialize", array_unique(array_map("serialize", $items)));
 
-        return $this->render('create', [
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save Failed');
+                }
+                $insItem = $this->insertItems($model->id, $uniqueItems, true);
+                if ($insItem !== true) {
+                    throw new ErrorException($insItem);
+                }
+                return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                return $e->getMessage();
+            }
+        }
+        return $this->render('update', [
             'model' => $model,
+            'items' => $this->getItems($id)
         ]);
     }
 

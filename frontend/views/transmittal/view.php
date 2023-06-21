@@ -20,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <!-- <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+       
         <?= Html::a('Delete', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
             'data' => [
@@ -32,11 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <div class="container">
-        <div class="row as">
-
-
-        </div>
-
+        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <div class="row" style="float:right">
             <?= Html::img(Yii::$app->request->baseUrl . '/frontend/web/dti3.png', ['alt' => 'some', 'class' => 'pull-left img-responsive', 'style' => 'width: 100px;height:100px;margin-left:auto']); ?>
         </div>
@@ -80,10 +76,10 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td>{$val['issuance_date']}</td>
                         <td>{$val['payee']}</td>
                         <td>{$val['particular']}</td>
-                        <td style='text-align:right'>" . number_format($val['amtDisburse'], 2)
+                        <td style='text-align:right'>" . number_format($val['amtDisbursed'], 2)
                         . "</td>
                     </tr>";
-                    $total += $val['amtDisburse'];
+                    $total += $val['amtDisbursed'];
                 }
                 ?>
                 <tr>
@@ -250,6 +246,7 @@ $this->params['breadcrumbs'][] = $this->title;
         background-color: white;
         width: 80%;
         margin-bottom: 10px;
+        padding: 2rem;
     }
 
     .row {
@@ -280,6 +277,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         .container {
             width: 100%;
+
         }
 
         header.onlyprint {
