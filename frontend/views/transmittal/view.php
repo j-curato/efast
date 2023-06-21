@@ -17,18 +17,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="transmittal-view">
 
-    <!-- <h1><?= Html::encode($this->title) ?></h1>
-
-    <p>
-       
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p> -->
 
 
     <div class="container">
@@ -59,13 +47,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th>Check/ADA Date</th>
                 <th>Payee</th>
                 <th>Particulars</th>
-                <th>Amount</th>
+                <th>Amount Disbursed</th>
+                <th>Tax Withheld</th>
             </thead>
 
             <tbody>
 
                 <?php
                 $total = 0;
+                $totalTax = 0;
                 foreach ($items as $i => $val) {
 
                     $q = $i + 1;
@@ -76,16 +66,18 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td>{$val['issuance_date']}</td>
                         <td>{$val['payee']}</td>
                         <td>{$val['particular']}</td>
-                        <td style='text-align:right'>" . number_format($val['amtDisbursed'], 2)
-                        . "</td>
+                        <td style='text-align:right'>" . number_format($val['amtDisbursed'], 2) . "</td>
+                        <td style='text-align:right'>" . number_format($val['taxWitheld'], 2) . "</td>
                     </tr>";
-                    $total += $val['amtDisbursed'];
+                    $total += floatval($val['amtDisbursed']);
+                    $totalTax += floatval($val['taxWitheld']);
                 }
                 ?>
                 <tr>
 
                     <td colspan="6" style="font-weight: bold;text-align:center"> Total</td>
                     <td style='text-align:right'> <?php echo number_format($total, 2); ?></td>
+                    <td style='text-align:right'> <?php echo number_format($totalTax, 2); ?></td>
                 </tr>
             </tbody>
         </table>
@@ -154,22 +146,10 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
     </div>
-    <!-- <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-    <link href="/dti-afms-2/frontend/web/js/select2.min.js" />
-    <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" /> -->
+
     <script>
         var reference = []
-        // $(document).ready(function() {
-        //     reference = ["GAY A. TIDALGO"]
-        //     $('#assignatory').select2({
-        //         data: reference,
-        //         placeholder: "Select ",
 
-        //     })
-        // })
-        // $("#assignatory").change(function() {
-        //     console.log("qwe")
-        // })
         function oic_position(q) {
             console.log($(q).val())
             $('#oic_position_text').text($(q).val())
