@@ -28,6 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'type' => 'primary',
             'heading' => 'ACIC in Bank'
         ],
+        'pjax'=>true,
         'columns' => [
 
             'serial_number',

@@ -134,6 +134,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'panel' => [
             'type' => Gridview::TYPE_PRIMARY,
         ],
+        'pjax'=>true,
         'toolbar' =>  [
             [
                 'content' =>

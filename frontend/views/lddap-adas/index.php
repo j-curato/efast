@@ -25,6 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'type' => 'primary',
             'heading' => 'LDDAP-ADA`s'
         ],
+        'pjax'=>true,
         'columns' => [
             'serial_number',
             [

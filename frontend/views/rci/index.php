@@ -27,6 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'type' => 'primary',
             'heading' => 'RCIs'
         ],
+        'pjax'=>true,
         'columns' => [
 
             'serial_number',

@@ -4,16 +4,18 @@ use yii\helpers\Html;
 use kartik\grid\GridView;
 
 /* @var $this yii\web\View */
-/* @var $searchModel app\models\SliiesSearch */
+/* @var $searchModel app\models\RadaiSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Sliies';
+$this->title = 'RADAIs';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="sliies-index">
+<div class="radai-index">
 
 
-
+    <p>
+        <?= Html::a('Create RADAI', ['create'], ['class' => 'btn btn-success']) ?>
+    </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
     ?>
@@ -23,18 +25,23 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'panel' => [
             'type' => 'primary',
-            'heading' => 'SLIIE`s'
+            'heading' => 'RADAIs'
         ],
-        'pjax'=>true,
+        'pjax' => true,
         'columns' => [
+
             'serial_number',
+            'reporting_period',
+            'date',
             [
-                'label' => 'Actions',
-                'format' => 'raw',
+
+                'attribute' => 'fk_book_id',
                 'value' => function ($model) {
-                    return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id], ['class' => 'btn']);
+                    return $model->book->name ?? '';
                 }
             ],
+
+            ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
 
