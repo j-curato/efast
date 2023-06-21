@@ -5917,7 +5917,7 @@ class ReportController extends \yii\web\Controller
 
             date_default_timezone_set('Asia/Manila');
             $date = date('Y-m-d h-s A');
-            $file_name = "property_database_$year.xlsx";
+            $file_name = "rao_$year.xlsx";
             $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
             $fileSaveLoc =  "exports\\" . $file_name;
             $path = Yii::getAlias('@webroot') . '/exports';
