@@ -51,6 +51,7 @@ $itemRow = 0;
     </div>
     <table class="table table-stripe" id="items_tbl">
         <thead>
+            <th>Book</th>
             <th>LDDAP No.</th>
             <th>ACIC No.</th>
             <th>Check No.</th>
@@ -59,19 +60,13 @@ $itemRow = 0;
         </thead>
         <tbody>
             <?php
-            // 
-            // lddap_ada_id
-            // 
-            // 
-            // 
-            // 
-            // 
             foreach ($items as $itm) {
                 echo "<tr>
                     <td style='display:none'>
                         <input type='text' name='items[$itemRow][item_id]' value='{$itm['item_id']}'>
                         <input type='text' name='items[$itemRow][lddap_ada_id]' value='{$itm['lddap_ada_id']}'>
                     </td>
+                    <td>{$itm['book_name']}</td>
                     <td>{$itm['lddap_no']}</td>
                     <td>{$itm['acic_no']}</td>
                     <td>{$itm['check_or_ada_no']}</td>
@@ -83,9 +78,15 @@ $itemRow = 0;
             } ?>
         </tbody>
     </table>
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+    <div class="row">
+
+        <div class="form-group col-sm-2 col-sm-offset-5">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
+        </div>
     </div>
+
+    <?php ActiveForm::end(); ?>
+
     <?php
     $searchModel = new VwRadaiFormLddapAdasSearch();
     $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
@@ -99,6 +100,7 @@ $itemRow = 0;
             'type' => 'primary',
             'heading' => 'RADAIs'
         ],
+        'pjax' => true,
         'columns' => [
             [
                 'label' => 'Actions',
@@ -116,6 +118,11 @@ $itemRow = 0;
                     return Html::button(Icon::show('plus', ['framework' => Icon::FA]), ['class' => 'btn-xs btn-primary add-action', 'onClick' => 'AddItem(this)']);
                 },
             ],
+            [
+                'attribute' => 'bookFilter',
+                'hidden' => true
+            ],
+            'book_name',
             'lddap_no',
             'acic_no',
             'check_or_ada_no',
@@ -124,7 +131,6 @@ $itemRow = 0;
         ],
     ]); ?>
 
-    <?php ActiveForm::end(); ?>
 
 </div>
 <style>
@@ -149,8 +155,17 @@ $itemRow = 0;
         itemRow++
         GetCashItemsTotal()
     }
+
+    function bookFilter(book) {
+        console.log(book)
+        $('input[name^="VwRadaiFormLddapAdasSearch[bookFilter]').val(book).trigger('change')
+    }
     $(document).ready(function() {
-
-
+        window.onload = function() {
+            bookFilter("<?= $model->book->name ?? '' ?>")
+        };
+        $('#radai-fk_book_id').change(function() {
+            bookFilter($('#radai-fk_book_id :selected').text())
+        })
     })
 </script>
