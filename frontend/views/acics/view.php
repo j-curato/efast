@@ -58,7 +58,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <span>NCA No.</span><br>
                 </td>
                 <td colspan="" class="no-bdr">
-                    <span><u>&emsp; <?= $model->serial_number ?>&emsp;</u></span><br>
+                    <span><u> <?= $model->serial_number ?></u></span><br>
                     <span>_________________</span><br>
                     <span>_________________</span><br>
                     <span>_________________</span><br>

@@ -102,7 +102,7 @@ class AcicsController extends Controller
             $num .= str_repeat(0, 3 - strlen($qry));
         }
         $num .= $qry;
-        return strtoupper($book->name) . '-' . $dte->format('y-m') . '-' . $num;
+        return $book->name . '-' . $dte->format('y-m') . '-' . $num;
     }
     private function getViewCashItems($id)
     {

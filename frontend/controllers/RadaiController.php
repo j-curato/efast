@@ -152,7 +152,8 @@ class RadaiController extends Controller
                 cash_disbursement.issuance_date,
                 lddap_adas.serial_number as lddap_no,
                 mode_of_payments.`name` as mode_of_payment_name,
-                acics.serial_number as acic_no
+                acics.serial_number as acic_no,
+                books.name as book_name
                 FROM 
                 radai_items
                 JOIN lddap_adas ON radai_items.fk_lddap_ada_id = lddap_adas.id
@@ -160,6 +161,7 @@ class RadaiController extends Controller
                 JOIN acics_cash_items ON cash_disbursement.id = acics_cash_items.fk_cash_disbursement_id
                 JOIN mode_of_payments ON cash_disbursement.fk_mode_of_payment_id = mode_of_payments.id
                 JOIN acics ON acics_cash_items.fk_acic_id = acics.id
+                LEFT JOIN books on cash_disbursement.book_id = books.id
                 WHERE radai_items.fk_radai_id = :id
                 AND radai_items.is_deleted = 0
         ")->bindValue(':id', $id)
