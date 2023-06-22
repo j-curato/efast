@@ -25,7 +25,9 @@ class VwRadaiFormLddapAdasSearch extends VwRadaiFormLddapAdas
                 'mode_of_payment_name',
                 'acic_no',
                 'issuance_date',
-                'check_or_ada_no'
+                'check_or_ada_no',
+                'book_name',
+                'bookFilter'
             ], 'safe'],
 
         ];
@@ -74,6 +76,8 @@ class VwRadaiFormLddapAdasSearch extends VwRadaiFormLddapAdas
             ->andFilterWhere(['like', 'mode_of_payment_name', $this->mode_of_payment_name])
             ->andFilterWhere(['like', 'acic_no', $this->acic_no])
             ->andFilterWhere(['like', 'issuance_date', $this->issuance_date])
+            ->andFilterWhere(['like', 'book_name', $this->book_name])
+            ->andFilterWhere(['like', 'book_name', $this->bookFilter])
             ->andFilterWhere(['like', 'check_or_ada_no', $this->check_or_ada_no]);
 
         return $dataProvider;

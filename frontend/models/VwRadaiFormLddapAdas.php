@@ -50,6 +50,7 @@ class VwRadaiFormLddapAdas extends \yii\db\ActiveRecord
             'lddap_no' => 'LDDAP No.',
             'mode_of_payment_name' => 'Mode Of Payment ',
             'acic_no' => 'ACIC No.',
+            'book_name' => 'Book',
         ];
     }
 }
