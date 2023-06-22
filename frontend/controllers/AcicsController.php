@@ -83,7 +83,7 @@ class AcicsController extends Controller
     {
         $book = Books::findOne($book_id);
         $dte = DateTime::createFromFormat('Y-m-d', $period);
-        $yr = $dte->format('y');
+        $yr = $dte->format('Y');
         $qry  = Yii::$app->db->createCommand("SELECT 
             CAST(SUBSTRING_INDEX(acics.serial_number,'-',-1)AS UNSIGNED) +1 as ser_num
             FROM acics  
@@ -102,7 +102,7 @@ class AcicsController extends Controller
             $num .= str_repeat(0, 3 - strlen($qry));
         }
         $num .= $qry;
-        return $book->name  . '-' . $dte->format('y-m') . '-' . $num;
+        return $book->name  . '-' . $dte->format('Y-m') . '-' . $num;
     }
     private function getViewCashItems($id)
     {
