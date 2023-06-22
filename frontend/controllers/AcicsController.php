@@ -91,7 +91,7 @@ class AcicsController extends Controller
             acics.serial_number LIKE :yr
             AND acics.fk_book_id = :book_id
             ORDER BY ser_num DESC LIMIT 1")
-            ->bindValue(':yr', $yr . '%')
+            ->bindValue(':yr', '%' . $yr . '%')
             ->bindValue(':book_id', $book_id . '%')
             ->queryScalar();
         if (empty($qry)) {
@@ -102,7 +102,7 @@ class AcicsController extends Controller
             $num .= str_repeat(0, 3 - strlen($qry));
         }
         $num .= $qry;
-        return $book->name . '-' . $dte->format('y-m') . '-' . $num;
+        return $book->name  . '-' . $dte->format('y-m') . '-' . $num;
     }
     private function getViewCashItems($id)
     {
