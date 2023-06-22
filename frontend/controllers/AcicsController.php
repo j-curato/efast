@@ -8,6 +8,7 @@ use Yii;
 use app\models\Acics;
 use app\models\AcicsCashItems;
 use app\models\AcicsSearch;
+use app\models\Books;
 use app\models\CashDisbursement;
 use DateTime;
 use ErrorException;
@@ -78,8 +79,9 @@ class AcicsController extends Controller
             ->bindValue(':id', $id)
             ->queryAll();
     }
-    private function getSerialNum($period)
+    private function getSerialNum($period, $book_id)
     {
+        $book = Books::findOne($book_id);
         $dte = DateTime::createFromFormat('Y-m-d', $period);
         $yr = $dte->format('y');
         $qry  = Yii::$app->db->createCommand("SELECT 
@@ -87,8 +89,10 @@ class AcicsController extends Controller
             FROM acics  
             WHERE 
             acics.serial_number LIKE :yr
+            AND acics.fk_book_id = :book_id
             ORDER BY ser_num DESC LIMIT 1")
             ->bindValue(':yr', $yr . '%')
+            ->bindValue(':book_id', $book_id . '%')
             ->queryScalar();
         if (empty($qry)) {
             $qry = 1;
@@ -98,7 +102,7 @@ class AcicsController extends Controller
             $num .= str_repeat(0, 3 - strlen($qry));
         }
         $num .= $qry;
-        return $dte->format('y-m') . '-' . $num;
+        return strtoupper($book->name) . '-' . $dte->format('y-m') . '-' . $num;
     }
     private function getViewCashItems($id)
     {
@@ -476,7 +480,7 @@ class AcicsController extends Controller
                 if (empty($cashRcvItms)) {
                     throw new ErrorException('Cash Receive is Required');
                 }
-                $model->serial_number = $this->getSerialNum($model->date_issued);
+                $model->serial_number = $this->getSerialNum($model->date_issued, $model->fk_book_id);
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
@@ -524,6 +528,7 @@ class AcicsController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $oldModel = $this->findModel($id);
         if ($model->load(Yii::$app->request->post())) {
             $cashItems = Yii::$app->request->post('cashItems') ?? [];
             $uniqueCashItems = array_map("unserialize", array_unique(array_map("serialize", $cashItems)));
@@ -531,7 +536,9 @@ class AcicsController extends Controller
             $cancellItems =  Yii::$app->request->post('cancelItems') ?? [];
             try {
                 $txn  = Yii::$app->db->beginTransaction();
-
+                if ($oldModel->fk_book_id !== $model->fk_book_id) {
+                    $model->serial_number = $this->getSerialNum($model->date_issued, $model->fk_book_id);
+                }
                 $chkItm = $this->checkItemsIfBalance($uniqueCashItems, $cashRcvItms);
                 if ($chkItm !== true) {
                     throw new ErrorException($chkItm);
@@ -542,7 +549,6 @@ class AcicsController extends Controller
                 if (empty($cashRcvItms)) {
                     throw new ErrorException('Cash Receive is Required');
                 }
-                $model->serial_number = $this->getSerialNum($model->date_issued);
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }

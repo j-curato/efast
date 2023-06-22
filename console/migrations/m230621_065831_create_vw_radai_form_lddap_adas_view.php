@@ -20,7 +20,8 @@ class m230621_065831_create_vw_radai_form_lddap_adas_view extends Migration
         cash_disbursement.issuance_date,
         lddap_adas.serial_number as lddap_no,
         mode_of_payments.`name` as mode_of_payment_name,
-        acics.serial_number as acic_no
+        acics.serial_number as acic_no,
+        books.name as book_name
 
         FROM cash_disbursement
         JOIN acics_cash_items ON cash_disbursement.id = acics_cash_items.fk_cash_disbursement_id
@@ -28,6 +29,7 @@ class m230621_065831_create_vw_radai_form_lddap_adas_view extends Migration
         JOIN lddap_adas ON cash_disbursement.id = lddap_adas.fk_cash_disbursement_id
         JOIN acics ON acics_cash_items.fk_acic_id = acics.id
         JOIN acic_in_bank_items ON acics.id = acic_in_bank_items.fk_acic_id
+        JOIN books ON cash_disbursement.book_id  = books.id
         WHERE 
         (mode_of_payments.`name` LIKE '%eCheck w/ ADA%' OR mode_of_payments.`name` LIKE '%LBP Check w/ ADA%')
         AND acics_cash_items.is_deleted = 0
@@ -42,7 +44,6 @@ class m230621_065831_create_vw_radai_form_lddap_adas_view extends Migration
      */
     public function safeDown()
     {
-
     }
 
     /*
