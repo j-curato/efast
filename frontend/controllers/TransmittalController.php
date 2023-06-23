@@ -72,7 +72,6 @@ class TransmittalController extends Controller
         t_dv.taxWitheld,
         cash_disbursement.is_cancelled
         FROM transmittal_entries
-        
         JOIN dv_aucs ON transmittal_entries.fk_dv_aucs_id = dv_aucs.id
         JOIN cash_disbursement_items ON dv_aucs.id = cash_disbursement_items.fk_dv_aucs_id
         JOIN cash_disbursement ON cash_disbursement_items.fk_cash_disbursement_id = cash_disbursement.id
@@ -87,6 +86,10 @@ class TransmittalController extends Controller
         WHERE 
          transmittal_entries.is_deleted = 0
          AND transmittal_entries.transmittal_id = :id
+        AND cash_disbursement_items.is_deleted = 0
+        AND cash_disbursement.is_cancelled = 0
+        AND NOT EXISTS (SELECT c.parent_disbursement FROM cash_disbursement  c WHERE c.is_cancelled  = 1
+        AND c.parent_disbursement IS NOT NULL AND c.parent_disbursement  = cash_disbursement.id)
         ")
             ->bindValue(':id', $id)
             ->queryAll();
@@ -113,7 +116,7 @@ class TransmittalController extends Controller
             }
             foreach ($items as $itm) {
 
-           
+
                 if (!empty($itm['item_id'])) {
                     $mdl = TransmittalEntries::findOne($itm['item_id']);
                 } else {
