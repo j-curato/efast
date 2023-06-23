@@ -536,7 +536,7 @@ class AcicsController extends Controller
             $cancellItems =  Yii::$app->request->post('cancelItems') ?? [];
             try {
                 $txn  = Yii::$app->db->beginTransaction();
-                if ($oldModel->fk_book_id !== $model->fk_book_id) {
+                if (intval($oldModel->fk_book_id) !== intval($model->fk_book_id)) {
                     $model->serial_number = $this->getSerialNum($model->date_issued, $model->fk_book_id);
                 }
                 $chkItm = $this->checkItemsIfBalance($uniqueCashItems, $cashRcvItms);
