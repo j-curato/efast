@@ -53,7 +53,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <td colspan="" class="no-bdr" style="min-width:130px">
                     <span>ACIC No.</span><br>
                     <span>Organization Code:</span><br>
-                    <span>Fund Cluste</span><br>
+                    <span>Fund Cluster</span><br>
                     <span>Area Code</span><br>
                     <span>NCA No.</span><br>
                 </td>
@@ -189,7 +189,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td colspan="6" class="ctr">
                         <div style='width:50%' class="flt-lft">
                             <span class="flt-lft">Certified Correct by:</span><br><br>
-                            <span>__________________________________</span><br>
+                            <u><b>MARRY ANN L. PASCUAL</b></u><br>
+                            <span>Administrative Officer V</span><br>
                             <span>Signature over Printed Name of Disbursing <br> Officer/Cashier/Head of Cash/ Treasury Unit</span>
                         </div>
                         <div style='width:50%' class="flt-lft">
@@ -203,7 +204,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td colspan="6" class="ctr">
                         <div style='width:50%' class="flt-lft">
                             <span class="flt-lft">Approved by:</span><br><br>
-                            <span>__________________________________</span><br>
+                            <u><b>GAY A. TIDALGO, CESO IV</b></u><br>
+                            <span>Region Director</span><br>
                             <span>Signature over Printed Name of Head of <br> Office/Unit or his/her authorized representative</span>
                         </div>
                         <div style='width:50%' class="flt-lft">
