@@ -133,6 +133,10 @@ $this->params['breadcrumbs'][] = $this->title;
             if (!empty($model->dv_link)) {
                 echo Html::a('DV Scanned Copy Link ', $model->dv_link, ['class' => 'btn btn-link', 'target' => '_blank']);
             }
+            if (!empty($transmittalId)) {
+                echo Html::a('Transmittal Link ', ['transmittal/view', 'id' => $transmittalId], ['class' => 'btn btn-link', 'target' => '_blank']);
+            }
+
             ?>
 
         </p>

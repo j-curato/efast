@@ -277,8 +277,15 @@ class DvAucsController extends Controller
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
-            'cashIds' => $this->getCashDisbursementIds($id)
+            'cashIds' => $this->getCashDisbursementIds($id),
+            'transmittalId' => $this->getTransmittalId($id)
         ]);
+    }
+    public function getTransmittalId($id)
+    {
+        return Yii::$app->db->createCommand("SELECT transmittal_entries.transmittal_id FROM transmittal_entries WHERE transmittal_entries.fk_dv_aucs_id = :id")
+            ->bindValue(':id', $id)
+            ->queryScalar();
     }
 
     /**
