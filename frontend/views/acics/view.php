@@ -20,6 +20,12 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= Html::a('Create', ['create'], ['class' => 'btn btn-success']) ?>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 
+
+            <?php
+            if (!empty($acicInBankId)) {
+                echo Html::a('ACIC in Bank Link', ['acic-in-bank/view', 'id' => $acicInBankId], ['class' => 'btn btn-link']);
+            }
+            ?>
         </p>
 
         <table>

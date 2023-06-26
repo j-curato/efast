@@ -59,6 +59,16 @@ class AcicsController extends Controller
             ],
         ];
     }
+    private function getAcicInBankId($id)
+    {
+        return Yii::$app->db->createCommand("SELECT acic_in_bank_items.fk_acic_in_bank_id FROM acics
+        JOIN acic_in_bank_items ON acics.id = acic_in_bank_items.fk_acic_id
+        WHERE 
+        acic_in_bank_items.is_deleted = 0
+        AND acics.id = :id
+        ")->bindValue(':id', $id)
+            ->queryScalar();
+    }
     private function getCancelledItemsDetails($id)
     {
         return Yii::$app->db->createCommand("SELECT 
@@ -451,7 +461,8 @@ class AcicsController extends Controller
         return $this->render('view', [
             'model' => $this->findModel($id),
             'cashItems' => $this->getViewCashItems($id),
-            'cancelledItems' => $this->getCancelledItemsDetails($id)
+            'cancelledItems' => $this->getCancelledItemsDetails($id),
+            'acicInBankId' => $this->getAcicInBankId($id)
         ]);
     }
 

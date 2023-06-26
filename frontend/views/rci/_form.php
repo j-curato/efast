@@ -3,6 +3,8 @@
 use app\models\Books;
 use app\models\VwDvsInBank;
 use app\models\VwDvsInBankSearch;
+use app\models\VwGdNoRciChecks;
+use app\models\VwGdNoRciChecksSearch;
 use kartik\date\DatePicker;
 use kartik\grid\GridView;
 use kartik\icons\Icon;
@@ -102,7 +104,7 @@ $itmRow = 0;
     <?php
 
 
-    $searchModel = new VwDvsInBankSearch();
+    $searchModel = new VwGdNoRciChecksSearch();
     $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
     $dataProvider->pagination = ['pageSize' => 10];
 
@@ -124,17 +126,14 @@ $itmRow = 0;
                 return Html::button(Icon::show('plus', ['framework' => Icon::FA]), ['class' => 'btn-xs btn-primary add-action', 'onClick' => 'AddItem(this)']);
             },
         ],
-        'reporting_period',
         'check_or_ada_no',
         'ada_number',
         'issuance_date',
-        'dv_number',
-        'grossAmt',
-        'payee',
-        'orsNums',
-        'particular',
-        'acic_num',
-
+        'book_name',
+        'reporting_period',
+        'mode_name',
+        'ttlDisbursed',
+        'ttlTax',
     ];
     ?>
 

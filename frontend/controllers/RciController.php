@@ -73,9 +73,9 @@ class RciController extends Controller
                CONCAT(chart_of_accounts.uacs,'-',chart_of_accounts.general_ledger) as uacs,
        acics.serial_number as acic_no
         FROM `rci_items`
-       JOIN cash_disbursement_items ON rci_items.fk_cash_disbursement_item_id = cash_disbursement_items.id
+       JOIN cash_disbursement ON rci_items.fk_cash_disbursement_id = cash_disbursement.id
+       JOIN cash_disbursement_items ON cash_disbursement.id = cash_disbursement_items.fk_cash_disbursement_id
        JOIN dv_aucs_index ON cash_disbursement_items.fk_dv_aucs_id = dv_aucs_index.id
-       JOIN cash_disbursement ON cash_disbursement_items.fk_cash_disbursement_id = cash_disbursement.id
        LEFT JOIN chart_of_accounts ON cash_disbursement_items.fk_chart_of_account_id = chart_of_accounts.id
        LEFT JOIN mode_of_payments ON cash_disbursement.fk_mode_of_payment_id = mode_of_payments.id
        LEFT JOIN acics_cash_items ON cash_disbursement.id = acics_cash_items.fk_cash_disbursement_id
@@ -110,7 +110,7 @@ class RciController extends Controller
 
                     $model = new RciItems();
                     $model->fk_rci_id = $model_id;
-                    $model->fk_cash_disbursement_item_id = $itm['cash_item_id'];
+                    $model->fk_cash_disbursement_id = $itm['cash_item_id'];
                     if (!$model->validate()) {
                         throw new ErrorException(json_encode($model->errors));
                     }

@@ -57,7 +57,7 @@ $itemRow = 0;
     <div class="row">
 
         <div class="col-sm-1 col-sm-offset-5">
-            <?= Html::submitButton('Save', ['class' => 'btn btn-success','style'=>'width:10rem']) ?>
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:10rem']) ?>
         </div>
     </div>
     <div class="form-group">
@@ -77,6 +77,7 @@ $itemRow = 0;
             'type' => 'primary',
             'heading' => 'ACIC`s'
         ],
+        'pjax' => true,
         'columns' => [
             [
                 'label' => 'Actions',
