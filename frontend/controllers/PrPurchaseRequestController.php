@@ -979,7 +979,9 @@ class PrPurchaseRequestController extends Controller
             SUM(pr_purchase_request_item.quantity *pr_purchase_request_item.unit_cost) as total_pr_amt,
             SUM(pr_purchase_request_item.quantity) as total_pr_qty
             FROM pr_purchase_request_item
+            JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id
             WHERE pr_purchase_request_item.is_deleted = 0
+            AND  pr_purchase_request.is_cancelled = 0
             GROUP BY pr_purchase_request_item.fk_ppmp_cse_item_id) as ppmp_in_pr ON supplemental_ppmp_cse.id = ppmp_in_pr.fk_ppmp_cse_item_id
                  WHERE supplemental_ppmp_cse.id = :id
                  AND  (IFNULL(supplemental_ppmp_cse.jan_qty,0)+
@@ -1020,9 +1022,10 @@ class PrPurchaseRequestController extends Controller
 									SUM(pr_purchase_request_item.quantity) as ttl_qty,
 									SUM(IFNULL(pr_purchase_request_item.unit_cost,0) * IFNULL(pr_purchase_request_item.quantity,0)) as total_pr_amt
 									FROM pr_purchase_request_item
+                                    JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id
 									WHERE 
 									pr_purchase_request_item.is_deleted =0
-
+                                    AND pr_purchase_request.is_cancelled = 0
 									GROUP BY
 									pr_purchase_request_item.fk_ppmp_non_cse_item_id
 									 ) as item_in_pr_total ON supplemental_ppmp_non_cse_items.id = item_in_pr_total.fk_ppmp_non_cse_item_id
@@ -1057,9 +1060,10 @@ class PrPurchaseRequestController extends Controller
 									SUM(pr_purchase_request_item.quantity) as ttl_qty,
 									SUM(IFNULL(pr_purchase_request_item.unit_cost,0) * IFNULL(pr_purchase_request_item.quantity,0)) as total_pr_amt
 									FROM pr_purchase_request_item
+                                    JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id
 									WHERE 
 									pr_purchase_request_item.is_deleted =0
-
+                                    AND pr_purchase_request.is_cancelled = 0
 									GROUP BY
 									pr_purchase_request_item.fk_ppmp_non_cse_item_id
 									 ) as item_in_pr_total ON supplemental_ppmp_non_cse_items.id = item_in_pr_total.fk_ppmp_non_cse_item_id
