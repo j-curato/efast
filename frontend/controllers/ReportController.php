@@ -2389,13 +2389,20 @@ class ReportController extends \yii\web\Controller
     public function actionCadadr()
     {
         if (Yii::$app->request->post()) {
-
+            $from_reporting_period = Yii::$app->request->post('from_reporting_period');
+            $to_reporting_period = Yii::$app->request->post('to_reporting_period');
+            $book_id = Yii::$app->request->post('book_id');
             // $from_reporting_period = $_POST['from_reporting_period'];
             // $to_reporting_period = $_POST['to_reporting_period'];
             // $book = $_POST['book'];
-            $qry = Yii::$app->db->createCommand("CALL prc_Cadadr('2023-01','2023-06',5)")
+            $qry = Yii::$app->db->createCommand("CALL prc_Cadadr(:from_period,:to_period,:book_id)")
+                ->bindValue(':from_period', $from_reporting_period)
+                ->bindValue(':to_period', $to_reporting_period)
+                ->bindValue(':book_id', $book_id)
                 ->queryAll();
-
+            $begin_balance = 0;
+            // if ($from_reporting_period !== '2023-01') {
+            // }
             //     $query = Yii::$app->db->createCommand("SELECT * FROM cadadr
             //         WHERE 
             //         reporting_period >= :from_reporting_period
@@ -2503,19 +2510,18 @@ class ReportController extends \yii\web\Controller
             //     // return json_encode([$begin_balance, $adjustment_begin_balance]);
             //     // $begin_balance  += $adjustment_begin_balance;
             //     $begin_balance = (float)$begin_balance - (float)$adjustment_begin_balance;
-            //     $adjustment = Yii::$app->db->createCommand("SELECT * 
-            //    FROM cash_adjustment
-            //    LEFT JOIN books ON cash_adjustment.book_id = books.id
+            $adjustments = Yii::$app->db->createCommand("SELECT * 
+               FROM cash_adjustment
+               LEFT JOIN books ON cash_adjustment.book_id = books.id
 
-            //    WHERE cash_adjustment.reporting_period <= :to_reporting_period
-            //    AND cash_adjustment.reporting_period >= :from_reporting_period
-            //    AND books.name = :book
-            //    ")
+               WHERE cash_adjustment.reporting_period <= :to_reporting_period
+               AND cash_adjustment.reporting_period >= :from_reporting_period
+               AND books.id = :book")
 
-            //         ->bindValue(':book', $book)
-            //         ->bindValue(':to_reporting_period', $to_reporting_period)
-            //         ->bindValue(':from_reporting_period', $from_reporting_period)
-            //         ->queryAll();
+                ->bindValue(':book', $book_id)
+                ->bindValue(':to_reporting_period', $to_reporting_period)
+                ->bindValue(':from_reporting_period', $from_reporting_period)
+                ->queryAll();
             //     $cancelled_checks = Yii::$app->db->createCommand("SELECT * FROM cadadr
             //         WHERE 
             //         reporting_period >= :from_reporting_period
@@ -2528,12 +2534,12 @@ class ReportController extends \yii\web\Controller
             //         ->bindValue(':to_reporting_period', $to_reporting_period)
             //         ->bindValue(':book', $book)
             //         ->queryAll();
-
+            $cancelled_checks = ArrayHelper::index($qry, null, ['is_cancelled']);
             return json_encode([
                 'results' => $qry,
-                // 'begin_balance' => $begin_balance,
-                // 'adjustment' => $adjustment,
-                // 'cancelled_checks' => $cancelled_checks
+                'begin_balance' => $begin_balance,
+                'adjustments' => $adjustments,
+                'cancelled_checks' => $cancelled_checks[1] ?? []
             ]);
         }
         return $this->render('cadadr');

@@ -48,11 +48,11 @@ class m230622_032548_create_prc_Cadadr_procedure extends Migration
                 LEFT JOIN books ON cash_disbursement.book_id = books.id
                 LEFT JOIN lddap_adas ON cash_disbursement.id = lddap_adas.fk_cash_disbursement_id
                 LEFT JOIN (SELECT 
-                rci.serial_number,rci_items.fk_cash_disbursement_item_id 
+                rci.serial_number,rci_items.fk_cash_disbursement_id 
                 FROM rci 
                 JOIN rci_items ON rci.id = rci_items.fk_rci_id
                 WHERE 
-                rci_items.is_deleted = 0) gdRci ON cash_disbursement_items.id = gdRci.fk_cash_disbursement_item_id
+                rci_items.is_deleted = 0) gdRci ON cash_disbursement.id = gdRci.fk_cash_disbursement_id
 
                 LEFT JOIN (SELECT 
                 radai.serial_number,

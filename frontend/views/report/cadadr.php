@@ -59,9 +59,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 <label for="book"> Books</label>
                 <?php
                 echo Select2::widget([
-                    'name' => 'book',
+                    'name' => 'book_id',
                     'id' => 'book',
-                    'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'name', 'name'),
+                    'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
                     'pluginOptions' => [
                         'placeholder' => 'Select Book'
                     ]
@@ -131,7 +131,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th rowspan="4">Payee</th>
                     <th rowspan="4">UACS</th>
                     <th rowspan="4">Nature of Payment</th>
-                    <th rowspan="3" colspan="4">Amount</th>
+                    <th rowspan="3" colspan="5">Amount</th>
 
                 </tr>
                 <tr>
@@ -153,6 +153,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th>Check Issued</th>
                     <th>ADA Issued</th>
                     <th>NCA/BANK Balance</th>
+                    <th>0 if Good 1 if Cancelled</th>
                 </tr>
 
 
@@ -254,6 +255,10 @@ $this->params['breadcrumbs'][] = $this->title;
         font-size: 10px;
     }
 
+    .amt {
+        text-align: right;
+    }
+
     @media print {
         #summary_table {
             margin-top: 0;
@@ -302,14 +307,17 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 // var conso = res.conso
                 // mfo = res.mfo_pap
                 // allotment_balances = res.allotments
-                displayData(res.results, res.begin_balance, res.adjustment)
-                // addToSummaryTable(res.conso_saob)
-                displayCancelledChecks(res.cancelled_checks)
-                const d = new Date($('#to_reporting_period').val())
-                const month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                // displayData(res.results, res.begin_balance, res.adjustment)
 
-                console.log(d.getMonth())
-                $('#period').text('As of ' + month[d.getMonth()] + ', ' + d.getFullYear())
+                // // addToSummaryTable(res.conso_saob)
+                // displayCancelledChecks(res.cancelled_checks)
+                // const d = new Date($('#to_reporting_period').val())
+                // const month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+                // console.log(d.getMonth())
+                // $('#period').text('As of ' + month[d.getMonth()] + ', ' + d.getFullYear())
+                console.log(res)
+                q(res)
                 setTimeout(() => {
                     $('#con').show()
                     $('#dots5').hide()
@@ -497,6 +505,104 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
         }
 
 
+
+    }
+
+    function q(data) {
+        $("#cadadr tbody").html('');
+        let ttlAda = 0;
+        let ttlCheck = 0
+        let ttlNca = 0
+        let nca_bal = parseFloat(data.begin_balance)
+        $.each(data.results, function(key, val) {
+            let ada = val.is_cancelled == 1 ? 0 : parseFloat(val.ada_issued);
+            let check = val.is_cancelled == 1 ? 0 : parseFloat(val.check_issued);
+            let nca = val.is_cancelled == 1 ? 0 : parseFloat(val.nca_receive);
+
+            nca_bal += nca;
+            nca_bal -= check;
+            nca_bal -= ada;
+
+
+            ttlAda += parseFloat(ada);
+            ttlCheck += parseFloat(check);
+            ttlNca += parseFloat(nca);
+
+            let row = `<tr>
+                <td>${val.dv_number}</td>
+                <td></td>
+                <td>${val.check_or_ada_no}</td>
+                <td>${val.ada_number}</td>
+                <td>${val.check_date}</td>
+                <td></td>
+                <td>${val.payee}</td>
+                <td>${val.uacs}</td>
+                <td>${val.particular}</td>
+                <td class='amt'>${thousands_separators(nca)}</td>
+                <td class='amt'>${thousands_separators(check)}</td>
+                <td class='amt'>${thousands_separators(ada)}</td>
+                <td class='amt'>${thousands_separators(nca_bal)}</td>
+                <td>${val.is_cancelled}</td>
+            </tr>`
+            $('#cadadr tbody').append(row)
+        })
+        let ttlRow = `<tr>
+                <td colspan='9'>TOTAL</td>
+                <td>${thousands_separators(ttlNca)}</td>
+                <td>${thousands_separators(ttlCheck)}</td>
+                <td>${thousands_separators(ttlAda)}</td>
+                <td>${thousands_separators(nca_bal)}</td>
+
+            </tr>`
+        $('#cadadr tbody').append(ttlRow)
+        // DIsplay Cancelled Cheks
+        $.each(data.cancelled_checks, function(key, val) {
+            let cnldRow = `<tr class='data_row'>
+                <td colspan='' >${val.dv_number}</td>
+                <td colspan='' >${val.check_date}</td>
+                <td colspan='' >${val.reporting_period}</td>
+                <td colspan='' >${val.check_or_ada_no}</td>
+                <td colspan='' >${val.ada_number}</td>
+                <td colspan='' >${val.check_date}</td>
+                <td></td>
+                <td colspan='' >${val.payee}</td>
+                <td></td>
+                <td colspan='' >${val.particular}</td>
+                <td  class='amount'>${ thousands_separators(val.nca_receive) }</td>
+                <td  class='amount'>${ thousands_separators(val.check_issued) }</td>
+                <td  class='amount'>${ thousands_separators(val.ada_issued) }</td>
+     
+                </tr>`
+            $('#cancelled_checks_table tbody').append(cnldRow)
+        })
+        // Display Adjustments
+        if (data.adjustments.length >= 1) {
+            $('#cadadr tbody').append(`<tr class='data_row'><td colspan='13' style='font-weight:bold;background-color:#cccccc'>Adjustments </td></tr>`)
+            $.each(data.adjustments, function(key, val) {
+
+
+
+                let b_balance = ttlNca
+                let balance = parseFloat(b_balance.toFixed(2)) - parseFloat(val.amount)
+                row = `<tr class='data_row'>
+                <td colspan='' ></td>
+                <td colspan='' ></td>
+                <td colspan='' ></td>
+                <td colspan='' ></td>
+                <td colspan='' ></td>
+                <td></td>
+                <td colspan='' ></td>
+                <td></td>
+                <td colspan='' >` + val.particular + `</td>
+                <td  class='amount'>` + thousands_separators(b_balance.toFixed(2)) + `</td>
+                <td  class='amount'></td>
+                <td class='amount' >` + thousands_separators(val.amount) + `</td>
+                <td  class='amount'>` + thousands_separators(balance.toFixed(2)) + `</td>
+                  
+                </tr>`
+                $('#cadadr tbody').append(row)
+            })
+        }
 
     }
 </script>
