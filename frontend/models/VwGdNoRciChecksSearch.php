@@ -11,6 +11,7 @@ use app\models\VwGdNoRciChecks;
  */
 class VwGdNoRciChecksSearch extends VwGdNoRciChecks
 {
+    public $bookFilter = '';
     /**
      * {@inheritdoc}
      */
@@ -25,7 +26,8 @@ class VwGdNoRciChecksSearch extends VwGdNoRciChecks
                 'issuance_date',
                 'reporting_period',
                 'book_name',
-                'mode_name'
+                'mode_name',
+                'bookFilter'
             ], 'safe'],
 
         ];
@@ -64,7 +66,10 @@ class VwGdNoRciChecksSearch extends VwGdNoRciChecks
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        if (empty($this->bookFilter)) {
+            $query->where('0=1');
+            return $dataProvider;
+        }
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
@@ -75,6 +80,7 @@ class VwGdNoRciChecksSearch extends VwGdNoRciChecks
             ->andFilterWhere(['like', 'issuance_date', $this->issuance_date])
             ->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
             ->andFilterWhere(['like', 'book_name', $this->book_name])
+            ->andFilterWhere(['like', 'book_name', $this->bookFilter])
             ->andFilterWhere(['like', 'mode_name', $this->mode_name]);
 
         return $dataProvider;

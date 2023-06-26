@@ -24,7 +24,10 @@ $itmRow = 0;
 
     <?php $form = ActiveForm::begin(); ?>
 
-
+    <ul class="notes">
+        <li>Notes:</li>
+        <li>Select Book to display all the Checks in bank for the selected book</li>
+    </ul>
     <div class="row">
         <div class="col-sm-3">
             <?= $form->field($model, 'fk_book_id')->widget(Select2::class, [
@@ -134,6 +137,7 @@ $itmRow = 0;
         'mode_name',
         'ttlDisbursed',
         'ttlTax',
+        'bookFilter'
     ];
     ?>
 
@@ -142,8 +146,9 @@ $itmRow = 0;
         'filterModel' => $searchModel,
         'panel' => [
             'type' => 'primary',
-            'heading' => 'DVs in Bank'
+            'heading' => 'Checks in Bank'
         ],
+        'pjax' => true,
         'columns' => $cols,
     ]); ?>
 
@@ -160,9 +165,14 @@ $itmRow = 0;
         text-align: right;
 
     }
+
+    .notes li {
+        color: red;
+    }
 </style>
 <script>
     let itmRow = <?= $itmRow ?>;
+    let book_name = '<?= !empty($model->book->name) ? $model->book->name : '' ?>';
 
     function AddItem(ths) {
         const clone = $(ths).closest('tr').clone()
@@ -177,4 +187,25 @@ $itmRow = 0;
     function remove(ths) {
         $(ths).closest('tr').remove()
     }
+
+    function bookFilter(book) {
+        $('input[name^="VwGdNoRciChecksSearch[bookFilter]').val(book).trigger('change')
+    }
+
+    $(document).ready(function() {
+        window.onload = function() {
+            bookFilter("<?= $model->book->name ?? '' ?>")
+        };
+        $('#cashdisbursement-fk_mode_of_payment_id').change(() => {
+            $('#cashdisbursement-fk_ro_check_range_id').val(null).trigger('change');
+        })
+        $('#rci-fk_book_id').change(() => {
+            const book = $('#rci-fk_book_id :selected').text()
+
+            bookFilter(book)
+        })
+
+
+
+    })
 </script>
