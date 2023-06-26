@@ -137,7 +137,11 @@ $itmRow = 0;
         'mode_name',
         'ttlDisbursed',
         'ttlTax',
-        'bookFilter'
+
+        [
+            'attribute' => 'bookFilter',
+            'hidden' => true
+        ],
     ];
     ?>
 
