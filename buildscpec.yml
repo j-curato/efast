@@ -1,0 +1,19 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      php: 7.4
+    commands:
+      - composer install --no-progress --no-interaction
+
+  build:
+    commands:
+      - php yii migrate/up --interactive=0
+      - php vendor/bin/codecept run
+
+artifacts:
+  files:
+    - "**/*"
+    - "!vendor/**/*"
+    - "!tests/**/*"
