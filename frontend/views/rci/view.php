@@ -65,7 +65,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php
             $total = 0;
             foreach ($items as $itm) {
-                $total  += floatval($itm['grossAmt']);
+                $total  += floatval($itm['ttlAmtDisbursed']);
                 echo "<tr>
                         <td>{$itm['issuance_date']}</td>
                         <td>{$itm['check_or_ada_no']}</td>
@@ -75,7 +75,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td>{$itm['payee']}</td>
                         <td>{$itm['uacs']}</td>
                         <td>{$itm['mode_name']}</td>
-                        <td class='amt'>" . number_format($itm['grossAmt'], 2) . "</td>
+                        <td class='amt'>" . number_format($itm['ttlAmtDisbursed'], 2) . "</td>
                     </tr>";
             }
             for ($i = count($items); $i < 10; $i++) {

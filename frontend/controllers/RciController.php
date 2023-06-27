@@ -61,6 +61,7 @@ class RciController extends Controller
      checkTtlAmt as (
      
      SELECT 
+     cash_disbursement.reporting_period,
      cash_disbursement_items.fk_cash_disbursement_id,
      SUM(dv_aucs_index.ttlAmtDisbursed) as ttlDisbursed,
      SUM(COALESCE(dv_aucs_index.ttlTax,0)) as ttlTax
@@ -106,6 +107,7 @@ rci_items.fk_rci_id= :id
                dv_aucs_index.orsNums,
                dv_aucs_index.payee,
                dv_aucs_index.grossAmt,
+               dv_aucs_index.ttlAmtDisbursed,
                dv_aucs_index.particular,
                mode_of_payments.`name` as mode_name,
                CONCAT(chart_of_accounts.uacs,'-',chart_of_accounts.general_ledger) as uacs,
