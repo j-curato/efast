@@ -5,7 +5,7 @@ phases:
     runtime-versions:
       php: 7.4
     commands:
-      - composer install --no-progress --no-interaction
+      - composer install 
 
   build:
     commands:
