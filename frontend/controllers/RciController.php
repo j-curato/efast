@@ -61,7 +61,6 @@ class RciController extends Controller
      checkTtlAmt as (
      
      SELECT 
-     cash_disbursement.reporting_period,
      cash_disbursement_items.fk_cash_disbursement_id,
      SUM(dv_aucs_index.ttlAmtDisbursed) as ttlDisbursed,
      SUM(COALESCE(dv_aucs_index.ttlTax,0)) as ttlTax
@@ -81,7 +80,9 @@ class RciController extends Controller
      cash_disbursement.reporting_period,
      mode_of_payments.`name` as mode_name,
      checkTtlAmt.ttlDisbursed,
-     checkTtlAmt.ttlTax
+     checkTtlAmt.ttlTax,
+     cash_disbursement.reporting_period
+
      
      FROM 
 rci_items
