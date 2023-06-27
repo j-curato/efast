@@ -485,12 +485,12 @@ class AcicsController extends Controller
             try {
                 $txn  = Yii::$app->db->beginTransaction();
                 $model->id  = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-                if (empty($cashItems)) {
-                    throw new ErrorException('Cash Disbursements is Required');
-                }
-                if (empty($cashRcvItms)) {
-                    throw new ErrorException('Cash Receive is Required');
-                }
+                // if (empty($cashItems)) {
+                //     throw new ErrorException('Cash Disbursements is Required');
+                // }
+                // if (empty($cashRcvItms)) {
+                //     throw new ErrorException('Cash Receive is Required');
+                // }
                 $model->serial_number = $this->getSerialNum($model->date_issued, $model->fk_book_id);
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
@@ -554,12 +554,12 @@ class AcicsController extends Controller
                 if ($chkItm !== true) {
                     throw new ErrorException($chkItm);
                 }
-                if (empty($cashItems)) {
-                    throw new ErrorException('Cash Disbursements is Required');
-                }
-                if (empty($cashRcvItms)) {
-                    throw new ErrorException('Cash Receive is Required');
-                }
+                // if (empty($cashItems)) {
+                //     throw new ErrorException('Cash Disbursements is Required');
+                // }
+                // if (empty($cashRcvItms)) {
+                //     throw new ErrorException('Cash Receive is Required');
+                // }
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
