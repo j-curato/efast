@@ -66,9 +66,9 @@ $requested_by = Yii::$app->db->createCommand("SELECT employee_name,position FROM
                     <th style="border-top:0;border-left:0;text-align:center;" colspan="2">
                         <span> End-User/Accountable Person</span>
                         <br>
-                        <span><?php echo $accountable_person['employee_name'] ?></span>
+                        <span><?= $accountable_person['employee_name'] ?? '' ?></span>
                         <br>
-                        <span><?php echo $accountable_person['position'] ?></span>
+                        <span><?= $accountable_person['position'] ?? '' ?></span>
                     </th>
                 </tr>
                 <tr>
@@ -86,9 +86,9 @@ $requested_by = Yii::$app->db->createCommand("SELECT employee_name,position FROM
                         <br>
                         <br>
                         <br>
-                        <span style="font-weight: bold;text-decoration:underline;text-transform:uppercase;"><?= $requested_by['employee_name'] ?></span>
+                        <span style="font-weight: bold;text-decoration:underline;text-transform:uppercase;"><?= $requested_by['employee_name'] ?? '' ?></span>
                         <br>
-                        <span><?= $requested_by['position'] ?></span>
+                        <span><?= $requested_by['position'] ?? '' ?></span>
 
                     </td>
                     <td class="center">
@@ -161,9 +161,9 @@ $requested_by = Yii::$app->db->createCommand("SELECT employee_name,position FROM
                         Date
                     </th>
                     <td colspan="2" style="border-top:0 ;border-left:0;padding-top:3rem; text-align:center;">
-                        <span style="text-decoration:underline;font-weight:bold;">__<?php echo $accountable_person['employee_name'] ?>__</span>
+                        <span style="text-decoration:underline;font-weight:bold;">__<?php echo $accountable_person['employee_name'] ?? '' ?>__</span>
                         <br>
-                        <span><?php echo $accountable_person['position'] ?></span>
+                        <span><?php echo $accountable_person['position'] ?? '' ?></span>
                         <br>
                         End-user/Accountable Person
                     </td>
