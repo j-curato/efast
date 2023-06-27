@@ -140,7 +140,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th colspan="3" class="ctr">CANCELLED CHECK</th>
                     <td rowspan="12" class="asig ctr">
                         <span class="flt-lft">Certified Correct By:</span><br><br><br>
-                        <span>___________________________</span><br>
+                        <span> <b> <u>&emsp;MARRY ANN L. PASCUAL&emsp;</u></b><br>
+                            <span>Administrative Officer V</span></span><br>
                         <span>Signature over Printed Name of Disbursing <br> Officer/Cashier/Head of Cash /Treasurey <br> Unit</span><br><br>
                         <span class="flt-lft">Approved By:</span><br><br>
                         <span>___________________________</span><br>
