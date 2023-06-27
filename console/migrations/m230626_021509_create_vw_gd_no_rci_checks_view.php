@@ -49,7 +49,7 @@ class m230626_021509_create_vw_gd_no_rci_checks_view extends Migration
         WHERE 
         NOT EXISTS(SELECT * FROM cte_CancelledChecks WHERE cte_CancelledChecks.parent_disbursement = cash_disbursement.id)
         AND cash_disbursement.is_cancelled = 0
-        AND NOT EXISTS (SELECT acics_cash_items.fk_cash_disbursement_id FROM acics_cash_items WHERE acics_cash_items.fk_cash_disbursement_id  = cash_disbursement.id
+        AND  EXISTS (SELECT acics_cash_items.fk_cash_disbursement_id FROM acics_cash_items WHERE acics_cash_items.fk_cash_disbursement_id  = cash_disbursement.id
         AND acics_cash_items.is_deleted = 0 ) 
  AND NOT EXISTS (SELECT 
             rci_items.fk_cash_disbursement_id

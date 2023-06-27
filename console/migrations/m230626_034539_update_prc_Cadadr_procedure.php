@@ -64,6 +64,20 @@ class m230626_034539_update_prc_Cadadr_procedure extends Migration
             WHERE 
             cash_disbursement_items.is_deleted = 0
             -- AND (gdRadai.serial_number IS NOT NULL OR gdRci.serial_number IS NOT NULL )
+                -- AND EXISTS (SELECT 
+
+                -- acics_cash_items.fk_cash_disbursement_id
+                -- FROM 
+                -- acics_cash_items
+                -- JOIN acics ON acics_cash_items.fk_acic_id = acics.id
+                -- JOIN acic_in_bank_items ON acics.id = acic_in_bank_items.fk_acic_id
+                -- JOIN acic_in_bank ON acic_in_bank_items.fk_acic_in_bank_id = acic_in_bank.id
+                -- WHERE 
+
+                -- acics_cash_items.is_deleted = 0 
+                -- AND acic_in_bank_items.is_deleted = 0
+                -- AND acics_cash_items.fk_cash_disbursement_id = cash_disbursement.id
+                -- )
             AND cash_disbursement.reporting_period >= frm_prd
             AND cash_disbursement.reporting_period <= to_prd
             AND books.id = book_id
@@ -110,7 +124,6 @@ class m230626_034539_update_prc_Cadadr_procedure extends Migration
      */
     public function safeDown()
     {
-
     }
 
     /*

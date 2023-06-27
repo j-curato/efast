@@ -64,31 +64,36 @@ $itmRow = 0;
             <th>Check No.</th>
             <th>ADA No.</th>
             <th>Date of Issued</th>
-            <th>DV No.</th>
-            <th>Gross Amount</th>
-            <th>Payee</th>
-            <th>ORS No/s.</th>
-            <th>Particular</th>
-            <th>ACIC No.</th>
+            <th>Book</th>
+            <th>Mode of Payment</th>
+            <th> Amount Disbursed</th>
+            <th> Tax Withheld</th>
+
 
         </thead>
         <tbody>
             <?php
             foreach ($items as $itm) {
 
+
+
+
+
+
+
+
+
                 echo "<tr>
-                    <td style='display:none'><input type='text' name='items[$itmRow][item_id]' value='{$itm['id']}'></td>
-                    <td style='display:none'><input type='text' name='items[$itmRow][cash_item_id]' value='{$itm['cash_item_id']}'></td>
+                    <td style='display:none'><input type='text' name='items[$itmRow][item_id]' value='{$itm['item_id']}'></td>
+                    <td style='display:none'><input type='text' name='items[$itmRow][cash_item_id]' value='{$itm['cash_id']}'></td>
                     <td>{$itm['reporting_period']}</td>
                     <td>{$itm['check_or_ada_no']}</td>
                     <td>{$itm['ada_number']}</td>
                     <td>{$itm['issuance_date']}</td>
-                    <td>{$itm['dv_number']}</td>
-                    <td class='amt'>" . number_format($itm['grossAmt'], 2) . "</td>
-                    <td>{$itm['payee']}</td>
-                    <td>{$itm['orsNums']}</td>
-                    <td>{$itm['particular']}</td>
-                    <td>{$itm['acic_no']}</td>
+                    <td>{$itm['book_name']}</td>
+                    <td>{$itm['mode_name']}</td>
+                    <td class=''>" . number_format($itm['ttlDisbursed'], 2) . "</td>
+                    <td class=''>" . number_format($itm['ttlTax'], 2) . "</td>
                     <td><button type='button' class='remove btn-xs btn-danger' onclick='remove(this)'><i class='fa fa-minus'></i></button></td>
                 </tr>";
                 $itmRow++;
@@ -129,14 +134,24 @@ $itmRow = 0;
                 return Html::button(Icon::show('plus', ['framework' => Icon::FA]), ['class' => 'btn-xs btn-primary add-action', 'onClick' => 'AddItem(this)']);
             },
         ],
+        'reporting_period',
+
         'check_or_ada_no',
         'ada_number',
         'issuance_date',
         'book_name',
-        'reporting_period',
         'mode_name',
-        'ttlDisbursed',
-        'ttlTax',
+
+        [
+            'attribute' => 'ttlDisbursed',
+
+            'format' => ['decimal', 2]
+        ],
+        [
+            'attribute' => 'ttlTax',
+
+            'format' => ['decimal', 2]
+        ],
 
         [
             'attribute' => 'bookFilter',

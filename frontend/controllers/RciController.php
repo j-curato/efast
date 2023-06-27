@@ -55,6 +55,44 @@ class RciController extends Controller
             ],
         ];
     }
+    private function getItemsPerCheck($id)
+    {
+        return Yii::$app->db->createCommand("WITH 
+     checkTtlAmt as (
+     
+     SELECT 
+     cash_disbursement_items.fk_cash_disbursement_id,
+     SUM(dv_aucs_index.ttlAmtDisbursed) as ttlDisbursed,
+     SUM(COALESCE(dv_aucs_index.ttlTax,0)) as ttlTax
+     FROM cash_disbursement_items
+     JOIN dv_aucs_index ON cash_disbursement_items.fk_dv_aucs_id = dv_aucs_index.id
+     WHERE 
+     cash_disbursement_items.is_deleted = 0
+     GROUP BY cash_disbursement_items.fk_cash_disbursement_id
+     )
+     SELECT 
+     rci_items.id as item_id,
+     cash_disbursement.id cash_id,
+     cash_disbursement.check_or_ada_no,
+     cash_disbursement.ada_number,
+     cash_disbursement.issuance_date,
+     books.`name` as book_name,
+     cash_disbursement.reporting_period,
+     mode_of_payments.`name` as mode_name,
+     checkTtlAmt.ttlDisbursed,
+     checkTtlAmt.ttlTax
+     
+     FROM 
+rci_items
+JOIN cash_disbursement ON rci_items.fk_cash_disbursement_id = cash_disbursement.id
+     LEFT JOIN books ON cash_disbursement.book_id = books.id
+     LEFT JOIN mode_of_payments ON cash_disbursement.fk_mode_of_payment_id = mode_of_payments.id
+     LEFT JOIN checkTtlAmt ON cash_disbursement.id  = checkTtlAmt.fk_cash_disbursement_id
+WHERE 
+rci_items.fk_rci_id= :id
+")->bindValue(':id', $id)
+            ->queryAll();
+    }
     private  function getItems($model_id)
     {
         return Yii::$app->db->createCommand("SELECT
@@ -258,7 +296,7 @@ class RciController extends Controller
 
         return $this->render('update', [
             'model' => $model,
-            'items' => $this->getItems($id),
+            'items' => $this->getItemsPerCheck($id),
         ]);
     }
 
