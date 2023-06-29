@@ -284,7 +284,8 @@ class FurController extends Controller
             ")
                 ->bindValue(':reporting_period', $reporting_period)
                 ->bindValue(':bank_account_id', $bank_account_id)
-                ->queryAll();
+                ->getRawSql();
+                return $query;
             $result = ArrayHelper::index($query, null, 'report_type');
 
 

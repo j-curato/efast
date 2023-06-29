@@ -26,7 +26,9 @@ $itmRow = 0;
 
     <ul class="notes">
         <li>Notes:</li>
-        <li>Select Book to display all the Checks in bank for the selected book</li>
+        <li>Select Book to display all the Checks in bank for the selected book.</li>
+        <li>If the check number is not in the list, verify whether the check number has an ACIC. </li>
+        <li>If the check number already has an RCI, it will not be displayed in the list. </li>
     </ul>
     <div class="row">
         <div class="col-sm-3">

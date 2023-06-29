@@ -325,8 +325,26 @@ class CashDisbursementController extends Controller
         return $this->render('view', [
             'model' => $this->findModel($id),
             'items' => $this->getItems($id),
-            'summary' => $this->getSummary($id)
+            'summary' => $this->getSummary($id),
+            'acic_id' => $this->getAcicId($id),
+            'rci_id' => $this->getRciId($id),
         ]);
+    }
+    private function getAcicId($id)
+    {
+        return Yii::$app->db->createCommand("SELECT acics_cash_items.fk_acic_id FROM acics_cash_items WHERE 
+        acics_cash_items.fk_cash_disbursement_id = :id
+        AND acics_cash_items.is_deleted = 0")
+            ->bindValue(':id', $id)
+            ->queryScalar();
+    }
+    private function getRciId($id)
+    {
+        return Yii::$app->db->createCommand("SELECT rci_items.fk_rci_id FROM rci_items WHERE 
+        rci_items.fk_cash_disbursement_id = :id
+        AND rci_items.is_deleted = 0")
+            ->bindValue(':id', $id)
+            ->queryScalar();
     }
 
     private function insertItems($model_id, $items, $isUpdate = false)
