@@ -842,15 +842,15 @@ $this->registerJsFile("@web/js/validate.min.js", ['depends' => [\yii\web\JqueryA
             x = 0
             // console.log($('input[name^="RecordAllotmentDetailedSearch[bookFilter]"]').val())
             const book = $('#book_id :selected').text()
-            $('input[name^="PurchaseRequestIndexSearch[bookFilter]').val(book).trigger('change')
-            $(document).ajaxComplete(function() {
+            // $('input[name^="PurchaseRequestIndexSearch[bookFilter]').val(book).trigger('change')
+            // $(document).ajaxComplete(function() {
 
-                if (x == 0) {
-                    const book_name = $('#book_id :selected').text()
-                    $('input[name^="RecordAllotmentDetailedSearch[bookFilter]"]').val(book_name).trigger('change')
-                    x = 1
-                }
-            });
+            if (x == 0) {
+                const book_name = $('#book_id :selected').text()
+                $('input[name^="RecordAllotmentDetailedSearch[bookFilter]"]').val(book_name).trigger('change')
+                x = 1
+            }
+            // });
         })
         $('input[name^="RecordAllotmentDetailedSearch[bookFilter]"]').val('').trigger('change')
         $('input[name^="PurchaseRequestIndexSearch[bookFilter]').val('').trigger('change')

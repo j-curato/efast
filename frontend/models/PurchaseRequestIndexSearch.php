@@ -102,7 +102,7 @@ class PurchaseRequestIndexSearch extends PurchaseRequestIndex
             ->andFilterWhere(['like', 'date', $this->date]);
 
         if (!empty($this->module === 'transaction')) {
-            $query->andWhere(['=', 'book_name', $this->bookFilter]);
+            // $query->andWhere(['=', 'book_name', $this->bookFilter]);
             $query->andWhere("forTransactionBal >0");
         }
         // echo $query->createCommand()->getRawSql();
