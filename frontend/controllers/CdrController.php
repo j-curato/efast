@@ -267,9 +267,10 @@ class CdrController extends Controller
 
                         UNION ALL
 
-                        SELECT 
-                        cash_disbursement.issuance_date as check_date,
-                        cash_disbursement.check_or_ada_no as check_number,
+                      
+  SELECT 
+                        cash.check_date,
+                        cash.check_number,
                         dv_aucs.particular,
                         advances_entries.amount ,
                         0 as withdrawals,
@@ -281,8 +282,26 @@ class CdrController extends Controller
                         FROM 
                         advances_entries
                         LEFT JOIN advances ON advances_entries.advances_id = advances.id
-                        LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
-                        LEFT JOIN dv_aucs ON cash_disbursement.dv_aucs_id = dv_aucs.id
+                        LEFT JOIN dv_aucs ON advances.dv_aucs_id = dv_aucs.id
+LEFT JOIN  (SELECT 
+            cash_disbursement_items.fk_dv_aucs_id,
+            cash_disbursement.check_or_ada_no as check_number,
+            cash_disbursement.ada_number,
+            cash_disbursement.issuance_date as check_date,
+            mode_of_payments.`name` as mode_of_payment,
+            books.`name` as book_name
+            FROM 
+            cash_disbursement
+            JOIN cash_disbursement_items ON cash_disbursement.id = cash_disbursement_items.fk_cash_disbursement_id
+            LEFT JOIN mode_of_payments ON cash_disbursement.fk_mode_of_payment_id = mode_of_payments.id
+            LEFT JOIN books ON cash_disbursement.book_id = books.id
+            WHERE 
+            cash_disbursement_items.is_deleted = 0
+            AND cash_disbursement.is_cancelled = 0
+            AND NOT EXISTS (SELECT * FROM cash_disbursement c WHERE c.is_cancelled = 1 AND c.parent_disbursement = cash_disbursement.id)
+) cash ON dv_aucs.id = cash.fk_dv_aucs_id
+
+
                         WHERE advances_entries.reporting_period = :reporting_period
                         AND advances.province = :province
                         AND advances_entries.report_type =:report_type 
