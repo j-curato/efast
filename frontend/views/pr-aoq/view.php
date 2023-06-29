@@ -24,12 +24,19 @@ $this->params['breadcrumbs'][] = $this->title;
             <?php
             if (Yii::$app->user->can('super-user')) {
                 $btn_color = $model->is_cancelled ? 'btn btn-success' : 'btn btn-danger';
-                $cncl_txt = $model->is_cancelled ? 'UnCancel' : 'Cancel';
-                echo  Html::a($cncl_txt, ['cancel', 'id' => $model->id], [
-                    'class' => $btn_color,
-                    'id' => 'cancel'
+                // $cncl_txt = $model->is_cancelled ? 'UnCancel' : 'Cancel';
+                // echo  Html::a($cncl_txt, ['cancel', 'id' => $model->id], [
+                //     'class' => $btn_color,
+                //     'id' => 'cancel'
 
-                ]);
+                // ]);
+                if (!$model->is_cancelled) {
+                    echo  Html::a($cncl_txt, ['cancel', 'id' => $model->id], [
+                        'class' => $btn_color,
+                        'id' => 'cancel'
+
+                    ]);
+                }
             }
             echo   Html::a('RFQ Link ', ['pr-rfq/view', 'id' => $model->pr_rfq_id], ['class' => 'btn btn-warning ', 'style' => 'margin:3px'])
             ?>
