@@ -37,7 +37,7 @@ WHERE bac_composition.id = :id")
             <?php
             if (Yii::$app->user->can('super-user')) {
                 $btn_color = $model->is_cancelled ? 'btn btn-success' : 'btn btn-danger';
-                // $cncl_txt = $model->is_cancelled ? 'UnCancel' : 'Cancel';
+                $cncl_txt = $model->is_cancelled ? 'UnCancel' : 'Cancel';
                 // echo  Html::a($cncl_txt, ['cancel', 'id' => $model->id], [
                 //     'class' => $btn_color,
                 //     'id' => 'cancel'
