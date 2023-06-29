@@ -43,9 +43,10 @@ $this->params['breadcrumbs'][] = $this->title;
             if (!empty($acic_id)) {
                 echo  Html::a('ACIC ', ['acics/view', 'id' => $acic_id], ['class' => 'btn btn-link ', 'style' => 'margin:3px']);
             }
-            if (!empty($acic_id)) {
+            if (!empty($rci_id)) {
                 echo  Html::a('RCI ', ['rci/view', 'id' => $rci_id], ['class' => 'btn btn-link ', 'style' => 'margin:3px']);
             }
+
             ?>
         </p>
         <table id="check_details_tbl" style="float: left; margin-right:2rem;margin-bottom:4rem">
