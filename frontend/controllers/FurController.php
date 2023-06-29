@@ -251,10 +251,11 @@ class FurController extends Controller
             ) as begining_balance
             
             FROM advances_entries
-            LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id  = cash_disbursement.id 
+            JOIN advances ON advances_entries.advances_id = advances.id
+            LEFT JOIN dv_aucs ON advances.dv_aucs_id = dv_aucs.id
             LEFT JOIN accounting_codes ON advances_entries.object_code = accounting_codes.object_code
-            LEFT JOIN dv_aucs ON cash_disbursement.dv_aucs_id = dv_aucs.id
-            LEFT JOIN advances ON advances_entries.advances_id = advances.id
+          
+           
             LEFT  JOIN (SELECT liquidation_entries.advances_entries_id,SUM(liquidation_entries.withdrawals) as current_total_withdrawals
             FROM liquidation_entries
              WHERE  liquidation_entries.reporting_period =:reporting_period
