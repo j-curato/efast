@@ -473,7 +473,7 @@ class DvAucsController extends Controller
             try {
                 $transaction = Yii::$app->db->beginTransaction();
                 $t_type = strtolower(DvTransactionType::findOne($model->fk_dv_transaction_type_id)->name);
-                $model->transaction_type = ucwords($t_type);
+                $model->transaction_type = $t_type;
                 if ($t_type == 'payroll') {
                     $model->fk_remittance_id = null;
                     Yii::$app->db->createCommand("UPDATE dv_accounting_entries 
