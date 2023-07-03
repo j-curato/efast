@@ -153,7 +153,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th>Check Issued</th>
                     <th>ADA Issued</th>
                     <th>NCA/BANK Balance</th>
-                    <th>0 if Good 1 if Cancelled</th>
                 </tr>
 
 
@@ -311,13 +310,16 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
 
                 // // addToSummaryTable(res.conso_saob)
                 // displayCancelledChecks(res.cancelled_checks)
-                // const d = new Date($('#to_reporting_period').val())
-                // const month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                const frm = new Date($('#from_reporting_period').val())
+                const to = new Date($('#to_reporting_period').val())
+                const month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-                // console.log(d.getMonth())
-                // $('#period').text('As of ' + month[d.getMonth()] + ', ' + d.getFullYear())
-                console.log(res)
-                q(res)
+                const frm_prd = month[frm.getMonth()] + ', ' + frm.getFullYear()
+                const to_prd = month[to.getMonth()] + ', ' + to.getFullYear()
+                let f_prd = frm_prd == to_prd ? to_prd : frm_prd + ' to ' + to_prd;
+
+                $('#period').text('As of ' + f_prd)
+                displayData(res)
                 setTimeout(() => {
                     $('#con').show()
                     $('#dots5').hide()
@@ -328,52 +330,191 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
         })
     })
 
-    function displayCancelledChecks(res) {
-        $('#cancelled_checks_table tbody').html('')
-        for (var i = 0; i < res.length; i++) {
-            var data = res[i]
-            var dv_number = data['dv_number']
-            var dv_date = data['dv_date']
-            var payee = data['account_name']
-            var ada_issued = parseFloat(data['ada_issued'])
-            var ada_number = data['ada_number']
-            var book_name = data['book_name']
-            var check_issued = parseFloat(data['check_issued'])
-            var check_or_ada_no = data['check_or_ada_no']
-            var issuance_date = data['issuance_date']
-            var particular = data['particular']
-            var reporting_period = data['reporting_period']
-            var nca_recieve = parseFloat(data['nca_recieve'])
+    // function displayCancelledChecks(res) {
+    //     $('#cancelled_checks_table tbody').html('')
+    //     for (var i = 0; i < res.length; i++) {
+    //         var data = res[i]
+    //         var dv_number = data['dv_number']
+    //         var dv_date = data['dv_date']
+    //         var payee = data['account_name']
+    //         var ada_issued = parseFloat(data['ada_issued'])
+    //         var ada_number = data['ada_number']
+    //         var book_name = data['book_name']
+    //         var check_issued = parseFloat(data['check_issued'])
+    //         var check_or_ada_no = data['check_or_ada_no']
+    //         var issuance_date = data['issuance_date']
+    //         var particular = data['particular']
+    //         var reporting_period = data['reporting_period']
+    //         var nca_recieve = parseFloat(data['nca_recieve'])
 
-            row = `<tr class='data_row'>
-                <td colspan='' >` + dv_number + `</td>
-                <td colspan='' >` + dv_date + `</td>
-                <td colspan='' >` + reporting_period + `</td>
-                <td colspan='' >` + check_or_ada_no + `</td>
-                <td colspan='' >` + ada_number + `</td>
-                <td colspan='' >` + issuance_date + `</td>
-                <td></td>
-                <td colspan='' >` + payee + `</td>
-                <td></td>
-                <td colspan='' >` + particular + `</td>
-                <td  class='amount'>` + thousands_separators(nca_recieve) + `</td>
-                <td  class='amount'>` + thousands_separators(check_issued) + `</td>
-                <td  class='amount'>` + thousands_separators(ada_issued) + `</td>
-                </tr>`
-            $('#cancelled_checks_table tbody').append(row)
+    //         row = `<tr class='data_row'>
+    //             <td colspan='' >` + dv_number + `</td>
+    //             <td colspan='' >` + dv_date + `</td>
+    //             <td colspan='' >` + reporting_period + `</td>
+    //             <td colspan='' >` + check_or_ada_no + `</td>
+    //             <td colspan='' >` + ada_number + `</td>
+    //             <td colspan='' >` + issuance_date + `</td>
+    //             <td></td>
+    //             <td colspan='' >` + payee + `</td>
+    //             <td></td>
+    //             <td colspan='' >` + particular + `</td>
+    //             <td  class='amount'>` + thousands_separators(nca_recieve) + `</td>
+    //             <td  class='amount'>` + thousands_separators(check_issued) + `</td>
+    //             <td  class='amount'>` + thousands_separators(ada_issued) + `</td>
+    //             </tr>`
+    //         $('#cancelled_checks_table tbody').append(row)
 
 
-        }
+    //     }
 
-    }
+    // }
 
-    function displayData(res, begin_balance, adjustment) {
+    // function displayData(res, begin_balance, adjustment) {
+    //     $("#cadadr tbody").html('');
+    //     var arr = []
+    //     var balance = parseFloat(begin_balance)
+    //     let check_count = 0
+    //     let ada_count = 0
+    //     row = `<tr class='data_row'>
+    //             <td colspan='' ></td>
+    //             <td colspan='' ></td>
+    //             <td colspan='' ></td>
+    //             <td colspan='' ></td>
+    //             <td colspan='' ></td>
+    //             <td></td>
+    //             <td colspan='' ></td>
+    //             <td></td>
+    //             <td colspan='' >` + 'Begining Balance' + `</td>
+    //             <td  class='amount'></td>
+    //             <td  class='amount'></td>
+    //             <td class='amount' ></td>
+    //             <td  class='amount'>` + thousands_separators(balance.toFixed(2)) + `</td>
+    //             </tr>`
+    //     var total_nca_recieve = 0
+    //     var total_check_issued = 0
+    //     var total_ada_issued = 0
+    //     $('#cadadr tbody').append(row)
+    //     for (var i = 0; i < res.length; i++) {
+    //         var data = res[i]
+    //         var dv_number = data['dv_number']
+    //         var dv_date = data['dv_date']
+    //         var payee = data['account_name']
+    //         var ada_issued = parseFloat(data['ada_issued'])
+    //         var ada_number = data['ada_number']
+    //         var book_name = data['book_name']
+    //         var check_issued = parseFloat(data['check_issued'])
+    //         var check_or_ada_no = data['check_or_ada_no']
+    //         var issuance_date = data['issuance_date']
+    //         var particular = data['particular']
+    //         var reporting_period = data['reporting_period']
+    //         var nca_recieve = parseFloat(data['nca_recieve'])
+    //         const mode_of_payment = data['mode_of_payment']
+    //         if (mode_of_payment.toLowerCase() == 'lbp check') {
+    //             check_count++
+    //         } else if (mode_of_payment.toLowerCase() != '') {
+    //             ada_count++
+    //         }
+    //         balance += nca_recieve - (ada_issued + check_issued)
+    //         // if (jQuery.inArray(dv_number, arr) == -1) {
+    //         //     arr.push(dv_number)
+    //         // } else {
+    //         //     dv_number = ''
+    //         //     dv_date = ''
+    //         //     check_or_ada_no = ''
+    //         //     ada_number = ''
+    //         //     particular = ''
+    //         // }
+    //         // console.log(jQuery.inArray(dv_number, arr))
+    //         row = `<tr class='data_row'>
+    //             <td colspan='' >` + dv_number + `</td>
+    //             <td colspan='' >` + dv_date + `</td>
+    //             <td colspan='' >` + check_or_ada_no + `</td>
+    //             <td colspan='' >` + ada_number + `</td>
+    //             <td colspan='' >` + issuance_date + `</td>
+    //             <td></td>
+    //             <td colspan='' >` + payee + `</td>
+    //             <td></td>
+    //             <td colspan='' >` + particular + `</td>
+    //             <td  class='amount'>` + thousands_separators(nca_recieve) + `</td>
+    //             <td  class='amount'>` + thousands_separators(check_issued) + `</td>
+    //             <td  class='amount'>` + thousands_separators(ada_issued) + `</td>
+    //             <td class='amount' >` + thousands_separators(balance.toFixed(2)) + `</td>
+                  
+    //             </tr>`
+    //         $('#cadadr tbody').append(row)
+    //         total_nca_recieve += nca_recieve
+    //         total_check_issued += check_issued
+    //         total_ada_issued += ada_issued
+
+    //     }
+
+
+    //     $('#check').text(check_count)
+    //     $('#ada').text(ada_count)
+    //     row = `<tr class='data_row'>
+    //             <td  ></td>
+    //             <td  ></td>
+    //             <td  ></td>
+    //             <td  ></td>
+    //             <td  ></td>
+    //             <td></td>
+    //             <td  ></td>
+    //             <td></td>
+    //             <td style='font-weight:bold' >` + 'Total' + `</td>
+    //             <td  class='amount'>` + thousands_separators(total_nca_recieve.toFixed(2)) + `</td>
+    //             <td  class='amount'>` + thousands_separators(total_check_issued) + `</td>
+    //             <td class='amount' >` + thousands_separators(total_ada_issued) + `</td>
+    //             <td  class='amount'>` + thousands_separators(balance.toFixed(2)) + `</td>
+                  
+    //             </tr>`
+    //     $('#cadadr tbody').append(row)
+
+    //     if (adjustment.length >= 1) {
+    //         row = `<tr class='data_row'>
+        
+    //             <td colspan='13' style='font-weight:bold;background-color:#cccccc'>` + 'Adjustment' + `</td>
+  
+                  
+    //             </tr>`
+    //         $('#cadadr tbody').append(row)
+
+    //     }
+    //     for (var adjustment_loop = 0; adjustment_loop < adjustment.length; adjustment_loop++) {
+
+    //         var adjust_amount = parseFloat(adjustment[adjustment_loop]['amount'])
+    //         var adjust_particular = adjustment[adjustment_loop]['particular']
+
+    //         var b_balance = balance
+    //         balance = parseFloat(balance.toFixed(2)) - parseFloat(adjust_amount)
+    //         console.log(balance, adjust_amount)
+    //         row = `<tr class='data_row'>
+    //             <td colspan='' ></td>
+    //             <td colspan='' ></td>
+    //             <td colspan='' ></td>
+    //             <td colspan='' ></td>
+    //             <td colspan='' ></td>
+    //             <td></td>
+    //             <td colspan='' ></td>
+    //             <td></td>
+    //             <td colspan='' >` + adjust_particular + `</td>
+    //             <td  class='amount'>` + thousands_separators(b_balance.toFixed(2)) + `</td>
+    //             <td  class='amount'></td>
+    //             <td class='amount' >` + thousands_separators(adjust_amount) + `</td>
+    //             <td  class='amount'>` + thousands_separators(balance.toFixed(2)) + `</td>
+                  
+    //             </tr>`
+    //         $('#cadadr tbody').append(row)
+    //     }
+
+
+
+    // }
+
+    function displayData(data) {
+        console.log(data.begin_balance)
         $("#cadadr tbody").html('');
-        var arr = []
-        var balance = parseFloat(begin_balance)
-        let check_count = 0
-        let ada_count = 0
-        row = `<tr class='data_row'>
+
+        $('#cadadr tbody').append(`<tr class='data_row'>
                 <td colspan='' ></td>
                 <td colspan='' ></td>
                 <td colspan='' ></td>
@@ -386,138 +527,16 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 <td  class='amount'></td>
                 <td  class='amount'></td>
                 <td class='amount' ></td>
-                <td  class='amount'>` + thousands_separators(balance.toFixed(2)) + `</td>
-                </tr>`
-        var total_nca_recieve = 0
-        var total_check_issued = 0
-        var total_ada_issued = 0
-        $('#cadadr tbody').append(row)
-        for (var i = 0; i < res.length; i++) {
-            var data = res[i]
-            var dv_number = data['dv_number']
-            var dv_date = data['dv_date']
-            var payee = data['account_name']
-            var ada_issued = parseFloat(data['ada_issued'])
-            var ada_number = data['ada_number']
-            var book_name = data['book_name']
-            var check_issued = parseFloat(data['check_issued'])
-            var check_or_ada_no = data['check_or_ada_no']
-            var issuance_date = data['issuance_date']
-            var particular = data['particular']
-            var reporting_period = data['reporting_period']
-            var nca_recieve = parseFloat(data['nca_recieve'])
-            const mode_of_payment = data['mode_of_payment']
-            if (mode_of_payment.toLowerCase() == 'lbp check') {
-                check_count++
-            } else if (mode_of_payment.toLowerCase() != '') {
-                ada_count++
-            }
-            balance += nca_recieve - (ada_issued + check_issued)
-            // if (jQuery.inArray(dv_number, arr) == -1) {
-            //     arr.push(dv_number)
-            // } else {
-            //     dv_number = ''
-            //     dv_date = ''
-            //     check_or_ada_no = ''
-            //     ada_number = ''
-            //     particular = ''
-            // }
-            // console.log(jQuery.inArray(dv_number, arr))
-            row = `<tr class='data_row'>
-                <td colspan='' >` + dv_number + `</td>
-                <td colspan='' >` + dv_date + `</td>
-                <td colspan='' >` + check_or_ada_no + `</td>
-                <td colspan='' >` + ada_number + `</td>
-                <td colspan='' >` + issuance_date + `</td>
-                <td></td>
-                <td colspan='' >` + payee + `</td>
-                <td></td>
-                <td colspan='' >` + particular + `</td>
-                <td  class='amount'>` + thousands_separators(nca_recieve) + `</td>
-                <td  class='amount'>` + thousands_separators(check_issued) + `</td>
-                <td  class='amount'>` + thousands_separators(ada_issued) + `</td>
-                <td class='amount' >` + thousands_separators(balance.toFixed(2)) + `</td>
-                  
-                </tr>`
-            $('#cadadr tbody').append(row)
-            total_nca_recieve += nca_recieve
-            total_check_issued += check_issued
-            total_ada_issued += ada_issued
-
-        }
-
-
-        $('#check').text(check_count)
-        $('#ada').text(ada_count)
-        row = `<tr class='data_row'>
-                <td  ></td>
-                <td  ></td>
-                <td  ></td>
-                <td  ></td>
-                <td  ></td>
-                <td></td>
-                <td  ></td>
-                <td></td>
-                <td style='font-weight:bold' >` + 'Total' + `</td>
-                <td  class='amount'>` + thousands_separators(total_nca_recieve.toFixed(2)) + `</td>
-                <td  class='amount'>` + thousands_separators(total_check_issued) + `</td>
-                <td class='amount' >` + thousands_separators(total_ada_issued) + `</td>
-                <td  class='amount'>` + thousands_separators(balance.toFixed(2)) + `</td>
-                  
-                </tr>`
-        $('#cadadr tbody').append(row)
-
-        if (adjustment.length >= 1) {
-            row = `<tr class='data_row'>
-        
-                <td colspan='13' style='font-weight:bold;background-color:#cccccc'>` + 'Adjustment' + `</td>
-  
-                  
-                </tr>`
-            $('#cadadr tbody').append(row)
-
-        }
-        for (var adjustment_loop = 0; adjustment_loop < adjustment.length; adjustment_loop++) {
-
-            var adjust_amount = parseFloat(adjustment[adjustment_loop]['amount'])
-            var adjust_particular = adjustment[adjustment_loop]['particular']
-
-            var b_balance = balance
-            balance = parseFloat(balance.toFixed(2)) - parseFloat(adjust_amount)
-            console.log(balance, adjust_amount)
-            row = `<tr class='data_row'>
-                <td colspan='' ></td>
-                <td colspan='' ></td>
-                <td colspan='' ></td>
-                <td colspan='' ></td>
-                <td colspan='' ></td>
-                <td></td>
-                <td colspan='' ></td>
-                <td></td>
-                <td colspan='' >` + adjust_particular + `</td>
-                <td  class='amount'>` + thousands_separators(b_balance.toFixed(2)) + `</td>
-                <td  class='amount'></td>
-                <td class='amount' >` + thousands_separators(adjust_amount) + `</td>
-                <td  class='amount'>` + thousands_separators(balance.toFixed(2)) + `</td>
-                  
-                </tr>`
-            $('#cadadr tbody').append(row)
-        }
-
-
-
-    }
-
-    function q(data) {
-        $("#cadadr tbody").html('');
+                <td  class='amount'>` + thousands_separators(data.begin_balance) + `</td>
+                </tr>`)
         let ttlAda = 0;
         let ttlCheck = 0
         let ttlNca = 0
         let nca_bal = parseFloat(data.begin_balance)
         $.each(data.results, function(key, val) {
-            let ada = val.is_cancelled == 1 ? 0 : parseFloat(val.ada_issued);
-            let check = val.is_cancelled == 1 ? 0 : parseFloat(val.check_issued);
-            let nca = val.is_cancelled == 1 ? 0 : parseFloat(val.nca_receive);
+            let ada = val.is_check == 0 ? parseFloat(val.amtDisbursed) : 0;
+            let check = val.is_check == 1 ? parseFloat(val.amtDisbursed) : 0;
+            let nca = parseFloat(val.nca_receive);
 
             nca_bal += nca;
             nca_bal -= check;
@@ -542,7 +561,6 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 <td class='amt'>${thousands_separators(check)}</td>
                 <td class='amt'>${thousands_separators(ada)}</td>
                 <td class='amt'>${thousands_separators(nca_bal)}</td>
-                <td>${val.is_cancelled}</td>
             </tr>`
             $('#cadadr tbody').append(row)
         })
@@ -557,6 +575,10 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
         $('#cadadr tbody').append(ttlRow)
         // DIsplay Cancelled Cheks
         $.each(data.cancelled_checks, function(key, val) {
+            let ada = val.is_check == 0 ? parseFloat(val.amtDisbursed) : 0;
+            let check = val.is_check == 1 ? parseFloat(val.amtDisbursed) : 0;
+            let nca = parseFloat(val.nca_receive);
+
             let cnldRow = `<tr class='data_row'>
                 <td colspan='' >${val.dv_number}</td>
                 <td colspan='' >${val.check_date}</td>
@@ -568,9 +590,9 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 <td colspan='' >${val.payee}</td>
                 <td></td>
                 <td colspan='' >${val.particular}</td>
-                <td  class='amount'>${ thousands_separators(val.nca_receive) }</td>
-                <td  class='amount'>${ thousands_separators(val.check_issued) }</td>
-                <td  class='amount'>${ thousands_separators(val.ada_issued) }</td>
+                <td  class='amount'>${ thousands_separators(nca) }</td>
+                <td  class='amount'>${ thousands_separators(check) }</td>
+                <td  class='amount'>${ thousands_separators(ada) }</td>
      
                 </tr>`
             $('#cancelled_checks_table tbody').append(cnldRow)

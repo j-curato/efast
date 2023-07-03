@@ -2401,8 +2401,12 @@ class ReportController extends \yii\web\Controller
                 ->bindValue(':book_id', $book_id)
                 ->queryAll();
             $begin_balance = 0;
-            // if ($from_reporting_period !== '2023-01') {
-            // }
+            if (strtotime($from_reporting_period) > strtotime('2023-01')) {
+                $begin_balance = Yii::$app->db->createCommand("CALL prc_CadadrBgnBal(:reporting_period,:book_id)")
+                    ->bindValue(':book_id', $book_id)
+                    ->bindValue(':reporting_period', $from_reporting_period)
+                    ->queryScalar();
+            }
             //     $query = Yii::$app->db->createCommand("SELECT * FROM cadadr
             //         WHERE 
             //         reporting_period >= :from_reporting_period
@@ -2537,9 +2541,9 @@ class ReportController extends \yii\web\Controller
             $cancelled_checks = ArrayHelper::index($qry, null, ['is_cancelled']);
             return json_encode([
                 'results' => $qry,
-                'begin_balance' => $begin_balance,
                 'adjustments' => $adjustments,
-                'cancelled_checks' => $cancelled_checks[1] ?? []
+                'cancelled_checks' => $cancelled_checks[1] ?? [],
+                'begin_balance' => $begin_balance,
             ]);
         }
         return $this->render('cadadr');
