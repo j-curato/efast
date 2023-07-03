@@ -422,6 +422,15 @@ class DvAucsController extends Controller
             $model->dv_number =  $this->getDvNumber($model->reporting_period, $model->book_id);
             try {
                 $t_type = strtolower(DvTransactionType::findOne($model->fk_dv_transaction_type_id)->name);
+                if ($t_type == 'payroll') {
+                    $model->fk_remittance_id = null;
+                    Yii::$app->db->createCommand("UPDATE dv_accounting_entries 
+                    SET dv_aucs_id = :model_id
+                    WHERE payroll_id = :payroll_id")
+                        ->bindValue(':model_id', $model->id)
+                        ->bindValue(':payroll_id', $model->payroll_id)
+                        ->query();
+                }
                 $model->transaction_type = $t_type;
                 if (count($items) < 1) {
                     throw new ErrorException('DV items Must Be More Than or Equal to 1');
@@ -467,7 +476,19 @@ class DvAucsController extends Controller
                 $model->transaction_type = ucwords($t_type);
                 if ($t_type == 'payroll') {
                     $model->fk_remittance_id = null;
+                    Yii::$app->db->createCommand("UPDATE dv_accounting_entries 
+                    SET dv_aucs_id = :model_id
+                    WHERE payroll_id = :payroll_id")
+                        ->bindValue(':model_id', $model->id)
+                        ->bindValue(':payroll_id', $model->payroll_id)
+                        ->query();
                 } else if ($t_type == 'remittance') {
+                    Yii::$app->db->createCommand("UPDATE dv_accounting_entries 
+                    SET dv_aucs_id = NULL
+                    WHERE payroll_id = :payroll_id")
+                        ->bindValue(':model_id', $model->id)
+                        ->bindValue(':payroll_id', $model->payroll_id)
+                        ->query();
                     $model->payroll_id = null;
                 } else {
                     $model->fk_remittance_id = null;
@@ -877,6 +898,19 @@ class DvAucsController extends Controller
          WHERE dv_accounting_entries.dv_aucs_id = :id")
             ->bindValue(':id', $model->id)
             ->queryAll();
+        // if (!empty($model->payroll_id)) {
+        //     $accounting_entries = Yii::$app->db->createCommand("SELECT CONCAT(dv_accounting_entries.object_code,'-',accounting_codes.account_title) as account_title ,
+        //     dv_accounting_entries.object_code,
+        //     dv_accounting_entries.debit,
+        //     dv_accounting_entries.credit,
+        //     dv_accounting_entries.id 
+        //     FROM dv_accounting_entries
+        //     JOIN dv_aucs ON dv_accounting_entries.dv_aucs_id = dv_aucs.id
+        //     LEFT JOIN accounting_codes ON dv_accounting_entries.object_code = accounting_codes.object_code
+        //      WHERE dv_aucs.payroll_id = :id")
+        //         ->bindValue(':id', $model->payroll_id)
+        //         ->queryAll();
+        // }
         $dv_items = Yii::$app->db->createCommand("SELECT 
             process_ors.serial_number,
             `transaction`.particular,
