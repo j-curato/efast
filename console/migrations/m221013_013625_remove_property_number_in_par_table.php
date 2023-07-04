@@ -12,7 +12,7 @@ class m221013_013625_remove_property_number_in_par_table extends Migration
      */
     public function safeUp()
     {
-        $this->dropColumn('par', 'property_number');
+        // $this->dropColumn('par', 'property_number');
     }
 
     /**
@@ -20,7 +20,7 @@ class m221013_013625_remove_property_number_in_par_table extends Migration
      */
     public function safeDown()
     {
-        $this->addColumn('par', 'property_number', $this->string());
+        // $this->addColumn('par', 'property_number', $this->string());
     }
 
     /*

@@ -3,21 +3,21 @@
 use yii\db\Migration;
 
 /**
- * Handles the creation of table `{{%cash_received}}`.
+ * Handles the creation of table `{{%cash_recieved}}`.
  * Has foreign keys to the tables:
  *
  * - `{{%document_recieve}}`
  * - `{{%books}}`
  * - `{{%mfo_pap_code}}`
  */
-class m210412_013034_create_cash_received_table extends Migration
+class m210412_013034_create_cash_recieved_table extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-        $this->createTable('{{%cash_received}}', [
+        $this->createTable('{{%cash_recieved}}', [
             'id' => $this->primaryKey(),
             'document_recieved_id' => $this->integer(),
             'book_id' => $this->integer(),
@@ -35,15 +35,15 @@ class m210412_013034_create_cash_received_table extends Migration
 
         // creates index for column `document_recieved_id`
         $this->createIndex(
-            '{{%idx-cash_received-document_recieved_id}}',
-            '{{%cash_received}}',
+            '{{%idx-cash_recieved-document_recieved_id}}',
+            '{{%cash_recieved}}',
             'document_recieved_id'
         );
 
         // add foreign key for table `{{%document_recieve}}`
         $this->addForeignKey(
-            '{{%fk-cash_received-document_recieved_id}}',
-            '{{%cash_received}}',
+            '{{%fk-cash_recieved-document_recieved_id}}',
+            '{{%cash_recieved}}',
             'document_recieved_id',
             '{{%document_recieve}}',
             'id',
@@ -52,15 +52,15 @@ class m210412_013034_create_cash_received_table extends Migration
 
         // creates index for column `book_id`
         $this->createIndex(
-            '{{%idx-cash_received-book_id}}',
-            '{{%cash_received}}',
+            '{{%idx-cash_recieved-book_id}}',
+            '{{%cash_recieved}}',
             'book_id'
         );
 
         // add foreign key for table `{{%books}}`
         $this->addForeignKey(
-            '{{%fk-cash_received-book_id}}',
-            '{{%cash_received}}',
+            '{{%fk-cash_recieved-book_id}}',
+            '{{%cash_recieved}}',
             'book_id',
             '{{%books}}',
             'id',
@@ -69,15 +69,15 @@ class m210412_013034_create_cash_received_table extends Migration
 
         // creates index for column `mfo_pap_code_id`
         $this->createIndex(
-            '{{%idx-cash_received-mfo_pap_code_id}}',
-            '{{%cash_received}}',
+            '{{%idx-cash_recieved-mfo_pap_code_id}}',
+            '{{%cash_recieved}}',
             'mfo_pap_code_id'
         );
 
         // add foreign key for table `{{%mfo_pap_code}}`
         $this->addForeignKey(
-            '{{%fk-cash_received-mfo_pap_code_id}}',
-            '{{%cash_received}}',
+            '{{%fk-cash_recieved-mfo_pap_code_id}}',
+            '{{%cash_recieved}}',
             'mfo_pap_code_id',
             '{{%mfo_pap_code}}',
             'id',
@@ -92,40 +92,40 @@ class m210412_013034_create_cash_received_table extends Migration
     {
         // drops foreign key for table `{{%document_recieve}}`
         $this->dropForeignKey(
-            '{{%fk-cash_received-document_recieved_id}}',
-            '{{%cash_received}}'
+            '{{%fk-cash_recieved-document_recieved_id}}',
+            '{{%cash_recieved}}'
         );
 
         // drops index for column `document_recieved_id`
         $this->dropIndex(
-            '{{%idx-cash_received-document_recieved_id}}',
-            '{{%cash_received}}'
+            '{{%idx-cash_recieved-document_recieved_id}}',
+            '{{%cash_recieved}}'
         );
 
         // drops foreign key for table `{{%books}}`
         $this->dropForeignKey(
-            '{{%fk-cash_received-book_id}}',
-            '{{%cash_received}}'
+            '{{%fk-cash_recieved-book_id}}',
+            '{{%cash_recieved}}'
         );
 
         // drops index for column `book_id`
         $this->dropIndex(
-            '{{%idx-cash_received-book_id}}',
-            '{{%cash_received}}'
+            '{{%idx-cash_recieved-book_id}}',
+            '{{%cash_recieved}}'
         );
 
         // drops foreign key for table `{{%mfo_pap_code}}`
         $this->dropForeignKey(
-            '{{%fk-cash_received-mfo_pap_code_id}}',
-            '{{%cash_received}}'
+            '{{%fk-cash_recieved-mfo_pap_code_id}}',
+            '{{%cash_recieved}}'
         );
 
         // drops index for column `mfo_pap_code_id`
         $this->dropIndex(
-            '{{%idx-cash_received-mfo_pap_code_id}}',
-            '{{%cash_received}}'
+            '{{%idx-cash_recieved-mfo_pap_code_id}}',
+            '{{%cash_recieved}}'
         );
 
-        $this->dropTable('{{%cash_received}}');
+        $this->dropTable('{{%cash_recieved}}');
     }
 }

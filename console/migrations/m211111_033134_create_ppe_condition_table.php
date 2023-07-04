@@ -12,10 +12,10 @@ class m211111_033134_create_ppe_condition_table extends Migration
      */
     public function safeUp()
     {
-        $this->createTable('{{%ppe_condition}}', [
-            'id' => $this->primaryKey(),
-            'condition'=>$this->string()
-        ]);
+        // $this->createTable('{{%ppe_condition}}', [
+        //     'id' => $this->primaryKey(),
+        //     'condition'=>$this->string()
+        // ]);
     }
 
     /**
@@ -23,6 +23,6 @@ class m211111_033134_create_ppe_condition_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('{{%ppe_condition}}');
+        // $this->dropTable('{{%ppe_condition}}');
     }
 }

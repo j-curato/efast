@@ -13,14 +13,15 @@ class m230228_031454_add_constraints_in_par_table extends Migration
     public function safeUp()
     {
         YIi::$app->db->createCommand("SET FOREIGN_KEY_CHECKS=0")->query();
-        $this->createIndex('idx-par_number', 'par', 'par_number', true);
-        $this->createIndex('idx-par-fk_recieved_by', 'par', 'fk_recieved_by');
-        $this->createIndex('idx-par-fk_actual_user', 'par', 'fk_actual_user');
-        $this->createIndex('idx-par-fk_property_id', 'par', 'fk_property_id');
-        $this->createIndex('idx-par-fk_issued_by_id', 'par', 'fk_issued_by_id');
+        // $this->addColumn('par', 'fk_property_id', $this->bigInteger());
+        // $this->createIndex('idx-par_number', 'par', 'par_number', true);
+        // $this->createIndex('idx-par-fk_recieved_by', 'par', 'fk_recieved_by');
+        // $this->createIndex('idx-par-fk_actual_user', 'par', 'fk_actual_user');
+        // $this->createIndex('idx-par-fk_property_id', 'par', 'fk_property_id');
+        // $this->createIndex('idx-par-fk_issued_by_id', 'par', 'fk_issued_by_id');
 
-        $this->addForeignKey('fk-par-fk_property_id', 'par', 'fk_property_id', 'property', 'id', 'RESTRICT', 'CASCADE');
-        $this->addForeignKey('fk-par-fk_actual_user', 'par', 'fk_actual_user', 'employee', 'employee_id', 'RESTRICT', 'CASCADE');
+        // $this->addForeignKey('fk-par-fk_property_id', 'par', 'fk_property_id', 'property', 'id', 'RESTRICT', 'CASCADE');
+        // $this->addForeignKey('fk-par-fk_actual_user', 'par', 'fk_actual_user', 'employee', 'employee_id', 'RESTRICT', 'CASCADE');
         // $this->addForeignKey('fk-par-fk_recieved_by', 'par', 'fk_recieved_by', 'employee', 'employee_id', 'RESTRICT', 'CASCADE');
         // $this->addForeignKey('fk-par-fk_issued_by_id', 'par', 'fk_issued_by_id', 'employee', 'employee_id', 'RESTRICT', 'CASCADE');
     }

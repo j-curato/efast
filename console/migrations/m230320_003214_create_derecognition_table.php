@@ -36,14 +36,14 @@ class m230320_003214_create_derecognition_table extends Migration
         );
 
         // // add foreign key for table `{{%iirup}}`
-        $this->addForeignKey(
-            '{{%fk-derecognition-fk_property_id}}',
-            '{{%derecognition}}',
-            'fk_property_id',
-            '{{%property}}',
-            'id',
-            'RESTRICT'
-        );
+        // $this->addForeignKey(
+        //     '{{%fk-derecognition-fk_property_id}}',
+        //     '{{%derecognition}}',
+        //     'fk_property_id',
+        //     '{{%property}}',
+        //     'id',
+        //     'RESTRICT'
+        // );
     }
 
     /**

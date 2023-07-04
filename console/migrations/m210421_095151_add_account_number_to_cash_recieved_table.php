@@ -3,16 +3,16 @@
 use yii\db\Migration;
 
 /**
- * Class m210421_095151_add_account_number_to_cash_received_table
+ * Class m210421_095151_add_account_number_to_cash_recieved_table
  */
-class m210421_095151_add_account_number_to_cash_received_table extends Migration
+class m210421_095151_add_account_number_to_cash_recieved_table extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-        $this->addColumn('cash_received','account_number',$this->string(100));
+        $this->addColumn('cash_recieved','account_number',$this->string(100));
     }
 
     /**
@@ -20,7 +20,7 @@ class m210421_095151_add_account_number_to_cash_received_table extends Migration
      */
     public function safeDown()
     {
-        $this->dropColumn('cash_received','account_number');
+        $this->dropColumn('cash_recieved','account_number');
     }
 
     /*
@@ -32,7 +32,7 @@ class m210421_095151_add_account_number_to_cash_received_table extends Migration
 
     public function down()
     {
-        echo "m210421_095151_add_account_number_to_cash_received_table cannot be reverted.\n";
+        echo "m210421_095151_add_account_number_to_cash_recieved_table cannot be reverted.\n";
 
         return false;
     }

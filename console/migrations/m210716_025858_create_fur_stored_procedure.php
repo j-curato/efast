@@ -89,10 +89,11 @@ class m210716_025858_create_fur_stored_procedure extends Migration
         //                 AND advances_entries.is_deleted !=1
         //                 ORDER BY cash_disbursement.issuance_date ASC
         //                 ;
-            
+
         // END
         // SQL;
         $sqlTrigger = <<<SQL
+                DROP PROCEDURE IF EXISTS fur;
                 CREATE PROCEDURE fur(province VARCHAR(50),r_period VARCHAR(50))
                 BEGIN 
                 SELECT 

@@ -12,40 +12,40 @@ class m230301_013010_alter_attributes_in_ptr_table extends Migration
      */
     public function safeUp()
     {
-        $this->dropPrimaryKey('PRIMARY', 'ptr');
-        $this->addPrimaryKey('pk_id', 'ptr', 'id');
-        $this->alterColumn('ptr', 'ptr_number', $this->string()->unique()->notNull()->after('id'));
+        // $this->dropPrimaryKey('PRIMARY', 'ptr');
+        // $this->addPrimaryKey('pk_id', 'ptr', 'id');
+        // $this->alterColumn('ptr', 'ptr_number', $this->string()->unique()->notNull()->after('id'));
 
-        $this->renameColumn('ptr', 'transfer_type_id', 'fk_transfer_type_id');
-        $this->renameColumn('ptr', 'agency_to_id', 'fk_to_agency_id');
+        // $this->renameColumn('ptr', 'transfer_type_id', 'fk_transfer_type_id');
+        // $this->renameColumn('ptr', 'agency_to_id', 'fk_to_agency_id');
 
-        $this->addColumn('ptr', 'fk_approved_by', $this->bigInteger()->after('ptr_number'));
-        $this->addColumn('ptr', 'fk_received_by', $this->bigInteger()->after('ptr_number'));
-        $this->addColumn('ptr', 'fk_actual_user', $this->bigInteger()->after('ptr_number'));
-        $this->addColumn('ptr', 'fk_issued_by', $this->bigInteger()->after('ptr_number'));
-        $this->addColumn('ptr', 'fk_property_id', $this->bigInteger()->after('ptr_number'));
+        // $this->addColumn('ptr', 'fk_approved_by', $this->bigInteger()->after('ptr_number'));
+        // $this->addColumn('ptr', 'fk_received_by', $this->bigInteger()->after('ptr_number'));
+        // $this->addColumn('ptr', 'fk_actual_user', $this->bigInteger()->after('ptr_number'));
+        // $this->addColumn('ptr', 'fk_issued_by', $this->bigInteger()->after('ptr_number'));
+        // $this->addColumn('ptr', 'fk_property_id', $this->bigInteger()->after('ptr_number'));
 
-        $this->dropColumn('ptr', 'par_number');
-        $this->dropColumn('ptr', 'reason');
-        $this->dropColumn('ptr', 'employee_from');
-        $this->dropColumn('ptr', 'employee_to');
-        $this->dropColumn('ptr', 'fk_par_id');
+        // $this->dropColumn('ptr', 'par_number');
+        // $this->dropColumn('ptr', 'reason');
+        // $this->dropColumn('ptr', 'employee_from');
+        // $this->dropColumn('ptr', 'employee_to');
+        // $this->dropColumn('ptr', 'fk_par_id');
 
-        $this->createIndex('idx-fk_approved_by', 'ptr', 'fk_approved_by');
-        $this->createIndex('idx-fk_received_by', 'ptr', 'fk_received_by');
-        $this->createIndex('idx-fk_actual_user', 'ptr', 'fk_actual_user');
-        $this->createIndex('idx-fk_issued_by', 'ptr', 'fk_issued_by');
-        $this->createIndex('idx-fk_transfer_type_id', 'ptr', 'fk_transfer_type_id');
-        $this->createIndex('idx-fk_to_agency_id', 'ptr', 'fk_to_agency_id');
-        $this->createIndex('idx-fk_property_id', 'ptr', 'fk_property_id');
+        // $this->createIndex('idx-fk_approved_by', 'ptr', 'fk_approved_by');
+        // $this->createIndex('idx-fk_received_by', 'ptr', 'fk_received_by');
+        // $this->createIndex('idx-fk_actual_user', 'ptr', 'fk_actual_user');
+        // $this->createIndex('idx-fk_issued_by', 'ptr', 'fk_issued_by');
+        // $this->createIndex('idx-fk_transfer_type_id', 'ptr', 'fk_transfer_type_id');
+        // $this->createIndex('idx-fk_to_agency_id', 'ptr', 'fk_to_agency_id');
+        // $this->createIndex('idx-fk_property_id', 'ptr', 'fk_property_id');
 
-        $this->addForeignKey('fk-ptr-fk_approved_by', 'ptr', 'fk_approved_by', 'employee', 'employee_id');
-        $this->addForeignKey('fk-ptr-fk_received_by', 'ptr', 'fk_received_by', 'employee', 'employee_id');
-        $this->addForeignKey('fk-ptr-fk_actual_user', 'ptr', 'fk_actual_user', 'employee', 'employee_id');
-        $this->addForeignKey('fk-ptr-fk_issued_by', 'ptr', 'fk_issued_by', 'employee', 'employee_id');
-        $this->addForeignKey('fk-ptr-fk_transfer_type_id', 'ptr', 'fk_transfer_type_id', 'transfer_type', 'id');
-        $this->addForeignKey('fk-ptr-fk_to_agency_id', 'ptr', 'fk_to_agency_id', 'agency', 'id');
-        $this->addForeignKey('fk-ptr-fk_property_id', 'ptr', 'fk_property_id', 'property', 'id');
+        // $this->addForeignKey('fk-ptr-fk_approved_by', 'ptr', 'fk_approved_by', 'employee', 'employee_id');
+        // $this->addForeignKey('fk-ptr-fk_received_by', 'ptr', 'fk_received_by', 'employee', 'employee_id');
+        // $this->addForeignKey('fk-ptr-fk_actual_user', 'ptr', 'fk_actual_user', 'employee', 'employee_id');
+        // $this->addForeignKey('fk-ptr-fk_issued_by', 'ptr', 'fk_issued_by', 'employee', 'employee_id');
+        // $this->addForeignKey('fk-ptr-fk_transfer_type_id', 'ptr', 'fk_transfer_type_id', 'transfer_type', 'id');
+        // $this->addForeignKey('fk-ptr-fk_to_agency_id', 'ptr', 'fk_to_agency_id', 'agency', 'id');
+        // $this->addForeignKey('fk-ptr-fk_property_id', 'ptr', 'fk_property_id', 'property', 'id');
     }
 
     /**
