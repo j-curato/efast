@@ -213,8 +213,8 @@ $this->params['breadcrumbs'][] = $this->title;
                             $q = Yii::$app->db->createCommand("SELECT object_code,account_title FROM accounting_codes WHERE object_code = :object_code")
                                 ->bindValue(':object_code', $val->new_object_code)
                                 ->queryOne();
-                            $uacs = $q['object_code'];
-                            $general_ledger =  $q['account_title'];
+                            $uacs = $q['object_code'] ?? '';
+                            $general_ledger =  $q['account_title'] ?? '';
                         } else if (!empty($val->new_chart_of_account_id)) {
 
                             $uacs = $val->newChartOfAccount->uacs;
