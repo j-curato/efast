@@ -5,12 +5,17 @@ phases:
     runtime-versions:
       php: 7.4
     commands:
-      - composer install 
+      - echo "Installing Composer..."
+      - curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+  pre_build:
+    commands:
+      - echo "Installing dependencies..."
+      - composer install --no-interaction --prefer-dist
 
   build:
     commands:
-      - php yii migrate/up --interactive=0
-      - php vendor/bin/codecept run
+        - echo "Running Yii2 migrations..."
+        - ./yii migrate --interactive=0
 
 artifacts:
   files:
