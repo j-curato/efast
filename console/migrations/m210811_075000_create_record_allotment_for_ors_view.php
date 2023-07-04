@@ -13,6 +13,7 @@ class m210811_075000_create_record_allotment_for_ors_view extends Migration
     public function safeUp()
     {
         $sql =<<<SQL
+        DROP VIEW IF EXISTS record_allotment_for_ors;
         CREATE VIEW record_allotment_for_ors as 
         SELECT
         record_allotment_entries.id,

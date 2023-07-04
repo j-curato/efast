@@ -12,7 +12,9 @@ class m210816_004002_create_account_codes_view extends Migration
      */
     public function safeUp()
     {
-        Yii::$app->db->createCommand("CREATE VIEW  accounting_codes AS 
+        Yii::$app->db->createCommand("
+        DROP VIEW  IF EXISTS accounting_codes ;
+        CREATE VIEW  accounting_codes AS 
                                     SELECT 
 chart_of_accounts.uacs as object_code,
 chart_of_accounts.general_ledger as account_title ,

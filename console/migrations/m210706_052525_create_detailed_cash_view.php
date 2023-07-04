@@ -12,7 +12,8 @@ class m210706_052525_create_detailed_cash_view extends Migration
      */
     public function safeUp()
     {
-        Yii::$app->db->createCommand("CREATE VIEW detailed_cash_view as 
+        Yii::$app->db->createCommand(" DROP VIEW IF EXISTS  detailed_cash_view;
+        CREATE VIEW detailed_cash_view as 
                                 SELECT 
                         cash_disbursement.id as cash_id,
                         cash_disbursement.book_id,

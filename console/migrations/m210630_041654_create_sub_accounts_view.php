@@ -12,7 +12,8 @@ class m210630_041654_create_sub_accounts_view extends Migration
      */
     public function safeUp()
     {
-        Yii::$app->db->createCommand("CREATE VIEW sub_accounts_view AS 
+        Yii::$app->db->createCommand(" DROP VIEW IF EXISTS sub_accounts_view;
+        CREATE VIEW sub_accounts_view AS 
         SELECT Row_number() OVER(ORDER BY object_code DESC) AS 'row_number',q.object_code,q.account_title FROM 
 (SELECT sub_accounts1.object_code,sub_accounts1.`name`as account_title FROM sub_accounts1
 UNION 

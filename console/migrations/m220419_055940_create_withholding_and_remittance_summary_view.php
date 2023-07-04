@@ -14,6 +14,7 @@ class m220419_055940_create_withholding_and_remittance_summary_view extends Migr
     {
         $sql = <<<SQL
          
+            DROP VIEW IF EXISTS withholding_and_remittance_summary; 
             CREATE VIEW withholding_and_remittance_summary as 
             SELECT 
             payroll.payroll_number,

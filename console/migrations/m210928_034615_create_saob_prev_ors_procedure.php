@@ -13,6 +13,7 @@ class m210928_034615_create_saob_prev_ors_procedure extends Migration
     public function safeUp()
     {
         $sql = <<<SQL
+            DROP PROCEDURE IF EXISTS saob_prev_ors;
             CREATE PROCEDURE saob_prev_ors (from_reporting_period VARCHAR(20))
               BEGIN 
                 SELECT

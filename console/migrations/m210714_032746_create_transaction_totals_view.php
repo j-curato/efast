@@ -12,7 +12,9 @@ class m210714_032746_create_transaction_totals_view extends Migration
      */
     public function safeUp()
     {
-        Yii::$app->db->createCommand("CREATE VIEW transaction_totals as 
+        Yii::$app->db->createCommand("
+        DROP VIEW IF EXISTS transaction_totals;
+        CREATE VIEW transaction_totals as 
         SELECT 
         `transaction`.id,
 	    `transaction`.created_at,

@@ -99,7 +99,7 @@ class m210808_072958_create_cibr_procedure extends Migration
 
         // NEW QUERY NI 
         $sql = <<<SQL
-
+            DROP PROCEDURE IF EXISTS cibr_function;
             CREATE PROCEDURE cibr_function (province VARCHAR(20),r_period VARCHAR(20))
             BEGIN 
                     

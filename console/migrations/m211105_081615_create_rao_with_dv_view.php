@@ -13,6 +13,7 @@ class m211105_081615_create_rao_with_dv_view extends Migration
     public function safeUp()
     {
         $sql = <<<SQL
+            DROP VIEW IF EXISTS rao_with_dv ;
             CREATE VIEW rao_with_dv as 
             SELECT
             process_ors.id,

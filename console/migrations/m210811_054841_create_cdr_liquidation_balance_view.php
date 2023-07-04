@@ -13,6 +13,7 @@ class m210811_054841_create_cdr_liquidation_balance_view extends Migration
     public function safeUp()
     {
         $sql = <<<SQL
+        DROP VIEW IF EXISTS cdr_liquidation_balance;
         CREATE VIEW cdr_liquidation_balance AS 
         SELECT
             advances.province,

@@ -13,6 +13,7 @@ class m220202_025530_create_tracking_sheet_index_view extends Migration
     public function safeUp()
     {
         $sql = <<<SQL
+            DROP VIEW IF EXISTS tracking_sheet_index ; 
             CREATE VIEW tracking_sheet_index AS 
                 SELECT 
                 dv_aucs.id,

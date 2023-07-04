@@ -13,6 +13,7 @@ class m210921_095131_create_process_ors_view_new extends Migration
     public function safeUp()
     {
         $sql = <<<SQL
+            DROP VIEW IF EXISTS  process_ors_new_view ;
             CREATE VIEW process_ors_new_view as 
             SELECT
             process_ors.id,

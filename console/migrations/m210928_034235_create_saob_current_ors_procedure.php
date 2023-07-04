@@ -13,6 +13,7 @@ class m210928_034235_create_saob_current_ors_procedure extends Migration
     public function safeUp()
     {
         $sqlTrigger = <<<SQL
+        DROP PROCEDURE IF EXISTS saob_current_ors;
         CREATE PROCEDURE saob_current_ors(from_reporting_period VARCHAR(50),to_reporting_period VARCHAR(50))
         BEGIN 
         SELECT

@@ -12,7 +12,9 @@ class m210714_034001_create_transaction_archive_view extends Migration
      */
     public function safeUp()
     {
-        Yii::$app->db->createCommand('CREATE VIEW transaction_archive as 
+        Yii::$app->db->createCommand('
+        DROP VIEW IF EXISTS transaction_archive;
+        CREATE VIEW transaction_archive as 
         SELECT 
         payee.account_name,
         `transaction`.tracking_number,

@@ -13,6 +13,7 @@ class m210813_032454_create_cibr_liquidation_balances_view extends Migration
     public function safeUp()
     {
         $sql = <<<SQL
+        DROP VIEW IF EXISTS cibr_liquidation_balances;
         CREATE VIEW cibr_liquidation_balances as 
         SELECT
         advances.province,

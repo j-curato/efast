@@ -14,6 +14,7 @@ class m210816_004003_create_conso_dv_all_procedure extends Migration
     {
 
             $createTriggerSql = <<< SQL
+                DROP PROCEDURE IF EXISTS conso_dv_all;
                 CREATE PROCEDURE conso_dv_all (r_year VARCHAR(20)) 
                 BEGIN
 

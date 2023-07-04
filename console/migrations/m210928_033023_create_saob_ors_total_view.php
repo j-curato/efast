@@ -13,6 +13,7 @@ class m210928_033023_create_saob_ors_total_view extends Migration
     public function safeUp()
     {
         $sql = <<<SQL
+        DROP VIEW  IF EXISTS saob_ors_total ; 
         CREATE VIEW saob_ors_total as 
             SELECT
             record_allotments_view.mfo_code ,

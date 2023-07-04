@@ -14,6 +14,7 @@ class m210823_070919_create_cancelled_check_view extends Migration
     public function safeUp()
     {
         $sql = <<< SQL
+        DROP VIEW IF EXISTS cancelled_checks_view;
             CREATE VIEW cancelled_checks_view as 
             SELECT
             liquidation.id,

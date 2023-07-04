@@ -12,7 +12,9 @@ class m210726_024451_create_po_transmittals_pending_view extends Migration
      */
     public function safeUp()
     {
-        Yii::$app->db->createCommand("CREATE VIEW po_transmittals_pending as 
+        Yii::$app->db->createCommand("
+        DROP VIEW IF EXISTS po_transmittals_pending;
+        CREATE VIEW po_transmittals_pending as 
         SELECT 
         po_transmittal.*,
         totals.total_withdrawals

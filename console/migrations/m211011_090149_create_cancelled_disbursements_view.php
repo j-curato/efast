@@ -13,6 +13,7 @@ class m211011_090149_create_cancelled_disbursements_view extends Migration
     public function safeUp()
     {
         $sql = <<< SQL
+        DROP VIEW IF EXISTS cancelled_disbursements ;
         CREATE VIEW cancelled_disbursements as 
             SELECT
             cash_disbursement.id,

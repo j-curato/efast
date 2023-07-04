@@ -13,6 +13,7 @@ class m210716_035548_create_conso_fur_store_procedure extends Migration
     public function safeUp()
     {
         $sqlTrigger =<<<SQL
+        DROP PROCEDURE IF EXISTS conso_fur;
         CREATE PROCEDURE conso_fur (province VARCHAR(50),r_period VARCHAR(50),prev_r_period VARCHAR(50))
         BEGIN
 

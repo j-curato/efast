@@ -12,7 +12,9 @@ class m210713_025940_create_advances_cash_disbursement_view extends Migration
      */
     public function safeUp()
     {
-        Yii::$app->db->createCommand("CREATE VIEW advances_cash_disbursement as
+        Yii::$app->db->createCommand("
+        DROP VIEW IF EXISTS advances_cash_disbursement;
+        CREATE VIEW advances_cash_disbursement as
        SELECT 
         cash_disbursement.id,
         books.`name` as book_name,

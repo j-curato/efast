@@ -13,6 +13,7 @@ class m210922_074618_create_process_burs_view extends Migration
     public function safeUp()
     {
         $sql = <<< SQL
+        DROP VIEW IF EXISTS process_burs_view ;
         CREATE VIEW process_burs_view as 
         SELECT
             process_ors.id,

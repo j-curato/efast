@@ -12,7 +12,8 @@ class m210707_060724_create_for_transmittal_view extends Migration
      */
     public function safeUp()
     {
-    Yii::$app->db->createCommand("CREATE VIEW for_transmittal as 
+    Yii::$app->db->createCommand("DROP VIEW IF EXISTS for_transmittal;
+    CREATE VIEW for_transmittal as 
             SELECT 
             cash_disbursement.id,
             cash_disbursement.check_or_ada_no,
