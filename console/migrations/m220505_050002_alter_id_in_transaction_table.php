@@ -26,15 +26,15 @@ class m220505_050002_alter_id_in_transaction_table extends Migration
         //     '{{%process_burs}}'
         // );
 
-        $this->dropIndex(
-            '{{%idx-process_ors-transaction_id}}',
-            '{{%process_ors}}'
-        );
+        // $this->dropIndex(
+        //     '{{%idx-process_ors-transaction_id}}',
+        //     '{{%process_ors}}'
+        // );
 
 
-        $this->alterColumn('transaction', 'id', $this->bigInteger());
-        $this->alterColumn('process_ors', 'transaction_id', $this->bigInteger());
-        $this->alterColumn('process_burs', 'transaction_id', $this->bigInteger());
+        // $this->alterColumn('transaction', 'id', $this->bigInteger());
+        // $this->alterColumn('process_ors', 'transaction_id', $this->bigInteger());
+        // $this->alterColumn('process_burs', 'transaction_id', $this->bigInteger());
     }
 
     /**
