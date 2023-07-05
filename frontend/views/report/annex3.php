@@ -186,7 +186,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
         'adn': 'Rosie R. Vellesco',
         'ads': 'Maria Prescylin C. Lademora',
         'sdn': 'Glenn Michael M. Goloran',
-        'sds': 'Fritzie N. Usares',
+        'sds': 'Sarah P. Estrada',
         'pdi': 'Edmar M. Granada',
         'ro': 'RO',
     }

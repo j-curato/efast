@@ -145,7 +145,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
         'adn': 'Rosie R. Vellesco',
         'ads': 'Maria Prescylin C. Lademora',
         'sdn': 'Ferdinand R. Inres',
-        'sds': 'Fritzie U. Bacor',
+        'sds': 'Sarah P. Estrada',
         'pdi': 'Venus A. Custodio',
         'ro': 'RO',
     }
@@ -172,7 +172,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
     function displayData(data) {
         $('#annex_table tbody').html('')
         var advance_type_keys = Object.keys(data)
-        var grand_total_unliquidated=0
+        var grand_total_unliquidated = 0
         for (var advance_type_loop = 0; advance_type_loop < advance_type_keys.length; advance_type_loop++) {
             var advance_name = advance_type_keys[advance_type_loop]
             // var row = `<tr class='data_row'>
@@ -223,17 +223,14 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
 
                     if (Difference_In_Days > 0) {
                         age_of_advances = Difference_In_Days
-                        if (Difference_In_Days <30){
+                        if (Difference_In_Days < 30) {
                             age_of_advances = 'Less Than 30 Days'
-                        }
-                        else if (Difference_In_Days >30 && Difference_In_Days <=60){
-                            age_of_advances='31 to 60 Days'
-                        }
-                        else if (Difference_In_Days >60 && Difference_In_Days <=365){
+                        } else if (Difference_In_Days > 30 && Difference_In_Days <= 60) {
+                            age_of_advances = '31 to 60 Days'
+                        } else if (Difference_In_Days > 60 && Difference_In_Days <= 365) {
                             age_of_advances = '61 to 365 Days'
-                        }
-                        else if (Difference_In_Days> 365){
-                            age_of_advances ='Over 1 Year'
+                        } else if (Difference_In_Days > 365) {
+                            age_of_advances = 'Over 1 Year'
                         }
                     }
                     var row = `<tr class='data_row'>
@@ -272,12 +269,12 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 //     <td  ></td>
                 //     <td  ></td>
                 //     <td  ></td>
-         
+
                 //     </tr>`
                 // $('#annex_table tbody').append(row)
             }
 
-   
+
         }
         var row = `<tr class='data_row'>
                     <td  style='font-weight:bold;text-align:center;' colspan='3'>Total ` + advance_name + `</td>
@@ -292,7 +289,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                     <td  ></td>
              
                     </tr>`
-            $('#annex_table tbody').append(row)
+        $('#annex_table tbody').append(row)
 
 
     }
