@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use kartik\grid\GridView;
 use yii\helpers\Html;
 
@@ -41,7 +42,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
             [
                 'label' => 'Actions',
-
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->id, 'none');
+                }
             ],
         ],
     ]); ?>

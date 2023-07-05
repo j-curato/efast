@@ -1,5 +1,6 @@
 <?php
 
+use kartik\select2\Select2Asset;
 use yii\helpers\Html;
 use yii\web\JqueryAsset;
 
@@ -209,8 +210,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         $status = 'Remove';
                         $color = 'btn-danger';
-                        if ($itm['liquidation_status'] === 'at_po') {
-                            $status = 'ibalik';
+                        if ($itm['is_returned'] == 1) {
+                            $status = 'Ibalik';
                             $color = 'btn-success';
                         }
                         $qwe = Html::a($status, ['return', 'id' => $itm['item_id']], [
@@ -220,9 +221,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 'method' => 'post',
                             ],
                         ]);
-                        echo "  <td class='status'>" .
-                            $qwe
-                            . " </td>";
+                        echo "  <td class='status'>" . $qwe . " </td>";
                     }
                     if ($itm['is_returned'] == 1) {
                         echo "<td class='status'> Returned</td>";
@@ -505,6 +504,7 @@ $this->params['breadcrumbs'][] = $this->title;
 </style>
 <?php
 $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [JqueryAsset::class]]);
+Select2Asset::register($this);
 ?>
 <!-- 
 <link href="/afms/frontend/web/js/select2.min.js" />
@@ -573,7 +573,7 @@ $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [
             allowClear: true,
             closeOnSelect: true
         })
-        $.getJSON('/afms/frontend/web/index.php?r=po-assignatory/get-all-assignatory')
+        $.getJSON(window.location.pathname + '?r=po-assignatory/get-all-assignatory')
 
             .then(function(data) {
 

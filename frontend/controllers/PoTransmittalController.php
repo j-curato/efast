@@ -186,6 +186,7 @@ class PoTransmittalController extends Controller
             try {
                 $txn = YIi::$app->db->beginTransaction();
                 $items = Yii::$app->request->post('items') ?? [];
+                $uniqueItems = array_map("unserialize", array_unique(array_map("serialize", $items)));
                 $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
                 $model->transmittal_number  = $this->getTransmittalNumber($model->date, $model->fk_office_id);
                 if (!$model->validate()) {
@@ -194,7 +195,7 @@ class PoTransmittalController extends Controller
                 if (!$model->save(false)) {
                     throw new ErrorException('Model Save Failed');
                 }
-                $insItms = $this->insItems($model->id, $items);
+                $insItms = $this->insItems($model->id, $uniqueItems);
                 if ($insItms !== true) {
                     throw new ErrorException($insItms);
                 }
@@ -225,6 +226,7 @@ class PoTransmittalController extends Controller
             try {
                 $txn = Yii::$app->db->beginTransaction();
                 $items = Yii::$app->request->post('items') ?? [];
+                $uniqueItems = array_map("unserialize", array_unique(array_map("serialize", $items)));
                 // return var_dump($items);
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
@@ -232,7 +234,7 @@ class PoTransmittalController extends Controller
                 if (!$model->save(false)) {
                     throw new ErrorException('Model Save Failed');
                 }
-                $insItms = $this->insItems($model->id, $items, true);
+                $insItms = $this->insItems($model->id, $uniqueItems, true);
                 if ($insItms !== true) {
                     throw new ErrorException($insItms);
                 }
@@ -405,27 +407,36 @@ class PoTransmittalController extends Controller
     }
     public function actionReturn($id)
     {
-        $model = PoTransmittalEntries::findOne($id);
-        $q  =  $model->status === 'returned' ? '' : 'returned';
-        $model->status = $q;
-        $po_tr = PoTransmittal::findOne($model->po_transmittal_number);
-        // $po_tr->edited = true;
-        $liquidation = Liquidation::findOne($model->liquidation->id);
-        $status = $liquidation->status == 'pending_at_ro' ? 'at_po' : 'pending_at_ro';
-        $liquidation->status = $status;
 
-        if ($liquidation->save(false)) {
-            // return json_encode($liquidation->status);
+        if (Yii::$app->request->post()) {
+            try {
+                $model = PoTransmittalEntries::findOne($id);
+                $q  =  $model->status === 'returned' ? '' : 'returned';
+                $model->status = $q;
 
-        } else {
-            return json_encode('cant save');
-        }
-        if ($model->save(false)) {
-        }
-        if ($po_tr->save(false)) {
-        }
+                $model->is_returned = $model->is_returned === 0 ? 1 : 0;
+                // $liquidation = Liquidation::findOne($model->liquidation->id);
+                // $status = $liquidation->status == 'pending_at_ro' ? 'at_po' : 'pending_at_ro';
+                // $liquidation->status = $status;
 
-        return $this->redirect(['view', 'id' => $model->poTransmittal->transmittal_number]);
+                // if ($liquidation->save(false)) {
+                // } else {
+                //     return json_encode('cant save');
+                // }
+
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save Failed');
+                }
+
+
+                return $this->redirect(['view', 'id' => $model->fk_po_transmittal_id]);
+            } catch (ErrorException $e) {
+                return $e->getMessage();
+            }
+        }
     }
     public function actionPendingAtRo()
     {
