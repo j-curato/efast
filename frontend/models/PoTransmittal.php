@@ -29,7 +29,7 @@ class PoTransmittal extends \yii\db\ActiveRecord
         return [
             [['transmittal_number', 'date', 'fk_office_id'], 'required'],
             [['date', 'created_at'], 'safe'],
-            [['fk_office_id'], 'integer'],
+            [['fk_office_id', 'is_accepted'], 'integer'],
             [['transmittal_number', 'status'], 'string', 'max' => 255],
             [['transmittal_number'], 'unique'],
             [[
@@ -52,6 +52,7 @@ class PoTransmittal extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
             'status' => 'Status',
             'fk_office_id' => 'Office',
+            'is_accepted' => 'is Accepted',
         ];
     }
     public function getPoTransmittalEntries()

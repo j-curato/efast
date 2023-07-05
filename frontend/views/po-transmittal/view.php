@@ -33,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php
                 $color = '';
                 $action = '';
-                if (strtolower($model->status) == 'pending_at_ro') {
+                if ($model->is_accepted === 0) {
                     $color = 'btn-success';
                     $action = 'Accept';
                 } else {
@@ -41,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $action = 'Pending';
                 }
                 if (Yii::$app->user->identity->province === 'ro_admin') {
-                    echo Html::a($action, ['accept', 'id' => $model->transmittal_number], [
+                    echo Html::a($action, ['accept', 'id' => $model->id], [
                         'class' => "btn $color",
                         'data' => [
                             'confirm' => "Are you sure you want to $action this item?",

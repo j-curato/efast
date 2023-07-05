@@ -38,7 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'transmittal_number',
             'date',
             'created_at',
-            'status',
+            'is_accepted',
 
             [
                 'label' => 'Actions',

@@ -400,9 +400,9 @@ class PoTransmittalController extends Controller
     public function actionAccept($id)
     {
         $model = $this->findModel($id);
-        $model->status = $model->status === 'pending_at_ro' ? 'at_ro' : 'pending_at_ro';
+        $model->is_accepted = $model->is_accepted === 1 ? 0 : 1;
         if ($model->save(false)) {
-            return $this->redirect(['view', 'id' => $model->transmittal_number]);
+            return $this->redirect(['view', 'id' => $model->id]);
         }
     }
     public function actionReturn($id)
