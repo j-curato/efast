@@ -30,14 +30,11 @@ class PoTransmittalEntries extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['liquidation_id'], 'integer'],
+            [['liquidation_id', 'is_deleted', 'is_returned'], 'integer'],
             [['po_transmittal_number'], 'string', 'max' => 255],
             [[
-                'id',
                 'po_transmittal_number',
-                'liquidation_id',
                 'status',
-
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
             [['liquidation_id'], 'exist', 'skipOnError' => true, 'targetClass' => Liquidation::class, 'targetAttribute' => ['liquidation_id' => 'id']],
             [['po_transmittal_number'], 'exist', 'skipOnError' => true, 'targetClass' => PoTransmittal::class, 'targetAttribute' => ['po_transmittal_number' => 'transmittal_number']],
@@ -53,6 +50,8 @@ class PoTransmittalEntries extends \yii\db\ActiveRecord
             'id' => 'ID',
             'po_transmittal_number' => 'Po Transmittal Number',
             'liquidation_id' => 'Liquidation ID',
+            'is_deleted' => 'is Deleted',
+            'is_returned' => 'is Returned',
         ];
     }
 

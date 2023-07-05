@@ -1,8 +1,5 @@
 <?php
 
-use app\models\Assignatory;
-use kartik\select2\Select2;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\JqueryAsset;
 
@@ -21,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="container">
         <div class="row as">
             <p>
-                <?= Html::a('Update', ['update', 'id' => $model->transmittal_number], ['class' => 'btn btn-primary']) ?>
+                <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 
                 <?php
                 echo Html::a(empty($model->file_link) ? 'Add File Link' : 'Update File Link', ['add-file-link', 'id' => $model->transmittal_number], ['class' => 'btn btn-primary modalButtonUpdate']);
@@ -194,40 +191,29 @@ $this->params['breadcrumbs'][] = $this->title;
                 ")
                     ->bindValue(':id', $model->transmittal_number)
                     ->queryAll();
-                // // ob_clean();
-                // // echo "<pre>";
-                // var_dump($query);
-                // echo "</pre>";
-                // return ob_get_clean();
-                foreach ($query as $i => $val) {
-                    // $query = (new \yii\db\Query())
-                    //     ->select(["SUM(liquidation_entries.withdrawals) as total_disbursed"])
-                    //     ->from('liquidation')
-                    //     ->join("LEFT JOIN", "liquidation_entries", "liquidation.id = liquidation_entries.liquidation_id")
-                    //     ->where("liquidation.id =:id", ['id' => $val->liquidation_id])
-                    //     ->one();
+
+                foreach ($items as $i => $itm) {
+
                     $qwe = '';
                     $display = 'display:none;';
-                    // $payee = !empty($val->liquidation->payee) ? $val->liquidation->payee : $val->liquidation->poTransaction->payee;
-                    // $particular = !empty($val->liquidation->particular) ? $val->liquidation->particular : $val->liquidation->poTransaction->particular;
                     echo "<tr>
                         <td>$q</td>
-                        <td>{$val['dv_number']}</td>
-                        <td>{$val['check_number']}</td>
-                        <td>{$val['check_date']}</td>
-                        <td>{$val['payee']}</td>
-                        <td>{$val['particular']}</td>
-                        <td style='text-align:right'>" . number_format($val['total_withdrawals'], 2) . "</td>
+                        <td>{$itm['dv_number']}</td>
+                        <td>{$itm['check_number']}</td>
+                        <td>{$itm['check_date']}</td>
+                        <td>{$itm['payee']}</td>
+                        <td>{$itm['particular']}</td>
+                        <td style='text-align:right'>" . number_format($itm['total_withdrawal'], 2) . "</td>
                     ";
-                    if (Yii::$app->user->identity->province === 'ro_admin') {
+                    if (Yii::$app->user->can('super-user')) {
 
                         $status = 'Remove';
                         $color = 'btn-danger';
-                        if ($val['liquidation_status'] === 'at_po') {
+                        if ($itm['liquidation_status'] === 'at_po') {
                             $status = 'ibalik';
                             $color = 'btn-success';
                         }
-                        $qwe = Html::a($status, ['return', 'id' => $val['id']], [
+                        $qwe = Html::a($status, ['return', 'id' => $itm['item_id']], [
                             'class' => "btn $color ",
                             'data' => [
                                 'confirm' => "Are you sure you want to  this item?",
@@ -237,13 +223,12 @@ $this->params['breadcrumbs'][] = $this->title;
                         echo "  <td class='status'>" .
                             $qwe
                             . " </td>";
-                    } else {
-                        if ($val['status'] === 'returned') {
-                            echo "<td class='status'> Returned</td>";
-                        }
+                    }
+                    if ($itm['is_returned'] == 1) {
+                        echo "<td class='status'> Returned</td>";
                     }
                     echo " </tr>";
-                    $total += $val['total_withdrawals'];
+                    $total += floatval($itm['total_withdrawal']);
                     $q++;
                 }
                 // }

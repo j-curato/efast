@@ -101,7 +101,7 @@ class m230703_084037_update_prc_Cadadr_procedure extends Migration
             cash_received.reporting_period >= frm_prd
             AND cash_received.reporting_period <= to_prd
             AND books.id = book_id
-        ) as q  ORDER BY q.check_date ; 
+        ) as q  ORDER BY q.check_or_ada_no ; 
     END 
     SQL;
         $this->execute($sql);

@@ -17,10 +17,7 @@ class LiquidationViewSearch extends LiquidationView
      */
     public function rules()
     {
-        $province = 'province';
-        if (\Yii::$app->user->identity->province != 'ro_admin') {
-            $province = '';
-        }
+
         return [
             [['id', 'is_cancelled'], 'integer'],
             [['total_withdrawal', 'total_expanded', 'total_liquidation_damage', 'total_vat'], 'number'],
@@ -34,7 +31,7 @@ class LiquidationViewSearch extends LiquidationView
                 'tracking_number',
                 'payee', 'particular', 'gross_payment',
                 'account_name',
-                $province,
+                'province'
             ], 'safe'],
 
         ];
@@ -59,18 +56,17 @@ class LiquidationViewSearch extends LiquidationView
     public function search($params)
     {
 
-        $province = Yii::$app->user->identity->province;
-        $q = LiquidationView::find();
-        if (
-            $province === 'adn' ||
-            $province === 'ads' ||
-            $province === 'sds' ||
-            $province === 'sdn' ||
-            $province === 'pdi'
-        ) {
-            // $q->where('province LIKE :province', ['province' => $province]);
+        $query = LiquidationView::find();
+
+        if (!Yii::$app->user->can('super-user')) {
+            $province = Yii::$app->user->identity->province;
+            // $user_data = Yii::$app->memem->getUserData();
+            // $query->andWhere('office_name = :office_name', ['office_name' => $user_data->office->office_name]);
+            // $query->andWhere('division = :division', ['division' => $user_data->divisionName->division]);
+            // $query->andWhere('is_cancelled = "Good"');
+            $query->where('province LIKE :province', ['province' => $province]);
         }
-        $query = $q->orderBy('check_date DESC');
+        $query->orderBy('check_date DESC');
 
         // add conditions that should always apply here
 
@@ -84,9 +80,6 @@ class LiquidationViewSearch extends LiquidationView
             // uncomment the following line if you do not want to return any records when validation fails
             // $query->where('0=1');
             return $dataProvider;
-        }
-        if ($province === 'ro_admin') {
-            $province = $this->province;
         }
 
 
@@ -110,7 +103,7 @@ class LiquidationViewSearch extends LiquidationView
             ->andFilterWhere(['like', 'gross_payment', $this->gross_payment])
             ->andFilterWhere(['like', 'status', $this->status])
             ->andFilterWhere(['like', 'account_name', $this->account_name])
-            ->andFilterWhere(['like', 'province', $province]);
+            ->andFilterWhere(['like', 'province', $this->province]);
 
         // var_dump($query->createCommand()->getRawSql());
 

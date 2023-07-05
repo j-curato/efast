@@ -4,6 +4,7 @@ namespace frontend\controllers;
 
 use app\models\Liquidation;
 use app\models\LiquidationView;
+use app\models\Office;
 use Yii;
 use app\models\PoTransmittal;
 use app\models\PoTransmittalEntries;
@@ -79,7 +80,69 @@ class PoTransmittalController extends Controller
             ],
         ];
     }
-
+    private function insItems($model_id, $items = [], $isUpdate = false)
+    {
+        try {
+            if ($isUpdate === true) {
+                $itemIds = array_column($items, 'item_id');
+                $params = [];
+                $sql = '';
+                if (!empty($itemIds)) {
+                    $sql = ' AND ';
+                    $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $itemIds], $params);
+                }
+                Yii::$app->db->createCommand("UPDATE po_transmittal_entries SET is_deleted = 1 
+                WHERE 
+                po_transmittal_entries.is_deleted = 0
+                AND po_transmittal_entries.fk_po_transmittal_id = :id
+                $sql", $params)
+                    ->bindValue(':id', $model_id)
+                    ->execute();
+            }
+            foreach ($items as $itm) {
+                $mdl = !empty($itm['item_id']) ? PoTransmittalEntries::findOne($itm['item_id']) : new PoTransmittalEntries();
+                $mdl->fk_po_transmittal_id = $model_id;
+                $mdl->liquidation_id = $itm['dv_id'];
+                if (!$mdl->validate()) {
+                    throw new ErrorException(json_encode($mdl->errors));
+                }
+                if (!$mdl->save(false)) {
+                    throw new ErrorException('Item Model Save Failed');
+                }
+            }
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
+    }
+    private function getItems($id)
+    {
+        return Yii::$app->db->createCommand("SELECT 
+        po_transmittal_entries.id as item_id,
+        po_transmittal_entries.is_returned,
+        liquidation_view.status as liquidation_status,
+        liquidation_view.id as dv_id,
+        liquidation_view.province,
+        liquidation_view.check_date,
+        liquidation_view.check_number,
+        liquidation_view.dv_number,
+        liquidation_view.reporting_period,
+        liquidation_view.payee,
+        liquidation_view.particular,
+        liquidation_view.total_withdrawal,
+        liquidation_view.total_vat,
+        liquidation_view.total_expanded,
+        liquidation_view.total_liquidation_damage,
+        liquidation_view.gross_payment
+         FROM po_transmittal_entries
+        JOIN liquidation_view ON po_transmittal_entries.liquidation_id = liquidation_view.id
+         WHERE 
+         po_transmittal_entries.fk_po_transmittal_id =:id 
+        AND po_transmittal_entries.is_deleted = 0
+        ")
+            ->bindValue(':id', $id)
+            ->queryAll();
+    }
     /**
      * Lists all PoTransmittal models.
      * @return mixed
@@ -105,6 +168,7 @@ class PoTransmittalController extends Controller
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
+            'items' => $this->getItems($id)
         ]);
     }
 
@@ -117,99 +181,35 @@ class PoTransmittalController extends Controller
     {
         $model = new PoTransmittal();
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
 
-
-
-            return $this->redirect(['view', 'id' => $model->transmittal_number]);
+            try {
+                $txn = YIi::$app->db->beginTransaction();
+                $items = Yii::$app->request->post('items') ?? [];
+                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                $model->transmittal_number  = $this->getTransmittalNumber($model->date, $model->fk_office_id);
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save Failed');
+                }
+                $insItms = $this->insItems($model->id, $items);
+                if ($insItms !== true) {
+                    throw new ErrorException($insItms);
+                }
+                $txn->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                $txn->rollback();
+                return $e->getMessage();
+            }
         }
 
         return $this->render('create', [
             'model' => $model,
         ]);
     }
-    public function actionInsertPoTransmittal()
-    {
-        if ($_POST) {
-            $date = $_POST['date'];
-            $transmittal_update_id = $_POST['transmittal_update_id'];
-            $liquidation_id = !empty($_POST['liquidation_id']) ? array_unique($_POST['liquidation_id']) : [];
-            $transaction = Yii::$app->db->beginTransaction();
-
-            if (!empty($transmittal_update_id)) {
-
-
-                $po_transmittal = PoTransmittal::findOne($transmittal_update_id);
-                if ($po_transmittal->status === 'at_ro') {
-                    return json_encode([
-                        'isSuccess' => false,
-                        'error' => 'Cannot update transmittal is already at RO'
-                    ]);
-                }
-                foreach ($po_transmittal->poTransmittalEntries as $d) {
-                    $update_liq = Liquidation::findOne($d->liquidation_id);
-                    $update_liq->status = 'at_po';
-                    if ($update_liq->save(false)) {
-                    }
-                    $d->delete();
-                }
-                // return json_encode([
-                //     'isSuccess' => false,
-                //     'error' => $po_transmittal->toArray()
-                // ]);
-            } else {
-                $po_transmittal = new PoTransmittal();
-                $po_transmittal->transmittal_number  = $this->getTransmittalNumber($date);
-            }
-            $po_transmittal->date = $date;
-            try {
-                if ($po_transmittal->validate()) {
-
-                    if ($flag = $po_transmittal->save(false)) {
-                        foreach ($liquidation_id as $liq) {
-                            $tr_entries = new PoTransmittalEntries();
-                            $tr_entries->po_transmittal_number = $po_transmittal->transmittal_number;
-                            $tr_entries->liquidation_id = $liq;
-                            if ($tr_entries->validate()) {
-                                if ($tr_entries->save(false)) {
-                                    $liquidation = Liquidation::findOne($liq);
-                                    $liquidation->status = 'pending_at_ro';
-                                    if ($liquidation->save(false)) {
-                                    }
-                                }
-                            } else {
-                                $transaction->rollBack();
-                                return json_encode([
-                                    'isSuccess' => false,
-                                    'error' => 'error'
-                                ]);
-                            }
-                        }
-                    }
-                    if ($flag) {
-                        $transaction->commit();
-                        return $this->redirect(['view', 'id' => $po_transmittal->transmittal_number]);
-                        // return json_encode([
-                        //     'isSuccess' => true,
-                        //     'error' => $po_transmittal->transmittal_number
-                        // ]);
-                    }
-                } else {
-                    $transaction->rollBack();
-                    return json_encode([
-                        'isSuccess' => false,
-                        'error' => $po_transmittal->errors
-                    ]);
-                }
-            } catch (ErrorException $error) {
-                return json_encode([
-                    'isSuccess' => false,
-                    'error' => $error->getMessage()
-                ]);
-            }
-        }
-    }
-
     /**
      * Updates an existing PoTransmittal model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -221,14 +221,116 @@ class PoTransmittalController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->transmittal_number]);
+        if ($model->load(Yii::$app->request->post())) {
+            try {
+                $txn = Yii::$app->db->beginTransaction();
+                $items = Yii::$app->request->post('items') ?? [];
+                // return var_dump($items);
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save Failed');
+                }
+                $insItms = $this->insItems($model->id, $items, true);
+                if ($insItms !== true) {
+                    throw new ErrorException($insItms);
+                }
+                $txn->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                $txn->rollback();
+                return $e->getMessage();
+            }
         }
-
         return $this->render('update', [
             'model' => $model,
+            'items' => $this->getItems($id)
         ]);
     }
+
+    // public function actionInsertPoTransmittal()
+    // {
+    //     if ($_POST) {
+    //         $date = $_POST['date'];
+    //         $transmittal_update_id = $_POST['transmittal_update_id'];
+    //         $liquidation_id = !empty($_POST['liquidation_id']) ? array_unique($_POST['liquidation_id']) : [];
+    //         $transaction = Yii::$app->db->beginTransaction();
+
+    //         if (!empty($transmittal_update_id)) {
+
+
+    //             $po_transmittal = PoTransmittal::findOne($transmittal_update_id);
+    //             if ($po_transmittal->status === 'at_ro') {
+    //                 return json_encode([
+    //                     'isSuccess' => false,
+    //                     'error' => 'Cannot update transmittal is already at RO'
+    //                 ]);
+    //             }
+    //             foreach ($po_transmittal->poTransmittalEntries as $d) {
+    //                 $update_liq = Liquidation::findOne($d->liquidation_id);
+    //                 $update_liq->status = 'at_po';
+    //                 if ($update_liq->save(false)) {
+    //                 }
+    //                 $d->delete();
+    //             }
+    //             // return json_encode([
+    //             //     'isSuccess' => false,
+    //             //     'error' => $po_transmittal->toArray()
+    //             // ]);
+    //         } else {
+    //             $po_transmittal = new PoTransmittal();
+    //             $po_transmittal->transmittal_number  = $this->getTransmittalNumber($date, '');
+    //         }
+    //         $po_transmittal->date = $date;
+    //         try {
+    //             if ($po_transmittal->validate()) {
+
+    //                 if ($flag = $po_transmittal->save(false)) {
+    //                     foreach ($liquidation_id as $liq) {
+    //                         $tr_entries = new PoTransmittalEntries();
+    //                         $tr_entries->po_transmittal_number = $po_transmittal->transmittal_number;
+    //                         $tr_entries->liquidation_id = $liq;
+    //                         if ($tr_entries->validate()) {
+    //                             if ($tr_entries->save(false)) {
+    //                                 $liquidation = Liquidation::findOne($liq);
+    //                                 $liquidation->status = 'pending_at_ro';
+    //                                 if ($liquidation->save(false)) {
+    //                                 }
+    //                             }
+    //                         } else {
+    //                             $transaction->rollBack();
+    //                             return json_encode([
+    //                                 'isSuccess' => false,
+    //                                 'error' => 'error'
+    //                             ]);
+    //                         }
+    //                     }
+    //                 }
+    //                 if ($flag) {
+    //                     $transaction->commit();
+    //                     return $this->redirect(['view', 'id' => $po_transmittal->transmittal_number]);
+    //                     // return json_encode([
+    //                     //     'isSuccess' => true,
+    //                     //     'error' => $po_transmittal->transmittal_number
+    //                     // ]);
+    //                 }
+    //             } else {
+    //                 $transaction->rollBack();
+    //                 return json_encode([
+    //                     'isSuccess' => false,
+    //                     'error' => $po_transmittal->errors
+    //                 ]);
+    //             }
+    //         } catch (ErrorException $error) {
+    //             return json_encode([
+    //                 'isSuccess' => false,
+    //                 'error' => $error->getMessage()
+    //             ]);
+    //         }
+    //     }
+    // }
+
 
     /**
      * Deletes an existing PoTransmittal model.
@@ -259,9 +361,9 @@ class PoTransmittalController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function getTransmittalNumber($date)
+    public function getTransmittalNumber($date, $office_id)
     {
-        $province = Yii::$app->user->identity->province;
+        $province = Office::findOne($office_id)->office_name;
         $year = DateTime::createFromFormat('Y-m-d', $date)->format('Y');
         $query = Yii::$app->db->createCommand("SELECT CAST(substring_index(transmittal_number,'-',-1 ) AS UNSIGNED) as id 
         FROM po_transmittal
@@ -307,7 +409,7 @@ class PoTransmittalController extends Controller
         $q  =  $model->status === 'returned' ? '' : 'returned';
         $model->status = $q;
         $po_tr = PoTransmittal::findOne($model->po_transmittal_number);
-        $po_tr->edited = true;
+        // $po_tr->edited = true;
         $liquidation = Liquidation::findOne($model->liquidation->id);
         $status = $liquidation->status == 'pending_at_ro' ? 'at_po' : 'pending_at_ro';
         $liquidation->status = $status;

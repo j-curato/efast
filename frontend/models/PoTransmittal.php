@@ -27,17 +27,15 @@ class PoTransmittal extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['transmittal_number'], 'required'],
+            [['transmittal_number', 'date', 'fk_office_id'], 'required'],
             [['date', 'created_at'], 'safe'],
+            [['fk_office_id'], 'integer'],
             [['transmittal_number', 'status'], 'string', 'max' => 255],
             [['transmittal_number'], 'unique'],
             [[
 
                 'transmittal_number',
                 'date',
-                'created_at',
-                'status',
-                'edited',
 
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
@@ -53,6 +51,7 @@ class PoTransmittal extends \yii\db\ActiveRecord
             'date' => 'Date',
             'created_at' => 'Created At',
             'status' => 'Status',
+            'fk_office_id' => 'Office',
         ];
     }
     public function getPoTransmittalEntries()
