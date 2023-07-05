@@ -62,13 +62,13 @@ class ItMaintenanceRequestSearch extends ItMaintenanceRequest
             'fk_requested_by' => $this->fk_requested_by,
             'fk_worked_by' => $this->fk_worked_by,
             'fk_division_id' => $this->fk_division_id,
-            'date_requested' => $this->date_requested,
             'date_accomplished' => $this->date_accomplished,
             'created_at' => $this->created_at,
         ]);
 
         $query->andFilterWhere(['like', 'serial_number', $this->serial_number])
             ->andFilterWhere(['like', 'description', $this->description])
+            ->andFilterWhere(['like', 'date_requested', $this->date_requested])
             ->andFilterWhere(['like', 'type', $this->type]);
 
         return $dataProvider;
