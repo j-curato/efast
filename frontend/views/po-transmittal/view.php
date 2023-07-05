@@ -506,22 +506,10 @@ $this->params['breadcrumbs'][] = $this->title;
 $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [JqueryAsset::class]]);
 Select2Asset::register($this);
 ?>
-<!-- 
-<link href="/afms/frontend/web/js/select2.min.js" />
-    <link href="/afms/frontend/web/css/select2.min.css" rel="stylesheet" /> -->
+
 <script>
     var reference = []
-    // $(document).ready(function() {
-    //     reference = ["GAY A. TIDALGO"]
-    //     $('#assignatory').select2({
-    //         data: reference,
-    //         placeholder: "Select ",
 
-    //     })
-    // })
-    // $("#assignatory").change(function() {
-    //     console.log("qwe")
-    // })
 
     function oicRd(x) {
         $("#oic").text(x.value)
