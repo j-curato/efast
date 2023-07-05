@@ -41,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </th>
                     <th colspan="3">
 
-                        <span>Report No:______________</span><br>
+                        <span>Report No: <u>&emsp;<?= $model->serial_number ?? '' ?>&emsp;</u> </span><br>
                         <span> Sheet No:______________</span><br>
                     </th>
                 </tr>
