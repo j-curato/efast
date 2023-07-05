@@ -167,7 +167,7 @@ class MyComponent extends Component
             ],
             'sds' => [
                 'province' => 'Surigao Del Sur',
-                'officer' => 'Fritzie U. Bacor',
+                'officer' => 'Sarah P. Estrada',
                 'location' => 'Tandag City'
             ],
             'pdi' => [

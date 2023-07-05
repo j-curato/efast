@@ -182,7 +182,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
         'adn': 'Rosie R. Vellesco',
         'ads': 'Maria Prescylin C. Lademora',
         'sdn': 'Ferdinand R. Inres',
-        'sds': 'Fritzie U. Bacor',
+        'sds': 'Sarah P. Estrada',
         'pdi': 'Venus A. Custodio',
         'ro': 'RO',
     }
