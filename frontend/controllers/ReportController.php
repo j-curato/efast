@@ -2409,129 +2409,22 @@ class ReportController extends \yii\web\Controller
                     ->bindValue(':reporting_period', $from_reporting_period)
                     ->queryScalar();
                 $laps_amt = Yii::$app->db->createCommand("SELECT
-                SUM(cash_adjustment.amount) as ttl
-                FROM 
-               cash_adjustment
-                WHERE 
-               cash_adjustment.book_id = :book_id
-               AND cash_adjustment.reporting_period >= '2023-01'
-               AND cash_adjustment.reporting_period < :from_period")
+                     SUM(cash_adjustment.amount) as ttl
+                    FROM 
+                    cash_adjustment
+                    WHERE 
+                    cash_adjustment.book_id = :book_id
+                    AND cash_adjustment.reporting_period >= '2023-01'
+                    AND cash_adjustment.reporting_period < :from_period")
                     ->bindValue(':from_period', $from_reporting_period)
                     ->bindValue(':book_id', $book_id)
                     ->queryScalar();;
                 $begin_balance = floatval($check_bgn_bal) - floatval($laps_amt);
             }
-            //     $query = Yii::$app->db->createCommand("SELECT * FROM cadadr
-            //         WHERE 
-            //         reporting_period >= :from_reporting_period
-            //         AND reporting_period <= :to_reporting_period
-            //         AND book_name = :book
-            //         AND is_cancelled =0
 
-            //         UNION ALL
-            //         SELECT
-            //         cadadr.mode_of_payment,
-            //         cadadr.reporting_period,
-            //         cadadr.dv_number,
-            //         cadadr.dv_date,
-            //         cadadr.check_or_ada_no,
-            //         cadadr.ada_number,
-            //         cadadr.issuance_date,
-            //         cadadr.account_name,
-            //         cadadr.particular,
-            //         cadadr.book_name,
-            //         cadadr.nca_recieve,
-            //         (CASE
-            //         WHEN QUARTER(CONCAT(cadadr.reporting_period,'-01')) = QUARTER(CONCAT(cadadr.cancelled_r_period,'-01')) AND SUBSTRING_INDEX(cadadr.reporting_period,'-',1) = SUBSTRING_INDEX(cadadr.cancelled_r_period,'-',1)
-            //         THEN cadadr.check_issued 
-            //         ELSE
-            //         0
-            //         END
-            //         ) as check_issued,
-            //         (CASE
-
-            //         WHEN QUARTER(CONCAT(cadadr.reporting_period,'-01')) = QUARTER(CONCAT(cadadr.cancelled_r_period,'-01')) AND SUBSTRING_INDEX(cadadr.reporting_period,'-',1) = SUBSTRING_INDEX(cadadr.cancelled_r_period,'-',1)
-            //         THEN cadadr.ada_issued 
-            //         ELSE
-            //        0
-            //         END
-            //         ) as ada_issued,
-            //         cadadr.is_cancelled,
-            //         cadadr.cancelled_r_period
-            //         FROM cadadr
-            //         WHERE 
-            //         reporting_period >= :from_reporting_period
-            //         AND reporting_period <= :to_reporting_period
-            //         AND book_name = :book
-            //         AND is_cancelled =1
-            //         ORDER BY issuance_date
-            //     ")
-            //         ->bindValue(':from_reporting_period', $from_reporting_period)
-            //         ->bindValue(':to_reporting_period', $to_reporting_period)
-            //         ->bindValue(':book', $book)
-            //         ->queryAll();
-            //     $d = new DateTime($from_reporting_period);
-            //     $w = new DateTime('2021-10');
-            //     $begin_balance = 0;
-            //     $adjustment_begin_balance = 0;
-            //     if ($d->format('Y-m') >= $w->format('Y-m') && $book === 'Fund 01') {
-            //         $begin_balance = Yii::$app->db->createCommand("SELECT 
-            //             IFNULL(SUM(total_nca_recieve) - (SUM(total_check_issued)+SUM(total_ada_issued)),0) as begin_balance
-            //            FROM cadadr_balances
-            //            WHERE 
-            //            cadadr_balances.reporting_period < :from_reporting_period 
-            //            and
-            //            cadadr_balances.reporting_period >= '2021-10' 
-            //            AND cadadr_balances.book_name = :book
-
-            //            ")
-            //             ->bindValue(':from_reporting_period', $from_reporting_period)
-            //             ->bindValue(':book', $book)
-            //             ->queryScalar();
-            //         $adjustment_begin_balance = Yii::$app->db->createCommand("SELECT
-            //             SUM(cash_adjustment.amount) as total_amount
-            //             FROM  cash_adjustment
-            //             LEFT JOIN books ON cash_adjustment.book_id = books.id
-            //             WHERE 
-            //             cash_adjustment.reporting_period < :from_reporting_period 
-            //             AND
-            //             cash_adjustment.reporting_period >= '2021-10' 
-            //             AND books.name = :book")
-            //             ->bindValue(':from_reporting_period', $from_reporting_period)
-            //             ->bindValue(':book', $book)
-            //             ->queryScalar();
-            //     } else {
-            //         $begin_balance = Yii::$app->db->createCommand("SELECT 
-            //             IFNULL(SUM(total_nca_recieve) - (SUM(total_check_issued)+SUM(total_ada_issued)),0) as begin_balance
-            //            FROM cadadr_balances
-            //            WHERE 
-            //            cadadr_balances.reporting_period < :from_reporting_period 
-            //           AND  cadadr_balances.reporting_period >= '2021-01' 
-            //            AND cadadr_balances.book_name = :book
-            //            ")
-            //             ->bindValue(':from_reporting_period', $from_reporting_period)
-            //             ->bindValue(':book', $book)
-            //             ->queryScalar();
-            //         $adjustment_begin_balance = Yii::$app->db->createCommand("SELECT
-            //             SUM(cash_adjustment.amount) as total_amount
-            //             FROM  cash_adjustment
-            //             LEFT JOIN books ON cash_adjustment.book_id = books.id
-            //             WHERE 
-            //             cash_adjustment.reporting_period < :from_reporting_period 
-            //             AND  cash_adjustment.reporting_period >= '2021-01' 
-            //             AND books.name = :book")
-            //             ->bindValue(':from_reporting_period', $from_reporting_period)
-            //             ->bindValue(':book', $book)
-            //             ->queryScalar();
-            //     }
-
-            //     // return json_encode([$begin_balance, $adjustment_begin_balance]);
-            //     // $begin_balance  += $adjustment_begin_balance;
-            //     $begin_balance = (float)$begin_balance - (float)$adjustment_begin_balance;
             $adjustments = Yii::$app->db->createCommand("SELECT * 
                FROM cash_adjustment
                LEFT JOIN books ON cash_adjustment.book_id = books.id
-
                WHERE cash_adjustment.reporting_period <= :to_reporting_period
                AND cash_adjustment.reporting_period >= :from_reporting_period
                AND books.id = :book")
@@ -2540,18 +2433,6 @@ class ReportController extends \yii\web\Controller
                 ->bindValue(':to_reporting_period', $to_reporting_period)
                 ->bindValue(':from_reporting_period', $from_reporting_period)
                 ->queryAll();
-            //     $cancelled_checks = Yii::$app->db->createCommand("SELECT * FROM cadadr
-            //         WHERE 
-            //         reporting_period >= :from_reporting_period
-            //         AND reporting_period <= :to_reporting_period
-            //         AND book_name = :book
-            //         AND is_cancelled = 1
-            //         ORDER BY issuance_date
-            //         ")
-            //         ->bindValue(':from_reporting_period', $from_reporting_period)
-            //         ->bindValue(':to_reporting_period', $to_reporting_period)
-            //         ->bindValue(':book', $book)
-            //         ->queryAll();
             $cancelled_checks = ArrayHelper::index($qry, null, ['is_cancelled']);
             return json_encode([
                 'results' => $qry,
