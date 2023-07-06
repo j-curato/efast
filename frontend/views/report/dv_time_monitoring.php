@@ -247,11 +247,11 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/select2.
             $.ajax({
                 url: window.location.pathname + "?r=employee/search-employee",
                 data: {
-                    q: id
+                    id: id
                 },
                 success: function(data) {
-                    position = data.results[0].position
-                    this_pos.text(data.results[0].position)
+                    position = data.results.position
+                    this_pos.text(data.results.position)
                 }
             })
 
