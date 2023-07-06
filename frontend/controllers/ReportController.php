@@ -904,8 +904,8 @@ class ReportController extends \yii\web\Controller
             LEFT JOIN mfo_pap_code ON record_allotments.mfo_pap_code_id = mfo_pap_code.id 
             LEFT JOIN chart_of_accounts ON record_allotment_entries.chart_of_account_id = chart_of_accounts.id
             LEFT JOIN major_accounts ON chart_of_accounts.major_account_id = major_accounts.id
-            LEFT JOIN cash_disbursement_items ON dv_aucs.id = cash_disbursement_items.fk_dv_aucs_id
-            LEFT JOIN cash_disbursement ON cash_disbursement_items.fk_cash_disbursement_id = cash_disbursement.id
+            LEFT JOIN (SELECT * FROM cash_disbursement_items WHERE cash_disbursement_items.is_deleted = 0)  as  gd_cash_items ON dv_aucs.id = gd_cash_items.fk_dv_aucs_id
+            LEFT JOIN cash_disbursement ON gd_cash_items.fk_cash_disbursement_id = cash_disbursement.id
             LEFT JOIN mode_of_payments ON cash_disbursement.fk_mode_of_payment_id = mode_of_payments.id
             LEFT JOIN nature_of_transaction ON dv_aucs.nature_of_transaction_id = nature_of_transaction.id 
             LEFT JOIN mrd_classification on dv_aucs.mrd_classification_id = mrd_classification.id
