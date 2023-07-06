@@ -2,6 +2,7 @@
 
 
 use aryelds\sweetalert\SweetAlertAsset;
+use yii\helpers\Html;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\JevPreparationSearch */
@@ -23,9 +24,23 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th>Particular</th>
                 <th>Amount Disbursed</th>
                 <th>Gross Amount</th>
+                <th>Link</th>
             </thead>
             <tbody>
+                <?php
+                foreach ($not_transmitted  as $itm) {
 
+                    echo "<tr>
+                            <td>{$itm['dv_number']}</td>
+                            <td>{$itm['check_or_ada_no']}</td>
+                            <td>{$itm['issuance_date']}</td>
+                            <td>{$itm['particular']}</td>
+                            <td class='amount'>" . number_format($itm['ttlDisbursed'], 2) . "</td>
+                            <td class='amount'>" . number_format($itm['grossAmt'], 2) . "</td><td>";
+                    echo Html::a('Link', ['dv-aucs/view', 'id' => $itm['id']], ['class' => 'btn btn-link']);
+                    echo "</td></tr>";
+                }
+                ?>
 
             </tbody>
         </table>
@@ -60,7 +75,7 @@ $this->registerJsFile(Yii::$app->request->baseUrl . '/frontend/web/js/globalFunc
 ?>
 <script>
     $(document).ready(function() {
-        notTransmitted()
+        // notTransmitted()
 
 
     })
