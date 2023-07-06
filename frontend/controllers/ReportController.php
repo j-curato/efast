@@ -2402,7 +2402,8 @@ class ReportController extends \yii\web\Controller
                 ->bindValue(':to_period', $to_reporting_period)
                 ->bindValue(':book_id', $book_id)
                 ->queryAll();
-            $begin_balance = 0;
+            $book_name = Books::findOne($book_id)->name;
+            $begin_balance = strtolower($book_name) === 'rapid lp' ? 667232.17 : 0;
             if (strtotime($from_reporting_period) > strtotime('2023-01')) {
                 $check_bgn_bal = Yii::$app->db->createCommand("CALL prc_CadadrBgnBal(:reporting_period,:book_id)")
                     ->bindValue(':book_id', $book_id)
@@ -2419,7 +2420,7 @@ class ReportController extends \yii\web\Controller
                     ->bindValue(':from_period', $from_reporting_period)
                     ->bindValue(':book_id', $book_id)
                     ->queryScalar();;
-                $begin_balance = floatval($check_bgn_bal) - floatval($laps_amt);
+                $begin_balance = floatval($begin_balance) + floatval($check_bgn_bal) - floatval($laps_amt);
             }
 
             $adjustments = Yii::$app->db->createCommand("SELECT * 
