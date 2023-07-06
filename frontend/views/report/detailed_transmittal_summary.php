@@ -22,6 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th>Issuance Date</th>
                 <th>Particular</th>
                 <th>Amount Disbursed</th>
+                <th>Gross Amount</th>
             </thead>
             <tbody>
 
@@ -72,13 +73,17 @@ $this->registerJsFile(Yii::$app->request->baseUrl . '/frontend/web/js/globalFunc
             const issuance_date = val.issuance_date
             const particular = val.particular
             const check_or_ada_no = val.check_or_ada_no
-            const amount_disbursed = val.amount_disbursed
+            const amount_disbursed = val.ttlDisbursed
+            const grossAmt = val.grossAmt
+
+
             const rowData = `<tr>
                                <td>${dv_number}</td>
                                <td>${check_or_ada_no}</td>
                                <td>${issuance_date}</td>
                                <td>${particular}</td>
                                <td class='amount'>${thousands_separators(amount_disbursed)}</td>
+                               <td class='amount'>${thousands_separators(grossAmt)}</td>
                             </tr>`
             $('#not-transmitted tbody').append(rowData)
         })

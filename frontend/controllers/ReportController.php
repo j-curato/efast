@@ -4374,60 +4374,49 @@ class ReportController extends \yii\web\Controller
     {
         if (Yii::$app->request->isPost) {
             $year = !empty(Yii::$app->getRequest()->getBodyParams()['year']) ? Yii::$app->getRequest()->getBodyParams()['year'] : date('Y');
-            $query = Yii::$app->db->createCommand("SELECT 
-            total_dv.*,
-            IFNULL(dv_at_ro.dv_count_at_ro,0) as dv_count_at_ro ,
-            IFNULL(dv_at_coa.dv_count_at_coa,0) as dv_count_at_coa
+            $query = Yii::$app->db->createCommand("WITH 
+            cte_gd_disbursed_dvs as (
+            SELECT 
+            cash_disbursement.reporting_period,
+            cash_disbursement_items.fk_dv_aucs_id
             FROM 
-            (SELECT 
-                cash.reporting_period,
-                COUNT(cash.id) as total_dv
-                FROM cash_disbursement as cash
-                WHERE
-                NOT EXISTS (SELECT * FROM cash_disbursement WHERE cash_disbursement.check_or_ada_no = cash.check_or_ada_no AND cash_disbursement.dv_aucs_id = cash.dv_aucs_id AND cash_disbursement.is_cancelled = 1)
-                AND cash.is_cancelled = 0 
-                GROUP BY
-                cash.reporting_period) as total_dv
-            LEFT JOIN 
-            (
-                SELECT
-                all_good_cash.reporting_period,
-                COUNT(all_good_cash.id) as dv_count_at_ro
-                FROM 
-                (SELECT 
-                cash.id,
-                cash.reporting_period
-                FROM cash_disbursement as cash
-                WHERE
-
-                NOT EXISTS (SELECT * FROM cash_disbursement WHERE cash_disbursement.check_or_ada_no = cash.check_or_ada_no AND cash_disbursement.dv_aucs_id = cash.dv_aucs_id AND cash_disbursement.is_cancelled = 1)
-                
-                AND cash.is_cancelled = 0 ) as all_good_cash
-                WHERE 
-
-                NOT EXISTS (SELECT cash_disbursement_id FROM transmittal_entries WHERE transmittal_entries.cash_disbursement_id  =  all_good_cash.id)
-                GROUP BY 
-                all_good_cash.reporting_period
-            )  as dv_at_ro ON total_dv.reporting_period   = dv_at_ro.reporting_period
+            cash_disbursement
+            JOIN cash_disbursement_items ON cash_disbursement.id  = cash_disbursement_items.fk_cash_disbursement_id
+            WHERE 
+             cash_disbursement.is_cancelled = 0
+             AND 
+            cash_disbursement_items.is_deleted = 0
+            AND 
+            EXISTS (SELECT dv_aucs.id FROM dv_aucs WHERE dv_aucs.id = cash_disbursement_items.fk_dv_aucs_id AND dv_aucs.is_cancelled = 0)
             
-            LEFT JOIN 
-            (SELECT
-            all_good_cash.reporting_period,
-            COUNT(all_good_cash.id) as dv_count_at_coa
+            ),
+            cte_ttl_dbs_dvs as (SELECT 
+            
+            cte_gd_disbursed_dvs.reporting_period,
+            COUNT(cte_gd_disbursed_dvs.fk_dv_aucs_id) as ttlDv
             FROM 
-            (SELECT 
-            cash.id,
-            cash.reporting_period
-            FROM cash_disbursement as cash
-            WHERE
-
-            NOT EXISTS (SELECT * FROM cash_disbursement WHERE cash_disbursement.check_or_ada_no = cash.check_or_ada_no AND cash_disbursement.dv_aucs_id = cash.dv_aucs_id AND cash_disbursement.is_cancelled = 1)
-            
-            AND cash.is_cancelled = 0 ) as all_good_cash
-            INNER JOIN  (SELECT cash_disbursement_id FROM transmittal_entries GROUP BY cash_disbursement_id)as transmitted ON all_good_cash.id = transmitted.cash_disbursement_id
-            GROUP BY 
-            all_good_cash.reporting_period) as dv_at_coa ON   total_dv.reporting_period = dv_at_coa.reporting_period
-            WHERE total_dv.reporting_period LIKE :_year
+            cte_gd_disbursed_dvs
+            GROUP BY
+            cte_gd_disbursed_dvs.reporting_period
+            ),
+            cte_ttl_dbs_dvs_at_coa as (
+             SELECT  
+            cte_gd_disbursed_dvs.reporting_period,
+            COUNT(cte_gd_disbursed_dvs.fk_dv_aucs_id) as ttlAtCoa
+            FROM 
+            cte_gd_disbursed_dvs
+            JOIN transmittal_entries ON cte_gd_disbursed_dvs.fk_dv_aucs_id = transmittal_entries.fk_dv_aucs_id
+            GROUP BY cte_gd_disbursed_dvs.reporting_period
+            )
+             SELECT 
+                cte_ttl_dbs_dvs.reporting_period,
+                cte_ttl_dbs_dvs.ttlDv as total_dv,
+                cte_ttl_dbs_dvs_at_coa.ttlAtCoa as dv_count_at_coa,
+                cte_ttl_dbs_dvs.ttlDv - cte_ttl_dbs_dvs_at_coa.ttlAtCoa as dv_count_at_ro
+             FROM 
+             cte_ttl_dbs_dvs
+             JOIN cte_ttl_dbs_dvs_at_coa ON cte_ttl_dbs_dvs.reporting_period = cte_ttl_dbs_dvs_at_coa.reporting_period
+             WHERE cte_ttl_dbs_dvs.reporting_period LIKE :_year
             ")
 
                 ->bindValue(':_year', $year . '%')
@@ -4440,42 +4429,68 @@ class ReportController extends \yii\web\Controller
     public function actionDetailedTransmittalSummary($reporting_period = '')
     {
 
-        $not_transmitted_query = Yii::$app->db->createCommand("SELECT 
-        all_good_cash.check_or_ada_no,
-        all_good_cash.issuance_date,
+        $not_transmitted_query = Yii::$app->db->createCommand("WITH 
+        cte_gd_disbursed_dvs as (
+        SELECT 
+        cash_disbursement.check_or_ada_no,
+        cash_disbursement.issuance_date,
+        cash_disbursement.reporting_period,
+        cash_disbursement_items.fk_dv_aucs_id
+        FROM 
+        cash_disbursement
+        JOIN cash_disbursement_items ON cash_disbursement.id  = cash_disbursement_items.fk_cash_disbursement_id
+        WHERE 
+         cash_disbursement.is_cancelled = 0
+         AND 
+        cash_disbursement_items.is_deleted = 0
+        AND 
+        EXISTS (SELECT dv_aucs.id FROM dv_aucs WHERE dv_aucs.id = cash_disbursement_items.fk_dv_aucs_id AND dv_aucs.is_cancelled = 0)
+        
+        ),
+        
+        cte_ttl_dbs_dvs_at_coa as (
+         SELECT  
+        cte_gd_disbursed_dvs.reporting_period,
+        cte_gd_disbursed_dvs.fk_dv_aucs_id
+        FROM 
+        cte_gd_disbursed_dvs
+        JOIN transmittal_entries ON cte_gd_disbursed_dvs.fk_dv_aucs_id = transmittal_entries.fk_dv_aucs_id
+        
+        ),
+        cte_dv_amts as (
+        SELECT 
+        dv_aucs_entries.dv_aucs_id,
+        SUM(dv_aucs_entries.amount_disbursed) as ttlDisbursed,
+        COALESCE(SUM(dv_aucs_entries.amount_disbursed),0)+
+        COALESCE(SUM(dv_aucs_entries.vat_nonvat),0)+
+        COALESCE(SUM(dv_aucs_entries.ewt_goods_services),0)+
+        COALESCE(SUM(dv_aucs_entries.compensation),0)+
+        COALESCE(SUM(dv_aucs_entries.other_trust_liabilities),0) as grossAmt
+        FROM 
+        dv_aucs_entries
+        WHERE 
+        dv_aucs_entries.is_deleted = 0
+        GROUP BY dv_aucs_entries.dv_aucs_id
+        )
+        
+        SELECT 
+        dv_aucs.id,
         dv_aucs.dv_number,
+        cte_gd_disbursed_dvs.check_or_ada_no,
+        cte_gd_disbursed_dvs.issuance_date,
         dv_aucs.particular,
-        dv_amount.amount_disbursed
-         FROM 
-        (SELECT 
-        cash.id,
-        cash.dv_aucs_id,
-        cash.check_or_ada_no,
-        cash.issuance_date,
-        cash.reporting_period
-        FROM cash_disbursement as cash
-        WHERE
-
-        NOT EXISTS (SELECT * FROM cash_disbursement 
-        WHERE cash_disbursement.check_or_ada_no = cash.check_or_ada_no
-        AND cash_disbursement.dv_aucs_id = cash.dv_aucs_id
-        AND cash_disbursement.is_cancelled = 1)
-        AND cash.is_cancelled = 0 ) as all_good_cash
-         INNER JOIN dv_aucs on all_good_cash.dv_aucs_id = dv_aucs.id
-         LEFT JOIN (SELECT SUM(dv_aucs_entries.amount_disbursed) 
-                as amount_disbursed,dv_aucs_entries.dv_aucs_id
-                 FROM dv_aucs_entries 
-                 WHERE dv_aucs_entries.is_deleted = 0
-                 GROUP BY dv_aucs_entries.dv_aucs_id) as dv_amount ON dv_aucs.id  = dv_amount.dv_aucs_id
-                WHERE 
-            NOT EXISTS 
-        (SELECT transmittal_entries.cash_disbursement_id
-        FROM transmittal_entries 
-        WHERE transmittal_entries.cash_disbursement_id=
-        all_good_cash.id 
-        GROUP BY transmittal_entries.cash_disbursement_id) 
-        AND all_good_cash.reporting_period = :reporting_period
-        ORDER BY all_good_cash.check_or_ada_no")
+        cte_dv_amts.ttlDisbursed,
+        cte_dv_amts.grossAmt
+        FROM 
+        dv_aucs 
+        JOIN cte_gd_disbursed_dvs ON dv_aucs.id = cte_gd_disbursed_dvs.fk_dv_aucs_id
+        LEFT JOIN cte_dv_amts ON dv_aucs.id = cte_dv_amts.dv_aucs_id
+        WHERE 
+         NOT EXISTS (SELECT *  FROM cte_ttl_dbs_dvs_at_coa WHERE cte_ttl_dbs_dvs_at_coa.fk_dv_aucs_id = dv_aucs.id)
+        AND 
+        cte_gd_disbursed_dvs.reporting_period = :reporting_period
+        ORDER BY  cte_dv_amts.grossAmt
+        ")
             ->bindValue(':reporting_period', $reporting_period)
             ->queryAll();
         $transmitted_query = Yii::$app->db->createCommand("SELECT 
