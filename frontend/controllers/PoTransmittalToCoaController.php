@@ -59,7 +59,76 @@ class PoTransmittalToCoaController extends Controller
             ],
         ];
     }
-
+    private function getItems($id)
+    {
+        return YIi::$app->db->createCommand("SELECT
+            po_transmittal_to_coa_entries.id as item_id,
+            po_transmittal.id as transmittal_id,
+            po_transmittal.transmittal_number,
+            po_transmittal.date,
+            po_tmtl.total_withdrawals,
+            po_tmtl.cnt_dv as total_dv
+            FROM
+            po_transmittal_to_coa_entries
+            JOIN po_transmittal ON po_transmittal_to_coa_entries.fk_po_transmittal_id = po_transmittal.id
+            JOIN (
+            SELECT  
+            po_transmittal_entries.fk_po_transmittal_id,
+            SUM(liquidation_total.total_withdrawals) as total_withdrawals,
+            COUNT(liquidation_total.liquidation_id)as cnt_dv
+            FROM 
+            po_transmittal_entries 
+            JOIN (SELECT 
+            liquidation_entries.liquidation_id,
+            SUM(liquidation_entries.withdrawals)as total_withdrawals
+            FROM liquidation_entries
+            GROUP BY liquidation_entries.liquidation_id) as liquidation_total ON po_transmittal_entries.liquidation_id = liquidation_total.liquidation_id 
+            WHERE 
+            po_transmittal_entries.is_deleted  = 0
+            GROUP BY
+            po_transmittal_entries.fk_po_transmittal_id
+            )as po_tmtl ON po_transmittal_to_coa_entries.fk_po_transmittal_id = po_tmtl.fk_po_transmittal_id
+            WHERE 
+            po_transmittal_to_coa_entries.is_deleted = 0
+            AND po_transmittal_to_coa_entries.fk_po_transmittal_to_coa_id = :id")
+            ->bindValue(':id', $id)
+            ->queryAll();
+    }
+    private function insItems($model_id, $items = [], $isUpdate = false)
+    {
+        try {
+            if ($isUpdate === true) {
+                $itemIds = array_column($items, 'item_id');
+                $params = [];
+                $sql = '';
+                if (!empty($itemIds)) {
+                    $sql = ' AND ';
+                    $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $itemIds], $params);
+                }
+                Yii::$app->db->createCommand("UPDATE po_transmittal_to_coa_entries SET is_deleted = 1 
+                WHERE 
+                po_transmittal_to_coa_entries.is_deleted = 0
+                AND po_transmittal_to_coa_entries.fk_po_transmittal_to_coa_id = :id
+                $sql", $params)
+                    ->bindValue(':id', $model_id)
+                    ->execute();
+            }
+            foreach ($items as $itm) {
+                $mdl = !empty($itm['item_id']) ? PoTransmittalToCoaEntries::findOne($itm['item_id']) : new PoTransmittalToCoaEntries();
+                $mdl->fk_po_transmittal_to_coa_id = $model_id;
+                $mdl->fk_po_transmittal_id = $itm['transmittal_id'];
+                if (!$mdl->validate()) {
+                    throw new ErrorException(json_encode($mdl->errors));
+                }
+                if (!$mdl->save(false)) {
+                    throw new ErrorException('Item Model Save Failed');
+                }
+            }
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
+    }
     /**
      * Lists all PoTransmittalToCoa models.
      * @return mixed
@@ -114,8 +183,8 @@ class PoTransmittalToCoaController extends Controller
             ->bindValue(':transmittal_number', $id)
             ->queryAll();
         return $this->render('view', [
-            'dataProvider' => $query,
-            'model' => $this->findModel($id)
+            'model' => $this->findModel($id),
+            'items' => $this->getItems($id)
         ]);
     }
 
@@ -127,11 +196,32 @@ class PoTransmittalToCoaController extends Controller
     public function actionCreate()
     {
         $model = new PoTransmittalToCoa();
+        if ($model->load(Yii::$app->request->post())) {
+            try {
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->transmittal_number]);
+                $items = Yii::$app->request->post('items') ?? [];
+                $uniqueItems = array_map("unserialize", array_unique(array_map("serialize", $items)));
+                $txn  = Yii::$app->db->beginTransaction();
+                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                $model->transmittal_number = $this->getTransmittalNumber($model->date);
+
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException("Model Save FAiled");
+                }
+                $insItms = $this->insItems($model->id, $uniqueItems);
+                if ($insItms !== true) {
+                    throw new ErrorException($insItms);
+                }
+                $txn->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                $txn->rollback();
+                return $e->getMessage();
+            }
         }
-
         return $this->render('create', [
             'model' => $model,
         ]);
@@ -148,12 +238,33 @@ class PoTransmittalToCoaController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->transmittal_number]);
+        if ($model->load(Yii::$app->request->post())) {
+            try {
+
+                $items = Yii::$app->request->post('items') ?? [];
+                $uniqueItems = array_map("unserialize", array_unique(array_map("serialize", $items)));
+                $txn  = Yii::$app->db->beginTransaction();
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException("Model Save FAiled");
+                }
+                $insItms = $this->insItems($model->id, $uniqueItems, true);
+                if ($insItms !== true) {
+                    throw new ErrorException($insItms);
+                }
+                $txn->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                $txn->rollback();
+                return $e->getMessage();
+            }
         }
 
         return $this->render('update', [
             'model' => $model,
+            'items' => $this->getItems($id)
         ]);
     }
 
@@ -240,14 +351,19 @@ class PoTransmittalToCoaController extends Controller
 
     public function getTransmittalNumber($date)
     {
-        $query = Yii::$app->db->createCommand("SELECT substring_index(transmittal_number,' ',-1) as q 
+        $query = Yii::$app->db->createCommand("SELECT CAST(substring_index(transmittal_number,' ',-1) AS UNSIGNED) as q 
         FROM po_transmittal_to_coa
         ORDER BY q DESC LIMIT 1")->queryScalar();
         $num = 1;
         if (!empty($query)) {
             $num = $query + 1;
         }
-        $string = substr(str_repeat(0, 4) . $num, -4);
+        if (strlen($num) < 4) {
+
+            $string = substr(str_repeat(0, 4) . $num, -4);
+        } else {
+            $string = $num;
+        }
         return 'RO-' . date('Y-m', strtotime($date)) . '-PO ' . $string;
     }
 }

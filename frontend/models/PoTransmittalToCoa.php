@@ -29,7 +29,7 @@ class PoTransmittalToCoa extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['transmittal_number'], 'required'],
+            [['transmittal_number', 'date'], 'required'],
             [['date', 'created_at'], 'safe'],
             [['transmittal_number'], 'string', 'max' => 255],
             [['transmittal_number'], 'unique'],

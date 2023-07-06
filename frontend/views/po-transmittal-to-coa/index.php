@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use kartik\grid\GridView;
 use yii\helpers\Html;
 
@@ -7,15 +8,14 @@ use yii\helpers\Html;
 /* @var $searchModel app\models\PoTransmittalToCoaSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Po Transmittal To Coas';
+$this->title = 'Po Transmittal To COA';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="po-transmittal-to-coa-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Po Transmittal To Coa', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('<i class="fa fa-plus"></i> Create', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
@@ -33,13 +33,17 @@ $this->params['breadcrumbs'][] = $this->title;
             'position' => 'absolute',
         ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
             'transmittal_number',
             'date',
             'created_at',
-
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->id, 'none');
+                }
+            ],
         ],
     ]); ?>
 

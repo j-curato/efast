@@ -17,25 +17,14 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="transmittal-view">
 
-    <!-- <h1><?= Html::encode($this->title) ?></h1>
-
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->transmittal_number], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->transmittal_number], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p> -->
 
 
     <div class="container">
-        <div class="row as">
 
+        <p>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        </p>
 
-        </div>
 
         <div class="row" style="float:right">
             <?= Html::img(Yii::$app->request->baseUrl . '/frontend/web/dti3.png', ['alt' => 'some', 'class' => 'pull-left img-responsive', 'style' => 'width: 100px;height:100px;margin-left:auto']); ?>
@@ -60,36 +49,33 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th>No.</th>
                 <th>Transmittal Number</th>
                 <th>Date</th>
+                <th>Total DVs</th>
                 <th>Total Withdrawals</th>
-                <th>Total Dv</th>
             </thead>
 
             <tbody>
 
                 <?php
                 $total = 0;
-                foreach ($dataProvider as $i => $val) {
-                    // $query = (new \yii\db\Query())
-                    //     ->select(["SUM(dv_aucs_entries.amount_disbursed) as total_disbursed"])
-                    //     ->from('dv_aucs')
-                    //     ->join("LEFT JOIN", "dv_aucs_entries", "dv_aucs.id = dv_aucs_entries.dv_aucs_id")
-                    //     ->where("dv_aucs.id =:id", ['id' => $val->cashDisbursement->dv_aucs_id])
-                    //     ->one();
+                $ttlDvCnt = 0;
+                foreach ($items as $i => $itm) {
                     $q = $i + 1;
-                    $edited = $val['edited'] == 1 ? 'Edited' : '';
+                    $edited = '';
                     echo "<tr>
                         <td>$q</td>
-                        <td>" . $val['transmittal_number'] . ' ' . $edited . "</td>
-                        <td>{$val['date']}</td>
-                        <td>{$val['total_dv']}</td>
-                        <td style='text-align:right'>" . number_format($val['total_withdrawals'], 2) . "</td>
+                        <td>" . $itm['transmittal_number'] . ' ' . $edited . "</td>
+                        <td>{$itm['date']}</td>
+                        <td >{$itm['total_dv']}</td>
+                        <td style='text-align:right'>" . number_format($itm['total_withdrawals'], 2) . "</td>
                     </tr>";
-                    $total += floatval($val['total_withdrawals']);
+                    $total += floatval($itm['total_withdrawals']);
+                    $ttlDvCnt += intval($itm['total_dv']);
                 }
                 ?>
                 <tr>
 
-                    <td colspan="4" style="font-weight: bold;text-align:center"> Total</td>
+                    <td colspan="3" style="font-weight: bold;text-align:center"> Total</td>
+                    <td style='text-align:center'> <?= $ttlDvCnt ?></td>
                     <td style='text-align:right'> <?php echo number_format($total, 2); ?></td>
                 </tr>
             </tbody>
@@ -121,9 +107,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="col-sm-3 as">
                 <label for="qwe">OIC</label>
-                <!-- <select id="assignatory" onchange="sample(this)" name="assignatory" class=" select" style="width: 100%">
-                    <option></option>
-                </select> -->
+
                 <?php
                 echo Select2::widget([
                     'data' => ArrayHelper::map(Assignatory::find()->asArray()->all(), 'name', 'name'),
@@ -161,22 +145,10 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
     </div>
-    <!-- <script src="/dti-afms-2/frontend/web/js/jquery.min.js" type="text/javascript"></script>
-    <link href="/dti-afms-2/frontend/web/js/select2.min.js" />
-    <link href="/dti-afms-2/frontend/web/css/select2.min.css" rel="stylesheet" /> -->
+
     <script>
         var reference = []
-        // $(document).ready(function() {
-        //     reference = ["GAY A. TIDALGO"]
-        //     $('#assignatory').select2({
-        //         data: reference,
-        //         placeholder: "Select ",
 
-        //     })
-        // })
-        // $("#assignatory").change(function() {
-        //     console.log("qwe")
-        // })
         function oic_position(q) {
             console.log($(q).val())
             $('#oic_position_text').text($(q).val())
@@ -246,6 +218,7 @@ $this->params['breadcrumbs'][] = $this->title;
         padding: 8px;
         line-height: 1.42857143;
         vertical-align: top;
+        text-align: center;
 
     }
 
