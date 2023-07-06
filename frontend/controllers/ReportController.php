@@ -2404,10 +2404,22 @@ class ReportController extends \yii\web\Controller
                 ->queryAll();
             $begin_balance = 0;
             if (strtotime($from_reporting_period) > strtotime('2023-01')) {
-                $begin_balance = Yii::$app->db->createCommand("CALL prc_CadadrBgnBal(:reporting_period,:book_id)")
+                $check_bgn_bal = Yii::$app->db->createCommand("CALL prc_CadadrBgnBal(:reporting_period,:book_id)")
                     ->bindValue(':book_id', $book_id)
                     ->bindValue(':reporting_period', $from_reporting_period)
                     ->queryScalar();
+                $laps_amt = Yii::$app->db->createCommand("SELECT
+                SUM(cash_adjustment.amount) as ttl
+                FROM 
+               cash_adjustment
+                WHERE 
+               cash_adjustment.book_id = :book_id
+               AND cash_adjustment.reporting_period >= '2023-01'
+               AND cash_adjustment.reporting_period < :from_period")
+                    ->bindValue(':from_period', $from_reporting_period)
+                    ->bindValue(':book_id', $book_id)
+                    ->queryScalar();;
+                $begin_balance = floatval($check_bgn_bal) - floatval($laps_amt);
             }
             //     $query = Yii::$app->db->createCommand("SELECT * FROM cadadr
             //         WHERE 
