@@ -923,7 +923,7 @@ SweetAlertAsset::register($this);
             url: window.location.pathname + '?r=dv-aucs/get-object-code',
             data: {
                 reporting_period: $('#reporting_period').val(),
-                '_csrf-frontend': '<?= $csrfToken ?>'
+                '_csrf': '<?= $csrfToken ?>'
             },
             success: function(data) {
                 const res = JSON.parse(data)

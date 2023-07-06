@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = 'Update';
 $reporting_period = $model->reporting_period;
 $nature_of_transaction = $model->nature_of_transaction_id;
 $book = $model->book_id;
-$transaction_type = $model->transaction_type;
+$transaction_type = strtolower($model->transaction_type);
 $mrd_classification = $model->mrd_classification_id;
 $particular = $model->particular;
 
@@ -44,7 +44,9 @@ $payee = ArrayHelper::map($payee_query, 'id', 'account_name');
         'accounting_entries' => $accounting_entries,
         'dv_items' => $dv_items,
         'items' => $items,
-        'accEntryItems' => $accEntryItems
+        // 'accItems' => $accItems,
+        // 'advancesModel' => $advancesModel,
+        // 'advancesItems' => $advancesItems,
     ]) ?>
 
 </div>

@@ -46,25 +46,8 @@ class JevPreparation extends \yii\db\ActiveRecord
             [['explaination',], 'string', 'max' => 1000],
 
             [[
-                'responsibility_center_id',
-                'fund_cluster_code_id',
-                'reporting_period',
-                'date',
-                'jev_number',
-                'lddap_number',
                 'explaination',
-                'ref_number',
-                'cash_flow_id',
-                'payee_id',
-                'mrd_classification_id',
-                'check_ada',
-                'cadadr_serial_number',
-                'check_ada_number',
-                'book_id',
-                'entry_type',
-                'cash_disbursement_id',
-                'check_ada_date',
-                'dv_number',
+
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
 
             [['jev_number',], 'unique'],
