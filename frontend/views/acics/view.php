@@ -211,8 +211,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td colspan="6" class="ctr">
                         <div style='width:50%' class="flt-lft">
                             <span class="flt-lft">Approved by:</span><br><br>
-                            <u><b>GAY A. TIDALGO, CESO IV</b></u><br>
-                            <span>Region Director</span><br>
+                            <u><b> JOHN VOLTAIRE S. ANCLA, CPA </b></u><br>
+                            <span>Chief Administrative Officer </span>
                             <span>Signature over Printed Name of Head of <br> Office/Unit or his/her authorized representative</span>
                         </div>
                         <div style='width:50%' class="flt-lft">
