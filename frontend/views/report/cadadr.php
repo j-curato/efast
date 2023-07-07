@@ -116,8 +116,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th class='head' colspan="1"> 15/</th>
                 </tr>
                 <tr>
-                    <th colspan="7">ARLEEN P. PAHAMTANG</th>
-                    <th colspan="3">Administrative Officer III</th>
+                    <th colspan="7">MARRY ANN L. PASCUAL</th>
+                    <th colspan="3">>Administrative Officer V</th>
                     <th colspan="3">DTI 13 Caraga-RO</th>
                 </tr>
                 <tr>
@@ -439,7 +439,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
     //             <td  class='amount'>` + thousands_separators(check_issued) + `</td>
     //             <td  class='amount'>` + thousands_separators(ada_issued) + `</td>
     //             <td class='amount' >` + thousands_separators(balance.toFixed(2)) + `</td>
-                  
+
     //             </tr>`
     //         $('#cadadr tbody').append(row)
     //         total_nca_recieve += nca_recieve
@@ -465,16 +465,16 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
     //             <td  class='amount'>` + thousands_separators(total_check_issued) + `</td>
     //             <td class='amount' >` + thousands_separators(total_ada_issued) + `</td>
     //             <td  class='amount'>` + thousands_separators(balance.toFixed(2)) + `</td>
-                  
+
     //             </tr>`
     //     $('#cadadr tbody').append(row)
 
     //     if (adjustment.length >= 1) {
     //         row = `<tr class='data_row'>
-        
+
     //             <td colspan='13' style='font-weight:bold;background-color:#cccccc'>` + 'Adjustment' + `</td>
-  
-                  
+
+
     //             </tr>`
     //         $('#cadadr tbody').append(row)
 
@@ -501,7 +501,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
     //             <td  class='amount'></td>
     //             <td class='amount' >` + thousands_separators(adjust_amount) + `</td>
     //             <td  class='amount'>` + thousands_separators(balance.toFixed(2)) + `</td>
-                  
+
     //             </tr>`
     //         $('#cadadr tbody').append(row)
     //     }
