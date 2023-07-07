@@ -187,8 +187,8 @@ $this->params['breadcrumbs'][] = $this->title;
                             <span>Administrative Officer V </span>
                         </div>
                         <div class="signatory">
-                            <u><b> GAY A. TIDALGO, CESO IV </b></u><br>
-                            <span> Regional Director </span>
+                            <u><b> JOHN VOLTAIRE S. ANCLA, CPA </b></u><br>
+                            <span>Chief Administrative Officer </span>
                         </div>
                     </td>
 
