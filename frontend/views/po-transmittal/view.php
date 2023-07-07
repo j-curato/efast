@@ -26,8 +26,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 if (!empty($model->file_link)) {
                     echo Html::a('DV Scanned Copy Link ', $model->file_link, ['class' => 'btn btn-link', 'target' => '_blank']);
                 }
-                if (!empty($model->poTransmittalToCoa->po_transmittal_to_coa_number) && YIi::$app->user->can('super-user')) {
-                    echo  Html::a('Transmittal to Coa Link', ['/po-transmittal-to-coa/view', 'id' => $model->poTransmittalToCoa->po_transmittal_to_coa_number], ['class' => 'btn btn-link']);
+                if (!empty($model->poTransmittalToCoa->id) && YIi::$app->user->can('super-user')) {
+                    echo  Html::a('Transmittal to Coa Link', ['/po-transmittal-to-coa/view', 'id' => $model->poTransmittalToCoa->id], ['class' => 'btn btn-link']);
                 }
                 ?>
                 <?php
