@@ -65,7 +65,10 @@ class VwRadaiFormLddapAdasSearch extends VwRadaiFormLddapAdas
             // $query->where('0=1');
             return $dataProvider;
         }
-
+        if (empty($this->bookFilter)) {
+            $query->where('0=1');
+            return $dataProvider;
+        }
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,

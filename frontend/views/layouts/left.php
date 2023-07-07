@@ -370,6 +370,7 @@
                                         ['label' => 'ACIC`s', 'icon' => 'circle-o', 'url' => ['/acics'],],
                                         ['label' => 'ACIC in Bank', 'icon' => 'circle-o', 'url' => ['/acic-in-bank'],],
                                         ['label' => 'RCI', 'icon' => 'circle-o', 'url' => ['/rci'],],
+                                        ['label' => 'RADAI', 'icon' => 'circle-o', 'url' => ['/radai'],],
                                         ['label' => 'Cash Received', 'icon' => 'circle-o', 'url' => ['/cash-received'],],
                                         ['label' => 'Laps Amounts', 'icon' => 'circle-o', 'url' => ['/cash-adjustment'],],
                                         ['label' => 'Cancel Disbursement', 'icon' => 'circle-o', 'url' => ['/cash-disbursement/cancel-disbursement-index'],],

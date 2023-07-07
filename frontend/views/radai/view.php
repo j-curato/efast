@@ -37,12 +37,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 <u>DEPARTMENT OF TRADE AND INDUSTRY</u><br>
                 <u> &emsp;<?= $model->book->name ?? '' ?> &emsp;</u><br>
-                <u> &emsp;<?php 
-                // echo $model->book->account_name ?? '';
-                echo $model->book->account_number ?? ''; ?> &emsp;</u>
+                <u> &emsp;<?php
+                            // echo $model->book->account_name ?? '';
+                            echo $model->book->account_number ?? ''; ?> &emsp;</u>
             </th>
             <th colspan="3" class="no-bdr">
-                <span>Report No.:__________</span><br>
+                <span>Report No.: <u>&emsp; <?= $model->serial_number ?> &emsp;</u></span><br>
                 <span>Sheet No.:__________</span><br>
             </th>
 
@@ -105,10 +105,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
 </div>
 <style>
-    .radai-view{
+    .radai-view {
         background-color: white;
         padding: 3rem;
     }
+
     th,
     td {
         border: 1px solid black;
