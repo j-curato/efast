@@ -19,7 +19,11 @@ $itemRow = 0;
 ?>
 
 <div class="radai-form panel panel-default">
-
+    <u class="notes">
+        <li>Notes</li>
+        <li>Select Book to Display the LDDAP-ADAs according to the book selected</li>
+        <li>If the LDDAP-ADA is not in the list, make sure the mode of payment for LDDAP-ADA is 'w/ ADA,' and it should be in the ACIC in the Bank Module</li>
+    </u>
     <?php $form = ActiveForm::begin(); ?>
 
     <div class="row">
@@ -98,7 +102,7 @@ $itemRow = 0;
         'filterModel' => $searchModel,
         'panel' => [
             'type' => 'primary',
-            'heading' => 'RADAIs'
+            'heading' => 'LDDAP-ADAs'
         ],
         'pjax' => true,
         'columns' => [
@@ -136,6 +140,10 @@ $itemRow = 0;
 <style>
     .radai-form {
         padding: 2rem;
+    }
+
+    .notes> li {
+        color: red;
     }
 </style>
 <script>
