@@ -145,8 +145,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
                         <div class="signatory">
 
-                            <u><b> JOHN VOLTAIRE S. ANCLA, CPA </b></u><br>
-                            <span>Chief Administrative Officer </span>
+                            <u><b>GAY A. TIDALGO, CESO IV </b></u><br>
+                            <span>Regional Director </span>
                         </div>
 
                     </td>
@@ -187,8 +187,9 @@ $this->params['breadcrumbs'][] = $this->title;
                             <span>Administrative Officer V </span>
                         </div>
                         <div class="signatory">
-                            <u><b> JOHN VOLTAIRE S. ANCLA, CPA </b></u><br>
-                            <span>Chief Administrative Officer </span>
+
+                            <u><b>GAY A. TIDALGO, CESO IV </b></u><br>
+                            <span>Regional Director </span>
                         </div>
                     </td>
 

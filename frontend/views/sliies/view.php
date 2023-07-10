@@ -205,8 +205,9 @@ $blnk = "                <tr>
                                 <br>
                                 <br>
                                 <br>
-                                <u><b> JOHN VOLTAIRE S. ANCLA, CPA </b></u><br>
-                                <span>Chief Administrative Officer </span>
+
+                                <u><b>GAY A. TIDALGO, CESO IV </b></u><br>
+                                <span>Regional Director </span>
                             </div>
                         </div>
                     </td>
