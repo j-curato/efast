@@ -2590,7 +2590,7 @@ class ReportController extends \yii\web\Controller
             cte_adv.ttlAdvances as advances_amount,
             cte_adv.cur_ttl_withdrawal +  cte_adv.prev_ttl_withdrawal as total_liquidation,
             cte_adv.ttlAdvances - (cte_adv.cur_ttl_withdrawal+cte_adv.prev_ttl_withdrawal) as unliquidated
-            FROM  
+            FROM cash_disbursement
             JOIN cash_disbursement_items ON cash_disbursement.id = cash_disbursement_items.fk_cash_disbursement_id
             JOIN dv_aucs ON cash_disbursement_items.fk_dv_aucs_id = dv_aucs.id
             JOIN advances ON dv_aucs.id = advances.dv_aucs_id
