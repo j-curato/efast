@@ -4458,7 +4458,7 @@ class ReportController extends \yii\web\Controller
             cash_disbursement_items.is_deleted = 0
             AND 
             EXISTS (SELECT dv_aucs.id FROM dv_aucs WHERE dv_aucs.id = cash_disbursement_items.fk_dv_aucs_id AND dv_aucs.is_cancelled = 0)
-            
+            AND NOT EXISTS (SELECT c.parent_disbursement FROM cash_disbursement c WHERE c.is_cancelled = 1 AND  c.parent_disbursement = cash_disbursement.id)
             ),
             cte_ttl_dbs_dvs as (SELECT 
             
@@ -4515,7 +4515,7 @@ class ReportController extends \yii\web\Controller
         cash_disbursement_items.is_deleted = 0
         AND 
         EXISTS (SELECT dv_aucs.id FROM dv_aucs WHERE dv_aucs.id = cash_disbursement_items.fk_dv_aucs_id AND dv_aucs.is_cancelled = 0)
-        
+        AND NOT EXISTS (SELECT c.parent_disbursement FROM cash_disbursement c WHERE c.is_cancelled = 1 AND  c.parent_disbursement = cash_disbursement.id)
         ),
         
         cte_ttl_dbs_dvs_at_coa as (

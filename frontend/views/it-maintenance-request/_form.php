@@ -137,4 +137,8 @@ use yii\widgets\ActiveForm;
     .container {
         padding: 2rem;
     }
+
+    .it-maintenance-request-form {
+        padding: 2rem;
+    }
 </style>

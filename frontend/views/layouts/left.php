@@ -537,7 +537,6 @@
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Job Request', 'icon' => 'circle-o', 'url' => ['/maintenance-job-request'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Pre-Repair Inspection', 'icon' => 'circle-o', 'url' => ['/pre-repair-inspection'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Trip Ticket', 'icon' => 'circle-o', 'url' => ['/trip-ticket'],] : [],
-                                Yii::$app->user->can('super-user') ?     ['label' => 'IT Helpdesk', 'icon' => 'circle-o', 'url' => ['/it-maintenance-request'],] : [],
 
                             ],
                         ] : [],
@@ -618,6 +617,21 @@
 
                             ],
                         ] : ['label' => ''],
+                        [
+                            'label' => 'IT Helpdesk',
+                            'url' => '#',
+                            'items' => [
+                                [
+                                    'label' => 'Transactions',
+                                    'icon' => 'circle-o',
+                                    'url' => '#',
+                                    'items' => [
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'IT Maintenance Request', 'icon' => 'circle-o', 'url' => ['/it-maintenance-request'],] : [],
+                                    ],
+                                ],
+
+                            ],
+                        ],
                         Yii::$app->user->can('super-user') ?     ['label' => 'Travel Order', 'icon' => 'circle-o', 'url' => ['/travel-order'],] : [],
                         Yii::$app->user->can('super-user') ?     ['label' => 'Supervisor Validation Notes', 'icon' => 'circle-o', 'url' => ['/supervisor-validation-notes'],] : [],
 
