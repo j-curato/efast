@@ -131,6 +131,35 @@ class JevPreparationController extends Controller
             ],
         ];
     }
+    private function getDvCeckNum($id)
+    {
+        return !empty($id) ? Yii::$app->db->createCommand("SELECT
+            `cash_disbursement`.`check_or_ada_no`
+            FROM `cash_disbursement` 
+            JOIN `cash_disbursement_items` ON cash_disbursement.id = cash_disbursement_items.fk_cash_disbursement_id
+            WHERE `cash_disbursement`.`is_cancelled`=0
+            AND `cash_disbursement_items`.`is_deleted`=0
+            AND NOT EXISTS (SELECT `c`.`parent_disbursement` 
+            FROM `cash_disbursement` `c` 
+            WHERE `c`.`is_cancelled`=1 AND `c`.`parent_disbursement`=cash_disbursement.id)
+            AND cash_disbursement_items.fk_dv_aucs_id = :id")
+            ->bindValue(':id', $id)
+            ->queryScalar() : '';
+    }
+    private function getItems($id)
+    {
+        return Yii::$app->db->createCommand("SELECT 
+        jev_accounting_entries.id as item_id,
+        jev_accounting_entries.debit,
+        jev_accounting_entries.credit,
+        jev_accounting_entries.object_code,
+        accounting_codes.account_title
+        FROM
+         jev_accounting_entries 
+        LEFT JOIN accounting_codes ON jev_accounting_entries.object_code = accounting_codes.object_code WHERE jev_preparation_id =:id")
+            ->bindValue(':id', $id)
+            ->queryAll();
+    }
     public function beforeAction($action)
     {
 
@@ -170,11 +199,15 @@ class JevPreparationController extends Controller
      */
     public function actionView($id)
     {
-
+        $model =  $this->findModel($id);
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
+            'items' => $this->getItems($id),
+            'check_number' => $this->getDvCeckNum($model->dvAucs->id ?? ''),
+
         ]);
     }
+
 
     public function actionGeneralLedger()
     {
@@ -434,19 +467,39 @@ class JevPreparationController extends Controller
      * @return mixed
      */
 
-    public function insertEntries($jev_id, $object_codes, $debit = [], $credit = [])
+    public function insertEntries($jev_id, $items, $isUpdate = false)
     {
 
-
-        foreach ($object_codes as $i => $val) {
-
-            $entry = new JevAccountingEntries();
-            $entry->object_code = $val;
-            $entry->debit = !empty($debit[$i]) ? $debit[$i] : 0;
-            $entry->credit = !empty($credit[$i]) ? $credit[$i] : 0;
-            $entry->jev_preparation_id = $jev_id;
-            if ($entry->save(false)) {
+        try {
+            if ($isUpdate) {
+                $itemIds = array_column($items, 'item_id');
+                $params = [];
+                $sql = ' AND ';
+                $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $itemIds], $params);
+                Yii::$app->db->createCommand("UPDATE jev_accounting_entries SET is_deleted = 1 
+                WHERE 
+                jev_accounting_entries.is_deleted = 0
+                AND jev_accounting_entries.fk_acic_id = :id
+                $sql", $params)
+                    ->bindValue(':id', $jev_id)
+                    ->execute();
             }
+            foreach ($items as  $itm) {
+                $entry = !empty($itm['item_id']) ? JevAccountingEntries::findOne($itm['item_id']) : new JevAccountingEntries();
+                $entry->object_code = $itm['object_code'];
+                $entry->debit = $itm['debit'];
+                $entry->credit = $itm['credit'];
+                $entry->jev_preparation_id = $jev_id;
+                if (!$entry->validate()) {
+                    throw new ErrorException(json_encode($entry->errors));
+                }
+                if (!$entry->save(false)) {
+                    throw new ErrorException('Entry Model Save Failed');
+                }
+            }
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
         }
     }
     public function checkReportingPeriod($reporting_period)
@@ -563,55 +616,55 @@ class JevPreparationController extends Controller
             $model->entry_type = 'Non-Closing';
             $model->ref_number = 'GJ';
         }
-        // $modelJevItems = [new JevAccountingEntries()];
         if ($model->load(Yii::$app->request->post())) {
+            $items = Yii::$app->request->post('items') ?? [];
+            $debits = array_column($items, 'debit');
+            $credits = array_column($items, 'credit');
+            try {
+                $txn = Yii::$app->db->beginTransaction();
+                $check_ada = $model->check_ada;
 
-            $debits = $_POST['debit'];
-            $credits = $_POST['credit'];
-            $object_code = $_POST['object_code'];
-            $check_ada = $model->check_ada;
-            if (!$this->checkReportingPeriod($model->reporting_period)) {
-                return json_encode(['isSuccess' => false, 'error' => 'Disabled Reporting Period']);
-            }
-
-            if (!$this->checkDebitCredit($debits, $credits)) {
-                return json_encode(['isSuccess' => false, 'error' => 'Debit & Credit are Not Equal']);
-            }
-            if ($this->checkDv($model->cash_disbursement_id)) {
-                return json_encode(['isSuccess' => false, 'error' => 'DV is already have a JEV']);
-            }
-            if (strtolower($check_ada) === 'ada') {
-                $reference = 'ADADJ';
-            } else if (strtolower($check_ada) === 'check') {
-                $reference = 'CKDJ';
-            } else {
-                $reference =  $model->ref_number;
-            }
-            if ($reference == 'ADADJ' || $reference === 'CKDJ') {
-
-                if (empty($model->payee_id)) {
-                    return json_encode(['isSuccess' => false, 'error' => 'Payee Cannot be Blank']);
+                if (empty($items)) {
+                    throw new ErrorException("Entry Cannot be Empty");
                 }
-
-                if (empty($model->responsibility_center_id)) {
-                    return json_encode(['isSuccess' => false, 'error' => 'Responsibility Center Cannot be Blank']);
+                if (!$this->checkReportingPeriod($model->reporting_period)) {
+                    throw new ErrorException('Disabled Reporting Period');
                 }
-            }
-            $model->ref_number = $reference;
-            $model->jev_number = $reference;
-            $model->jev_number = $this->getJevNumber($model->book_id, $model->reporting_period, $reference, 1);
-
-            if ($model->form_token !== Yii::$app->session['jev_form_session']) {
-                return $this->redirect('index');
-            }
-            if ($model->validate()) {
-                if ($model->save(false)) {
-                    Yii::$app->session['jev_form_session'] = Yii::$app->getSecurity()->generateRandomString();
-                    $this->insertEntries($model->id, $object_code, $debits, $credits);
-                    return $this->redirect(['view', 'id' => $model->id]);
+                if (!$this->checkDebitCredit($debits, $credits)) {
+                    throw new ErrorException('Debit & Credit are Not Equal');
                 }
-            } else {
-                return json_encode($model->errors);
+                if (strtolower($check_ada) === 'ada') {
+                    $reference = 'ADADJ';
+                } else if (strtolower($check_ada) === 'check') {
+                    $reference = 'CKDJ';
+                } else {
+                    $reference =  $model->ref_number;
+                }
+                if ($reference == 'ADADJ' || $reference === 'CKDJ') {
+                    if (empty($model->payee_id)) {
+                        throw new ErrorException('Payee Cannot be Blank');
+                    }
+                    if (empty($model->responsibility_center_id)) {
+                        throw new ErrorException('Responsibility Center Cannot be Blank');
+                    }
+                }
+                $model->ref_number = $reference;
+                $model->jev_number = $this->getJevNumber($model->book_id, $model->reporting_period, $reference, 1);
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save Failed');
+                }
+                $insItems = $this->insertEntries($model->id, $items);
+                if ($insItems !== true) {
+                    throw new ErrorException($insItems);
+                }
+                $txn->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                $txn->rollBack();
+                return $e->getMessage();
             }
         }
 
@@ -643,84 +696,74 @@ class JevPreparationController extends Controller
         $model = $this->findModel($id);
         $oldModel = $this->findModel($id);
 
+
         if ($model->load(Yii::$app->request->post())) {
-            $debits = $_POST['debit'];
-            $credits = $_POST['credit'];
-            $object_code = $_POST['object_code'];
-            $check_ada = $model->check_ada;
-            if (!$this->checkReportingPeriod($model->reporting_period)) {
-                return json_encode(['isSuccess' => false, 'error' => 'Disabled Reporting Period']);
-            }
+            $items = Yii::$app->request->post('items') ?? [];
+            $debits = array_column($items, 'debit');
+            $credits = array_column($items, 'credit');
+            try {
+                $txn = Yii::$app->db->beginTransaction();
+                $check_ada = $model->check_ada;
 
-            if (!$this->checkDebitCredit($debits, $credits)) {
-                return json_encode(['isSuccess' => false, 'error' => 'Debit & Credit are Not Equal']);
-            }
-            if (intVal($model->cash_disbursement_id) !== intVal($oldModel->cash_disbursement_id)) {
-
-                if ($this->checkDv($model->cash_disbursement_id)) {
-                    return json_encode(['isSuccess' => false, 'error' => 'DV is already have a JEV']);
+                if (empty($items)) {
+                    throw new ErrorException("Entry Cannot be Empty");
                 }
-            }
-            if (strtolower($check_ada) === 'ada') {
-                $reference = 'ADADJ';
-            } else if (strtolower($check_ada) === 'check') {
-                $reference = 'CKDJ';
-            } else {
-                $reference =  $model->ref_number;
-            }
-            if ($reference == 'ADADJ' || $reference === 'CKDJ') {
-
-                if (empty($model->payee_id)) {
-                    return json_encode(['isSuccess' => false, 'error' => 'Payee Cannot be Blank']);
+                if (!$this->checkReportingPeriod($model->reporting_period)) {
+                    throw new ErrorException('Disabled Reporting Period');
                 }
-
-                if (empty($model->responsibility_center_id)) {
-                    return json_encode(['isSuccess' => false, 'error' => 'Responsibility Center Cannot be Blank']);
+                if (!$this->checkDebitCredit($debits, $credits)) {
+                    throw new ErrorException('Debit & Credit are Not Equal');
                 }
-            }
-            $model->ref_number = $reference;
-            $old_year  = intval(DateTime::createFromFormat('Y-m', $oldModel->reporting_period)->format('Y'));
-            $cur_year  = intval(DateTime::createFromFormat('Y-m', $model->reporting_period)->format('Y'));
-
-            if (
-                $model->ref_number != $oldModel->ref_number ||
-                $model->book_id != $oldModel->book_id ||
-                $old_year != $cur_year
-            ) {
-
-                $model->jev_number = $this->getJevNumber($model->book_id, $model->reporting_period, $reference, 1);
-            }
-            if ($model->validate()) {
-                if ($model->save(false)) {
-                    if (!empty($model->jevAccountingEntries)) {
-                        foreach ($model->jevAccountingEntries as $val) {
-                            $val->delete();
-                        }
+                if (strtolower($check_ada) === 'ada') {
+                    $reference = 'ADADJ';
+                } else if (strtolower($check_ada) === 'check') {
+                    $reference = 'CKDJ';
+                } else {
+                    $reference =  $model->ref_number;
+                }
+                if ($reference == 'ADADJ' || $reference === 'CKDJ') {
+                    if (empty($model->payee_id)) {
+                        throw new ErrorException('Payee Cannot be Blank');
                     }
-                    $this->insertEntries($model->id, $object_code, $debits, $credits);
-                    return $this->redirect(['view', 'id' => $model->id]);
+                    if (empty($model->responsibility_center_id)) {
+                        throw new ErrorException('Responsibility Center Cannot be Blank');
+                    }
                 }
-            } else {
-                return json_encode($model->errors);
+                $model->ref_number = $reference;
+                $old_year  = intval(DateTime::createFromFormat('Y-m', $oldModel->reporting_period)->format('Y'));
+                $cur_year  = intval(DateTime::createFromFormat('Y-m', $model->reporting_period)->format('Y'));
+
+                if (
+                    $model->ref_number != $oldModel->ref_number ||
+                    $model->book_id != $oldModel->book_id ||
+                    $old_year != $cur_year
+                ) {
+
+                    $model->jev_number = $this->getJevNumber($model->book_id, $model->reporting_period, $reference, 1);
+                }
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save Failed');
+                }
+                $insItems = $this->insertEntries($model->id, $items);
+                if ($insItems !== true) {
+                    throw new ErrorException($insItems);
+                }
+                $txn->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                $txn->rollBack();
+                return $e->getMessage();
             }
         }
 
-        $entries = Yii::$app->db->createCommand("SELECT 
-        jev_accounting_entries.id,
-        jev_accounting_entries.debit,
-        jev_accounting_entries.credit,
-        jev_accounting_entries.object_code,
-        accounting_codes.account_title
-        FROM
-         jev_accounting_entries 
-        LEFT JOIN accounting_codes ON jev_accounting_entries.object_code = accounting_codes.object_code WHERE jev_preparation_id =:id")
-            ->bindValue(':id', $model->id)
-            ->queryAll();
 
 
         return $this->render('update', [
             'model' => $model,
-            'entries' => $entries
+            'entries' => $this->getItems($id)
 
         ]);
     }
@@ -3296,5 +3339,39 @@ class JevPreparationController extends Controller
             'entries' => $entries,
 
         ]);
+    }
+    public function actionGetDvDetails()
+    {
+        if (Yii::$app->request->post()) {
+            $id  = Yii::$app->request->post('id');
+            $dv_details = Yii::$app->db->createCommand("SELECT 
+            dv_aucs.reporting_period,
+            payee.id as payee_id,
+            payee.account_name as payee_name,
+            dv_aucs.book_id,
+            dv_aucs.particular
+            FROM 
+            dv_aucs
+            LEFT JOIN payee ON dv_aucs.payee_id = payee.id
+            WHERE dv_aucs.id = :id
+            ")
+                ->bindValue(':id', $id)
+                ->queryOne();
+            $dv_entries = Yii::$app->db->createCommand("SELECT 
+            dv_accounting_entries.debit,
+            dv_accounting_entries.credit,
+            accounting_codes.object_code,
+            accounting_codes.account_title
+            FROM dv_accounting_entries
+            LEFT JOIN accounting_codes ON dv_accounting_entries.object_code = accounting_codes.object_code
+            WHERE 
+            dv_accounting_entries.dv_aucs_id = :id
+            ")->bindValue(':id', $id)
+                ->queryAll();
+            return json_encode([
+                'dv_details' => $dv_details,
+                'dv_entries' => $dv_entries,
+            ]);
+        }
     }
 }

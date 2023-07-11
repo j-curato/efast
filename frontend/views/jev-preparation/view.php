@@ -20,80 +20,20 @@ $this->params['breadcrumbs'][] = ['label' => 'Jev Preparations', 'url' => ['inde
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 Select2Asset::register($this);
+
+
 ?>
 <div class="jev-preparation-view" style="box-shadow: none;border:none">
-
-    <!-- <h1><?= Html::encode($this->title) ?></h1> -->
-    <?php $t = yii::$app->request->baseUrl . '/index.php?r=jev-preparation/delete&id=' . $model->id; ?>
-    <p class="actions" style="margin-left:50px;">
-        <?= Html::a('Update', ['update', 'id' => $model->id, 'duplicate' => false], ['class' => 'btn btn-primary']) ?>
-        <?php
-        //  Html::a('Delete', ['delete', 'id' => $model->id], [
-        //     'class' => 'btn btn-danger delete',
-
-        // 'data' => [
-        //     'confirm' => 'Are you sure you want to delete this item?',
-        //     'method' => 'post',
-        // ],
-        // ])
-        $q = JevReportingPeriod::find()->all();
-        ?>
-
-        <?= Html::button('Print', ['onclick' => 'window.print()', 'class' => 'btn btn-success print']) ?>
-        <?php
-        if (!empty($model->cash_disbursement_id)) {
-
-            $q = (new \yii\db\Query())
-                ->select('dv_aucs.id')
-                ->from('dv_aucs')
-                ->where('dv_aucs.dv_number =:dv_number', ['dv_number' => $model->dv_number])
-                ->one();
-            if (!empty($q)) {
-                $dv_link = yii::$app->request->baseUrl . '/index.php?r=dv-aucs/view&id=' . $q['id'];
-                echo "<a type='button' href='$dv_link' class='btn btn-success'>DV</a>";
-            }
-        }
-        if (!empty($model->cash_disbursement_id)) {
-            $cash_link = yii::$app->request->baseUrl . '/index.php?r=cash-disbursement/view&id=' . $model->cash_disbursement_id;
-            echo "<a type='button' href='$cash_link' class='btn btn-warning'>Cash</a>";
-        }
-
-        ?>
-
-    </p>
-
-    <?php
-    //  DetailView::widget([
-
-    //     'model' => $model,
-    //     'attributes' => [
-    //         'id', [
-    //             'attribute' => 'responsibility_center_id',
-    //             'style'=>'border:2px solid red'
-    //         ],
-
-    //         'fund_cluster_code_id',
-    //         'reporting_period',
-    //         'date',
-    //         'jev_number',
-    //         'dv_number',
-    //         'lddap_number',
-    //         'entity_name',
-    //         'explaination',
-    //     ],
-    // ]) 
-    $total_debit = 0;
-    $total_credit = 0;
-    ?>
-
-
 
 
 
     <div class="container ">
-
+        <p>
+            <?= Html::a('Update', ['update', 'id' => $model->id, 'duplicate' => false], ['class' => 'btn btn-primary']) ?>
+            <?= Html::button('<i class="fa fa-print"></i> Print', ['onclick' => 'window.print()', 'class' => 'btn btn-success print']) ?>
+            <?= !empty($model->fk_dv_aucs_id) ?  Html::a('DV Link', ['dv-aucs/view', 'id' => $model->fk_dv_aucs_id], ['class' => 'btn btn-link']) : '' ?>
+        </p>
         <table id="data_table">
-
             <thead>
                 <tr>
                     <th rowspan="2" colspan="2">
@@ -105,44 +45,36 @@ Select2Asset::register($this);
                         <div style="padding:5px ;align-items:center;">
 
                             <span>
+                                <span><?= !empty($model->payee->account_name) ? 'Payee' : 'Entity Name' ?> :</span>
+                                <u>&emsp;<?= $model->payee->account_name ?? 'Department of Trade and Industry' ?> &emsp;</u>
+
                                 <?php
 
-                                if (!empty($model->cash_disbursement_id)) {
-                                    echo "<span>Payee :</span>";
-                                    echo "<span>{$model->cashDisbursement->dvAucs->payee->account_name}</span>";
-                                } else {
-                                    if (!empty($model->payee_id)) {
-                                        echo "<span>Payee :</span>";
-                                        echo "<span>{$model->payee->account_name}</span>";
-                                    } else {
-                                        echo   "<span>Entity Name :</span>";
-                                        echo   "<span>Department of Trade and Industry</span>";
-                                    }
-                                }
+                                // if (!empty($model->cash_disbursement_id)) {
+                                //     echo "<span>Payee :</span>";
+                                //     echo "<span>{$model->cashDisbursement->dvAucs->payee->account_name}</span>";
+                                // } else {
+                                //     if (!empty($model->payee_id)) {
+                                //         echo "<span>Payee :</span>";
+                                //         echo "<span>{$model->payee->account_name}</span>";
+                                //     } else {
+                                //         echo   "<span>Entity Name :</span>";
+                                //         echo   "<span>Department of Trade and Industry</span>";
+                                //     }
+                                // }
 
                                 ?>
                             </span>
                         </div>
                         <div style="padding:5px ;align-items:center;">
-                            <span>
-                                Fund Cluster :
-                            </span>
-                            <span>
-                                <?php echo ($model->books) ? $model->books->name : "";
-
-                                ?>
-                            </span>
+                            <span>Fund Cluster :</span>
+                            <u>&emsp;<?= $model->books->name ?? "" ?>&emsp;</u>
                         </div>
                     </th>
 
                     <th rowspan="1" colspan="3">
-                        <span>
-                            JEV #:
-                        </span>
-                        <span>
-                            <?php echo $model->jev_number ?>
-
-                        </span>
+                        <span>JEV #:</span>
+                        <u>&emsp;<?= $model->jev_number ?>&emsp;</u>
                     </th>
 
                 </tr>
@@ -152,17 +84,13 @@ Select2Asset::register($this);
                             <span>
                                 Date:
                             </span>
-                            <span>
-                                <?php echo $model->date ?>
-                            </span>
+                            <u>&emsp;<?= $model->date ?>&emsp;</u>
                         </div>
                         <div>
                             <span>
                                 Reporting Period:
                             </span>
-                            <span>
-                                <?php echo $model->reporting_period ?>
-                            </span>
+                            <u>&emsp;<?= $model->reporting_period ?>&emsp;</u>
                         </div>
                     </th>
 
@@ -182,7 +110,7 @@ Select2Asset::register($this);
                     <th rowspan="2">
                         UACS Object Code
                     </th>
-                    <th colspan="2">
+                    <th colspan="2" class="ctr">
                         Amount
                     </th>
 
@@ -210,86 +138,42 @@ Select2Asset::register($this);
                     <td></td>
                 </tr>
 
+
                 <?php
-                //   $model->jevAccountingEntries->orderBy('debit DESC');
-                $arr = [];
-                ?>
-                <?php
-                $xx = $model->jevAccountingEntries;
-                foreach ($model->jevAccountingEntries as $key => $value) : ?>
-                    <?php
-                    $general_ledger = '';
-                    $object_code = '';
-                    // if ($value->lvl === 1) {
-                    //     $general_ledger = $value->chartOfAccount->general_ledger;
-                    //     $object_code = $value->chartOfAccount->uacs;
-                    // } else if ($value->lvl === 2) {
-                    //     $q = SubAccounts1::find()->where("object_code =:object_code", ['object_code' => $value->object_code])->one();
-                    //     $general_ledger = $q->name;
-                    //     $object_code = $q->object_code;
-                    // } else if ($value->lvl === 3) {
-                    //     $q = SubAccounts2::find()->where("object_code =:object_code", ['object_code' => $value->object_code])->one();
-                    //     $general_ledger = $q->name;
-                    //     $object_code = $q->object_code;
-                    // }
-                    $q = Yii::$app->db->createCommand('SELECT * FROM accounting_codes where object_code =:object_code')
-                        ->bindValue(":object_code", $value->object_code)
-                        ->queryOne();
-                    if (!empty($q)) {
 
-                        $general_ledger = $q['account_title'];
-                        $object_code = $q['object_code'];
-                    }
-
-                    $arr[] = [
-                        'general_ledger' => $general_ledger,
-                        'object_code' => $object_code,
-                        'debit' => $value->debit,
-                        'credit' => $value->credit,
-                        'lvl' => $value->lvl,
-
-                    ];
-                    $total_credit += $value->credit;
-
-                    $total_debit += $value->debit;
-                    ?>
-                <?php endforeach; ?>
-                <?php
-                ArrayHelper::multisort($arr, ['credit', [SORT_ASC]]);
-                foreach ($arr as $val) {
-                    $debit = $val['debit'] != 0 ? number_format($val['debit'], 2) : '';
-                    $credit = $val['credit'] != 0 ? number_format($val['credit'], 2) : '';
+                $total_credit = 0;
+                $total_debit = 0;
+                foreach ($items as $itm) {
+                    $total_credit += floatval($itm['debit']);
+                    $total_debit += floatval($itm['debit']);
                     echo "<tr>
                             <td></td>
-                            <td>{$val['general_ledger']}</td>
-                            <td>{$val['object_code']}</td>
-                            <td style='text-align:right'>$debit </td>
-                            <td style='text-align:right'> $credit</td>         
+                            <td>{$itm['account_title']}</td>
+                            <td>{$itm['object_code']}</td>
+                            <td style='text-align:right'>" . number_format($itm['debit'], 2) . " </td>
+                            <td style='text-align:right'>" . number_format($itm['credit'], 2) . "</td>         
                         </tr>";
                 }
                 ?>
 
                 <tr>
                     <td>DV# </td>
-                    <td><?php echo $model->dv_number ?></td>
+                    <td><?= $model->dvAucs->dv_number ?? '' ?></td>
                     <td></td>
                     <td></td>
                     <td></td>
                 </tr>
                 <tr>
-                    <?php
-                    if (strtolower($model->check_ada) == 'ada') {
-                        echo "<td>LDDAP#</td>";
-                        // echo "<td>{$model->lddap_number}</td>";
-                    } else if (strtolower($model->check_ada) == 'check') {
-                        echo "<td>CHECK#</td>";
-                    } else {
-                        echo "<td style='padding:12px'></td>";
-                        // echo "<td></td>";
-                    }
-                    echo "<td>{$model->check_ada_number}</td>";
-                    ?>
-
+                    <td>
+                        <?php
+                        if (strtolower($model->check_ada) == 'ada') {
+                            echo "LDDAP#";
+                        } else if (strtolower($model->check_ada) == 'check') {
+                            echo "CHECK#";
+                        }
+                        ?>
+                    </td>
+                    <td><?= $check_number ?></td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -300,17 +184,17 @@ Select2Asset::register($this);
                 <tr>
                     <td></td>
                     <td></td>
-                    <td>Total</td>
-                    <td class="amount"><?php echo number_format($total_debit, 2); ?></td>
-                    <td class="amount"><?php echo number_format($total_credit, 2); ?></td>
+                    <th class="ctr">Total</th>
+                    <th class="amount"><?= number_format($total_debit, 2); ?></th>
+                    <th class="amount"><?= number_format($total_credit, 2); ?></th>
                 </tr>
                 <tr>
-                    <td colspan="2" style="text-align: center;">
-
-                        <div>
+                    <td colspan="5">
+                        <div style='width:50%;float:left;text-align:center;' class="flt-lft">
                             <h6 class="pull-left">
                                 Prepared By:
                             </h6>
+                            <br>
                             <br>
                             <br>
                             <br>
@@ -322,29 +206,29 @@ Select2Asset::register($this);
                             <br>
                             <span class='position'></span>
                         </div>
-
-                    </td>
-                    <td colspan="3">
-
-                        <div>
-                            <h6>
+                        <div style='width:50%;float:left;text-align:center' class="flt-lft">
+                            <h6 class="pull-left">
                                 Certified Correct:
                             </h6>
-                        </div>
-                        <div style="text-align: center;">
+                            <br>
+                            <br>
                             <div style="width: 70px;height:50px;margin-left:auto;margin-right:auto">
                                 <?= Html::img(Yii::$app->request->baseUrl . '/frontend/web/charles_sign.png', [
                                     'alt' => 'some', 'class' => 'pull-left img-responsive',
                                     'style' => 'width: 80px;height:50px;margin-left:auto'
                                 ]); ?>
                             </div>
+                            <br>
+
                             <h5>
                                 CHARLIE C. DECHOS, CPA
                             </h5>
-
                             <h6>
                                 Accountant III
                             </h6>
+                        </div>
+
+
                     </td>
 
                 </tr>
@@ -366,6 +250,10 @@ Select2Asset::register($this);
 
         .amount {
             text-align: right;
+        }
+
+        .ctr {
+            text-align: center;
         }
 
         th,
@@ -467,7 +355,9 @@ Select2Asset::register($this);
         }
 
         @media print {
-            .actions {
+
+            .actions,
+            .btn {
                 display: none;
             }
 

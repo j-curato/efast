@@ -13,7 +13,7 @@ $this->params['breadcrumbs'][] = 'Update';
 <div class="jev-preparation-update">
 
 
-    <?= $this->render('_form_new', [
+    <?= $this->render('_form', [
         'model' => $model,
         'entries'=>$entries
   

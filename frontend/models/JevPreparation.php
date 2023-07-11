@@ -38,8 +38,8 @@ class JevPreparation extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['book_id', 'reporting_period', 'date', 'jev_number', 'explaination', 'check_ada_date', 'entry_type'], 'required'],
-            [['responsibility_center_id', 'fund_cluster_code_id', 'cash_flow_id', 'payee_id', 'book_id', 'cash_disbursement_id', 'fk_derecognition_id'], 'integer'],
+            [['book_id', 'reporting_period', 'date', 'jev_number', 'explaination',  'entry_type'], 'required'],
+            [['responsibility_center_id', 'fund_cluster_code_id', 'cash_flow_id', 'payee_id', 'book_id', 'cash_disbursement_id', 'fk_derecognition_id', 'fk_dv_aucs_id'], 'integer'],
             [['date', 'check_ada_date', 'check_ada_number'], 'safe'],
             [['reporting_period', 'entry_type'], 'string', 'max' => 50],
             [['jev_number', 'dv_number', 'lddap_number', 'ref_number'], 'string', 'max' => 100],
@@ -81,12 +81,12 @@ class JevPreparation extends \yii\db\ActiveRecord
             'check_ada' => 'Check ADA',
             'cadadr_serial_number' => 'CADADR Serial Number',
             'check_ada_number' => 'Check/ADA Number',
-
             'book_id' => 'Book',
             'entry_type' => 'Entry Type',
             'check_ada_date' => 'Check/ADA Date',
             'cash_disbursement_id' => 'DV Number',
             'fk_derecognition_id' => 'fk_derecognition_id',
+            'fk_dv_aucs_id' => 'DV Number'
 
         ];
     }
@@ -131,5 +131,9 @@ class JevPreparation extends \yii\db\ActiveRecord
     public function getCashDisbursement()
     {
         return $this->hasOne(CashDisbursement::class, ['id' => 'cash_disbursement_id']);
+    }
+    public function getDvAucs()
+    {
+        return $this->hasOne(DvAucs::class, ['id' => 'fk_dv_aucs_id']);
     }
 }

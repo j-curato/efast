@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-create">
 
-    <?= $this->render('_form_new', [
+    <?= $this->render('_form', [
         'model' => $model,
         'type' => $type,
         'entries' => $entries,
