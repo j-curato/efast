@@ -59,6 +59,15 @@ $this->params['breadcrumbs'][] = $this->title;
 // echo "<button type='submit' class='btn btn-success' id='save'>Save</button>";
 // echo '<form>';
 // Modal::end();
+
+$transmittal_id = Yii::$app->db->createCommand("SELECT 
+po_transmittal_entries.fk_po_transmittal_id
+FROM po_transmittal_entries
+
+ WHERE po_transmittal_entries.liquidation_id = :id
+AND po_transmittal_entries.is_deleted = 0")
+    ->bindValue(':id', $model->id)
+    ->queryScalar();
 ?>
 <div class="liquidation-view">
 
@@ -70,11 +79,12 @@ $this->params['breadcrumbs'][] = $this->title;
             <p>
                 <?= Html::a('Re-Align/Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
                 <?php
-
                 if (Yii::$app->user->can('super-user')) {
                     echo Html::button(empty($model->document_link) ? 'Add File Link' : 'Update File Link', ['class' => "btn btn-success", 'data-target' => "#uploadmodal", 'data-toggle' => "modal"]);
                 }
-
+                if ($transmittal_id) {
+                    echo Html::a('Transmital Link', ['po-transmittal/view', 'id' => $transmittal_id], ['class' => "btn btn-link"]);
+                }
                 $btn_clr = 'btn-danger';
                 $text = 'Exclude ';
 
