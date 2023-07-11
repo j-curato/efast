@@ -15,7 +15,7 @@ use app\models\NetAssetEquity;
 use app\models\Payee;
 use app\models\SubAccounts1;
 use app\models\SubAccounts2;
-
+use app\models\VwJevPreparationIndexViewSearch;
 use DateTime;
 use ErrorException;
 use Exception;
@@ -182,7 +182,7 @@ class JevPreparationController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new JevPreparationSearch();
+        $searchModel = new VwJevPreparationIndexViewSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [

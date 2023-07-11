@@ -216,45 +216,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
     ],
     'toggleDataContainer' => ['class' => 'btn-group mr-2'],
+
+
     'columns' => [
-
-      'jev_number',
-      [
-        'label' => 'Payee',
-        'attribute' => 'payee_id',
-        'value' => 'payee.account_name'
-      ],
-      [
-        'label' => 'Particular',
-        'attribute' => 'explaination',
-        'options' => [
-          'width' => '50',
-        ]
-      ],
-      [
-        'label' => 'Reference',
-        'attribute' => 'ref_number',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => $reference,
-        'filterWidgetOptions' => [
-          'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => 'Select Reference', 'multiple' => false],
-        'format' => 'raw'
-      ],
-
-      [
-        'label' => 'Book',
-        'attribute' => 'book_id',
-        'value' => 'books.name',
-        'filterType' => GridView::FILTER_SELECT2,
-        'filter' => ArrayHelper::map(Books::find()->orderBy('name')->asArray()->all(), 'id', 'name'),
-        'filterWidgetOptions' => [
-          'pluginOptions' => ['allowClear' => true],
-        ],
-        'filterInputOptions' => ['placeholder' => 'Select Book', 'multiple' => false],
-        'format' => 'raw'
-      ],
       [
         'attribute' => 'reporting_period',
         'filterType' => GridView::FILTER_DATE,
@@ -272,6 +236,44 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
 
       ],
+      'jev_number',
+
+      [
+        'label' => 'Payee',
+        'attribute' => 'payee',
+      ],
+      [
+        'label' => 'Particular',
+        'attribute' => 'explaination',
+        'options' => [
+          'width' => '50',
+        ]
+      ],
+      'dv_number',
+      [
+        'label' => 'Reference',
+        'attribute' => 'reference_type',
+        'filterType' => GridView::FILTER_SELECT2,
+        'filter' => $reference,
+        'filterWidgetOptions' => [
+          'pluginOptions' => ['allowClear' => true],
+        ],
+        'filterInputOptions' => ['placeholder' => 'Select Reference', 'multiple' => false],
+        'format' => 'raw'
+      ],
+
+      [
+        'label' => 'Book',
+        'attribute' => 'book_name',
+        'filterType' => GridView::FILTER_SELECT2,
+        'filter' => ArrayHelper::map(Books::find()->orderBy('name')->asArray()->all(), 'id', 'name'),
+        'filterWidgetOptions' => [
+          'pluginOptions' => ['allowClear' => true],
+        ],
+        'filterInputOptions' => ['placeholder' => 'Select Book', 'multiple' => false],
+        'format' => 'raw'
+      ],
+
       [
         'attribute' => 'date',
         'value' => 'date',
@@ -291,12 +293,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
       ],
 
-      'dv_number',
-      'lddap_number',
-      'check_ada_number',
-
-
-
+      'check_ada',
+      'entry_type',
 
 
       [

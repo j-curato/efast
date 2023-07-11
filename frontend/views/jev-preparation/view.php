@@ -170,7 +170,8 @@ Select2Asset::register($this);
                             echo "LDDAP#";
                         } else if (strtolower($model->check_ada) == 'check') {
                             echo "CHECK#";
-                        }
+                        } else
+                            echo '<br>'
                         ?>
                     </td>
                     <td><?= $check_number ?></td>
