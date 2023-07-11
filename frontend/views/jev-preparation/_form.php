@@ -232,12 +232,12 @@ if (!empty($model->fk_dv_aucs_id)) {
                         </td>
                         <td style='width: 150px;'>
                              <label for='debit'>Debit</label>
-                            <input type='text' class='  mask-amount' placeholder='Debit' value='$debit'>
+                            <input type='text' class='  mask-amount' placeholder='Debit' value='" . number_format($debit, 2) . "'>
                             <input type='hidden' name='items[$entry_row][debit]' class='debit main_amount' placeholder='Debit' value='$debit'>
                         </td>
                         <td style='width: 150px;'>
                         <label for='credit'>Credit</label>
-                            <input type='text' class='  mask-amount' placeholder='Credit' value='$credit'>
+                            <input type='text' class='  mask-amount' placeholder='Credit' value='" . number_format($credit, 2) . "'>
                             <input type='hidden' name='items[$entry_row][credit]' class='credit main_amount' placeholder='Credit' value='$credit'>
                         </td>
                         <td style='width: 50px;'>
