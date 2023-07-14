@@ -34,7 +34,7 @@
     "wbraganca/yii2-dynamicform": "dev-master",
     "kartik-v/yii2-number": "dev-master",
     "aryelds/yii2-sweet-alert": "@dev",
-    "phpoffice/phpspreadsheet": "^1.8",
+    "phpoffice/phpspreadsheet": "^1.23",
     "philippfrenzel/yii2fullcalendar": "*",
     "edofre/yii2-fullcalendar": "V1.0.11",
     "kartik-v/yii2-export": "@dev",
