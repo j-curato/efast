@@ -297,7 +297,7 @@ class AlphalistController extends Controller
                             FROM liquidation_entries
                             INNER JOIN liquidation ON liquidation_entries.liquidation_id = liquidation.id
                             INNER JOIN advances_entries ON liquidation_entries.advances_entries_id = advances_entries.id 
-                            INNER JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
+                            -- INNER JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
                             WHERE liquidation.province = :province
                             AND liquidation.check_date >='2022-04-01'
                             AND  liquidation.check_date <= :_range
