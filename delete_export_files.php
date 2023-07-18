@@ -1,6 +1,6 @@
 <?php
 
-$subdirectory = '//exports/';
+$subdirectory = '//transaction/';
 $parentDir = dirname(__FILE__);
 $targetFolder = $parentDir . $subdirectory;
 // Get a list of files in the folder
