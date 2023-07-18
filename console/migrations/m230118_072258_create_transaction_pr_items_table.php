@@ -16,46 +16,46 @@ class m230118_072258_create_transaction_pr_items_table extends Migration
      */
     public function safeUp()
     {
-        // $this->createTable('{{%transaction_pr_items}}', [
-        //     'id' => $this->primaryKey(),
-        //     'fk_transaction_id' => $this->bigInteger(),
-        //     'fk_pr_purchase_request_id' => $this->bigInteger(),
-        //     'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')
-        // ]);
+        $this->createTable('{{%transaction_pr_items}}', [
+            'id' => $this->primaryKey(),
+            'fk_transaction_id' => $this->integer(),
+            'fk_pr_purchase_request_id' => $this->bigInteger(),
+            'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')
+        ]);
 
-        // // creates index for column `fk_transaction_id`
-        // $this->createIndex(
-        //     '{{%idx-transaction_pr_items-fk_transaction_id}}',
-        //     '{{%transaction_pr_items}}',
-        //     'fk_transaction_id'
-        // );
+        // creates index for column `fk_transaction_id`
+        $this->createIndex(
+            '{{%idx-transaction_pr_items-fk_transaction_id}}',
+            '{{%transaction_pr_items}}',
+            'fk_transaction_id'
+        );
 
-        // // add foreign key for table `{{%transaction}}`
-        // $this->addForeignKey(
-        //     '{{%fk-transaction_pr_items-fk_transaction_id}}',
-        //     '{{%transaction_pr_items}}',
-        //     'fk_transaction_id',
-        //     '{{%transaction}}',
-        //     'id',
-        //     'CASCADE'
-        // );
+        // add foreign key for table `{{%transaction}}`
+        $this->addForeignKey(
+            '{{%fk-transaction_pr_items-fk_transaction_id}}',
+            '{{%transaction_pr_items}}',
+            'fk_transaction_id',
+            '{{%transaction}}',
+            'id',
+            'CASCADE'
+        );
 
-        // // creates index for column `fk_pr_purchase_request_id`
-        // $this->createIndex(
-        //     '{{%idx-transaction_pr_items-fk_pr_purchase_request_id}}',
-        //     '{{%transaction_pr_items}}',
-        //     'fk_pr_purchase_request_id'
-        // );
+        // creates index for column `fk_pr_purchase_request_id`
+        $this->createIndex(
+            '{{%idx-transaction_pr_items-fk_pr_purchase_request_id}}',
+            '{{%transaction_pr_items}}',
+            'fk_pr_purchase_request_id'
+        );
 
-        // // add foreign key for table `{{%pr_purchase_request}}`
-        // $this->addForeignKey(
-        //     '{{%fk-transaction_pr_items-fk_pr_purchase_request_id}}',
-        //     '{{%transaction_pr_items}}',
-        //     'fk_pr_purchase_request_id',
-        //     '{{%pr_purchase_request}}',
-        //     'id',
-        //     'RESTRICT'
-        // );
+        // add foreign key for table `{{%pr_purchase_request}}`
+        $this->addForeignKey(
+            '{{%fk-transaction_pr_items-fk_pr_purchase_request_id}}',
+            '{{%transaction_pr_items}}',
+            'fk_pr_purchase_request_id',
+            '{{%pr_purchase_request}}',
+            'id',
+            'RESTRICT'
+        );
     }
 
     /**

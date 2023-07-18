@@ -668,7 +668,7 @@ LEFT JOIN  (SELECT
 
             // $command = $query->createCommand();
             // $data = $command->queryAll();
-            $data = Yii::$app->cloud_db->createCommand("SELECT cdr.id, cdr.serial_number as `text` FROM cdr WHERE cdr.serial_number LIKE :cdr")
+            $data = Yii::$app->db->createCommand("SELECT cdr.id, cdr.serial_number as `text` FROM cdr WHERE cdr.serial_number LIKE :cdr")
                 ->bindValue(':cdr', '%' . $q . '%')->queryAll();
             $out['results'] = array_values($data);
         }
@@ -679,7 +679,7 @@ LEFT JOIN  (SELECT
 
         if (Yii::$app->request->isPost) {
 
-            $cdr_details = Yii::$app->cloud_db->createCommand("SELECT 
+            $cdr_details = Yii::$app->db->createCommand("SELECT 
                         reporting_period,
                         report_type,
                         fk_bank_account_id
@@ -690,7 +690,7 @@ LEFT JOIN  (SELECT
                 ->queryOne();
             if (!empty($cdr_details)) {
 
-                $query = Yii::$app->cloud_db->createCommand("SELECT 
+                $query = Yii::$app->db->createCommand("SELECT 
                 
                 accounting_codes.account_title,
                 cdr_conso.new_object_code as object_code,
