@@ -11,6 +11,7 @@ use app\models\LiquidataionSearch;
 use app\models\LiquidationEntries;
 use app\models\LiquidationEntriesSearch;
 use app\models\LiquidationEntriesViewSearch;
+use app\models\PoTransaction;
 use aryelds\sweetalert\SweetAlert;
 use DateTime;
 use ErrorException;
@@ -187,7 +188,7 @@ class LiquidationController extends Controller
         $withdrawal = [],
         $vat_nonvat = [],
         $expanded_tax = [],
-        $bank_account_id
+        $bank_account_id = ''
     ) {
 
 
@@ -353,9 +354,6 @@ class LiquidationController extends Controller
             $check_number = $_POST['check_number'];
             $po_transaction_id = $_POST['po_transaction_id'];
             $province = Yii::$app->user->identity->province;
-
-
-
             $model->dv_number = $this->getDvNumber($reporting_period);
             $model->reporting_period = $reporting_period;
             $model->province = $province;
@@ -383,8 +381,6 @@ class LiquidationController extends Controller
                 if ($validateReportingPeriod !== true) {
                     throw new ErrorException($validateReportingPeriod);
                 }
-
-
                 if ($model->save(false)) {
 
                     $flag = $this->insertItems(
@@ -1107,219 +1103,210 @@ class LiquidationController extends Controller
     //         // }
     //     }
     // }
+    public function getTxnTrackingNumber($responsibility_center_id, $reporting_period, $province)
+    {
+        // $date = date("Y");
+        $reporting_period_year = DateTime::createFromFormat('Y-m', $reporting_period)->format('Y');
+        $date = $reporting_period_year;
+        $responsibility_center = (new \yii\db\Query())
+            ->select("name")
+            ->from('po_responsibility_center')
+            ->where("id =:id", ['id' => $responsibility_center_id])
+            ->one();
+        $province = Yii::$app->user->identity->province;
+        if ($reporting_period_year <= 2021) {
 
+            $latest_tracking_no = Yii::$app->db->createCommand(
+                "SELECT CAST(substring_index(tracking_number,'-',-1)  AS UNSIGNED) as q
+        FROM `po_transaction`
+        WHERE tracking_number LIKE :province
+       
+         ORDER BY q DESC LIMIT 1"
+            )
+                ->bindValue(':province', $province . '%')
+
+                ->queryScalar();
+        } else {
+            $latest_tracking_no = Yii::$app->db->createCommand(
+                "SELECT CAST(substring_index(tracking_number,'-',-1)  AS UNSIGNED) as q
+                FROM `po_transaction`
+                WHERE tracking_number LIKE :province
+                AND reporting_period LIKE :_year
+                 ORDER BY q DESC LIMIT 1"
+            )
+                ->bindValue(':province', $province . '%')
+                ->bindValue(':_year', $date . '%')
+                ->queryScalar();
+        }
+
+        if (!empty($latest_tracking_no)) {
+            $last_number = $latest_tracking_no + 1;
+        } else {
+            $last_number = 1;
+        }
+        $final_number = '';
+        // for ($y = strlen($last_number); $y < 3; $y++) {
+        //     $final_number .= 0;
+        // }
+        if (strlen($last_number) < 4) {
+
+            $final_number = substr(str_repeat(0, 3) . $last_number, -3);
+        } else {
+            $final_number = $last_number;
+        }
+
+
+        // $final_number .= $last_number;
+        $tracking_number = strtoupper($province) . '-' . trim($responsibility_center['name']) . '-' . $date . '-' . $final_number;
+        return  $tracking_number;
+    }
     public function actionImport()
     {
-        if (!empty($_POST)) {
-            // $chart_id = $_POST['chart_id'];
-            $name = $_FILES["file"]["name"];
-            // var_dump($_FILES['file']);
-            // die();
-            $id = uniqid();
-            $file = "transaction/{$id}_{$name}";
-            if (move_uploaded_file($_FILES['file']['tmp_name'], $file)) {
-            } else {
-                return "ERROR 2: MOVING FILES FAILED.";
-                die();
-            }
-            $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
-            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
-            $excel = $reader->load($file);
-            $excel->setActiveSheetIndexByName('Liquidation');
-            $worksheet = $excel->getActiveSheet();
+        if (YIi::$app->request->post()) {
+            try {
+                $transaction = Yii::$app->db->beginTransaction();
 
-            // print_r($excel->getSheetNames());
 
-            $data = [];
-            // $chart_uacs = ChartOfAccounts::find()->where("id = :id", ['id' => $chart_id])->one()->uacs;
-
-            $latest_tracking_no = (new \yii\db\Query())
-                ->select('tracking_number')
-                ->from('transaction')
-                ->orderBy('id DESC')->one();
-            if ($latest_tracking_no) {
-                $x = explode('-', $latest_tracking_no['tracking_number']);
-                $last_number = $x[2] + 1;
-            } else {
-                $last_number = 1;
-            }
-            // 
-            $qwe = 1;
-            $advances_id = [];
-
-            $transaction = Yii::$app->db->beginTransaction();
-            foreach ($worksheet->getRowIterator(2) as $key => $row) {
-                $cellIterator = $row->getCellIterator();
-                $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
-                $cells = [];
-                $y = 0;
-                foreach ($cellIterator as $x => $cell) {
-                    $q = '';
-                    if ($y === 4) {
-                        $cells[] = $cell->getFormattedValue();
-                    } else {
-                        $cells[] =   $cell->getValue();
-                    }
-                    $y++;
+                // $chart_id = $_POST['chart_id'];
+                $name = $_FILES["file"]["name"];
+                // var_dump($_FILES['file']);
+                // die();
+                $id = uniqid();
+                $file = "transaction/{$id}_{$name}";
+                if (!move_uploaded_file($_FILES['file']['tmp_name'], $file)) {
+                    throw new ErrorException('ERROR 2: MOVING FILES FAILED.');
                 }
-                if (!empty($cells)) {
+                $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
+                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+                $excel = $reader->load($file);
+                $excel->setActiveSheetIndexByName('Liquidation');
+                $worksheet = $excel->getActiveSheet();
 
-                    $province = $cells[0];
-                    $transaction_number = $cells[1];
-                    $reporting_period = $cells[2];
-                    $dv_number = $cells[3];
-                    $check_date = $cells[4];
-                    $check_number = $cells[5];
-                    $fund_source = $cells[6];
-                    $object_code = $cells[9];
-                    $withdrawal = $cells[11];
-                    $vat_nonvat = $cells[12];
-                    $expanded_tax = $cells[13];
-                    $liquidation_damage = $cells[14];
-
-
-
-
-
-                    // return json_encode($key);
-                    // return json_encode('qwer');
-                    $po_transaction_id = Yii::$app->db->createCommand("SELECT id FROM po_transaction WHERE po_transaction.tracking_number =:tracking_number")
-                        ->bindValue(':tracking_number', $transaction_number)
-                        ->queryScalar();
-                    if (empty($po_transaction_id)) {
-                        $transaction->rollback();
-                        return "po transaction $key";
+                foreach ($worksheet->getRowIterator(2) as $key => $row) {
+                    $cellIterator = $row->getCellIterator();
+                    $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+                    $cells = [];
+                    $y = 0;
+                    foreach ($cellIterator as $x => $cell) {
+                        if ($y === 3) {
+                            $cells[] = $cell->getFormattedValue();
+                        } else {
+                            $cells[] =   $cell->getValue();
+                        }
+                        $y++;
                     }
-                    $po_transaction_id = Yii::$app->db->createCommand("SELECT id FROM po_transaction WHERE po_transaction.tracking_number =:tracking_number")
-                        ->bindValue(':tracking_number', $transaction_number)
-                        ->queryScalar();
-                    if (empty($po_transaction_id)) {
-                        $transaction->rollback();
-                        return "po transaction $key";
-                    }
-                    $check_range_id = Yii::$app->db->createCommand("SELECT
-                     id FROM check_range
-                    WHERE
-                   :check_number >= check_range.`from`
-                   AND :check_number  <=check_range.`to`
-                   AND check_range.province = :province
-                   ")
-                        ->bindValue(':check_number', $check_number)
+
+                    $reporting_period = $cells[1];
+                    $dv_number = $cells[2];
+                    $check_date = $cells[3];
+                    $check_number = $cells[4];
+                    $check_range = $cells[5];
+                    $res_center = $cells[6];
+                    $fund_source = $cells[7];
+                    $particular = $cells[8];
+                    $payee = $cells[9];
+                    $object_code = $cells[10];
+                    $withdrawals = $cells[12];
+                    $vat_non_vat = $cells[13];
+                    $expanded_tax = $cells[14];
+                    $liquidation_damage = $cells[15];
+                    $province = $cells[17];
+                    $bank_account = $cells[19];
+                    if (strtolower(trim($payee)) != 'cancelled')
+                        $checkDvIfExists = Yii::$app->db->createCommand("SELECT id FROM `liquidation` WHERE liquidation.dv_number = :dv_number")->bindValue(':dv_number', $dv_number)->queryScalar();
+                    $po_responsibility_center_id = Yii::$app->db->createCommand("SELECT po_responsibility_center.id FROM po_responsibility_center WHERE po_responsibility_center.`name` = :res_center
+                    AND po_responsibility_center.province = :province")
                         ->bindValue(':province', $province)
+                        ->bindValue(':res_center', $res_center)
                         ->queryScalar();
-                    if (empty($check_range_id)) {
-                        $transaction->rollback();
-                        return "Check Range $key";
+                    if (empty($po_responsibility_center_id)) {
+                        throw new ErrorException(" PO response center does not exists row $res_center $key");
                     }
-                    $chart_of_account_id = Yii::$app->db->createCommand("SELECT id FROM chart_of_accounts WHERE uacs = :object_code")
-                        ->bindValue(':object_code', $object_code)
+                    // $po_responsibility_center_id = $res_center;
+                    $bank_acc_id = Yii::$app->db->createCommand("SELECT id FROM bank_account
+                    WHERE 
+                    
+                    CONCAT(account_number,'-',account_name) = :bank_acc")
+                        ->bindValue(':bank_acc', $bank_account)
                         ->queryScalar();
-                    if (empty($chart_of_account_id)) {
-                        $transaction->rollback();
-                        return "chart of account $key";
+                    // throw new ErrorException($bank_acc_id);
+                    if (empty($bank_acc_id)) {
+                        throw new ErrorException("Bank Account does not exists row $key");
                     }
+                    $chk_rng_id = Yii::$app->db->createCommand("SELECT id FROM check_range WHERE 
+                        CONCAT(check_range.`from`,' to ',check_range.`to`) = :chk_rng
+                        AND bank_account_id = :bnk_acc_id")
+                        ->bindValue(':bnk_acc_id', $bank_acc_id)
+                        ->bindValue(':chk_rng', $check_range)
+                        ->queryScalar();
 
-                    $advances_entries_id = Yii::$app->db->createCommand("SELECT * FROM `advances_entries`
-                    WHERE
-                    advances_entries.fund_source = :fund_source")
+                    if (empty($chk_rng_id)) {
+                        throw new ErrorException("Check Range does not exists row $key $check_range");
+                    }
+                    $advances_entry_id = Yii::$app->db->createCommand("SELECT * FROM advances_entries WHERE advances_entries.fund_source = :fund_source")
                         ->bindValue(':fund_source', $fund_source)
                         ->queryScalar();
-                    if (empty($advances_entries_id)) {
-                        $transaction->rollBack();
-                        return "advances entries $key";
+                    if (empty($advances_entry_id)) {
+                        throw new ErrorException("Advances does not exists row $key");
                     }
-                    $liq_id = Yii::$app->db->createCommand("SELECT id FROM liquidation WHERE liquidation.dv_number =:dv_number")
-                        ->bindValue(':dv_number', $dv_number)
-                        ->queryScalar();
-
-                    // (new \yii\db\Query())
-                    //     ->select('id')
-                    //     ->from('liquidation')
-                    //     ->where('liquidation.dv_number =:dv_number', ['dv_number' => $dv_number])
-                    //     ->one();
-
-
-                    $liquidation_id = '';
-                    if (empty($liq_id)) {
-                        $liquidation = new Liquidation();
-                        $liquidation->province = $province;
-                        $liquidation->check_date = $check_date;
-                        $liquidation->check_number = $check_number;
-                        $liquidation->po_transaction_id = $po_transaction_id;
-                        $liquidation->dv_number = $dv_number;
-                        $liquidation->reporting_period = $reporting_period;
-                        $liquidation->check_range_id = $check_range_id;
-
-                        if ($liquidation->save(false)) {
-                            $liquidation_id = $liquidation->id;
-                            $liq_entries = new  LiquidationEntries();
-                            $liq_entries->liquidation_id = $liquidation->id;
-                            $liq_entries->chart_of_account_id = $chart_of_account_id;
-                            $liq_entries->withdrawals = $withdrawal;
-                            $liq_entries->vat_nonvat = $vat_nonvat;
-                            $liq_entries->expanded_tax = $expanded_tax;
-                            $liq_entries->reporting_period = $reporting_period;
-                            $liq_entries->advances_entries_id = $advances_entries_id;
-                            $liq_entries->liquidation_damage = $liquidation_damage;
-                            if ($liq_entries->save(false)) {
-                            } else {
-                                $transaction->rollback();
-                                return  $liq_entries->errors .  " Error pag save sa entries $key";
-                            }
+                    if (empty($checkDvIfExists)) {
+                        $poTxn = new PoTransaction();
+                        $poTxn->tracking_number = $this->getTxnTrackingNumber($po_responsibility_center_id, $reporting_period, $province);
+                        $poTxn->po_responsibility_center_id = $po_responsibility_center_id;
+                        $poTxn->payee = $payee;
+                        $poTxn->particular = $particular;
+                        $poTxn->reporting_period = $reporting_period;
+                        $poTxn->amount = $withdrawals;
+                        if (!$poTxn->validate()) {
+                            throw new ErrorException(json_encode($poTxn->errors));
                         }
+                        if (!$poTxn->save(false)) {
+                            throw new ErrorException('Transactin Model Save Failed');
+                        }
+                        $liq = new Liquidation();
+                        $liq->reporting_period = $reporting_period;
+                        $liq->check_date = $check_date;
+                        $liq->check_number = $check_number;
+                        $liq->dv_number = $dv_number;
+                        $liq->po_transaction_id = $poTxn->id;
+                        $liq->check_range_id = $chk_rng_id;
+                        $liq->province = $province;
+                        if (!$liq->validate()) {
+                            throw new ErrorException(json_encode($liq->errors));
+                        }
+                        if (!$liq->save(false)) {
+                            throw new ErrorException('Liquidation Model Save Failed');
+                        }
+                        $liq_id = $liq->id;
                     } else {
-                        // $liquidation =  Liquidation::findOne($liq_id);
-                        // $liquidation->province = $province;
-                        // $liquidation->check_date = $check_date;
-                        // $liquidation->check_number = $check_number;
-                        // $liquidation->po_transaction_id = $po_transaction_id;
-                        // $liquidation->dv_number = $dv_number;
-                        // $liquidation->reporting_period = $reporting_period;
-                        // $liquidation->check_range_id = $check_range_id;
+                        $liq_id = $checkDvIfExists;
+                    }
 
-                        // if ($liquidation->save(false)) {
-                        // $liquidation_id = $liquidation->id;
-                        $liq_entries = new  LiquidationEntries();
-                        $liq_entries->liquidation_id = $liq_id;
-                        $liq_entries->chart_of_account_id = $chart_of_account_id;
-                        $liq_entries->withdrawals = $withdrawal;
-                        $liq_entries->vat_nonvat = $vat_nonvat;
-                        $liq_entries->expanded_tax = $expanded_tax;
-                        $liq_entries->reporting_period = $reporting_period;
-                        $liq_entries->advances_entries_id = $advances_entries_id;
-                        $liq_entries->liquidation_damage = $liquidation_damage;
-                        if ($liq_entries->save(false)) {
-                        } else {
-                            $transaction->rollback();
-                            return  $liq_entries->errors .  " Error pag save sa entries $key";
-                        }
-                        // } else {
-                        //     $transaction->rollback();
-                        //     return  $liquidation->errors .  " Error pag update sa liquidation $key";
-                        // }
+                    $liqItem = new LiquidationEntries();
+                    $liqItem->liquidation_id  = $liq_id;
+                    $liqItem->withdrawals  = $withdrawals;
+                    $liqItem->vat_nonvat = $vat_non_vat;
+                    $liqItem->expanded_tax = $expanded_tax;
+                    $liqItem->reporting_period = $reporting_period;
+                    $liqItem->advances_entries_id = $advances_entry_id;
+                    $liqItem->liquidation_damage = $liquidation_damage;
+
+                    $liqItem->new_object_code = $object_code;
+                    if (!$liqItem->validate()) {
+                        throw new ErrorException(json_encode($liqItem->errors));
+                    }
+                    if (!$liqItem->save(false)) {
+                        throw new ErrorException("Liquidation Item Model Save Failed");
                     }
                 }
+
+
+                $transaction->commit();
+                return 'success';
+            } catch (ErrorException $e) {
+                $transaction->rollBack();
+                return $e->getMessage();
             }
-
-            // $column = [
-            //     'liquidation_id',
-            //     'chart_of_account_id',
-            //     'withdrawals',
-            //     'vat_nonvat',
-            //     'expanded_tax',
-            //     'reporting_period',
-            //     'advances_entries_id'
-            // ];
-            // $ja = Yii::$app->db->createCommand()->batchInsert('liquidation_entries', $column, $data)->execute();
-
-            // return $this->redirect(['index']);
-            // return json_encode(['isSuccess' => true]);
-            $transaction->commit();
-            ob_clean();
-            echo "<pre>";
-            var_dump('success');
-            echo "</pre>";
-            return ob_get_clean();
         }
     }
 
