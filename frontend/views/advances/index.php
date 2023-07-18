@@ -112,7 +112,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'format' => 'raw',
             'value' => function ($model) {
 
-                return  MyHelper::gridDefaultAction($model->id);
+                // return  MyHelper::gridDefaultAction($model->id);
+                return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id], ['class' => 'btn']);
             }
         ],
 
