@@ -12,7 +12,7 @@ class m220419_083155_add_fk_property_id_in_par_table extends Migration
      */
     public function safeUp()
     {
-        // $this->addColumn('par', 'fk_property_id', $this->bigInteger());
+        $this->addColumn('par', 'fk_property_id', $this->bigInteger());
     }
 
     /**
@@ -22,7 +22,7 @@ class m220419_083155_add_fk_property_id_in_par_table extends Migration
     {
 
 
-        // $this->dropColumn('par', 'fk_property_id');
+        $this->dropColumn('par', 'fk_property_id');
     }
 
     /*
