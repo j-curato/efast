@@ -163,7 +163,6 @@ $this->params['breadcrumbs'][] = $this->title;
         width: 20rem;
         padding: 0;
     }
- 
 </style>
 <?php
 
