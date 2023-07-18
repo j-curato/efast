@@ -4259,9 +4259,9 @@ class ReportController extends \yii\web\Controller
             $from_reporting_period = DateTime::createFromFormat('Y-m', $to_reporting_period)->format('Y') . '-01';
             $db = Yii::$app->db;
 
-            if ($_SERVER['REMOTE_ADDR'] !== '210.1.103.26') {
-                $db = Yii::$app->cloud_db;
-            }
+            // if ($_SERVER['REMOTE_ADDR'] !== '210.1.103.26') {
+            //     $db = Yii::$app->cloud_db;
+            // }
             $query = $db->createCommand("SELECT 
             liquidation_target.fund_source_type,
             IFNULL(liquidation_target.total_amount,0) as target_liquidation,
