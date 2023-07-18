@@ -5661,7 +5661,7 @@ class ReportController extends \yii\web\Controller
         $book_id = '',
         $employee_id = null,
         $office_id = null,
-        $reporting_period,
+        $reporting_period = '',
         $uacs_id = ''
     ) {
         $uacs  = Yii::$app->db->createCommand("SELECT uacs FROM chart_of_accounts WHERE id = :id")->bindValue(':id', $uacs_id)->queryScalar();
