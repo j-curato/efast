@@ -76,12 +76,11 @@ $this->params['breadcrumbs'][] = $this->title;
                     $user_province === 'pdi'
                 ) {
                     $and = 'WHERE';
-                    $sql = YIi::$app->db->getQueryBuilder()->buildCondition('province=:province', $params);
+                    $sql = YIi::$app->db->getQueryBuilder()->buildCondition(['=', 'province', $user_province], $params);
                 }
                 $bank_accounts = Yii::$app->db->createCommand("SELECT id ,CONCAT(account_number,'-',province,'-',account_name) as account FROM bank_account
                 $and $sql
-                ")
-                    ->bindValue(':province', $user_province)
+                ", $params)
                     ->queryAll();
 
 
