@@ -19,7 +19,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="liquidation-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <?php if (Yii::$app->user->can('create_liquidation')) { ?>
         <p>
@@ -178,22 +177,8 @@ $this->params['breadcrumbs'][] = $this->title;
     ];
     $province = \Yii::$app->user->identity->province;
     $viewSearchModel = new LiquidationViewSearch();
-    // if (
-    //     $province === 'adn' ||
-    //     $province === 'sdn' ||
-    //     $province === 'sds' ||
-    //     $province === 'sdn' ||
-    //     $province === 'pdi'
-
-    // ) {
-    //     $viewSearchModel->province = \Yii::$app->user->identity->province;
-    //     // echo \Yii::$app->user->identity->province;
-    // }
-
     $viewDataProvider = $viewSearchModel->search(Yii::$app->request->queryParams);
-
     $viewDataProvider->pagination = ['pageSize' => 10];
-    // echo \Yii::$app->user->identity->province;
     $viewColumn = [
         'province',
         // [
@@ -342,8 +327,6 @@ $this->params['breadcrumbs'][] = $this->title;
     ]);
 
     ?>
-    <?php Pjax::begin(['id' => 'employee', 'clientOptions' => ['method' => 'POST']]) ?>
-    <?php Pjax::end() ?>
 
 </div>
 

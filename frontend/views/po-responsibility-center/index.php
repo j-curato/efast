@@ -13,7 +13,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="po-responsibility-center-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?php

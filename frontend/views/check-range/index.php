@@ -15,7 +15,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="check-range-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
 
     <p>

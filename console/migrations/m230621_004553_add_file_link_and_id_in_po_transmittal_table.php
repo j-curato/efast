@@ -12,7 +12,7 @@ class m230621_004553_add_file_link_and_id_in_po_transmittal_table extends Migrat
      */
     public function safeUp()
     {
-        // $this->addColumn('po_transmittal', 'file_link', $this->text());
+        $this->addColumn('po_transmittal', 'file_link', $this->text());
         $this->addColumn('po_transmittal', 'id', $this->bigInteger());
     }
 
