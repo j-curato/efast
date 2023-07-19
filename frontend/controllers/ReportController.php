@@ -3883,11 +3883,11 @@ class ReportController extends \yii\web\Controller
                     WHERE 
                         cash_disbursement.is_cancelled = 0
                     AND cash_disbursement_items.is_deleted = 0
-                        AND NOT EXISTS (SELECT cncl_chks.parent_disbursement
-                        FROM cash_disbursement as cncl_chks 
-                        WHERE cncl_chks.parent_disbursement = cash_disbursement.id 
-                        AND cncl_chks.is_cancelled = 1 
-                        AND cncl_chks.parent_disbursement IS NOT NULL) 
+                        -- AND NOT EXISTS (SELECT cncl_chks.parent_disbursement
+                        -- FROM cash_disbursement as cncl_chks 
+                        -- WHERE cncl_chks.parent_disbursement = cash_disbursement.id 
+                        -- AND cncl_chks.is_cancelled = 1 
+                        -- AND cncl_chks.parent_disbursement IS NOT NULL) 
                 
                 )
                 
