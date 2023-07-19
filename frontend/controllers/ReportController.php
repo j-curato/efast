@@ -39,6 +39,7 @@ use app\models\TransactionTrackingSearch;
 use app\models\PoTransmittalsPendingSearch;
 use yii\symfonymailer\MessageWrapperInterface;
 use app\models\WithholdingAndRemittanceSummarySearch;
+use frontend\models\SignupForm;
 use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Mailer\Transport\Smtp\SmtpTransport;
 
@@ -3863,42 +3864,64 @@ class ReportController extends \yii\web\Controller
             \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
             $from_reporting_period = $_POST['from_reporting_period'];
             $to_reporting_period = $_POST['to_reporting_period'];
-            $query = Yii::$app->db->createCommand("SELECT 
-            dv_aucs.dv_number,
-            payee.account_name as payee,
-            IFNULL(DATE_FORMAT(dv_aucs.in_timestamp,'%Y-%m-%d'),'') as dv_in,
-            IFNULL(DATE_FORMAT(dv_aucs.out_timestamp,'%Y-%m-%d'),'') as dv_out,
-            cash_disbursement.check_or_ada_no,
-            cash_disbursement.ada_number,
-            cash_disbursement.issuance_date,
-            cash_disbursement.begin_time as cash_in,
-            cash_disbursement.out_time as cash_out,
-            IFNULL(dv_entry_amount.dv_amount,0) as dv_amount,
-
-            dv_aucs.is_cancelled,
-            cash_disbursement.is_cancelled
-
-            FROM
-            dv_aucs
-            INNER JOIN payee ON dv_aucs.payee_id = payee.id
-            INNER JOIN cash_disbursement ON dv_aucs.id = cash_disbursement.dv_aucs_id
-            LEFT JOIN (SELECT dv_aucs_entries.dv_aucs_id,
-            SUM(dv_aucs_entries.amount_disbursed)as dv_amount 
-            FROM dv_aucs_entries
-            GROUP BY 
-            dv_aucs_entries.dv_aucs_id) AS dv_entry_amount ON dv_aucs.id = dv_entry_amount.dv_aucs_id
-
-            WHERE
-
-            dv_aucs.is_cancelled !=1
-  
-
-            AND 
-            cash_disbursement.is_cancelled !=1
-            AND dv_aucs.reporting_period >= :from_reporting_period
-            AND dv_aucs.reporting_period <= :to_reporting_period
-            ORDER BY cash_disbursement.issuance_date
-
+            $query = Yii::$app->db->createCommand("WITH cte_gd_cash as (
+                SELECT
+                    cash_disbursement.id,
+                    cash_disbursement.reporting_period,
+                    cash_disbursement.issuance_date,
+                    books.`name` as book_name,
+                    mode_of_payments.`name` as mode_name,
+                    cash_disbursement.check_or_ada_no,
+                    cash_disbursement.ada_number,
+                        cash_disbursement_items.fk_dv_aucs_id,
+                        cash_disbursement.begin_time as cash_in,
+                        cash_disbursement.out_time as cash_out
+                    FROM cash_disbursement
+                        JOIN cash_disbursement_items ON cash_disbursement.id = cash_disbursement_items.fk_cash_disbursement_id
+                    LEFT JOIN books ON cash_disbursement.book_id = books.id
+                    LEFT JOIN mode_of_payments ON cash_disbursement.fk_mode_of_payment_id  = mode_of_payments.id
+                    WHERE 
+                        cash_disbursement.is_cancelled = 0
+                    AND cash_disbursement_items.is_deleted = 0
+                        AND NOT EXISTS (SELECT cncl_chks.parent_disbursement
+                        FROM cash_disbursement as cncl_chks 
+                        WHERE cncl_chks.parent_disbursement = cash_disbursement.id 
+                        AND cncl_chks.is_cancelled = 1 
+                        AND cncl_chks.parent_disbursement IS NOT NULL) 
+                
+                )
+                
+                SELECT 
+                            dv_aucs.dv_number,
+                dv_aucs.reporting_period,
+                            payee.account_name as payee,
+                            IFNULL(DATE_FORMAT(dv_aucs.in_timestamp,'%Y-%m-%d'),'') as dv_in,
+                            IFNULL(DATE_FORMAT(dv_aucs.out_timestamp,'%Y-%m-%d'),'') as dv_out,
+                                        cte_gd_cash.check_or_ada_no,
+                                        cte_gd_cash.ada_number,
+                                        cte_gd_cash.issuance_date,
+                                        cte_gd_cash.cash_in,
+                                        cte_gd_cash.cash_out,
+                            IFNULL(dv_entry_amount.dv_amount,0) as dv_amount
+                
+                            FROM
+                            dv_aucs
+                            INNER JOIN payee ON dv_aucs.payee_id = payee.id
+                            INNER JOIN cte_gd_cash ON dv_aucs.id = cte_gd_cash.fk_dv_aucs_id
+                            LEFT JOIN (SELECT dv_aucs_entries.dv_aucs_id,
+                            SUM(dv_aucs_entries.amount_disbursed)as dv_amount 
+                            FROM dv_aucs_entries
+                                        WHERE dv_aucs_entries.is_deleted = 0
+                            GROUP BY 
+                            dv_aucs_entries.dv_aucs_id) AS dv_entry_amount ON dv_aucs.id = dv_entry_amount.dv_aucs_id
+                
+                            WHERE
+                
+                            dv_aucs.is_cancelled !=1
+                
+                            AND dv_aucs.reporting_period >= :from_reporting_period
+                            AND dv_aucs.reporting_period <= :to_reporting_period
+                         ORDER BY cte_gd_cash.issuance_date
             ")
                 ->bindValue(':from_reporting_period', $from_reporting_period)
                 ->bindValue(':to_reporting_period', $to_reporting_period)
@@ -5927,6 +5950,39 @@ class ReportController extends \yii\web\Controller
             exit();
         }
         return $this->render('rao');
+    }
+    function actionCreateUsers()
+    {
+
+        $emps = Yii::$app->db->createCommand("SELECT 
+        employee.employee_id,
+        employee.fk_office_id,
+        LOWER(CONCAT(REPLACE(employee.f_name,' ',''),'.',REPLACE(employee.l_name,' ',''))) as user_name
+        FROM employee
+        WHERE is_disabled  = 0
+        ")
+            ->queryAll();
+        try {
+            $txn = Yii::$app->db->beginTransaction();
+            foreach ($emps as $emp) {
+                $model = new SignupForm();
+                $model->username = $emp['user_name'];
+                $model->email = $emp['user_name'] . '@gmail.com';
+                $model->fk_office_id = $emp['fk_office_id']??5;
+                $model->password = 'abcde54321';
+                $model->fk_employee_id = $emp['employee_id'];
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors) . $emp['user_name'] . '@gmail.com'. $emp['employee_id']);
+                }
+                if ($model->signup()) {
+                }
+            }
+            $txn->commit();
+            return 'success';
+        } catch (ErrorException $e) {
+            $txn->rollBack();
+            return $e->getMessage();
+        }
     }
 }
 

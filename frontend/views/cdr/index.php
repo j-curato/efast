@@ -12,7 +12,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="cdr-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
 
@@ -43,7 +42,6 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'export' => false,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
             'id',
             'serial_number',

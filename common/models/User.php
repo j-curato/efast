@@ -59,7 +59,7 @@ class User extends ActiveRecord implements IdentityInterface
             ['status', 'default', 'value' => self::STATUS_INACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
             ['province', 'string', 'max' => 255],
-            ['employee_id', 'string', 'max' => 255],
+            ['fk_employee_id', 'string', 'max' => 255],
         ];
     }
     public function getOffice()
