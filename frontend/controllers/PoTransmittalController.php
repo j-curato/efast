@@ -11,6 +11,7 @@ use app\models\PoTransmittalEntries;
 use app\models\PoTransmittalSearch;
 use app\models\PoTransmittalsPendingSearch;
 use app\models\TransmittalEntries;
+use app\models\VwPoTransmittalIndexSearch;
 use DateTime;
 use ErrorException;
 use yii\data\ActiveDataProvider;
@@ -149,7 +150,7 @@ class PoTransmittalController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new PoTransmittalSearch();
+        $searchModel = new VwPoTransmittalIndexSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
