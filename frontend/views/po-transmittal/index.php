@@ -38,7 +38,12 @@ $this->params['breadcrumbs'][] = $this->title;
             'transmittal_number',
             'date',
             'created_at',
-            'is_accepted',
+            [
+                'attribute' => 'is_accepted',
+                'value' => function ($model) {
+                    return $model->is_accepted ? 'Accepted' : 'Pending';
+                }
+            ],
 
             [
                 'label' => 'Actions',
