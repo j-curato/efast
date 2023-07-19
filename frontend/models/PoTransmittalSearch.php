@@ -42,25 +42,27 @@ class PoTransmittalSearch extends PoTransmittal
     {
 
         $province = Yii::$app->user->identity->province;
-        $q = PoTransmittal::find();
-        if (
-            $province === 'adn' ||
-            $province === 'ads' ||
-            $province === 'sds' ||
-            $province === 'sdn' ||
-            $province === 'pdi'
-        ) {
-            $q->where('transmittal_number LIKE :province', ['province' => "$province%"]);
-        }
-        if (!empty($this->status)) {
-            $q->where('status = :province', ['province' => $this->status]);
-        }
+        $query = PoTransmittal::find();
+        // if (
+        //     $province === 'adn' ||
+        //     $province === 'ads' ||
+        //     $province === 'sds' ||
+        //     $province === 'sdn' ||
+        //     $province === 'pdi'
+        // ) {
+        //     $q->where('transmittal_number LIKE :province', ['province' => "$province%"]);
+        // }
+        // if (!empty($this->status)) {
+        //     $q->where('status = :province', ['province' => $this->status]);
+        // }
         // if (Yii::$app->user->identity->province === 'ro_admin') {
 
         //     $q->where('status = :status', ['status' => "pending_at_ro"]);
         // }
-
-        $query = $q;
+        if (!Yii::$app->user->can('super-user')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $query->andWhere('fk_office_id = :office_id', ['office_id' => $user_data->office->id]);
+        }
 
         // add conditions that should always apply here
 

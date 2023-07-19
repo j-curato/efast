@@ -180,7 +180,10 @@ class PoTransmittalController extends Controller
     public function actionCreate()
     {
         $model = new PoTransmittal();
-
+        if (!Yii::$app->user->can('super-user')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $model->fk_office_id = $user_data->office->id;
+        }
         if ($model->load(Yii::$app->request->post())) {
 
             try {

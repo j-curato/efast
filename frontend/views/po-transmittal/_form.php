@@ -118,14 +118,17 @@ $itemRow = 0;
                 ]
             ]) ?>
         </div>
-        <div class="col-sm-2">
-            <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
-                'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
-                'pluginOptions' => [
-                    'placeholder' => 'Select Office',
-                ]
-            ]) ?>
-        </div>
+        <?php
+        if (Yii::$app->user->can('super-iser')) {?>
+            <div class="col-sm-2">
+                <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
+                    'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
+                    'pluginOptions' => [
+                        'placeholder' => 'Select Office',
+                    ]
+                ]) ?>
+            </div>
+        <?php } ?>
     </div>
     <table class="table table-striped" id="transaction_table" style="background-color: white;">
         <thead>
