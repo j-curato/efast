@@ -2436,11 +2436,13 @@ class ReportController extends \yii\web\Controller
                 ->bindValue(':from_reporting_period', $from_reporting_period)
                 ->queryAll();
             $cancelled_checks = ArrayHelper::index($qry, null, ['is_cancelled']);
+            $per_mode_of_payment = ArrayHelper::index($cancelled_checks[0], null, ['mode_of_payment_name']);
             return json_encode([
                 'results' => $qry,
                 'adjustments' => $adjustments,
                 'cancelled_checks' => $cancelled_checks[1] ?? [],
                 'begin_balance' => $begin_balance,
+                'per_mode_of_payment' => $per_mode_of_payment,
             ]);
         }
         return $this->render('cadadr');
@@ -5968,11 +5970,11 @@ class ReportController extends \yii\web\Controller
                 $model = new SignupForm();
                 $model->username = $emp['user_name'];
                 $model->email = $emp['user_name'] . '@gmail.com';
-                $model->fk_office_id = $emp['fk_office_id']??5;
+                $model->fk_office_id = $emp['fk_office_id'] ?? 5;
                 $model->password = 'abcde54321';
                 $model->fk_employee_id = $emp['employee_id'];
                 if (!$model->validate()) {
-                    throw new ErrorException(json_encode($model->errors) . $emp['user_name'] . '@gmail.com'. $emp['employee_id']);
+                    throw new ErrorException(json_encode($model->errors) . $emp['user_name'] . '@gmail.com' . $emp['employee_id']);
                 }
                 if ($model->signup()) {
                 }

@@ -84,15 +84,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <table id='mode_of_payment_count'>
 
-            <tr>
-                <th>Check:</th>
-                <th id="check"></th>
-            </tr>
-            <tr>
-                <th>ADA:</th>
-                <th id="ada"></th>
-            </tr>
-
+            <tbody></tbody>
         </table>
 
         <table id="cadadr">
@@ -117,7 +109,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
                     <th colspan="7">MARRY ANN L. PASCUAL</th>
-                    <th colspan="3">>Administrative Officer V</th>
+                    <th colspan="3">Administrative Officer V</th>
                     <th colspan="3">DTI 13 Caraga-RO</th>
                 </tr>
                 <tr>
@@ -302,14 +294,21 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
             data: $("#filter").serialize(),
             success: function(data) {
                 var res = JSON.parse(data)
-                // var detailed = res.detailed
-                // var conso = res.conso
-                // mfo = res.mfo_pap
-                // allotment_balances = res.allotments
-                // displayData(res.results, res.begin_balance, res.adjustment)
+                console.log(res)
+                // display counts per mode of payments
+                let t = 0;
+                $('#mode_of_payment_count tbody').html('')
+                $.each(res.per_mode_of_payment, function(key, val) {
+                    if (key) {
+                        $('#mode_of_payment_count tbody').append(`<tr>
+                        <th>${key}</th>
+                        <th>${val.length}</th>
+                    </tr>`)
+                        t += val.length
+                    }
+                })
+                console.log(t)
 
-                // // addToSummaryTable(res.conso_saob)
-                // displayCancelledChecks(res.cancelled_checks)
                 const frm = new Date($('#from_reporting_period').val())
                 const to = new Date($('#to_reporting_period').val())
                 const month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
