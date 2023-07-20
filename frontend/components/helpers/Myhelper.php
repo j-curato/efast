@@ -208,4 +208,10 @@ class MyHelper extends BaseObject
             ")->bindValue(':id', $id)
             ->queryScalar();
     }
+    public static function getPayee($id)
+    {
+        return Yii::$app->db->createCommand("SELECT * FROM payee WHERE id = :id")
+            ->bindValue(':id', $id)
+            ->queryAll();
+    }
 }

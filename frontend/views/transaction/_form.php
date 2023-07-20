@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use app\models\Books;
 use app\models\RecordAllotmentDetailedSearch;
 use app\models\PurchaseRequestIndexSearch;
@@ -41,11 +42,7 @@ if ($model->type == 'single' || $model->type == 'multiple') {
         }
     }
 }
-$payee = [];
-if (!empty($model->payee_id)) {
-    $payee_query = Yii::$app->db->createCommand("SELECT id,account_name FROM payee WHERE id = :id")->bindValue(':id', $model->payee->id)->queryAll();
-    $payee = ArrayHelper::map($payee_query, 'id', 'account_name');
-}
+$payee = !empty($model->payee_id) ? ArrayHelper::map(MyHelper::getPayee($model->payee_id), 'id', 'account_name') : [];
 ?>
 
 

@@ -150,7 +150,6 @@ class DvAucsController extends Controller
 
                 if (!empty($advances_id)) {
                     $adv = Advances::findOne($advances_id);
-
                     $itemIds = array_column($advances_items, 'item_id');
                     $params = [];
                     $sql = '';
@@ -482,13 +481,13 @@ class DvAucsController extends Controller
                         ->bindValue(':model_id', $model->id)
                         ->bindValue(':payroll_id', $model->payroll_id)
                         ->query();
-                } else if ($t_type == 'remittance') {
-                    Yii::$app->db->createCommand("UPDATE dv_accounting_entries 
-                    SET dv_aucs_id = NULL
-                    WHERE payroll_id = :payroll_id")
-                        ->bindValue(':model_id', $model->id)
-                        ->bindValue(':payroll_id', $model->payroll_id)
-                        ->query();
+                } else if ($t_type == 'remittance' && !empty($model->payroll_id)) {
+                    // Yii::$app->db->createCommand("UPDATE dv_accounting_entries 
+                    // SET dv_aucs_id = NULL
+                    // WHERE payroll_id = :payroll_id")
+                    //     ->bindValue(':model_id', $model->id)
+                    //     ->bindValue(':payroll_id', $model->payroll_id)
+                    //     ->query();
                     $model->payroll_id = null;
                 } else {
                     $model->fk_remittance_id = null;
@@ -651,7 +650,7 @@ class DvAucsController extends Controller
             ->bindValue(':id', $id)
             ->queryAll();
     }
-    private function insertDvAccItems($dv_id, $items = [])
+    private function insertDvAccItems($dv_id, $items = [], $isUpdate = false)
     {
         // $item_ids = array_column($items, 'item_id');
         $debits = array_column($items, 'debit');
@@ -671,7 +670,20 @@ class DvAucsController extends Controller
         //     ->execute();
 
         try {
+            // if ($isUpdate === true && !empty(array_column($items, 'item_id'))) {
 
+            //     $itemIds = array_column($items, 'item_id');
+            //     $params = [];
+            //     $sql = ' AND ';
+            //     $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $itemIds], $params);
+            //     Yii::$app->db->createCommand("UPDATE dv_accountin SET is_deleted = 1 
+            //     WHERE 
+            //     dv_accountin.is_deleted = 0
+            //     AND dv_accountin.fk_acic_id = :id
+            //     $sql", $params)
+            //         ->bindValue(':id', $dv_id)
+            //         ->execute();
+            // }
             if ($sum_debits !==  $sum_credits) {
                 throw new ErrorException("Credit and Debit Total is Not Balance $sum_debits :  $sum_credits");
             }
@@ -703,16 +715,15 @@ class DvAucsController extends Controller
         $model = $this->findModel($id);
         // $advancesModel = $this->findAdvancesModel($id);
         $oldModel = $model;
-        // $validator = new \yii\validators\RequiredValidator();
-        // $validator->attributes = [
-        //     'nature_of_transaction_id',
-        //     'mrd_classification_id'
-        // ];
-        // $model->validators[] = $validator;
+        $validator = new \yii\validators\RequiredValidator();
+        $validator->attributes = [
+            'nature_of_transaction_id',
+            'mrd_classification_id'
+        ];
+        $model->validators[] = $validator;
         // if ($model->load(Yii::$app->request->post())) {
         //     $items = !empty(Yii::$app->request->post('items')) ? Yii::$app->request->post('items') : [];
         //     $dvAccItems = !empty(Yii::$app->request->post('dvAccItems')) ? Yii::$app->request->post('dvAccItems') : [];
-
         //     $advances = Yii::$app->request->post('advances') ?? [];
         //     $advancesItems = Yii::$app->request->post('advancesItems') ?? [];
         //     try {
@@ -735,14 +746,18 @@ class DvAucsController extends Controller
         //         if ($ins_itm !== true) {
         //             throw new ErrorException($ins_itm);
         //         }
-        //         $ins_acc_entries  = $this->insertDvAccItems($model->id, $dvAccItems);
+        //         $ins_acc_entries  = $this->insertDvAccItems($model->id, $dvAccItems, true);
         //         if ($ins_acc_entries !== true) {
         //             throw new ErrorException($ins_acc_entries);
         //         }
-        //         $insAdvances = $this->insAdvances($model->id, $advancesModel->id, $advances, $advancesItems);
-        //         if ($insAdvances !== true) {
-        //             throw new ErrorException($insAdvances);
+
+        //         if (strtolower($model->natureOfTransaction->name) === 'ca to sdos/opex') {
+        //             $insAdvances = $this->insAdvances($model->id, $advancesModel->id, $advances, $advancesItems);
+        //             if ($insAdvances !== true) {
+        //                 throw new ErrorException($insAdvances);
+        //             }
         //         }
+
         //         $transaction->commit();
         //     } catch (ErrorException $e) {
         //         $transaction->rollBack();
@@ -2454,5 +2469,28 @@ class DvAucsController extends Controller
         return $this->renderAjax('_add_link_form', [
             'model' => $model,
         ]);
+    }
+    public function actionSearchDisbursedDvs($page = 1, $q = null, $id = null)
+    {
+        $limit = 5;
+        $offset = ($page - 1) * $limit;
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if ($id > 0) {
+            $out['results'] = ['id' => $id, 'text' => DvAucs::findOne($id)->dv_number];
+        } else if (!is_null($q)) {
+            $query = new Query();
+            $query->select('vw_no_jev_disbursed_dvs.id, vw_no_jev_disbursed_dvs.dv_number AS text')
+                ->from('vw_no_jev_disbursed_dvs')
+                ->where(['like', 'vw_no_jev_disbursed_dvs.dv_number', $q]);
+            $query->offset($offset)
+                ->limit($limit);
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+            $out['pagination'] = ['more' => !empty($data) ? true : false];
+        }
+        return $out;
     }
 }
