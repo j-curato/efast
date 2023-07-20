@@ -373,40 +373,37 @@ class TransactionController extends Controller
      */
     public function actionCreate()
     {
-
-
         $model = new Transaction();
-        date_default_timezone_set('Asia/Manila');
-        if (Yii::$app->request->isPost) {
+        if (Yii::$app->request->post()) {
             try {
-                $transaction = Yii::$app->db->beginTransaction();
+                $txn = Yii::$app->db->beginTransaction();
+                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                $model->type = Yii::$app->request->post('Transaction')['type'];
+                $model->fk_book_id = Yii::$app->request->post('Transaction')['fk_book_id'];
+                $model->payee_id = Yii::$app->request->post('Transaction')['payee_id'];
+                $model->particular = Yii::$app->request->post('Transaction')['particular'];
+                $model->transaction_date = Yii::$app->request->post('Transaction')['transaction_date'];
+                $model->responsibility_center_id = Yii::$app->request->post('Transaction')['responsibility_center_id'] ?? '';
                 $prItems = Yii::$app->request->post('prItems') ?? [];
                 $allotmentItems = Yii::$app->request->post('items') ?? [];
                 if (empty($allotmentItems)) {
                     throw new ErrorException('Allotment and Gross Amount is Required');
                 }
 
-                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-                $model->type = Yii::$app->request->post('type');
-                $model->responsibility_center_id = Yii::$app->request->post('responsibility_center_id');
-                $model->payee_id = Yii::$app->request->post('payee_id');
-                $model->transaction_date = Yii::$app->request->post('transaction_date');
-                $model->particular = Yii::$app->request->post('particular');
-                $model->fk_book_id = Yii::$app->request->post('book_id');
                 $division = strtolower(Yii::$app->user->identity->division);
-
                 $iarItems = [];
                 if ($model->type === 'multiple') {
-                    if (empty($_POST['multiple_iar'])) {
-                        return json_encode(['isSuccess' => false, 'error_message' => 'IAR is Required']);
+                    if (empty(Yii::$app->request->post('multiple_iar'))) {
+                        throw new ErrorException('IAR is Required');
                     }
-                    $iarItems = $_POST['multiple_iar'];
+                    $iarItems = Yii::$app->request->post('multiple_iar');
                 } else if ($model->type === 'single') {
-                    if (empty($_POST['single_iar'])) {
-                        return json_encode(['isSuccess' => false, 'error_message' => 'IAR is Required']);
+                    if (empty(Yii::$app->request->post('single_iar'))) {
+                        throw new ErrorException('IAR is Required');
                     }
-                    $iarItems = [$_POST['single_iar']];
+                    $iarItems = Yii::$app->request->post('single_iar');
                 }
+
                 if (!Yii::$app->user->can('super-user')) {
                     $r_center = Yii::$app->db->createCommand("SELECT `id` FROM responsibility_center WHERE `name`=:division")
                         ->bindValue(':division', $division)
@@ -414,34 +411,32 @@ class TransactionController extends Controller
                     $model->responsibility_center_id = $r_center;
                 }
                 $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id,  $model->transaction_date);
-
                 if (!$model->validate()) {
-                    throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => json_encode($model->errors))));
+                    throw new ErrorException(json_encode($model->errors));
                 }
                 // if ($model->type != 'no-iar'  && empty($prItems)) {
                 //     throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => 'Please Select a Purchase Request Below')));
                 // }
 
                 if (!$model->save(false)) {
-                    throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => 'Error saving model')));
+                    throw new ErrorException('Error saving model');
                 }
-
-                $err = $this->InsertPrs($model->id, $prItems);
-                if ($err !== true) {
-                    throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => $err)));
+                $insPrs = $this->InsertPrs($model->id, $prItems);
+                if ($insPrs !== true) {
+                    throw new ErrorException($insPrs);
                 }
-                $err = $this->insertItems($model->id, $allotmentItems);
-                if ($err !== true) {
-                    throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => $err)));
+                $isItms = $this->insertItems($model->id, $allotmentItems);
+                if ($isItms !== true) {
+                    throw new ErrorException($isItms);
                 }
-                $err = $this->InsertTransactionIar($model->id, $iarItems);
-                if ($err !== true) {
-                    throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => $err)));
+                $insIar = $this->InsertTransactionIar($model->id, $iarItems);
+                if ($insIar !== true) {
+                    throw new ErrorException($insIar);
                 }
-                $transaction->commit();
+                $txn->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
-                $transaction->rollBack();
+                $txn->rollBack();
                 return $e->getMessage();
             }
         }
@@ -465,71 +460,62 @@ class TransactionController extends Controller
         $model = $this->findModel($id);
         $oldModel = $this->findModel($id);
         $items = $this->getItems($model->id);
-        if ((Yii::$app->request->isPost)) {
+        if ((Yii::$app->request->post())) {
             try {
                 $transaction = Yii::$app->db->beginTransaction();
-                $prItems = !empty($_POST['prItems']) ? $_POST['prItems'] : [];
-                $allotmentItems = !empty($_POST['items']) ? $_POST['items'] : [];
+                $model->type = Yii::$app->request->post('Transaction')['type'];
+                $model->fk_book_id = Yii::$app->request->post('Transaction')['fk_book_id'];
+                $model->payee_id = Yii::$app->request->post('Transaction')['payee_id'];
+                $model->particular = Yii::$app->request->post('Transaction')['particular'];
+                $model->transaction_date = Yii::$app->request->post('Transaction')['transaction_date'];
+                if (Yii::$app->user->can('super-user')) {
+                    $model->responsibility_center_id = Yii::$app->request->post('Transaction')['responsibility_center_id'];
+                }
+                $prItems = Yii::$app->request->post('prItems') ?? [];
+                $allotmentItems = Yii::$app->request->post('items') ?? [];
                 if (empty($allotmentItems)) {
                     throw new ErrorException('Allotment and Gross Amount is Required');
                 }
-
                 $old_year = DateTime::createFromFormat('m-d-Y', $oldModel->transaction_date)->format('Y');
                 $new_year = DateTime::createFromFormat('m-d-Y', $model->transaction_date)->format('Y');
-                if (intval($old_year) !== intval($new_year)) {
+                if (intval($old_year) !== intval($new_year) || intval($oldModel->responsibility_center_id) !==  intval($model->responsibility_center_id)) {
                     $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id, $model->transaction_date);
                 }
-                if (intval($oldModel->responsibility_center_id) !==  intval($model->responsibility_center_id)) {
-                    $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id,  $model->transaction_date);
-                }
-
-                $items = !empty($_POST['items']) ? $_POST['items'] : [];
-                if (empty($items)) {
+                if (empty($allotmentItems)) {
                     throw new ErrorException('Allotment and Gross Amount is Required');
                 }
-                if (Yii::$app->user->can('super-user')) {
-
-                    $model->responsibility_center_id = $_POST['responsibility_center_id'];
-                }
-                $model->type = $_POST['type'];
-                $model->payee_id = $_POST['payee_id'];
-                $model->transaction_date = $_POST['transaction_date'];
-                $model->particular = $_POST['particular'];
-                $model->fk_book_id = $_POST['book_id'];
                 $iarItems = [];
                 if ($model->type === 'multiple') {
-                    if (empty($_POST['multiple_iar'])) {
+                    if (empty(Yii::$app->request->post('multiple_iar'))) {
                         throw new ErrorException('IAR is Required');
                     }
-                    $iarItems = $_POST['multiple_iar'];
+                    $iarItems = Yii::$app->request->post('multiple_iar');
                 } else if ($model->type === 'single') {
-                    if (empty($_POST['single_iar'])) {
+                    if (empty(Yii::$app->request->post('single_iar'))) {
                         throw new ErrorException('IAR is Required');
                     }
-                    $iarItems = [$_POST['single_iar']];
-                }
-
-                if (!$model->validate()) {
-                    throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => $model->errors)));
+                    $iarItems = Yii::$app->request->post('single_iar');
                 }
                 if ($model->type != 'no-iar'  && empty($prItems)) {
-                    throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => 'Please Select a Purchase Request Below')));
+                    throw new ErrorException('Please Select a Purchase Request Below');
                 }
-
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
                 if (!$model->save(false)) {
-                    throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => 'Error saving model')));
+                    throw new ErrorException('Error saving model');
                 }
-                $err = $this->InsertPrs($model->id, $prItems, true);
-                if ($err !== true) {
-                    throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => $err)));
+                $InsertPrs = $this->InsertPrs($model->id, $prItems, true);
+                if ($InsertPrs !== true) {
+                    throw new ErrorException($InsertPrs);
                 }
-                $err = $this->insertItems($model->id, $allotmentItems, true);
-                if ($err !== true) {
-                    throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => $err)));
+                $insertItems = $this->insertItems($model->id, $allotmentItems, true);
+                if ($insertItems !== true) {
+                    throw new ErrorException($insertItems);
                 }
-                $err = $this->InsertTransactionIar($model->id, $iarItems);
-                if ($err !== true) {
-                    throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => $err)));
+                $insIar = $this->InsertTransactionIar($model->id, $iarItems);
+                if ($insIar !== true) {
+                    throw new ErrorException($insIar);
                 }
                 $transaction->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
