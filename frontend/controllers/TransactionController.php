@@ -378,42 +378,43 @@ class TransactionController extends Controller
         $model = new Transaction();
         date_default_timezone_set('Asia/Manila');
         if (Yii::$app->request->isPost) {
-            $prItems = Yii::$app->request->post('prItems') ?? [];
-            $allotmentItems = Yii::$app->request->post('items') ?? [];
-            if (empty($allotmentItems)) {
-                return json_encode(['isSuccess' => false, 'error_message' => 'Allotment and Gross Amount is Required']);
-            }
-
-            $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-            $model->type = Yii::$app->request->post('type');
-            $model->responsibility_center_id = Yii::$app->request->post('responsibility_center_id');
-            $model->payee_id = Yii::$app->request->post('payee_id');
-            $model->transaction_date = Yii::$app->request->post('transaction_date');
-            $model->particular = Yii::$app->request->post('particular');
-            $model->fk_book_id = Yii::$app->request->post('book_id');
-            $division = strtolower(Yii::$app->user->identity->division);
-
-            $iarItems = [];
-            if ($model->type === 'multiple') {
-                if (empty($_POST['multiple_iar'])) {
-                    return json_encode(['isSuccess' => false, 'error_message' => 'IAR is Required']);
-                }
-                $iarItems = $_POST['multiple_iar'];
-            } else if ($model->type === 'single') {
-                if (empty($_POST['single_iar'])) {
-                    return json_encode(['isSuccess' => false, 'error_message' => 'IAR is Required']);
-                }
-                $iarItems = [$_POST['single_iar']];
-            }
-            if (!Yii::$app->user->can('super-user')) {
-                $r_center = Yii::$app->db->createCommand("SELECT `id` FROM responsibility_center WHERE `name`=:division")
-                    ->bindValue(':division', $division)
-                    ->queryScalar();
-                $model->responsibility_center_id = $r_center;
-            }
-            $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id,  $model->transaction_date);
             try {
                 $transaction = Yii::$app->db->beginTransaction();
+                $prItems = Yii::$app->request->post('prItems') ?? [];
+                $allotmentItems = Yii::$app->request->post('items') ?? [];
+                if (empty($allotmentItems)) {
+                    throw new ErrorException('Allotment and Gross Amount is Required');
+                }
+
+                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                $model->type = Yii::$app->request->post('type');
+                $model->responsibility_center_id = Yii::$app->request->post('responsibility_center_id');
+                $model->payee_id = Yii::$app->request->post('payee_id');
+                $model->transaction_date = Yii::$app->request->post('transaction_date');
+                $model->particular = Yii::$app->request->post('particular');
+                $model->fk_book_id = Yii::$app->request->post('book_id');
+                $division = strtolower(Yii::$app->user->identity->division);
+
+                $iarItems = [];
+                if ($model->type === 'multiple') {
+                    if (empty($_POST['multiple_iar'])) {
+                        return json_encode(['isSuccess' => false, 'error_message' => 'IAR is Required']);
+                    }
+                    $iarItems = $_POST['multiple_iar'];
+                } else if ($model->type === 'single') {
+                    if (empty($_POST['single_iar'])) {
+                        return json_encode(['isSuccess' => false, 'error_message' => 'IAR is Required']);
+                    }
+                    $iarItems = [$_POST['single_iar']];
+                }
+                if (!Yii::$app->user->can('super-user')) {
+                    $r_center = Yii::$app->db->createCommand("SELECT `id` FROM responsibility_center WHERE `name`=:division")
+                        ->bindValue(':division', $division)
+                        ->queryScalar();
+                    $model->responsibility_center_id = $r_center;
+                }
+                $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id,  $model->transaction_date);
+
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => json_encode($model->errors))));
                 }
@@ -462,56 +463,52 @@ class TransactionController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $oldModel = $this->findModel($id);
         $items = $this->getItems($model->id);
         if ((Yii::$app->request->isPost)) {
-            $prItems = !empty($_POST['prItems']) ? $_POST['prItems'] : [];
-            $allotmentItems = !empty($_POST['items']) ? $_POST['items'] : [];
-            if (empty($allotmentItems)) {
-                return json_encode(['isSuccess' => false, 'error_message' => 'Allotment and Gross Amount is Required']);
-            }
-            $old =  $this->findModel($id);
-            $old_responsibility_center = intval($old->responsibility_center_id);
-            $new_responsibility_center = intval($model->responsibility_center_id);
-            $old_year = DateTime::createFromFormat('m-d-Y', $old->transaction_date)->format('Y');
-            $new_year = DateTime::createFromFormat('m-d-Y', $model->transaction_date)->format('Y');
-            if (intval($old_year) !== intval($new_year)) {
-                $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id, 1, $model->transaction_date);
-            }
-            if ($old_responsibility_center !==  $new_responsibility_center) {
-                $old_tracking_number = explode('-', $old->tracking_number)[2];
-                $new_tracking_number = explode('-', $this->getTrackingNumber($model->responsibility_center_id, $model->transaction_date));
-                $new_tracking_number[2] = $old_tracking_number;
-
-                $model->tracking_number = implode('-', $new_tracking_number);
-            }
-
-            $items = !empty($_POST['items']) ? $_POST['items'] : [];
-            if (empty($items)) {
-                return json_encode(['isSuccess' => false, 'error_message' => 'Allotment and Gross Amount is Required']);
-            }
-            if (Yii::$app->user->can('super-user')) {
-
-                $model->responsibility_center_id = $_POST['responsibility_center_id'];
-            }
-            $model->type = $_POST['type'];
-            $model->payee_id = $_POST['payee_id'];
-            $model->transaction_date = $_POST['transaction_date'];
-            $model->particular = $_POST['particular'];
-            $model->fk_book_id = $_POST['book_id'];
-            $iarItems = [];
-            if ($model->type === 'multiple') {
-                if (empty($_POST['multiple_iar'])) {
-                    return json_encode(['isSuccess' => false, 'error_message' => 'IAR is Required']);
-                }
-                $iarItems = $_POST['multiple_iar'];
-            } else if ($model->type === 'single') {
-                if (empty($_POST['single_iar'])) {
-                    return json_encode(['isSuccess' => false, 'error_message' => 'IAR is Required']);
-                }
-                $iarItems = [$_POST['single_iar']];
-            }
             try {
                 $transaction = Yii::$app->db->beginTransaction();
+                $prItems = !empty($_POST['prItems']) ? $_POST['prItems'] : [];
+                $allotmentItems = !empty($_POST['items']) ? $_POST['items'] : [];
+                if (empty($allotmentItems)) {
+                    throw new ErrorException('Allotment and Gross Amount is Required');
+                }
+
+                $old_year = DateTime::createFromFormat('m-d-Y', $oldModel->transaction_date)->format('Y');
+                $new_year = DateTime::createFromFormat('m-d-Y', $model->transaction_date)->format('Y');
+                if (intval($old_year) !== intval($new_year)) {
+                    $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id, $model->transaction_date);
+                }
+                if (intval($oldModel->responsibility_center_id) !==  intval($model->responsibility_center_id)) {
+                    $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id,  $model->transaction_date);
+                }
+
+                $items = !empty($_POST['items']) ? $_POST['items'] : [];
+                if (empty($items)) {
+                    throw new ErrorException('Allotment and Gross Amount is Required');
+                }
+                if (Yii::$app->user->can('super-user')) {
+
+                    $model->responsibility_center_id = $_POST['responsibility_center_id'];
+                }
+                $model->type = $_POST['type'];
+                $model->payee_id = $_POST['payee_id'];
+                $model->transaction_date = $_POST['transaction_date'];
+                $model->particular = $_POST['particular'];
+                $model->fk_book_id = $_POST['book_id'];
+                $iarItems = [];
+                if ($model->type === 'multiple') {
+                    if (empty($_POST['multiple_iar'])) {
+                        throw new ErrorException('IAR is Required');
+                    }
+                    $iarItems = $_POST['multiple_iar'];
+                } else if ($model->type === 'single') {
+                    if (empty($_POST['single_iar'])) {
+                        throw new ErrorException('IAR is Required');
+                    }
+                    $iarItems = [$_POST['single_iar']];
+                }
+
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode(array('isSuccess' => false, 'error_message' => $model->errors)));
                 }
