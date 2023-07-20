@@ -454,29 +454,31 @@ class PrPurchaseRequestController extends Controller
         }
         return true;
     }
-    private function insertPrAllotments($model_id, $allotment_items = [])
+    private function insertPrAllotments($model_id, $allotment_items = [], $isUpdate = false)
     {
-        $i = 1;
+        try {
+            $i = 1;
+            if ($isUpdate) {
+                $params = [];
+                $item_ids = array_column($allotment_items, 'pr_allotment_item_id');
+                $sql = '';
+                if (!empty($item_ids)) {
+                    $sql = 'AND ';
+                    $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $item_ids], $params);
+                }
+                Yii::$app->db->createCommand("UPDATE pr_purchase_request_allotments SET is_deleted = 1 WHERE 
+                 pr_purchase_request_allotments.fk_purchase_request_id = :id  $sql", $params)
+                    ->bindValue(':id', $model_id)
+                    ->execute();
+            }
+            foreach ($allotment_items as  $item) {
+                if (empty($item['gross_amount'])) {
+                    throw new ErrorException('Gross Amount Cannot be Blank');
+                }
+                if (empty($item['allotment_id'])) {
+                    throw new ErrorException('Allotment  Cannot be Blank');
+                }
 
-        $params = [];
-        $item_ids = array_column($allotment_items, 'pr_allotment_item_id');
-        $sql = '';
-        if (!empty($item_ids)) {
-            $sql = 'AND ';
-            $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $item_ids], $params);
-        }
-        Yii::$app->db->createCommand("UPDATE pr_purchase_request_allotments SET is_deleted = 1 WHERE 
-             pr_purchase_request_allotments.fk_purchase_request_id = :id  $sql", $params)
-            ->bindValue(':id', $model_id)
-            ->execute();
-        foreach ($allotment_items as  $item) {
-            if (empty($item['gross_amount'])) {
-                throw new ErrorException('Gross Amount Cannot be Blank');
-            }
-            if (empty($item['allotment_id'])) {
-                throw new ErrorException('Allotment  Cannot be Blank');
-            }
-            try {
                 if (!empty($item['pr_allotment_item_id'])) {
                     $ai = PrPurchaseRequestAllotments::findOne($item['pr_allotment_item_id']);
                 } else {
@@ -485,7 +487,7 @@ class PrPurchaseRequestController extends Controller
                 }
                 $validate_allotment = MyHelper::checkAllotmentBalance(
                     $item['allotment_id'],
-                    $item['gross_amount'],
+                    floatval($item['gross_amount']),
                     !empty($item['pr_allotment_item_id']) ? $item['pr_allotment_item_id'] : null
                 );
                 if ($validate_allotment !== true) {
@@ -496,18 +498,17 @@ class PrPurchaseRequestController extends Controller
                 $ai->fk_record_allotment_entries_id = $item['allotment_id'];
                 $ai->amount = $item['gross_amount'];
                 if (!$ai->validate()) {
-
                     throw new ErrorException(json_encode($ai->errors));
                 }
                 if (!$ai->save(false)) {
                     throw new ErrorException('Allotment Save Failed');
                 }
-            } catch (ErrorException $e) {
-                return $e->getMessage();
+                $i++;
             }
-            $i++;
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
         }
-        return true;
     }
     private function employeeData($employee_id = '')
     {
@@ -523,62 +524,41 @@ class PrPurchaseRequestController extends Controller
     public function actionCreate()
     {
         $model = new PrPurchaseRequest();
-
-        if (Yii::$app->request->isPost) {
-
-
-            $office_id = !empty($_POST['office_id']) ? $_POST['office_id'] : '';
-            $division_id = !empty($_POST['division_id']) ? $_POST['division_id'] : '';
-            $division_program_unit_id = !empty($_POST['division_program_unit_id']) ? $_POST['division_program_unit_id'] : '';
-            if (!Yii::$app->user->can('super-user')) {
-                $user_data = Yii::$app->memem->getUserData();
-                $office_id = $user_data->office->id;
-                $division_id = $user_data->divisionName->id;
-            }
-
-            $book_id = !empty($_POST['book_id']) ? $_POST['book_id'] : '';
-            $purpose = !empty($_POST['purpose']) ? $_POST['purpose'] : '';
-            $requested_by_id = !empty($_POST['requested_by_id']) ? $_POST['requested_by_id'] : '';
-            $approved_by_id = !empty($_POST['approved_by_id']) ? $_POST['approved_by_id'] : '';
-            $pr_items = !empty($_POST['pr_items']) ? $_POST['pr_items'] : [];
-            $allotment_items = !empty($_POST['allotment_items']) ? $_POST['allotment_items'] : [];
-            $budget_year = !empty($_POST['budget_year']) ? $_POST['budget_year'] : [];
-            $date_now = new DateTime();
-            $model->date = $date_now->format('Y-m-d');
-            $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-            $model->book_id = $book_id;
-            $model->pr_project_procurement_id = '';
-            $model->purpose = $purpose;
-            $model->requested_by_id = $requested_by_id;
-            $model->approved_by_id = $approved_by_id;
-            $model->budget_year = $budget_year;
-            $model->fk_office_id = $office_id;
-            $model->fk_division_id = $division_id;
-            $model->fk_division_program_unit_id = $division_program_unit_id;
-            $model->pr_number = $this->getPrNumber($model->date, $model->fk_office_id, $model->fk_division_id);
+        $model->fk_office_id =  Yii::$app->user->identity->fk_office_id ?? '';
+        $model->fk_division_id =  Yii::$app->user->identity->fk_division_id ?? '';
 
 
-
-
-
+        if ($model->load(Yii::$app->request->post())) {
+            // if (!Yii::$app->user->can('super-user')) {
+            //     $user_data = Yii::$app->memem->getUserData();
+            //     $office_id = $user_data->office->id;
+            //     $division_id = $user_data->divisionName->id;
+            // }
             try {
                 $transaction = Yii::$app->db->beginTransaction();
-
+                $pr_items = Yii::$app->request->post('pr_items') ?? [];
+                $allotment_items = Yii::$app->request->post('allotment_items') ?? [];
+                $date_now = new DateTime();
+                $model->date = $date_now->format('Y-m-d');
+                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                $model->pr_number = $this->getPrNumber($model->date, $model->fk_office_id, $model->fk_division_id);
                 $allotment_items_ttl = array_column($allotment_items, 'gross_amount');
                 $validate_ttl = $this->calculateItemsTotal($pr_items, $allotment_items_ttl);
+
                 if ($validate_ttl !== true) {
                     throw new ErrorException(json_encode('The sum of the allotments does not match the sum of the specifications.'));
                 }
+
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
                 if (!$model->save(false)) {
                     throw new ErrorException('PR save failed');
                 }
+
                 $insert_items = $this->insertPrItems(
                     $model->id,
-                    $pr_items,
-                    true
+                    $pr_items
                 );
                 if ($insert_items !== true) {
                     throw new ErrorException($insert_items);
@@ -591,7 +571,7 @@ class PrPurchaseRequestController extends Controller
                 return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
                 $transaction->rollBack();
-                return json_encode(['isSuccess' => false, 'error_message' => $e->getMessage()]);
+                return  $e->getMessage();
             }
         }
 
@@ -622,49 +602,15 @@ class PrPurchaseRequestController extends Controller
         if ($model->is_final && !Yii::$app->user->can('super-user')) {
             return $this->goHome();
         }
-
-
-        if (Yii::$app->request->post()) {
-
-            $old = $this->findModel($id);
-
-            // $old_date =  $old->date;
-            // $new_date = $model->date;
-            $ppmp_id = !empty($_POST['ppmp_id']) ? $_POST['ppmp_id'] : '';
-            $book_id = !empty($_POST['book_id']) ? $_POST['book_id'] : '';
-            $purpose = !empty($_POST['purpose']) ? $_POST['purpose'] : '';
-            $requested_by_id = !empty($_POST['requested_by_id']) ? $_POST['requested_by_id'] : '';
-            $approved_by_id = !empty($_POST['approved_by_id']) ? $_POST['approved_by_id'] : '';
-            $pr_items = !empty($_POST['pr_items']) ? $_POST['pr_items'] : [];
-            $allotment_items = !empty($_POST['allotment_items']) ? $_POST['allotment_items'] : [];
-
-            $office_id = !empty($_POST['office_id']) ? $_POST['office_id'] : '';
-            $division_id = !empty($_POST['division_id']) ? $_POST['division_id'] : '';
-            $division_program_unit_id = !empty($_POST['division_program_unit_id']) ? $_POST['division_program_unit_id'] : '';
-            if (!Yii::$app->user->can('super-user')) {
-                $user_data = Yii::$app->memem->getUserData();
-                $office_id = $user_data->office->id;
-                $division_id = $user_data->divisionName->id;
-            }
-            $model->fk_office_id = $office_id;
-            $model->fk_division_id = $division_id;
-            $model->fk_division_program_unit_id = $division_program_unit_id;
-            // $date_now = new DateTime();
-            // $model->date = $date_now->format('Y-m-d');
-            $model->book_id = $book_id;
-            $model->pr_project_procurement_id = '';
-            $model->purpose = $purpose;
-            $model->requested_by_id = $requested_by_id;
-            $model->approved_by_id = $approved_by_id;
-
-            // if (
-            //     $oldModel->fk_office_id != $model->fk_office_id
-            //     || $oldModel->fk_division_id != $model->fk_division_id
-            // ) {
-            //     $model->pr_number = $this->getPrNumber($model->date, $model->fk_office_id, $model->fk_division_id);
-            // }
+        if ($model->load(Yii::$app->request->post())) {
             try {
                 $transaction = Yii::$app->db->beginTransaction();
+
+                if ($oldModel->fk_office_id !== $model->fk_office_id || $oldModel->fk_division_id !== $model->fk_division_id) {
+                    $model->pr_number = $this->getPrNumber($model->date, $model->fk_office_id, $model->fk_division_id);
+                }
+                $pr_items = Yii::$app->request->post('pr_items') ?? [];
+                $allotment_items = Yii::$app->request->post('allotment_items') ?? [];
                 $check_rfqs = YIi::$app->db->createCommand("SELECT 
                 GROUP_CONCAT(pr_rfq.rfq_number) as rfq_nums
                 FROM pr_rfq
@@ -680,16 +626,17 @@ class PrPurchaseRequestController extends Controller
                 }
                 $allotment_items_ttl = array_column($allotment_items, 'gross_amount');
                 $validate_ttl = $this->calculateItemsTotal($pr_items, $allotment_items_ttl);
-
                 if ($validate_ttl !== true) {
-                    throw new ErrorException('The sum of the allotments does not match the sum of the specifications.');
+                    throw new ErrorException(json_encode('The sum of the allotments does not match the sum of the specifications.'));
                 }
+
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
                 if (!$model->save(false)) {
                     throw new ErrorException('PR save failed');
                 }
+
                 $insert_items = $this->insertPrItems(
                     $model->id,
                     $pr_items,
@@ -698,7 +645,7 @@ class PrPurchaseRequestController extends Controller
                 if ($insert_items !== true) {
                     throw new ErrorException($insert_items);
                 }
-                $insert_allotments = $this->insertPrAllotments($model->id, $allotment_items);
+                $insert_allotments = $this->insertPrAllotments($model->id, $allotment_items, true);
                 if ($insert_allotments !== true) {
                     throw new ErrorException($insert_allotments);
                 }
@@ -706,7 +653,7 @@ class PrPurchaseRequestController extends Controller
                 return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
                 $transaction->rollBack();
-                return json_encode(['isSuccess' => false, 'error_message' => $e->getMessage()]);
+                return  $e->getMessage();
             }
         }
 
@@ -757,19 +704,19 @@ class PrPurchaseRequestController extends Controller
     {
         $office = Yii::$app->db->createCommand("SELECT office_name FROM office WHERE office.id = :id")->bindValue(':id', $office_id)->queryScalar();
         $division = Yii::$app->db->createCommand("SELECT division FROM divisions WHERE divisions.id = :id")->bindValue(':id', $division_id)->queryScalar();
-
         $pr_office = $office . '-' . $division;
-        $date = DateTime::createFromFormat('Y-m-d', $d)->format('Y-m-d');
+        $date = DateTime::createFromFormat('Y-m-d', $d);
         $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(pr_number,'-',-1) AS UNSIGNED) as last_number 
-        FROM pr_purchase_request
-        WHERE pr_purchase_request.date = :_date
-        AND 
-        pr_purchase_request.pr_number LIKE :pr_number
-         ORDER BY last_number DESC LIMIT 1")
-            ->bindValue(':_date', $date)
-            ->bindValue(':pr_number', '%' . $pr_office . '%')
+            FROM pr_purchase_request
+            WHERE pr_purchase_request.fk_office_id = :office_id
+            AND pr_purchase_request.fk_division_id = :division_id
+            AND pr_purchase_request.pr_number LIKE :pr_number
+            AND pr_purchase_request.is_final = 0
+            ORDER BY last_number DESC LIMIT 1")
+            ->bindValue(':office_id', $office_id)
+            ->bindValue(':division_id', $division_id)
+            ->bindValue(':pr_number', '%' . $date->format('Y') . '%')
             ->queryScalar();
-
         $num  = 1;
         if (!empty($query)) {
             $num = intval($query) + 1;
@@ -779,9 +726,7 @@ class PrPurchaseRequestController extends Controller
             $final .= 0;
         }
 
-
-
-        return  strtoupper($pr_office) . '-' . $date . '-' . $final . $num;
+        return  strtoupper($pr_office) . '-' . $date->format('Y-m') . '-' . $final . $num;
     }
     public function actionSearchPr($q = null, $id = null, $province = null)
     {

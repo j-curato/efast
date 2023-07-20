@@ -9,9 +9,11 @@ use app\models\RecordAllotmentDetailedSearch;
 use aryelds\sweetalert\SweetAlert;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
+use kartik\form\ActiveForm;
 use kartik\grid\GridView;
 use kartik\icons\Icon;
 use kartik\select2\Select2;
+use Matrix\Operators\Division;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\JsExpression;
@@ -93,46 +95,36 @@ $user_data = Yii::$app->memem->getUserData();
     </div>
     <div>
 
-        <?= Html::beginForm([$action, 'id' => $model->id], 'post', ['id' => 'pr_form']); ?>
-
+        <!-- <?= Html::beginForm([$action, 'id' => $model->id], 'post', ['id' => 'pr_form']); ?> -->
+        <?php $form = ActiveForm::begin([
+            'id' => 'PurchaseRequestForm'
+        ]); ?>
         <div class="row">
             <?php
-            if (YIi::$app->user->can('super-user')) {
-
+            if (Yii::$app->user->can('super-user')) {
             ?>
                 <div class="col-sm-2">
-                    <label for="office_id">Office </label>
-                    <?= Select2::widget([
-                        'id' => 'office_id',
-                        'name' => 'office_id',
-                        'value' => $model->fk_office_id,
-                        'data' => ArrayHelper::map($offices, 'id', 'office_name'),
+                    <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
+                        'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
                         'pluginOptions' => [
-                            'placeholder' => 'Select Office'
-                        ]
-                    ]) ?>
-                </div>
-                <div class="col-sm-2">
-                    <label for="division_id">Division </label>
-                    <?= Select2::widget([
-                        'id' => 'division_id',
-                        'name' => 'division_id',
-                        'value' => $model->fk_division_id,
-                        'data' => ArrayHelper::map($divisions_list, 'id', 'division'),
-                        'pluginOptions' => [
-                            'placeholder' => 'Select Division'
-                        ]
+                            'placeholder' => 'Select Office',
+                        ],
+
                     ]) ?>
                 </div>
 
+                <div class="col-sm-2">
+                    <?= $form->field($model, 'fk_division_id')->widget(Select2::class, [
+                        'data' => ArrayHelper::map(Divisions::find()->asArray()->all(), 'id', 'division'),
+                        'pluginOptions' => [
+                            'placeholder' => 'Select Division',
+                        ],
+
+                    ]) ?>
+                </div>
             <?php } ?>
             <div class="col-sm-2">
-                <label for="budget_year">Budget Year</label>
-                <?php
-                echo DatePicker::widget([
-                    'name' => 'budget_year',
-                    'id' => 'budget_year',
-                    'value' => !empty($model->budget_year) ? $model->budget_year : date('Y'),
+                <?= $form->field($model, 'budget_year')->widget(DatePicker::class, [
                     'pluginOptions' => [
                         'autoclose' => true,
                         'format' => 'yyyy',
@@ -142,86 +134,32 @@ $user_data = Yii::$app->memem->getUserData();
                         'readonly' => true,
                         'style' => 'background-color:white'
                     ]
-                ]);
-                ?>
+
+                ]) ?>
             </div>
             <div class="col-sm-2">
-                <label for="division_id">Division/Program/Unit</label>
-                <?= Select2::widget([
-                    'id' => 'division_program_unit_id',
-                    'name' => 'division_program_unit_id',
-                    'value' => $model->fk_division_program_unit_id,
+                <?= $form->field($model, 'fk_division_program_unit_id')->widget(Select2::class, [
                     'data' => ArrayHelper::map(DivisionProgramUnit::find()->asArray()->all(), 'id', 'name'),
                     'pluginOptions' => [
                         'placeholder' => 'Select Division/Program/Unit'
                     ]
+
                 ]) ?>
             </div>
-            <!-- <div class="col-sm-4">
-                <label for="ppmp_id">Project</label>
-                <?= Select2::widget([
-                    'data' => $ppmp_item_data,
-                    'name' => 'ppmp_id',
-                    'id' => 'ppmp_id',
-                    'value' => $ppmp_item_id,
-                    'options' => [
-                        'placeholder' => 'Search for a Activity/Project ...',
-                    ],
-                    'pluginOptions' => [
-                        'allowClear' => true,
-                        'minimumInputLength' => 1,
-                        'language' => [
-                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                        ],
-                        'ajax' => [
-                            'url' => Yii::$app->request->baseUrl . '?r=pr-purchase-request/search-ppmp',
-                            'dataType' => 'json',
-                            'delay' => 250,
-                            'data' => new JsExpression('function(params) { 
-                                return {
-                                    q:params.term,page: params.page||1,
-                                    budget_year:$("#budget_year").val(),
-                                    office_id:$("#office_id").val(),
-                                    division_id:$("#division_id").val(),
-                                }; }'),
-                            'cache' => true
-                        ],
-                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                    ],
-
-                ]) ?>
-            </div> -->
-
-
-
             <div class="col-sm-2">
-                <label for="book_id">Book </label>
-                <?= Select2::widget([
-                    'name' => 'book_id',
-                    'value' => $model->book_id,
+                <?= $form->field($model, 'book_id')->widget(Select2::class, [
                     'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
                     'pluginOptions' => [
                         'placeholder' => 'Select Book'
                     ]
+
                 ]) ?>
             </div>
         </div>
-
-        <label for="purpose">Purpose </label>
-        <?php echo Html::textarea('purpose', $model->purpose, ['rows' => 4, 'required' => true, 'id' => 'purpose']) ?>
-
-
-
-
-
+        <?= $form->field($model, 'purpose')->textarea() ?>
         <div class="row">
             <div class="col-sm-6">
-                <label for="requested_by_id">Requested By </label>
-                <?= Select2::widget([
-                    'name' => 'requested_by_id',
-                    'value' => $model->requested_by_id,
+                <?= $form->field($model, 'requested_by_id')->widget(Select2::class, [
                     'data' => Arrayhelper::map($requested_by, 'employee_id', 'employee_name'),
                     'options' => ['placeholder' => 'Search for a Employee ...'],
                     'pluginOptions' => [
@@ -234,7 +172,7 @@ $user_data = Yii::$app->memem->getUserData();
                             'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
                             'dataType' => 'json',
                             'delay' => 250,
-                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                            'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
                             'cache' => true
                         ],
                         'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
@@ -245,11 +183,8 @@ $user_data = Yii::$app->memem->getUserData();
                 ]) ?>
             </div>
             <div class="col-sm-6">
-                <label for="approved_by_id">Approved By </label>
-                <?= Select2::widget([
-                    'name' => 'approved_by_id',
+                <?= $form->field($model, 'approved_by_id')->widget(Select2::class, [
                     'data' => Arrayhelper::map($approved_by, 'employee_id', 'employee_name'),
-                    'value' => $model->approved_by_id,
                     'options' => ['placeholder' => 'Search for a Employee ...'],
                     'pluginOptions' => [
                         'allowClear' => true,
@@ -261,7 +196,7 @@ $user_data = Yii::$app->memem->getUserData();
                             'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
                             'dataType' => 'json',
                             'delay' => 250,
-                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                            'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
                             'cache' => true
                         ],
                         'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
@@ -271,6 +206,7 @@ $user_data = Yii::$app->memem->getUserData();
 
                 ]) ?>
             </div>
+
         </div>
         <hr style="  position: relative;
                             top: 10px;
@@ -278,13 +214,6 @@ $user_data = Yii::$app->memem->getUserData();
                             height: 2px;
                             background: black;
                             margin-bottom: 20px;">
-
-
-
-
-
-
-
 
         <table class="table" id="form_fields_data">
             <thead>
@@ -347,7 +276,7 @@ $user_data = Yii::$app->memem->getUserData();
                                 <div class='row'>
                                     <div class='col-sm-4'>
                                         <label for='stocks'>Stock</label>
-                                        <input required type='hidden' name='pr_items[$row_number]['item_id']' class=' form-control' style='width: 100%' value='$item_id'>
+                                        <input required type='hidden' name='pr_items[$row_number][item_id]' class=' form-control' style='width: 100%' value='$item_id'>
                                         <input required type='hidden' name='pr_items[$row_number][$cse_type]' class=' form-control' style='width: 100%' value='$ppmp_item_id'>
                                         <input required type='hidden' name='pr_items[$row_number][pr_stocks_id]' class='stock_input form-control' style='width: 100%' value='$stock_id'>
                                         <p>$stock_title</p>
@@ -528,11 +457,14 @@ $user_data = Yii::$app->memem->getUserData();
                 </tr>
             </tfoot>
         </table>
-        <div class="form-group" style="text-align: center;">
-            <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:15em;font-size:15px']) ?>
+        <div class="row">
+
+            <div class="form-group col-sm-2 col-sm-offset-5">
+                <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
+            </div>
         </div>
 
-        <?= Html::endForm(); ?>
+        <?php ActiveForm::end(); ?>
 
 
     </div>
@@ -846,9 +778,9 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                     return {
                         q: params.term,
                         page: params.page || 1,
-                        budget_year: $("#budget_year").val(),
-                        office_id: $("#office_id").val(),
-                        division_id: $("#division_id").val(),
+                        budget_year: $("#prpurchaserequest-budget_year").val(),
+                        office_id: $("#prpurchaserequest-fk_office_id").val(),
+                        division_id: $("#prpurchaserequest-fk_division_id").val(),
                     };
                 },
                 processResults: function(data, params) {
@@ -1179,34 +1111,30 @@ SweetAlertAsset::register($this);
 $js = <<<JS
 
     $(document).ready(()=>{
-        $('#pr_form').on('submit', function(e) {
-            e.preventDefault()
-            const form = $(this)
-            $.ajax({
-                type: 'POST',
-                url: window.location.pathname + form.attr('action'),
-                data: form.serialize(),
-                success: function(data) {
-                    const res = JSON.parse(data)
-                    if (!res.isSuccess) {
-
-                        if (typeof res.error_message === 'object') {
-                            console.log('object error')
-                        } else if (typeof res.error_message === 'string') {
-                            swal({
-                                icon: 'error',
-                                title: res.error_message,
-                                type: "error",
-                                timer: 3000,
-                                closeOnConfirm: false,
-                                closeOnCancel: false
-                            })
-                        }
+            $("#PurchaseRequestForm").on("beforeSubmit", function (event) {
+                event.preventDefault();
+                var form = $(this);
+                $.ajax({
+                    url: form.attr("action"),
+                    type: form.attr("method"),
+                    data: form.serialize(),
+                    success: function (data) {
+                        // let res = JSON.parse(data)
+                        swal({
+                            icon: 'error',
+                            title: data,
+                            type: "error",
+                            timer: 3000,
+                            closeOnConfirm: false,
+                            closeOnCancel: false
+                        })
+                    },
+                    error: function (data) {
+                
                     }
-                },
-
-            })
-        })
+                });
+                return false;
+            });
     })
 JS;
 

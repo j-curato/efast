@@ -35,15 +35,14 @@ class PrRfq extends \yii\db\ActiveRecord
                 'id', 'rfq_number', 'pr_purchase_request_id',
                 '_date',
                 'deadline',
+                'fk_office_id'
             ], 'required'],
-            [['id', 'pr_purchase_request_id', 'bac_composition_id', 'is_cancelled'], 'integer'],
+            [['id', 'pr_purchase_request_id', 'bac_composition_id', 'is_cancelled', 'fk_office_id'], 'integer'],
             [['_date', 'created_at', 'deadline', 'project_location', 'cancelled_at'], 'safe'],
             [['rfq_number', 'employee_id', 'province'], 'string', 'max' => 255],
             [['rfq_number'], 'unique'],
             [['id'], 'unique'],
             [[
-                'rfq_number',
-                'deadline',
                 'project_location',
 
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
@@ -57,7 +56,7 @@ class PrRfq extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'rfq_number' => 'Rfq Number',
+            'rfq_number' => 'RFQ No.',
             'pr_purchase_request_id' => 'Purchase Request ',
             '_date' => 'Date',
             'bac_composition_id' => 'Rbac Composition ',
@@ -67,7 +66,8 @@ class PrRfq extends \yii\db\ActiveRecord
             'province' => 'Province',
             'project_location' => 'Location of Project',
             'cancelled_at' => 'Cancelled_at',
-            'is_cancelled' => 'is Cancelled'
+            'is_cancelled' => 'is Cancelled',
+            'fk_office_id' => 'Office'
 
         ];
     }

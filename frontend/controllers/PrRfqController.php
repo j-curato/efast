@@ -111,7 +111,6 @@ class PrRfqController extends Controller
                 ->queryScalar();
             if ($check != 1) {
                 $rfq_item = new PrRfqItem();
-
                 $rfq_item->id = MyHelper::getUuid();
                 $rfq_item->pr_rfq_id = $model_id;
                 $rfq_item->pr_purchase_request_item_id = $itm['pr_id'];

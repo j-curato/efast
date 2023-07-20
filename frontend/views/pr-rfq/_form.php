@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Office;
 use aryelds\sweetalert\SweetAlert;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
@@ -68,14 +69,20 @@ if (!empty($model->pr_purchase_request_id)) {
 
         <div class="panel-body">
 
-            <?php $form = ActiveForm::begin(
-                [
-                    'id' => $model->formName()
-                ]
-            ); ?>
+            <?php $form = ActiveForm::begin([
+                'id' => $model->formName()
+            ]); ?>
 
             <div class="row">
+                <div class="col-sm-2">
+                    <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
+                        'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
+                        'pluginOptions' => [
+                            'placeholder' => 'Select Office',
+                        ],
 
+                    ]) ?>
+                </div>
                 <div class="col-sm-2">
                     <?= $form->field($model, '_date')->widget(DatePicker::class, [
                         'pluginOptions' => [
@@ -95,7 +102,6 @@ if (!empty($model->pr_purchase_request_id)) {
                             'autoclose' => true
                         ],
                         'options' => [
-
                             'readonly' => true,
                             'style' => 'background-color:white'
                         ]
@@ -128,7 +134,7 @@ if (!empty($model->pr_purchase_request_id)) {
                     ]) ?>
                 </div>
 
-                <div class="col-sm-4">
+                <div class="col-sm-3">
                     <?= $form->field($model, 'employee_id')->widget(Select2::class, [
                         'data' => $employee,
                         'options' => ['placeholder' => 'Search for a Employee ...'],
@@ -238,7 +244,7 @@ if (!empty($model->pr_purchase_request_id)) {
             <div class="row">
 
                 <div class="form-group col-sm-3 col-sm-offset-4">
-                    <?= Html::submitButton('Save', ['class' => 'btn btn-success','style'=>'width:100%']) ?>
+                    <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
                 </div>
             </div>
 

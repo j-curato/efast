@@ -51,7 +51,7 @@ class MyHelper extends BaseObject
             $cur_balance = floatval($balance) - floatval($amount);
 
             if ($cur_balance < 0) {
-                throw new ErrorException("Allotment Amount Cannot be more than " . number_format($balance, 2));
+                throw new ErrorException("Allotment Amount Cannot be more than " . number_format(floatval($balance), 2));
             }
         } catch (ErrorException $e) {
             return $e->getMessage();
