@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use app\components\helpers\MyHelper;
 use Yii;
 use app\models\PrAoq;
 use app\models\PrAoqEntries;
@@ -106,98 +107,67 @@ class PrAoqController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function insertEntries(
-        $model_id,
-        $pr_rfq_items,
-        $unit_costs,
-        $payee_ids,
-        $remarks,
-        $pr_aoq_item,
-        $is_lowest = []
-    ) {
-        // var_dump($pr_rfq_items);
-        // die();
-        foreach ($pr_rfq_items as $i => $val) {
+    public function insertEntries($model_id, $items)
+    {
 
 
-            if (empty($pr_aoq_item[$i])) {
-                $aoq = new PrAoqEntries();
-            } else {
-                $aoq =  PrAoqEntries::findOne($pr_aoq_item[$i]);
+        try {
+            foreach ($items as $i => $itm) {
+                foreach ($itm as $val) {
+
+                    if (!empty($val['item_id'])) {
+                        $aoq =  PrAoqEntries::findOne($val['item_id']);
+                    } else {
+                        $aoq = new PrAoqEntries();
+                        $aoq->id = MyHelper::getUuid();
+                    }
+                    $aoq->payee_id = $val['payee_id'];
+                    $aoq->pr_aoq_id = $model_id;
+                    $aoq->amount = $val['unit_cost'];
+                    $aoq->remark = $val['remarks'];
+                    $aoq->pr_rfq_item_id = $i;
+                    $aoq->is_lowest = !empty($val['lowest']) && $val['lowest'] == 'on' ? 1 : 0;
+                    if (!$aoq->validate()) {
+                        throw new ErrorException(json_encode($aoq->errors));
+                    }
+                    if (!$aoq->save(false)) {
+                        throw new ErrorException('AOQ Item Model Save Failed');
+                    }
+                }
             }
-            $aoq->payee_id = !empty($payee_ids[$i]) ? $payee_ids[$i] : '';
-            $aoq->pr_aoq_id = $model_id;
-            $aoq->amount = !empty($unit_costs[$i]) ? $unit_costs[$i] : '';
-            $aoq->remark = !empty($remarks[$i]) ? $remarks[$i] : '';
-            $aoq->pr_rfq_item_id = !empty($pr_rfq_items[$i]) ? $pr_rfq_items[$i] : '';
-            $aoq->is_lowest = !empty($is_lowest[$i]) && $is_lowest[$i] == 'on' ? 1 : 0;
-            // var_dump($remarks[$i]);
-            // die();
-            // var_dump([
-            //     'pr_rfq_items' => $pr_rfq_items[$i],
-            //     // 'pr_aoq_item' => $pr_aoq_item[],
-            //     'payee_ids' => $payee_ids[$i],
-            //     // 'unit_costs' => $unit_costs,
-            //     // 'remarks' => $remarks
-            // ]);
 
-            // die();
-            if ($aoq->save(false)) {
-            } else {
-                return false;
-            }
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
         }
-
-        return true;
     }
     public function actionCreate()
     {
         $model = new PrAoq();
 
         if ($model->load(Yii::$app->request->post())) {
-            $model->aoq_number = $this->aoqNumberGenerator($model->rfq->deadline);
-            $payee_ids = $_POST['payee_id'];
-            $unit_costs  = $_POST['unit_cost'];
-            $pr_rfq_items = $_POST['pr_rfq_item'];
-            $remarks = $_POST['remarks'];
-            $is_lowest = $_POST['lowest'];
-
-            $transaction  = Yii::$app->db->beginTransaction();
-
             try {
-
-                if ($flag = true) {
-
-
-                    if ($model->save(false)) {
-                        $flag = $this->insertEntries(
-                            $model->id,
-                            $pr_rfq_items,
-                            $unit_costs,
-                            $payee_ids,
-                            $remarks,
-                            [],
-                            $is_lowest
-                        );
-                        // return json_encode($this->insertEntries(
-                        //     $model->id,
-                        //     $pr_rfq_items,
-                        //     $unit_costs,
-                        //     $payee_ids,
-                        //     $remarks,
-                        //     $is_lowest
-                        // ));
-                    }
+                $transaction  = Yii::$app->db->beginTransaction();
+                $model->aoq_number = $this->aoqNumberGenerator($model->rfq->deadline);
+                $items  = Yii::$app->request->post('items') ?? [];
+                $model->id = MyHelper::getUuid();
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
                 }
-                if ($flag) {
-                    $transaction->commit();
-                    return $this->redirect(['view', 'id' => $model->id]);
-                } else {
-                    $transaction->rollBack();
-                    return json_encode('error');
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model save failed');
                 }
+                $insItems = $this->insertEntries(
+                    $model->id,
+                    $items
+                );
+                if ($insItems !== true) {
+                    throw new ErrorException($insItems);
+                }
+                $transaction->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
-
+                $transaction->rollBack();
                 return json_encode($e->getMessage());
             }
         }
@@ -219,59 +189,32 @@ class PrAoqController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post())) {
-
-
-            // return var_dump($_POST['remarks']);
-            $payee_ids = $_POST['payee_id'];
-            $unit_costs  = $_POST['unit_cost'];
-            $pr_rfq_items = $_POST['pr_rfq_item'];
-            $remarks = $_POST['remarks'];
-            $pr_aoq_item = !empty($_POST['pr_aoq_item']) ? $_POST['pr_aoq_item'] : [];
-            $is_lowest = $_POST['lowest'];
-            // return json_encode($is_lowest);
-            // return json_encode([
-            //     'pr_rfq_items'=>$pr_rfq_items,
-            //     'unit_costs'=>$unit_costs,
-            //     'payee_ids'=>$payee_ids,
-            //     'remarks'=>$remarks,
-            //     'pr_aoq_item'=>$pr_aoq_item,
-            // ]);
-            $transaction  = Yii::$app->db->beginTransaction();
             try {
-
-                $this->removeEntry($model->id, $pr_aoq_item);
-                if ($flag = true) {
-
-
-                    if ($model->save(false)) {
-                        $flag = $this->insertEntries(
-                            $model->id,
-                            $pr_rfq_items,
-                            $unit_costs,
-                            $payee_ids,
-                            $remarks,
-                            $pr_aoq_item,
-                            $is_lowest
-                        );
-                    }
+                $transaction  = Yii::$app->db->beginTransaction();
+                $items  = Yii::$app->request->post('items') ?? [];
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
                 }
-                if ($flag) {
-                    $transaction->commit();
-                    return $this->redirect(['view', 'id' => $model->id]);
-                } else {
-                    $transaction->rollBack();
-                    return json_encode('error');
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model save failed');
                 }
+                $insItems = $this->insertEntries(
+                    $model->id,
+                    $items
+                );
+                if ($insItems !== true) {
+                    throw new ErrorException($insItems);
+                }
+                $transaction->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
-
+                $transaction->rollBack();
                 return json_encode($e->getMessage());
             }
-            return $this->redirect(['view', 'id' => $model->id]);
         }
-
         return $this->render('update', [
             'model' => $model,
-            'aoq_entries' => $result = ArrayHelper::index($this->aoqEntriesData($id), null, 'rfq_item_id')
+            'aoq_entries' => ArrayHelper::index($this->aoqEntriesData($id), null, 'rfq_item_id')
         ]);
     }
 
@@ -349,7 +292,7 @@ class PrAoqController extends Controller
     {
         if ($pr_aoq_id == null) return;
         return $query = Yii::$app->db->createCommand("SELECT
-                pr_aoq_entries.id as aoq_item_id,
+                pr_aoq_entries.id as item_id,
                 pr_rfq_item.id as rfq_item_id,
                 pr_stock.bac_code,
                 unit_of_measure.unit_of_measure,

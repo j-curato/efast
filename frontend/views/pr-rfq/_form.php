@@ -227,7 +227,6 @@ if (!empty($model->pr_purchase_request_id)) {
                     <th>Description</th>
                     <th>Unit of Measure</th>
                     <th>Specification</th>
-
                     <th>Unit Cost</th>
                     <th>Quantity</th>
                     <th>Total Unit Cost</th>
@@ -236,8 +235,11 @@ if (!empty($model->pr_purchase_request_id)) {
 
                 </tbody>
             </table>
-            <div class="form-group">
-                <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+            <div class="row">
+
+                <div class="form-group col-sm-3 col-sm-offset-4">
+                    <?= Html::submitButton('Save', ['class' => 'btn btn-success','style'=>'width:100%']) ?>
+                </div>
             </div>
 
             <?php ActiveForm::end(); ?>

@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use app\components\helpers\MyHelper;
 use Yii;
 use app\models\SupplementalPpmp;
 use app\models\SupplementalPpmpCse;
@@ -150,6 +151,7 @@ class SupplementalPpmpController extends Controller
                 } else {
 
                     $cse_item = new SupplementalPpmpCse();
+                    $cse_item->id  = MyHelper::getUuid();
                 }
                 $cse_item->fk_supplemental_ppmp_id = $id;
                 $cse_item->fk_pr_stock_id = $item['stock_id'];
@@ -208,6 +210,7 @@ class SupplementalPpmpController extends Controller
                         ->bindValue(':id', $ppmp_non_cse->id)->query();
                 } else {
                     $ppmp_non_cse = new SupplementalPpmpNonCse();
+                    $ppmp_non_cse->id = MyHelper::getUuid();
                 }
                 $ppmp_non_cse->fk_supplemental_ppmp_id = $id;
                 $ppmp_non_cse->type = $noncse['type'];
@@ -230,6 +233,7 @@ class SupplementalPpmpController extends Controller
                         $ppmp_non_cse_item = SupplementalPpmpNonCseItems::findOne($item['non_cse_item_id']);
                     } else {
                         $ppmp_non_cse_item = new SupplementalPpmpNonCseItems();
+                        $ppmp_non_cse_item->id = MyHelper::getUuid();
                     }
 
                     $ppmp_non_cse_item->fk_supplemental_ppmp_non_cse_id = $ppmp_non_cse->id;

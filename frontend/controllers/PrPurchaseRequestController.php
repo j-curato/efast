@@ -481,6 +481,7 @@ class PrPurchaseRequestController extends Controller
                     $ai = PrPurchaseRequestAllotments::findOne($item['pr_allotment_item_id']);
                 } else {
                     $ai = new PrPurchaseRequestAllotments();
+                    $ai->id   = MyHelper::getUuid();
                 }
                 $validate_allotment = MyHelper::checkAllotmentBalance(
                     $item['allotment_id'],
