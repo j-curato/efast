@@ -504,7 +504,7 @@ class AcicsController extends Controller
                 $txn  = Yii::$app->db->beginTransaction();
                 $model->id  = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
                 $chkItm = $this->checkItemsIfBalance($uniqueCashItems, $cashRcvItms, $uniqueCancelledItems);
-                if ($chkItm !== true) {
+                if ($chkItm != true) {
                     throw new ErrorException($chkItm);
                 }
                 if (empty($cashRcvItms)) {
@@ -571,7 +571,7 @@ class AcicsController extends Controller
                     $model->serial_number = $this->getSerialNum($model->date_issued, $model->fk_book_id);
                 }
                 $chkItm = $this->checkItemsIfBalance($uniqueCashItems, $cashRcvItms, $uniqueCancelledItems);
-                if ($chkItm !== true) {
+                if ($chkItm != true) {
                     throw new ErrorException($chkItm);
                 }
                 if (empty($cashRcvItms)) {
