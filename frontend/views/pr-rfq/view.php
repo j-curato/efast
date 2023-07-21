@@ -14,16 +14,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Pr Rfqs', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 SweetAlertAsset::register($this);
-$rbac = Yii::$app->db->createCommand("SELECT 
-employee_search_view.employee_name,
-CONCAT(bac_position.position,'_', employee_search_view.employee_name) as pos
- FROM bac_composition
-LEFT JOIN bac_composition_member ON bac_composition.id = bac_composition_member.bac_composition_id
-LEFT JOIN bac_position ON bac_composition_member.bac_position_id = bac_position.id
-LEFT JOIN employee_search_view ON bac_composition_member.employee_id = employee_search_view.employee_id
-WHERE bac_composition.id = :id")
-    ->bindValue(':id', $model->bac_composition_id)
-    ->queryAll();
+
 ?>
 <div class="pr-rfq-view">
 
@@ -160,22 +151,6 @@ WHERE bac_composition.id = :id")
                 <tr>
                     <td colspan="5" class="bdr-none"></td>
                     <td colspan="3" class='bdr-none' style="text-align:center;border-left:none">
-
-                        <?php
-
-                        // $bac = Yii::$app->db->createCommand("SELECT 
-                        // UPPER(employee_name)  as employee_name
-                        // FROM 
-                        // bac_composition_member 
-                        // LEFT JOIN bac_position ON bac_composition_member.bac_position_id  = bac_position.id
-                        // LEFT JOIN employee_search_view ON bac_composition_member.employee_id = employee_search_view.employee_id
-                        // WHERE
-                        // bac_composition_member.bac_composition_id = :bac_composition_id
-                        // AND bac_position.position = 'chairperson'
-                        //  ")->bindValue(':bac_composition_id', $model->bac_composition_id)
-                        //     ->queryOne();
-
-                        ?>
 
                         <br>
                         <br>

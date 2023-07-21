@@ -7,6 +7,7 @@ use app\models\Office;
 use app\models\SubAccounts1;
 use Da\QrCode\QrCode;
 use ErrorException;
+use PHPUnit\Framework\MockObject\Stub\ReturnValueMap;
 use Yii;
 use yii\base\BaseObject;
 use yii\db\Query;
@@ -212,6 +213,19 @@ class MyHelper extends BaseObject
     {
         return Yii::$app->db->createCommand("SELECT * FROM payee WHERE id = :id")
             ->bindValue(':id', $id)
+            ->queryAll();
+    }
+    public static function getRbac()
+    {
+        return Yii::$app->db->createCommand("SELECT 
+        employee_search_view.employee_name,
+        CONCAT(bac_position.position,'_', employee_search_view.employee_name) as pos
+        FROM bac_composition
+        LEFT JOIN bac_composition_member ON bac_composition.id  = bac_composition_member.bac_composition_id
+        LEFT JOIN bac_position ON bac_composition_member.bac_position_id = bac_position.id
+        LEFT JOIN employee_search_view ON bac_composition_member.employee_id = employee_search_view.employee_id
+        WHERE bac_composition.fk_office_id = :office_id")
+            ->bindValue(':office_id', Yii::$app->user->identity->fk_office_id)
             ->queryAll();
     }
 }

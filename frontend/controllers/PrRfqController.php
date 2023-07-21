@@ -89,8 +89,11 @@ class PrRfqController extends Controller
      */
     public function actionView($id)
     {
+        $rbac =  MyHelper::getRbac();
+        // return json_encode($rbac);
         return $this->render('view', [
             'model' => $this->findModel($id),
+            'rbac' =>$rbac
         ]);
     }
 
@@ -146,14 +149,14 @@ class PrRfqController extends Controller
                 if (strtotime($model->deadline) < strtotime($model->_date)) {
                     throw new ErrorException('Deadline  must be greater than the RFQ date.');
                 }
-                $rbac_id = Yii::$app->db->createCommand("SELECT id FROM bac_composition WHERE :_date  >= bac_composition.effectivity_date AND :_date<= bac_composition.expiration_date ")
-                    ->bindValue(':_date', $model->_date)
-                    ->queryOne();
-                if (empty($rbac_id)) {
-                    throw new ErrorException('No RBAC for selected Date');
-                }
+                // $rbac_id = Yii::$app->db->createCommand("SELECT id FROM bac_composition WHERE :_date  >= bac_composition.effectivity_date AND :_date<= bac_composition.expiration_date ")
+                //     ->bindValue(':_date', $model->_date)
+                //     ->queryOne();
+                // if (empty($rbac_id)) {
+                //     throw new ErrorException('No RBAC for selected Date');
+                // }
                 $model->id  = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-                $model->bac_composition_id = $rbac_id['id'];
+                // $model->bac_composition_id = $rbac_id['id'];
                 $model->province = $province;
                 $model->rfq_number = $this->getRfqNumber($model->_date);
 
@@ -208,16 +211,16 @@ class PrRfqController extends Controller
                     throw new ErrorException('RFQ and Deadline date should not be before the PR Date.');
                 }
 
-                $rbac_id = Yii::$app->db->createCommand("SELECT id FROM bac_composition WHERE :_date  >= bac_composition.effectivity_date AND :_date<= bac_composition.expiration_date ")
-                    ->bindValue(':_date', $model->_date)
-                    ->queryOne();
-                if (empty($rbac_id)) {
-                    throw new ErrorException('No RBAC for selected Date');
-                }
+                // $rbac_id = Yii::$app->db->createCommand("SELECT id FROM bac_composition WHERE :_date  >= bac_composition.effectivity_date AND :_date<= bac_composition.expiration_date ")
+                //     ->bindValue(':_date', $model->_date)
+                //     ->queryOne();
+                // if (empty($rbac_id)) {
+                //     throw new ErrorException('No RBAC for selected Date');
+                // }
                 if (!$oldmodel->_date != $model->_date) {
                     $model->rfq_number = $this->getRfqNumber($model->_date);
                 }
-                $model->bac_composition_id = $rbac_id['id'];
+                // $model->bac_composition_id = $rbac_id['id'];
                 $model->province = $province;
 
 
