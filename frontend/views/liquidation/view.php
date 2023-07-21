@@ -247,10 +247,10 @@ AND po_transmittal_entries.is_deleted = 0")
                 <td>{$responsibility_center}</td>
                 <td>{$uacs}</td>
                 <td>{$general_ledger}</td>
-                <td class='number'>" . number_format($val->withdrawals, 2) . "</td>
-                <td class='number'>" . number_format($val->vat_nonvat, 2) . "</td>
-                <td class='number'>" . number_format($val->expanded_tax, 2) . "</td>
-                <td class='number'>" . number_format($val->liquidation_damage, 2) . "</td>
+                <td class='number'>" . number_format($val->withdrawals ?? 0, 2) . "</td>
+                <td class='number'>" . number_format($val->vat_nonvat ?? 0, 2) . "</td>
+                <td class='number'>" . number_format($val->expanded_tax ?? 0, 2) . "</td>
+                <td class='number'>" . number_format($val->liquidation_damage ?? 0, 2) . "</td>
                 <td class='number'>" . number_format($gross, 2) . "</td>
                 
                 </tr>";
