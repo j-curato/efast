@@ -479,6 +479,17 @@ class CashDisbursementController extends Controller
         ]);
     }
 
+    private function hasAcic($id)
+    {
+        return Yii::$app->db->createCommand("SELECT EXISTS(SELECT 
+        acics_cash_items.id
+        FROM acics_cash_items WHERE fk_cash_disbursement_id = :id
+        AND
+        acics_cash_items.is_deleted = 0
+        )")
+            ->bindValue(':id', $id)
+            ->queryScalar();
+    }
     /**
      * Updates an existing CashDisbursement model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -497,11 +508,13 @@ class CashDisbursementController extends Controller
         $dvDataProvider->pagination = ['pageSize' => 10];
 
         if ($model->load(Yii::$app->request->post())) {
-
             $items = Yii::$app->request->post('items') ?? [];
-
             try {
                 $txn = Yii::$app->db->beginTransaction();
+
+                if ($this->hasAcic($model->id)) {
+                    throw new ErrorException('Cannot Update this Check is already in ACIC');
+                }
                 if ($model->is_cancelled == true) {
                     throw new ErrorException('Cancelled Check Cannot be Updated');
                 }
@@ -868,57 +881,18 @@ class CashDisbursementController extends Controller
     }
     public function actionGetDv()
     {
-        if (!empty($_POST)) {
-            $cash_id = $_POST['cash_id'];
-
-            // $query = (new \yii\db\Query())
-            //     ->select([
-            //         'cash_disbursement.book_id',
-            //         'dv_aucs.dv_number',
-            //         'dv_aucs.id as dv_aucs_id',
-            //         'dv_aucs.payee_id',
-            //         'dv_aucs.particular',
-            //         'dv_aucs.reporting_period',
-            //         'cash_disbursement.check_or_ada_no',
-            //         'cash_disbursement.mode_of_payment',
-            //         'cash_disbursement.issuance_date',
-            //         'cash_disbursement.ada_number',
-            //         'responsibility_center.id as rc_id',
-            //         'transaction.id as transaction_id',
-            //         'SUM(dv_aucs_entries.amount_disbursed) as total_disbursed',
-            //         'jev_preparation.id as jev_id'
-
-            //     ])
-            //     ->from("cash_disbursement")
-            //     ->join('LEFT JOIN', 'jev_preparation', 'cash_disbursement.id = jev_preparation.cash_disbursement_id')
-            //     ->join('LEFT JOIN', 'dv_aucs', 'cash_disbursement.dv_aucs_id = dv_aucs.id')
-            //     ->join('LEFT JOIN', 'dv_aucs_entries', 'dv_aucs.id = dv_aucs_entries.dv_aucs_id')
-            //     ->join('LEFT JOIN', 'process_ors', 'dv_aucs_entries.process_ors_id = process_ors.id')
-            //     ->join('LEFT JOIN', 'transaction', 'process_ors.transaction_id = transaction.id')
-            //     ->join('LEFT JOIN', 'responsibility_center', 'transaction.responsibility_center_id = responsibility_center.id')
-            //     ->where("cash_disbursement.id = :id", [
-            //         'id' => $cash_id
-            //     ])
-            //     ->groupBy([
-            //         'cash_disbursement.id',
-            //         'cash_disbursement.book_id',
-            //         'cash_disbursement.check_or_ada_no',
-            //         'cash_disbursement.mode_of_payment',
-            //         'cash_disbursement.issuance_date',
-            //         'cash_disbursement.ada_number',
-            //     ])
-            //     ->one();
+        if (Yii::$app->request->post()) {
+            $dv_id = Yii::$app->request->post('dv_id');
             $query = (new \yii\db\Query())
                 ->select('*')
                 ->from('detailed_cash_view')
-                ->where('cash_id = :cash_id', ['cash_id' => $cash_id])
+                ->where('cash_id = :cash_id', ['cash_id' => $dv_id])
                 ->one();
             $date = new DateTime($query['issuance_date']);
-            // echo $date->format('Y-m-d H:i:s');
-            // $q = new DateTime($query['issuance_date']);
+
             $query['issuance_date'] = $date->format('Y-m-d');
 
-            $model = DvAucs::findOne($query['dv_aucs_id']);
+
 
             $dv_accounting_entries = [];
             $dv_accounting_entries = Yii::$app->db->createCommand("SELECT 
@@ -931,38 +905,8 @@ class CashDisbursementController extends Controller
            accounting_codes.account_title
            FROM dv_accounting_entries 
            LEFT JOIN accounting_codes ON dv_accounting_entries.object_code = accounting_codes.object_code
-           WHERE dv_accounting_entries.dv_aucs_id = :dv_id")->bindValue(':dv_id', $model->id)
+           WHERE dv_accounting_entries.dv_aucs_id = :dv_id")->bindValue(':dv_id', $dv_id)
                 ->queryAll();
-            // if (!empty($model->dvAccountingEntries)) {
-
-            //     foreach ($model->dvAccountingEntries as $val) {
-
-            //         if ($val->lvl === 2) {
-            //             $chart_id = (new \yii\db\Query())->select(['sub_accounts1.id'])->from('sub_accounts1')
-            //                 ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
-            //                 ->where('sub_accounts1.object_code =:object_code', ['object_code' => $val->object_code])->one()['id'];
-            //         } else if ($val->lvl === 3) {
-            //             $chart_id = (new \yii\db\Query())->select(['sub_accounts2.id'])->from('sub_accounts2')
-            //                 // ->join("LEFT JOIN", 'sub_accounst1', 'sub_accounts2.sub_accounts1_id = sub_accounts1.id')
-            //                 // ->join("LEFT JOIN", 'chart_of_accounts', 'sub_accounts1.chart_of_account_id = chart_of_accounts.id')
-            //                 ->where('sub_accounts2.object_code =:object_code', ['object_code' => $val->object_code])->one()['id'];
-            //         } else {
-            //             $chart_id =  $val->chart_of_account_id;
-            //         }
-            //         $dv_accounting_entries[] = [
-            //             'dv_aucs_id' => $val->dv_aucs_id,
-            //             'chart_of_account_id' => $val->chart_of_account_id,
-            //             'id' => $chart_id,
-            //             'debit' => $val->debit,
-            //             'credit' => $val->credit,
-            //             'net_asset_equity_id' => $val->net_asset_equity_id,
-            //             'object_code' => $val->object_code,
-            //             'lvl' => $val->lvl,
-            //             'cashflow_id' => $val->cashflow_id,
-            //         ];
-            //     }
-            // }
-
             return json_encode(['results' => $query, 'dv_accounting_entries' => $dv_accounting_entries]);
         }
     }
@@ -1107,9 +1051,7 @@ class CashDisbursementController extends Controller
         if (!is_null($q)) {
             $query = new Query();
             $query->select(['cash_disbursement.id as id', 'dv_aucs.dv_number as text'])
-                ->from('cash_disbursement')
-                ->join('LEFT JOIN', 'dv_aucs', 'cash_disbursement.dv_aucs_id  = dv_aucs.id')
-                ->andWhere('cash_disbursement.is_cancelled = :is_cancelled', ['is_cancelled' => false])
+                ->from('dv_aucs')
                 ->andWhere(['like', 'dv_aucs.dv_number', $q]);
 
             $command = $query->createCommand();
