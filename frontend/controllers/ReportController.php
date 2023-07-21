@@ -2436,7 +2436,7 @@ class ReportController extends \yii\web\Controller
                 ->bindValue(':from_reporting_period', $from_reporting_period)
                 ->queryAll();
             $cancelled_checks = ArrayHelper::index($qry, null, ['is_cancelled']);
-            $per_mode_of_payment = ArrayHelper::index($cancelled_checks[0], null, ['mode_of_payment_name']);
+            $per_mode_of_payment = ArrayHelper::index($cancelled_checks[0]??[], null, ['mode_of_payment_name']);
             return json_encode([
                 'results' => $qry,
                 'adjustments' => $adjustments,
