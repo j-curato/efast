@@ -606,7 +606,7 @@ class PrPurchaseRequestController extends Controller
             try {
                 $transaction = Yii::$app->db->beginTransaction();
 
-                if ($oldModel->fk_office_id !== $model->fk_office_id || $oldModel->fk_division_id !== $model->fk_division_id) {
+                if (intval($oldModel->fk_office_id) !== intval($model->fk_office_id) || intval($oldModel->fk_division_id) !== intval($model->fk_division_id)) {
                     $model->pr_number = $this->getPrNumber($model->date, $model->fk_office_id, $model->fk_division_id);
                 }
                 $pr_items = Yii::$app->request->post('pr_items') ?? [];
