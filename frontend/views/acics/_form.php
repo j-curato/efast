@@ -21,7 +21,7 @@ use yii\widgets\ActiveForm;
 
 $cshItmRowNum = 0;
 $cshRcvItmRowNum = 0;
-$cnclItmRow = 0;
+$cancelItmRowNum = 0;
 ?>
 
 <div class="accics-form panel panel-default">
@@ -105,7 +105,62 @@ $cnclItmRow = 0;
                 <th colspan="6" class="ctr">Total</th>
                 <th class="cashItemsDisbursedGndTtl"><?= number_format($grdTtlDisbursed, 2) ?></th>
                 <th class="cashItemsTaxGndTtl"><?= number_format($grdTtlTax, 2) ?></th>
+                <td></td>
             </tr>
+        </tfoot>
+    </table>
+    <table class="table " id="cancelled_cash_items">
+
+        <thead>
+            <tr class="danger">
+                <th colspan="10" class=" ctr">
+                    Cancel Cash Disbursements
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            $cancelledItemsDisbursedGndTtl = 0;
+            $cancelledItemsTaxGndTtl = 0;
+            foreach ($cancelledItems as $cItm) {
+                $cancelledItemsDisbursedGndTtl += floatval($cItm['ttlDisbursed']);
+                $cancelledItemsTaxGndTtl += floatval($cItm['ttlTax']);
+                echo "<tr>
+                        <td>
+                        <input type='hidden' name = 'cancelItems[$cancelItmRowNum][item_id]' value='{$cItm['item_id']}'>
+                        <input type='hidden' name = 'cancelItems[$cancelItmRowNum][cash_id]' value='{$cItm['cash_id']}'>
+                        {$cItm['reporting_period']}</td>
+                        <td class =''>{$cItm['mode_name']}</td>
+                        <td>{$cItm['check_or_ada_no']}</td>
+                        <td>{$cItm['ada_number']}</td>
+                        <td>{$cItm['issuance_date']}</td>
+                        <td>{$cItm['book_name']}</td>
+                        <td>" . number_format($cItm['ttlDisbursed'], 2) . "</td>
+                        <td>{$cItm['ttlTax']}</td>
+                        <td><button type='button' class='remove btn-xs btn-danger' onclick='remove(this)'><i class='fa fa-minus'></i></button></td>
+                    </tr>";
+                $cancelItmRowNum++;
+            }
+            ?>
+        </tbody>
+        <tfoot>
+
+
+            <tfoot>
+                <tr class="" style="background-color: #e9eff2;">
+                    <th colspan="6" class="ctr">Total</th>
+                    <th class="cancelledItemsDisbursedGndTtl"><?= number_format($cancelledItemsDisbursedGndTtl, 2) ?></th>
+                    <th class="cancelledItemsTaxGndTtl"><?= number_format($cancelledItemsTaxGndTtl, 2) ?></th>
+                    <td></td>
+                </tr>
+                <tr class="warning">
+                    <th colspan="6" class="ctr">Grand Total</th>
+                    <th class="grdTtl"><?= number_format($cancelledItemsDisbursedGndTtl + $grdTtlDisbursed, 2) ?></th>
+                    <th class="grdTtlTax"><?= number_format($cancelledItemsTaxGndTtl + $grdTtlTax, 2) ?></th>
+                    <td></td>
+                </tr>
+
+            </tfoot>
         </tfoot>
     </table>
     <table class="table" id="cash_rcv_itms_tbl">
@@ -171,39 +226,7 @@ $cnclItmRow = 0;
         </tfoot>
     </table>
 
-    <table class="table " id="cancelled_cash_items">
 
-        <thead>
-            <tr class="danger">
-                <th colspan="7" class="ctr">
-                    Cancel Cash Disbursements
-                </th>
-            </tr>
-            <th>Reporting Period</th>
-            <th>Mode of Payment</th>
-            <th>Check No.</th>
-            <th>ADA No.</th>
-            <th>Issuance Date</th>
-            <th>Book Name</th>
-        </thead>
-        <tbody>
-            <?php
-
-            foreach ($cancelledItems as $cItm) {
-                echo "<tr>
-                    
-                    <td>{$cItm['reporting_period']}</td>
-                    <td>{$cItm['mode_name']}</td>
-                    <td>{$cItm['check_or_ada_no']}</td>
-                    <td>{$cItm['ada_number']}</td>
-                    <td>{$cItm['issuance_date']}</td>
-                    <td>{$cItm['book_name']}</td>
-                </tr>";
-                $cshItmRowNum++;
-            }
-            ?>
-        </tbody>
-    </table>
     <div class="row">
         <div class="form-group col-sm-1 col-sm-offset-5">
             <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
@@ -351,6 +374,19 @@ $cnclItmRow = 0;
         'ada_number',
         'issuance_date',
         'book_name',
+
+        [
+            'attribute' => 'ttlDisbursed',
+            'format' => ['decimal', 2],
+            'value' => function ($model) {
+                return $model->ttlDisbursed * -1;
+            },
+            'contentOptions' => ['class' => 'disbursed'],
+        ],
+        [
+            'attribute' => 'ttlTax',
+            'format' => ['decimal', 2]
+        ],
         [
             'attribute' => 'bookFilter',
             'hidden' => true
@@ -449,7 +485,7 @@ $this->registerJsFile("@web/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsse
 <script>
     let cshItmRowNum = <?= $cshItmRowNum ?>;
     let cshRcvItmRowNum = <?= $cshRcvItmRowNum ?>;
-    let cnclItmRow = <?= $cnclItmRow ?>;
+    let cnclItmRow = <?= $cancelItmRowNum ?>;
 
     function AddCancelItem(ths) {
         const clone = $(ths).closest('tr').clone()
@@ -498,6 +534,37 @@ $this->registerJsFile("@web/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsse
         GetCashReceiveTotal()
     }
 
+    function GetGrandTtl() {
+
+
+        let disbursed = parseFloat($('.cancelledItemsDisbursedGndTtl').text().replace(/,/g, '')) + parseFloat($('.cashItemsDisbursedGndTtl').text().replace(/,/g, ''))
+        let tax = parseFloat($('.cancelledItemsTaxGndTtl').text().replace(/,/g, '')) + parseFloat($('.cashItemsTaxGndTtl').text().replace(/,/g, ''))
+        console.log(disbursed)
+        $('.grdTtl').text(thousands_separators(disbursed))
+        $('.grdTtlTax').text(thousands_separators(tax))
+    }
+
+    function GetCancelledTtl() {
+        let disbursedTtl = 0
+        let taxTtl = 0
+
+        $("#cancelled_cash_items .disbursed").each(function(key, val) {
+            disbursedTtl += parseFloat($(val).text().replace(/,/g, ''))
+        })
+        $("#cancelled_cash_items .tax").each(function(key, val) {
+            taxTtl += parseFloat($(val).text().replace(/,/g, ''))
+        })
+        if (isNaN(disbursedTtl)) {
+            disbursedTtl = 0
+        }
+        if (isNaN(taxTtl)) {
+            taxTtl = 0
+        }
+        $('.cancelledItemsDisbursedGndTtl').text(thousands_separators(disbursedTtl))
+        $('.cancelledItemsTaxGndTtl').text(thousands_separators(taxTtl))
+        GetGrandTtl()
+    }
+
     function GetCashItemsTotal() {
         let disbursedTtl = 0
         let taxTtl = 0
@@ -516,6 +583,7 @@ $this->registerJsFile("@web/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsse
         }
         $('.cashItemsDisbursedGndTtl').text(thousands_separators(disbursedTtl))
         $('.cashItemsTaxGndTtl').text(thousands_separators(taxTtl))
+        GetGrandTtl()
     }
 
     function GetCashReceiveTotal() {
@@ -530,6 +598,7 @@ $this->registerJsFile("@web/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsse
             ttl = 0
         }
         $('.cashReceiveTtl').text(thousands_separators(ttl))
+
 
     }
     $(document).ready(function() {

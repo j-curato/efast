@@ -71,7 +71,19 @@ class AcicsController extends Controller
     }
     private function getCancelledItemsDetails($id)
     {
-        return Yii::$app->db->createCommand("SELECT 
+        return Yii::$app->db->createCommand("WITH checkTtlAmt as (
+        
+            SELECT 
+            cash_disbursement_items.fk_cash_disbursement_id,
+            SUM(dv_aucs_index.ttlAmtDisbursed) * -1 as ttlDisbursed ,
+            SUM(COALESCE(dv_aucs_index.ttlTax,0)) as ttlTax
+            FROM cash_disbursement_items
+            JOIN dv_aucs_index ON cash_disbursement_items.fk_dv_aucs_id = dv_aucs_index.id
+            WHERE 
+            cash_disbursement_items.is_deleted = 0
+            GROUP BY cash_disbursement_items.fk_cash_disbursement_id
+            )
+                SELECT 
                 acic_cancelled_items.id  as item_id,
                 cash_disbursement.id as cash_id,
                 cash_disbursement.check_or_ada_no,
@@ -79,11 +91,14 @@ class AcicsController extends Controller
                 cash_disbursement.ada_number,
                 cash_disbursement.issuance_date,
                 books.`name` as book_name,
-                mode_of_payments.`name` as mode_name
+                mode_of_payments.`name` as mode_name,
+                checkTtlAmt.ttlDisbursed,
+                checkTtlAmt.ttlTax
                 FROM acic_cancelled_items 
                 JOIN cash_disbursement ON acic_cancelled_items.fk_cash_disbursement_id = cash_disbursement.id
                 LEFT JOIN books ON cash_disbursement.book_id = books.id
                 LEFT JOIN mode_of_payments ON cash_disbursement.fk_mode_of_payment_id = mode_of_payments.id
+                LEFT JOIN checkTtlAmt ON cash_disbursement.id  = checkTtlAmt.fk_cash_disbursement_id
                 WHERE 
                 acic_cancelled_items.fk_acic_id = :id")
             ->bindValue(':id', $id)
@@ -415,25 +430,28 @@ class AcicsController extends Controller
             return json_encode(['isSuccess' => false, 'cancelled' => 'cancel', 'error' => $e->getMessage()]);
         }
     }
-    private function checkItemsIfBalance($uniqueCashItems, $casRcvItems)
+    private function getCashDisbursementTttl($items)
     {
-        $cashRcvAmts = array_column($casRcvItems, 'amount');
-        $cashRcvAmtsTtl = array_sum($cashRcvAmts);
-        $cash_ids = array_column($uniqueCashItems, 'cash_id');
         $params = [];
         $sql = ' AND ';
-        $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['IN', 'cash_disbursement.id', $cash_ids], $params);
-        $cashItemsTtl = Yii::$app->db->createCommand("  SELECT 
+        $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['IN', 'cash_disbursement.id', $items], $params);
+        return Yii::$app->db->createCommand("  SELECT 
         SUM(dv_aucs_index.ttlAmtDisbursed) as ttl
          FROM cash_disbursement
         JOIN cash_disbursement_items ON cash_disbursement.id = cash_disbursement_items.fk_cash_disbursement_id
         JOIN dv_aucs_index ON cash_disbursement_items.fk_dv_aucs_id = dv_aucs_index.id
-        
         WHERE cash_disbursement_items.is_deleted = 0
         $sql", $params)
-            ->queryScalar();
-
-        return number_format($cashRcvAmtsTtl, 2) !== number_format($cashItemsTtl, 2) ? 'Cash disbursements and cash receipts totals must balance' : true;
+            ->queryScalar() ?? 0;
+    }
+    private function checkItemsIfBalance($uniqueCashItems, $casRcvItems, $cancellItems)
+    {
+        $cashRcvAmtsTtl = array_sum($casRcvItems);
+        $cash_ids = array_column($uniqueCashItems, 'cash_id');
+        $cancelled_ids = array_column($cancellItems, 'cash_id');
+        $cashItemsTtl = $this->getCashDisbursementTttl($cash_ids);
+        $cnclItemsTtl = $this->getCashDisbursementTttl($cancelled_ids) * -1;
+        return number_format($cashRcvAmtsTtl, 2) !== number_format(floatval($cashItemsTtl) + floatval($cnclItemsTtl), 2) ? 'Cash disbursements and cash receipts totals must balance' : true;
     }
     /**
      * Lists all Acics models.
@@ -480,17 +498,18 @@ class AcicsController extends Controller
             $uniqueCashItems = array_map("unserialize", array_unique(array_map("serialize", $cashItems)));
             $cashRcvItms =  Yii::$app->request->post('cshRcvItems') ?? [];
             $cancellItems =  Yii::$app->request->post('cancelItems') ?? [];
-            // return var_dump($cancellItems);
+            $uniqueCancelledItems = array_map("unserialize", array_unique(array_map("serialize", $cancellItems)));
 
             try {
                 $txn  = Yii::$app->db->beginTransaction();
                 $model->id  = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-                // if (empty($cashItems)) {
-                //     throw new ErrorException('Cash Disbursements is Required');
-                // }
-                // if (empty($cashRcvItms)) {
-                //     throw new ErrorException('Cash Receive is Required');
-                // }
+                $chkItm = $this->checkItemsIfBalance($uniqueCashItems, $cashRcvItms, $uniqueCancelledItems);
+                if ($chkItm !== true) {
+                    throw new ErrorException($chkItm);
+                }
+                if (empty($cashRcvItms)) {
+                    throw new ErrorException('Cash Receive is Required');
+                }
                 $model->serial_number = $this->getSerialNum($model->date_issued, $model->fk_book_id);
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
@@ -510,7 +529,7 @@ class AcicsController extends Controller
 
                     throw new ErrorException($insCashRcvItms);
                 }
-                $inCnclItms = $this->insCancelledItems($model->id, $cancellItems);
+                $inCnclItms = $this->insCancelledItems($model->id, $uniqueCancelledItems);
                 if ($inCnclItms !== true) {
                     throw new ErrorException($inCnclItms);
                 }
@@ -545,21 +564,19 @@ class AcicsController extends Controller
             $uniqueCashItems = array_map("unserialize", array_unique(array_map("serialize", $cashItems)));
             $cashRcvItms =  Yii::$app->request->post('cshRcvItems') ?? [];
             $cancellItems =  Yii::$app->request->post('cancelItems') ?? [];
+            $uniqueCancelledItems = array_map("unserialize", array_unique(array_map("serialize", $cancellItems)));
             try {
                 $txn  = Yii::$app->db->beginTransaction();
                 if (intval($oldModel->fk_book_id) !== intval($model->fk_book_id)) {
                     $model->serial_number = $this->getSerialNum($model->date_issued, $model->fk_book_id);
                 }
-                $chkItm = $this->checkItemsIfBalance($uniqueCashItems, $cashRcvItms);
+                $chkItm = $this->checkItemsIfBalance($uniqueCashItems, $cashRcvItms, $uniqueCancelledItems);
                 if ($chkItm !== true) {
                     throw new ErrorException($chkItm);
                 }
-                // if (empty($cashItems)) {
-                //     throw new ErrorException('Cash Disbursements is Required');
-                // }
-                // if (empty($cashRcvItms)) {
-                //     throw new ErrorException('Cash Receive is Required');
-                // }
+                if (empty($cashRcvItms)) {
+                    throw new ErrorException('Cash Receive is Required');
+                }
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
@@ -579,7 +596,7 @@ class AcicsController extends Controller
 
                     throw new ErrorException($insCashRcvItms);
                 }
-                $inCnclItms = $this->insCancelledItems($model->id, $cancellItems);
+                $inCnclItms = $this->insCancelledItems($model->id, $uniqueCancelledItems, true);
                 if ($inCnclItms !== true) {
                     throw new ErrorException($inCnclItms);
                 }

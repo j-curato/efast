@@ -219,7 +219,8 @@ class MyHelper extends BaseObject
     {
         return Yii::$app->db->createCommand("SELECT 
         employee_search_view.employee_name,
-        CONCAT(bac_position.position,'_', employee_search_view.employee_name) as pos
+        CONCAT(bac_position.position,'_', employee_search_view.employee_name) as pos,
+        LOWER(bac_position.position)as position
         FROM bac_composition
         LEFT JOIN bac_composition_member ON bac_composition.id  = bac_composition_member.bac_composition_id
         LEFT JOIN bac_position ON bac_composition_member.bac_position_id = bac_position.id
