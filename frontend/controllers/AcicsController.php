@@ -446,11 +446,13 @@ class AcicsController extends Controller
     }
     private function checkItemsIfBalance($uniqueCashItems, $casRcvItems, $cancellItems)
     {
-        $cashRcvAmtsTtl = array_sum($casRcvItems);
+        $cashRcvAmtsTtl = array_sum(array_column($casRcvItems, 'amount'));
         $cash_ids = array_column($uniqueCashItems, 'cash_id');
         $cancelled_ids = array_column($cancellItems, 'cash_id');
         $cashItemsTtl = $this->getCashDisbursementTttl($cash_ids);
         $cnclItemsTtl = $this->getCashDisbursementTttl($cancelled_ids) * -1;
+        // echo number_format(floatval($cashItemsTtl) + floatval($cnclItemsTtl), 2);
+
         return number_format($cashRcvAmtsTtl, 2) !== number_format(floatval($cashItemsTtl) + floatval($cnclItemsTtl), 2) ? 'Cash disbursements and cash receipts totals must balance' : true;
     }
     /**
@@ -504,7 +506,7 @@ class AcicsController extends Controller
                 $txn  = Yii::$app->db->beginTransaction();
                 $model->id  = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
                 $chkItm = $this->checkItemsIfBalance($uniqueCashItems, $cashRcvItms, $uniqueCancelledItems);
-                if ($chkItm != true) {
+                if ($chkItm !== true) {
                     throw new ErrorException($chkItm);
                 }
                 if (empty($cashRcvItms)) {
@@ -571,7 +573,7 @@ class AcicsController extends Controller
                     $model->serial_number = $this->getSerialNum($model->date_issued, $model->fk_book_id);
                 }
                 $chkItm = $this->checkItemsIfBalance($uniqueCashItems, $cashRcvItms, $uniqueCancelledItems);
-                if ($chkItm != true) {
+                if ($chkItm !== true) {
                     throw new ErrorException($chkItm);
                 }
                 if (empty($cashRcvItms)) {
