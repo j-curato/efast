@@ -401,7 +401,7 @@ class TransactionController extends Controller
                     if (empty(Yii::$app->request->post('single_iar'))) {
                         throw new ErrorException('IAR is Required');
                     }
-                    $iarItems = Yii::$app->request->post('single_iar');
+                    $iarItems[] = Yii::$app->request->post('single_iar');
                 }
 
                 if (!Yii::$app->user->can('super-user')) {
@@ -491,19 +491,19 @@ class TransactionController extends Controller
                     }
                     $iarItems = Yii::$app->request->post('multiple_iar');
                 } else if ($model->type === 'single') {
-                    
+
                     if (empty(Yii::$app->request->post('single_iar'))) {
                         throw new ErrorException('IAR is Required');
                     }
                     $iarItems[] = Yii::$app->request->post('single_iar');
-                // throw new ErrorException(json_encode());
+                    // throw new ErrorException(json_encode());
 
                 }
 
                 if ($model->type != 'no-iar'  && empty($prItems)) {
                     throw new ErrorException('Please Select a Purchase Request Below');
                 }
-                
+
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
@@ -522,7 +522,7 @@ class TransactionController extends Controller
                 if ($insIar !== true) {
                     throw new ErrorException($insIar);
                 }
-              
+
                 $transaction->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
