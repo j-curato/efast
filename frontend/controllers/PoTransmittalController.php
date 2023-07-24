@@ -191,7 +191,7 @@ class PoTransmittalController extends Controller
                 $txn = YIi::$app->db->beginTransaction();
                 $items = Yii::$app->request->post('items') ?? [];
                 $uniqueItems = array_map("unserialize", array_unique(array_map("serialize", $items)));
-                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT() % 9223372036854775807")->queryScalar();
                 $model->transmittal_number  = $this->getTransmittalNumber($model->date, $model->fk_office_id);
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
