@@ -14,6 +14,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use kartik\select2\Select2;
+use yii\helpers\Url;
 use yii\web\JsExpression;
 
 /* @var $this yii\web\View */
@@ -187,10 +188,10 @@ $payee = !empty($model->payee_id) ? ArrayHelper::map(MyHelper::getPayee($model->
                         'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
                     ],
                     'ajax' => [
-                        'url' => Yii::$app->request->baseUrl . '?r=payee/search-payee',
+                        'url' => Url::to(['payee/search-payee']),
                         'dataType' => 'json',
                         'delay' => 250,
-                        'data' => new JsExpression('function(params) { return {q:params.term,page:params.term.page||1}; }'),
+                        'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
                         'cache' => true
                     ],
                     'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
