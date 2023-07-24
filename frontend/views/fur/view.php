@@ -23,7 +23,7 @@ $this->title = "FUR";
 $this->params['breadcrumbs'][] = ['label' => 'Furs', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="fur-view " style="background-color: white;padding:20px ;display:none">
+<div class="fur-view " style="background-color: white;padding:20px ">
     <?php
     echo "<input type='hidden' id='model_id' value='$model->id'/>"
     ?>
@@ -33,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div id='con'>
         <div class="head" style="margin-left: auto;margin-right:auto;text-align:center;">
             <h5 style="font-weight: bold;">Fund Utilization Report</h5>
-            <h6 id="period"></h6>
+            <h6 id="period">For the period of <?= DateTime::createFromFormat('Y-m', $model->reporting_period)->format('F, Y') ?></h6>
             <h6 id="prov"></h6>
         </div>
         <table id="conso_fur_table" style="margin-top:20px;">
@@ -45,9 +45,36 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th>Ending Balance</th>
             </thead>
             <tbody>
-
+                <?php
+                $cns_bgn_bal_tt = 0;
+                $cns_adv_bal_tt = 0;
+                $cns_wdt_bal_tt = 0;
+                foreach ($items['conso_fur'] as $itm) {
+                    $cns_bgn_bal_tt += floatval($itm['begining_balance']);
+                    $cns_adv_bal_tt += floatval($itm['total_advances']);
+                    $cns_wdt_bal_tt += floatval($itm['total_withdrawals']);
+                    echo "<tr>
+                    
+                            <td>{$itm['report_type']}</td>
+                            <td>" . number_format($itm['begining_balance'], 2) . "</td>
+                            <td>" . number_format($itm['total_advances'], 2) . "</td>
+                            <td>" . number_format($itm['total_withdrawals'], 2) . "</td><td>";
+                    echo   number_format((floatval($itm['begining_balance']) + floatval($itm['total_advances'])) - floatval($itm['total_withdrawals']), 2);
+                    echo "</td></tr>";
+                }
+                ?>
 
             </tbody>
+            <tfoot>
+                <tr>
+                    <th>Total</th>
+                    <td><?= number_format($cns_bgn_bal_tt, 2) ?></td>
+                    <td><?= number_format($cns_adv_bal_tt, 2) ?></td>
+                    <td><?= number_format($cns_wdt_bal_tt, 2) ?></td>
+                    <td><?= number_format(($cns_bgn_bal_tt + $cns_adv_bal_tt) - $cns_wdt_bal_tt, 2) ?></td>
+
+                </tr>
+            </tfoot>
         </table>
         <table class="" id="fur_table" style="margin-top: 30px;">
 
@@ -63,19 +90,54 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th>Account Title</th>
             </thead>
             <tbody>
+                <?php
 
+                $bgn_bal_ttl = 0;
+                $adv_ttl = 0;
+                $wtl_ttl = 0;
+                foreach ($items['fur'] as $itm) {
+                    $bgn_bal_ttl += floatval($itm['begining_balance']);
+                    $adv_ttl += floatval($itm['total_advances']);
+                    $wtl_ttl += floatval($itm['total_withdrawals']);
+                    $fur_ending_balance = floatval($bgn_bal_ttl) + floatval($adv_ttl) - floatval($wtl_ttl);
+
+                    echo   "<tr>
+
+                        <td>{$itm['fund_source']}</td>
+                        <td class='amount'>" . number_format($itm['begining_balance'], 2) . "</td>
+                        <td class='amount'>" . number_format($itm['total_advances'], 2) . "</td>
+                        <td class='amount'>" . number_format($itm['total_withdrawals'], 2) . "</td>
+                        <td class='amount'>" . number_format($fur_ending_balance, 2) . "</td>
+                        <td>{$itm['particular']}</td>
+                        <td>{$itm['report_type']}</td>
+                        <td>{$itm['object_code']}</td>
+                        <td>{$itm['account_title']}</td>
+                        </tr>";
+                }
+                ?>
             </tbody>
+            <tfoot>
+                <tr>
+                    <td>Total</td>
+                    <td class='amount'><?= number_format($bgn_bal_ttl, 2) ?></td>
+                    <td class='amount'><?= number_format($adv_ttl, 2) ?></td>
+                    <td class='amount'><?= number_format($wtl_ttl, 2) ?></td>
+                    <td class='amount'> <?= number_format(($bgn_bal_ttl + $adv_ttl) - $wtl_ttl, 2) ?></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tfoot>
         </table>
     </div>
     <!-- </div> -->
 
 </div>
-<div id="dots5">
+<!-- <div id="dots5">
     <span></span>
     <span></span>
     <span></span>
     <span></span>
-</div>
+</div> -->
 <style>
     table,
     th,
@@ -149,40 +211,40 @@ $script = <<< JS
         var diff =seconds/ 60;
         console.log(seconds)
         
-        $.ajax({
-            type:'POST',
-            url:window.location.pathname +'?r=fur/find-fur',
-            data:{id:$('#model_id').val()},
-            success:function(data){
-                var res = JSON.parse(data)
-                console.log(res)
-                var reporting_period = new Date(res.reporting_period)
-                month = reporting_period.toLocaleString('default',{month:'long'})
-                year = reporting_period.getFullYear()
-                $("#period").text('For the Period of '+ month+','+year)
-                        $('#prov').text('Province of '+province[res.province])
-                $.ajax({
-                    type:'POST',
-                    url:window.location.pathname +'?r=fur/generate-fur',
-                    data:{
-                        reporting_period:res.reporting_period,
-                        province:res.province,
-                        bank_account_id:res.bank_account_id
-                    },
-                    success:function(data){
-                        var res = JSON.parse(data)
-                        var conso_fur = res.conso_fur
-                        var fur = res.fur
-                        console.log(res)
+        // $.ajax({
+        //     type:'POST',
+        //     url:window.location.pathname +'?r=fur/find-fur',
+        //     data:{id:$('#model_id').val()},
+        //     success:function(data){
+        //         var res = JSON.parse(data)
+        //         console.log(res)
+        //         var reporting_period = new Date(res.reporting_period)
+        //         month = reporting_period.toLocaleString('default',{month:'long'})
+        //         year = reporting_period.getFullYear()
+        //         $("#period").text('For the Period of '+ month+','+year)
+        //                 $('#prov').text('Province of '+province[res.province])
+        //         $.ajax({
+        //             type:'POST',
+        //             url:window.location.pathname +'?r=fur/generate-fur',
+        //             data:{
+        //                 reporting_period:res.reporting_period,
+        //                 province:res.province,
+        //                 bank_account_id:res.bank_account_id
+        //             },
+        //             success:function(data){
+        //                 var res = JSON.parse(data)
+        //                 var conso_fur = res.conso_fur
+        //                 var fur = res.fur
+        //                 console.log(res)
        
-                        addData(fur,conso_fur)
-                        $('#dots5').hide()
-                        $('.fur-view').show()
-                    }
+        //                 addData(fur,conso_fur)
+        //                 $('#dots5').hide()
+        //                 $('.fur-view').show()
+        //             }
       
-                })
-            }
-        })
+        //         })
+        //     }
+        // })
     })
 
     function addData(fur, conso_fur) {

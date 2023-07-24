@@ -28,7 +28,7 @@ class m220419_031423_update_cdr_advances_balance_view extends Migration
             LEFT JOIN sub_accounts_view ON advances_entries.object_code = sub_accounts_view.object_code
             LEFT JOIN dv_aucs ON cash_disbursement.dv_aucs_id = dv_aucs.id
             WHERE
-            advances_entries.is_deleted !=1
+            advances_entries.is_deleted NOT IN (1,9)
             GROUP BY advances.province,
             advances.bank_account_id,
             advances_entries.reporting_period,
