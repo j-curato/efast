@@ -543,10 +543,11 @@ class PrPurchaseRequestController extends Controller
                 $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
                 $model->pr_number = $this->getPrNumber($model->date, $model->fk_office_id, $model->fk_division_id);
                 $allotment_items_ttl = array_column($allotment_items, 'gross_amount');
-                $validate_ttl = $this->calculateItemsTotal($pr_items, $allotment_items_ttl);
-
-                if ($validate_ttl !== true) {
-                    throw new ErrorException(json_encode('The sum of the allotments does not match the sum of the specifications.'));
+                if (strtolower($model->office->office_name) == 'ro') {
+                    $validate_ttl = $this->calculateItemsTotal($pr_items, $allotment_items_ttl);
+                    if ($validate_ttl !== true) {
+                        throw new ErrorException(json_encode('The sum of the allotments does not match the sum of the specifications.'));
+                    }
                 }
 
                 if (!$model->validate()) {
@@ -563,10 +564,13 @@ class PrPurchaseRequestController extends Controller
                 if ($insert_items !== true) {
                     throw new ErrorException($insert_items);
                 }
-                $insert_allotments = $this->insertPrAllotments($model->id, $allotment_items);
-                if ($insert_allotments !== true) {
-                    throw new ErrorException($insert_allotments);
+                if (strtolower($model->office->office_name) == 'ro') {
+                    $insert_allotments = $this->insertPrAllotments($model->id, $allotment_items);
+                    if ($insert_allotments !== true) {
+                        throw new ErrorException($insert_allotments);
+                    }
                 }
+
                 $transaction->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
@@ -605,7 +609,6 @@ class PrPurchaseRequestController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             try {
                 $transaction = Yii::$app->db->beginTransaction();
-
                 if (intval($oldModel->fk_office_id) !== intval($model->fk_office_id) || intval($oldModel->fk_division_id) !== intval($model->fk_division_id)) {
                     $model->pr_number = $this->getPrNumber($model->date, $model->fk_office_id, $model->fk_division_id);
                 }
@@ -625,9 +628,12 @@ class PrPurchaseRequestController extends Controller
                     throw new ErrorException('Unable to Update PR No. has RFQ"s.');
                 }
                 $allotment_items_ttl = array_column($allotment_items, 'gross_amount');
-                $validate_ttl = $this->calculateItemsTotal($pr_items, $allotment_items_ttl);
-                if ($validate_ttl !== true) {
-                    throw new ErrorException(json_encode('The sum of the allotments does not match the sum of the specifications.'));
+
+                if (strtolower($model->office->office_name) == 'ro') {
+                    $validate_ttl = $this->calculateItemsTotal($pr_items, $allotment_items_ttl);
+                    if ($validate_ttl !== true) {
+                        throw new ErrorException(json_encode('The sum of the allotments does not match the sum of the specifications.'));
+                    }
                 }
 
                 if (!$model->validate()) {
