@@ -113,6 +113,10 @@ $user_data = Yii::$app->memem->getUserData();
                     ]) ?>
                 </div>
 
+
+            <?php } ?>
+            <?php
+            if (Yii::$app->user->can('ro_procurement_admin') || Yii::$app->user->can('po_procurement_admin')) { ?>
                 <div class="col-sm-2">
                     <?= $form->field($model, 'fk_division_id')->widget(Select2::class, [
                         'data' => ArrayHelper::map(Divisions::find()->asArray()->all(), 'id', 'division'),
@@ -797,8 +801,8 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
             var data = $(".select2 option:selected").text();
 
             const id = $(this).val()
-            const office = $('#office_id').val()
-            const division = $('#division_id').val()
+            const office = $('#prpurchaserequest-fk_office_id').val()
+            const division = $('#prpurchaserequest-fk_division_id').val()
             // $(this).closest('tr').find('.itemList').html('');
             // $(this).closest('tr').find('.itemList').append('<li><a href="#">New list item</a></li>');
             const itemList = $(this).closest('tr').find('.itemList')
