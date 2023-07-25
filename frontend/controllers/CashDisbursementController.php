@@ -136,12 +136,16 @@ class CashDisbursementController extends Controller
         $qry = Yii::$app->db->createCommand("SELECT ro_check_ranges.to,ro_check_ranges.from FROM ro_check_ranges WHERE id =:id")
             ->bindValue(':id', $fk_ro_check_range_id)
             ->queryOne();
+        if (intval($qry['from']) === 0 && intval($qry['to'] == 0)) {
+            return 0;
+        }
         $checks  = [];
         $x = 0;
         for ($i = $qry['from']; $i <= $qry['to']; $i++) {
             $checks[':qp' . $x][] = $i;
             $x++;
         }
+
 
         Yii::$app->db->createCommand("DROP TABLE IF EXISTS tmp_tbl_checks;
         CREATE TABLE tmp_tbl_checks (check_num BIGINT)")
@@ -151,6 +155,7 @@ class CashDisbursementController extends Controller
         LEFT JOIN cash_disbursement ON tmp_tbl_checks.check_num = cash_disbursement.check_or_ada_no
         WHERE cash_disbursement.id IS NULL ORDER BY tmp_tbl_checks.check_num LIMIT 1")
             ->queryScalar();
+
         return $model_check_num;
     }
     private function getItems($model_id)
@@ -416,7 +421,8 @@ class CashDisbursementController extends Controller
                     throw new ErrorException('Items is Required');
                 }
                 $model_check_num =  $this->getCheckNumber($model->fk_ro_check_range_id);
-                if (empty($model_check_num)) {
+                // return var_dump($model_check_num);
+                if (empty($model_check_num) && $model_check_num !== 0) {
                     throw new ErrorException("No Available Check Number for the selected check range");
                 }
                 $mode_of_payment_name = strtolower(trim($model->modeOfPayment->name));
@@ -524,7 +530,7 @@ class CashDisbursementController extends Controller
                 if (intval($model->fk_ro_check_range_id) !== intval($oldModel->fk_ro_check_range_id)) {
 
                     $model_check_num =  $this->getCheckNumber($model->fk_ro_check_range_id);
-                    if (empty($model_check_num)) {
+                    if (empty($model_check_num) && $model_check_num !== 0) {
                         throw new ErrorException("No Available Check Number for the selected check range");
                     }
                     $model->check_or_ada_no = $model_check_num;
