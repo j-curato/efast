@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\PrAoq;
+use Yii;
 
 /**
  * PrAoqSearch represents the model behind the search form of `app\models\PrAoq`.
@@ -50,7 +51,10 @@ class PrAoqSearch extends PrAoq
         $query = PrAoq::find();
 
         // add conditions that should always apply here
-
+        if (!Yii::$app->user->can('super-user')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $query->andWhere('pr_aoq.fk_office_id = :office_id', ['office_id' => $user_data->office->id]);
+        }
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);

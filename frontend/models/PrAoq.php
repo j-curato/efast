@@ -31,16 +31,13 @@ class PrAoq extends \yii\db\ActiveRecord
         return [
             [[
                 'pr_rfq_id',
-                'is_cancelled'
+                'is_cancelled',
+                'fk_office_id'
             ], 'integer'],
             [['pr_date', 'created_at', 'cancelled_at'], 'safe'],
             [['aoq_number'], 'string', 'max' => 255],
             [['aoq_number'], 'unique'],
-            [['pr_date', 'pr_rfq_id'], 'required'],
-            [[
-                'aoq_number',
-                'pr_date',
-            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+            [['pr_date', 'pr_rfq_id', 'fk_office_id'], 'required'],
         ];
     }
 
@@ -51,12 +48,13 @@ class PrAoq extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'aoq_number' => 'Aoq Number',
-            'pr_rfq_id' => 'RFQ Number',
+            'aoq_number' => 'AOQ No.',
+            'pr_rfq_id' => 'RFQ No.',
             'pr_date' => 'Date',
             'created_at' => 'Created At',
             'is_cancelled' => 'Is Cancel',
-            'cancelled_at=' => 'Cancelled  At'
+            'cancelled_at=' => 'Cancelled  At',
+            'fk_office_id' => 'Office'
         ];
     }
     public function getPrAoqEntries()

@@ -25,11 +25,6 @@ $this->params['breadcrumbs'][] = $this->title;
             if (Yii::$app->user->can('super-user')) {
                 $btn_color = $model->is_cancelled ? 'btn btn-success' : 'btn btn-danger';
                 $cncl_txt = $model->is_cancelled ? 'UnCancel' : 'Cancel';
-                // echo  Html::a($cncl_txt, ['cancel', 'id' => $model->id], [
-                //     'class' => $btn_color,
-                //     'id' => 'cancel'
-
-                // ]);
                 if (!$model->is_cancelled) {
                     echo  Html::a($cncl_txt, ['cancel', 'id' => $model->id], [
                         'class' => $btn_color,
@@ -42,35 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ?>
         </p>
         <?php
-        // $aoq_items_array = [];
-        $aoq_items_query = Yii::$app->db->createCommand("SELECT 
-        pr_rfq_item.id as rfq_item_id,
-        pr_purchase_request_item.quantity,
-        pr_stock.stock_title as `description`,
-        IFNULL(REPLACE(pr_purchase_request_item.specification,'[n]','<br>'),'') as specification,
-        payee.account_name as payee,
-        IF(IFNULL(pr_aoq_entries.amount,0)!=0,pr_aoq_entries.amount,'-') as amount,
-        pr_purchase_request.purpose,
-        pr_aoq_entries.remark,
-        pr_aoq_entries.is_lowest,
-        unit_of_measure.unit_of_measure,
-        pr_rfq.bac_composition_id
-        FROM `pr_aoq_entries`
-        LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
-        LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
-        LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id= pr_purchase_request_item.id
-        LEFT JOIN unit_of_measure ON pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
-        LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id  = pr_stock.id
-        LEFT JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id
-        LEFT JOIN pr_rfq ON pr_rfq_item.pr_rfq_id = pr_rfq.id
-        WHERE pr_aoq_entries.pr_aoq_id = :id
-    ")
-
-            ->bindValue(':id', $model->id)
-            ->queryAll();
         $for_print = ArrayHelper::index($aoq_items_query, null, 'rfq_item_id');
-
-
         $result = ArrayHelper::index($aoq_items_query, null, 'rfq_item_id');
         $qqq = ArrayHelper::index($aoq_items_query, 'payee', [function ($element) {
             return $element['rfq_item_id'];
@@ -78,22 +45,11 @@ $this->params['breadcrumbs'][] = $this->title;
         $aoq_items_array  = ArrayHelper::index($aoq_items_query, 'payee');
         $header_count = count($aoq_items_array) * 2 + 5;
 
-        $bac_compositions = Yii::$app->db->createCommand("SELECT 
-            employee_search_view.employee_name,
-            LOWER(bac_position.position)as position
-            FROM bac_composition
-            LEFT JOIN bac_composition_member ON bac_composition.id  = bac_composition_member.bac_composition_id
-            LEFT JOIN bac_position ON bac_composition_member.bac_position_id = bac_position.id
-            LEFT JOIN employee_search_view ON bac_composition_member.employee_id = employee_search_view.employee_id
-            WHERE bac_composition.id = :bac_id
-            ")
-            ->bindValue(':bac_id', $aoq_items_query[0]['bac_composition_id'])
-            ->queryAll();
+
 
         ?>
 
         <table id="table">
-
             <thead>
                 <tr>
                     <th colspan="<?= $header_count ?>" style='text-align:center;border:none;'>
@@ -188,7 +144,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             $i = 1;
                             foreach ($bac_compositions as $val) {
 
-                                if ($val['position'] === 'member') {
+                                if (strtolower($val['position']) === 'member') {
 
                                     $member_name =  strtoupper($val['employee_name']);
                                     $member_position = ucwords($val['position']);

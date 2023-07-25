@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Office;
 use kartik\date\DatePicker;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
@@ -29,6 +30,18 @@ $row = 1;
     <div class="con">
         <?php $form = ActiveForm::begin(); ?>
         <div class="row">
+            <?php
+            if (Yii::$app->user->can('super-user')) {
+            ?>
+                <div class="col-sm-2">
+                    <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
+                        'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
+                        'pluginOptions' => [
+                            'placeholder' => 'Select Office'
+                        ]
+                    ]) ?>
+                </div>
+            <?php } ?>
             <div class="col-sm-2">
                 <?= $form->field($model, 'pr_rfq_id')->widget(
                     Select2::class,
@@ -222,11 +235,10 @@ $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [
                         let r = `<tr class='info'>
                             <td>
                                 <button type='button' class='btn-xs btn-primary add' value='+'><i class='fa fa-plus'></i></button>
-                            </td>
-                            <td >
-                                <input type='text' class='form-check-input checkbox rfq_item_id' value='${val['rfq_item_id']}'
+                                <input type='hidden' class='form-check-input checkbox rfq_item_id' value='${val['rfq_item_id']}'
                                 data-value = '${val['rfq_item_id']}'>
                             </td>
+                        
                             <td>${val['bac_code']}</td>
                             <td>${val['stock_title']}</td>
                             <td>${val['specification']}</td>

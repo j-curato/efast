@@ -3,10 +3,12 @@
 namespace frontend\controllers;
 
 use app\components\helpers\MyHelper;
+use app\models\Office;
 use Yii;
 use app\models\PrAoq;
 use app\models\PrAoqEntries;
 use app\models\PrAoqSearch;
+use DateTime;
 use ErrorException;
 use yii\db\Query;
 use yii\filters\AccessControl;
@@ -97,9 +99,39 @@ class PrAoqController extends Controller
      */
     public function actionView($id)
     {
+        // return json_encode(MyHelper::getRbac());
         return $this->render('view', [
             'model' => $this->findModel($id),
+            'aoq_items_query' => $this->getAoqItems($id),
+            'bac_compositions' => MyHelper::getRbac(),
         ]);
+    }
+    private function getAoqItems($id)
+    {
+        return Yii::$app->db->createCommand("SELECT 
+    pr_rfq_item.id as rfq_item_id,
+    pr_purchase_request_item.quantity,
+    pr_stock.stock_title as `description`,
+    IFNULL(REPLACE(pr_purchase_request_item.specification,'[n]','<br>'),'') as specification,
+    payee.account_name as payee,
+    IF(IFNULL(pr_aoq_entries.amount,0)!=0,pr_aoq_entries.amount,'-') as amount,
+    pr_purchase_request.purpose,
+    pr_aoq_entries.remark,
+    pr_aoq_entries.is_lowest,
+    unit_of_measure.unit_of_measure,
+    pr_rfq.bac_composition_id
+    FROM `pr_aoq_entries`
+    LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
+    LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
+    LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id= pr_purchase_request_item.id
+    LEFT JOIN unit_of_measure ON pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
+    LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id  = pr_stock.id
+    LEFT JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id
+    LEFT JOIN pr_rfq ON pr_rfq_item.pr_rfq_id = pr_rfq.id
+    WHERE pr_aoq_entries.pr_aoq_id = :id")
+
+            ->bindValue(':id', $id)
+            ->queryAll();
     }
 
     /**
@@ -144,11 +176,12 @@ class PrAoqController extends Controller
     public function actionCreate()
     {
         $model = new PrAoq();
+        $model->fk_office_id = Yii::$app->user->identity->fk_office_id ?? null;
 
         if ($model->load(Yii::$app->request->post())) {
             try {
                 $transaction  = Yii::$app->db->beginTransaction();
-                $model->aoq_number = $this->aoqNumberGenerator($model->rfq->deadline);
+
                 $items  = Yii::$app->request->post('items') ?? [];
                 $model->id = MyHelper::getUuid();
                 if (!$model->validate()) {
@@ -187,10 +220,14 @@ class PrAoqController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $oldModel = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post())) {
             try {
                 $transaction  = Yii::$app->db->beginTransaction();
+                if ($model->fk_office_id != $oldModel->fk_office_id) {
+                    $model->aoq_number = $this->aoqNumberGenerator($model->rfq->deadline, $model->fk_office_id);
+                }
                 $items  = Yii::$app->request->post('items') ?? [];
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
@@ -268,11 +305,17 @@ class PrAoqController extends Controller
             ->execute();
     }
 
-    public function aoqNumberGenerator($reporting_period)
+    public function aoqNumberGenerator($aoq_date, $office_id)
     {
-
+        $office = Office::findOne($office_id);
+        $date = DateTime::createFromFormat('Y-m-d', $aoq_date);
         $last_num  = Yii::$app->db->createCommand("SELECT CAST(substring_index(aoq_number,'-',-1) AS UNSIGNED)as last_id
-        FROM pr_aoq ORDER BY last_id DESC LIMIT 1")
+        FROM pr_aoq
+        WHERE fk_office_id = :office_id
+        AND pr_aoq.aoq_number LIKE :yr
+         ORDER BY last_id DESC LIMIT 1")
+            ->bindValue(':office_id', $office_id)
+            ->bindValue(':yr', "%" . $date->format('Y') . '%')
             ->queryScalar();
         if (!empty($last_num)) {
             $last_num  = intval($last_num) + 1;
@@ -286,7 +329,7 @@ class PrAoqController extends Controller
             $number_length++;
         }
 
-        return 'RO-' . $reporting_period . '-' . $zero . $last_num;
+        return $office->office_name . '-' . $date->format('Y-m') . '-' . $zero . $last_num;
     }
     public function aoqEntriesData($pr_aoq_id = null)
     {
