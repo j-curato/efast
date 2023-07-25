@@ -7,12 +7,11 @@ use yii\helpers\Html;
 /* @var $searchModel app\models\RodSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Rods';
+$this->title = 'RODs';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="rod-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::a('Create Rod', ['create'], ['class' => 'btn btn-success']) ?>
@@ -20,8 +19,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
     $del = 'display:none;';
-    if (Yii::$app->user->can('super-user')){
-        $del='';
+    if (Yii::$app->user->can('super-user')) {
+        $del = '';
     }
     ?>
 
@@ -30,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
-            'heading' => 'List of ROD'
+            'heading' => 'List of RODs'
         ],
         'columns' => [
 

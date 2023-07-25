@@ -7,7 +7,7 @@ use yii\helpers\Html;
 /* @var $searchModel app\models\CdrSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Cdrs';
+$this->title = 'CDRs';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="cdr-index">

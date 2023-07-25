@@ -7,7 +7,7 @@ use yii\helpers\Html;
 /* @var $searchModel app\models\CibrSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Cibrs';
+$this->title = 'CIBRs';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="cibr-index">

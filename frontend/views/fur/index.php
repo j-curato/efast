@@ -7,7 +7,7 @@ use yii\helpers\Html;
 /* @var $searchModel app\models\FurSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Furs';
+$this->title = 'FURs';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="fur-index">
@@ -29,9 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'export' => false,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
             'reporting_period',
             [
                 'label' => 'Province',
@@ -44,7 +42,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function ($model) {
                     $account = '';
                     if (!empty($model->bank_account_id)) {
-
                         $account = $model->bankAccount->account_number . '-' . $model->bankAccount->account_name;
                     }
                     return $account;

@@ -1,6 +1,10 @@
 <?php
 
+use app\models\Office;
 use kartik\date\DatePicker;
+use kartik\select2\Select2;
+use Mpdf\Tag\Select;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -52,8 +56,19 @@ $row_number = 0;
                 ) ?>
             </div>
             <div class="col-sm-3">
+                <?= $form->field($model, 'fk_office_id')->widget(
+                    Select2::class,
+                    [
+                        'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
+                        'pluginOptions' => [
+                            'placeholder' => 'Select Office'
 
+                        ],
+
+                    ]
+                ) ?>
             </div>
+
         </div>
 
 
