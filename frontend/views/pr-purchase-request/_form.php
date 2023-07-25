@@ -22,6 +22,8 @@ use yii\web\JsExpression;
 /* @var $model app\models\PrPurchaseRequest */
 /* @var $form yii\widgets\ActiveForm */
 
+$user_data = Yii::$app->memem->getUserData();
+
 $row_number = 1;
 $allotment_row_num = 1;
 
@@ -381,57 +383,60 @@ $user_data = Yii::$app->memem->getUserData();
             echo "<th>Office</th>";
             echo "<th>Division</th>";
         }
+        if (strtolower($user_data->office->office_name) === 'ro') {
+
         ?>
-        <table class="table" id="allotment_table">
-            <thead>
-                <tr class="info">
-                    <th colspan="<?= $allotment_colspan ?>" class="center">
-                        <h3>Allotments</h3>
-                    </th>
-                </tr>
-                <tr>
-                    <th>Budget Year</th>
-                    <th>Office</th>
-                    <th>Division</th>
-                    <th>Allotment Number</th>
-                    <th>Mfo Name</th>
-                    <th>Fund Source</th>
-                    <th> General Ledger</th>
-                    <th class='amount'>Amount </th>
-                    <th class='amount'>Balance </th>
-                    <th>Gross Amount</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
 
-                <?php
-                $allotment_grnd_ttl  = 0;
-                if (!empty($allotment_items)) {
-                    foreach ($allotment_items as $item) {
-                        $allotment_entry_id = $item['allotment_entry_id'];
-                        $pr_allotment_item_id = $item['pr_allotment_item_id'];
-                        $mfo_name = $item['mfo_name'];
-                        $fund_source_name = $item['fund_source_name'];
-                        $account_title = $item['account_title'];
-                        $amount = $item['amount'];
-                        $balance = $item['balance'];
-                        $gross_amount = ($item['gross_amount']);
-                        $division = ($item['division']);
-                        $office = ($item['office_name']);
-                        $gross_amount = floatval($item['gross_amount']);
-                        $allotmentNumber = $item['allotmentNumber'];
-                        $budget_year = $item['budget_year'];
-                        $allotment_grnd_ttl += $gross_amount;
-                        $gross_display = number_format($gross_amount, 2);
-                        echo "<tr><td>$budget_year</td>";
+            <table class="table" id="allotment_table">
+                <thead>
+                    <tr class="info">
+                        <th colspan="<?= $allotment_colspan ?>" class="center">
+                            <h3>Allotments</h3>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>Budget Year</th>
+                        <th>Office</th>
+                        <th>Division</th>
+                        <th>Allotment Number</th>
+                        <th>Mfo Name</th>
+                        <th>Fund Source</th>
+                        <th> General Ledger</th>
+                        <th class='amount'>Amount </th>
+                        <th class='amount'>Balance </th>
+                        <th>Gross Amount</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    <?php
+                    $allotment_grnd_ttl  = 0;
+                    if (!empty($allotment_items)) {
+                        foreach ($allotment_items as $item) {
+                            $allotment_entry_id = $item['allotment_entry_id'];
+                            $pr_allotment_item_id = $item['pr_allotment_item_id'];
+                            $mfo_name = $item['mfo_name'];
+                            $fund_source_name = $item['fund_source_name'];
+                            $account_title = $item['account_title'];
+                            $amount = $item['amount'];
+                            $balance = $item['balance'];
+                            $gross_amount = ($item['gross_amount']);
+                            $division = ($item['division']);
+                            $office = ($item['office_name']);
+                            $gross_amount = floatval($item['gross_amount']);
+                            $allotmentNumber = $item['allotmentNumber'];
+                            $budget_year = $item['budget_year'];
+                            $allotment_grnd_ttl += $gross_amount;
+                            $gross_display = number_format($gross_amount, 2);
+                            echo "<tr><td>$budget_year</td>";
 
 
-                        if (Yii::$app->user->can('super-user')) {
-                            echo "<td>$office</td>
+                            if (Yii::$app->user->can('super-user')) {
+                                echo "<td>$office</td>
                             <td>$division</td>";
-                        }
-                        echo " 
+                            }
+                            echo " 
                             <td style='display:none;'><input type='text' class='entry_id' name='allotment_items[{$allotment_row_num}][pr_allotment_item_id]' value='$pr_allotment_item_id'></td>
                             <td style='display:none;'><input type='text' class='entry_id' name='allotment_items[{$allotment_row_num}][allotment_id]' value='$allotment_entry_id'></td>
                             <td>$allotmentNumber</td>
@@ -448,19 +453,20 @@ $user_data = Yii::$app->memem->getUserData();
                             <button type='button' class='remove btn-xs btn-danger'><i class='fa fa-times'></i></button>
                             </td>
                         </tr>";
-                        $allotment_row_num++;
+                            $allotment_row_num++;
+                        }
                     }
-                }
-                ?>
-            </tbody>
-            <tfoot>
+                    ?>
+                </tbody>
+                <tfoot>
 
-                <tr>
-                    <th colspan="5" class="" style="text-align: right;">Total: </th>
-                    <th class='allotment_total' style="padding-left: 2rem;"><?= number_format($allotment_grnd_ttl, 2) ?></th>
-                </tr>
-            </tfoot>
-        </table>
+                    <tr>
+                        <th colspan="5" class="" style="text-align: right;">Total: </th>
+                        <th class='allotment_total' style="padding-left: 2rem;"><?= number_format($allotment_grnd_ttl, 2) ?></th>
+                    </tr>
+                </tfoot>
+            </table>
+        <?php } ?>
         <div class="row">
 
             <div class="form-group col-sm-2 col-sm-offset-5">
@@ -648,7 +654,7 @@ $user_data = Yii::$app->memem->getUserData();
 
     ?>
 
-    <?= GridView::widget([
+    <?= strtolower($user_data->office->office_name) === 'ro' ? GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
 
@@ -665,7 +671,7 @@ $user_data = Yii::$app->memem->getUserData();
 
 
         'columns' => $col
-    ]); ?>
+    ]) : ''; ?>
 
 </div>
 <style>
