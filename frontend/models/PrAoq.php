@@ -32,7 +32,8 @@ class PrAoq extends \yii\db\ActiveRecord
             [[
                 'pr_rfq_id',
                 'is_cancelled',
-                'fk_office_id'
+                'fk_office_id',
+                'aoq_number'
             ], 'integer'],
             [['pr_date', 'created_at', 'cancelled_at'], 'safe'],
             [['aoq_number'], 'string', 'max' => 255],
