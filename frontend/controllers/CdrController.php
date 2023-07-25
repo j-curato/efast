@@ -314,8 +314,7 @@ LEFT JOIN  (SELECT
                 ->bindValue(':province', $province)
                 ->bindValue(':report_type', $report_type)
                 ->bindValue(':bank_account_id', $bank_account_id)
-                ->getRawSql();
-            return $query;
+                ->queryAll();
 
             $advances_balance = 0;
             $liquidation_balance = 0;
