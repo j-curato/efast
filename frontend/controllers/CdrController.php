@@ -307,13 +307,15 @@ LEFT JOIN  (SELECT
                         AND advances_entries.report_type =:report_type 
                         AND advances_entries.is_deleted NOT IN (1,9)
                         AND advances.bank_account_id = :bank_account_id
+                        AND dv_aucs.is_cancelled = 0
             
  
             ")->bindValue(':reporting_period',  $reporting_period)
                 ->bindValue(':province', $province)
                 ->bindValue(':report_type', $report_type)
                 ->bindValue(':bank_account_id', $bank_account_id)
-                ->queryAll();
+                ->getRawSql();
+            return $query;
 
             $advances_balance = 0;
             $liquidation_balance = 0;
