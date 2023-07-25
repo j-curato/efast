@@ -43,7 +43,8 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
                 'fk_pr_aoq_id', 'delivery_term',
                 'fk_auth_official',
                 'fk_accounting_unit',
-                'po_date'
+                'po_date',
+                'fk_office_id'
             ], 'required'],
             [[
                 'id', 'fk_contract_type_id',
@@ -52,7 +53,8 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
                 'fk_auth_official',
                 'fk_accounting_unit',
                 'fk_bac_composition_id',
-                'is_cancelled'
+                'is_cancelled',
+                'fk_office_id'
             ], 'integer'],
             [['place_of_delivery'], 'string'],
             [[
@@ -103,6 +105,7 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
             'date_completed' => 'Date Completed',
             'is_cancelled' => 'Is Cancelled',
             'cancelled_at' => 'Cancelled At',
+            'fk_office_id' => 'Office'
 
 
 
@@ -146,7 +149,6 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
     }
     public function getAoq()
     {
-
         return $this->hasOne(PrAoq::class, ['id' => 'fk_pr_aoq_id']);
     }
 }

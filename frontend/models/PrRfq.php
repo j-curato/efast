@@ -81,7 +81,10 @@ class PrRfq extends \yii\db\ActiveRecord
     }
     public function getCanvasser()
     {
-
         return $this->hasOne(Employee::class, ['id' => 'employee_id']);
+    }
+    public function getOffice()
+    {
+        return $this->hasOne(Office::class, ['id' => 'fk_office_id']);
     }
 }

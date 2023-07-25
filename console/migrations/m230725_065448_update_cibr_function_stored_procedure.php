@@ -3,9 +3,9 @@
 use yii\db\Migration;
 
 /**
- * Class m230502_013019_update_cibr_stored_procedure
+ * Class m230725_065448_update_cibr_function_stored_procedure
  */
-class m230502_013019_update_cibr_stored_procedure extends Migration
+class m230725_065448_update_cibr_function_stored_procedure extends Migration
 {
     /**
      * {@inheritdoc}
@@ -14,8 +14,26 @@ class m230502_013019_update_cibr_stored_procedure extends Migration
     {
         $sql = <<<SQL
         DROP PROCEDURE IF EXISTS cibr_function;
-        CREATE PROCEDURE cibr_function (province VARCHAR(20),r_period VARCHAR(20),bank_account_id BIGINT)
+        CREATE PROCEDURE cibr_function (province VARCHAR(20),r_period VARCHAR(20))
         BEGIN 
+            WITH cte_gd_checks as (
+                SELECT 
+                cash_disbursement_items.fk_dv_aucs_id,
+                cash_disbursement.check_or_ada_no as check_number,
+                cash_disbursement.ada_number,
+                cash_disbursement.issuance_date as check_date,
+                mode_of_payments.`name` as mode_of_payment,
+                books.`name` as book_name
+                FROM 
+                cash_disbursement
+                JOIN cash_disbursement_items ON cash_disbursement.id = cash_disbursement_items.fk_cash_disbursement_id
+                LEFT JOIN mode_of_payments ON cash_disbursement.fk_mode_of_payment_id = mode_of_payments.id
+                LEFT JOIN books ON cash_disbursement.book_id = books.id
+                WHERE 
+                cash_disbursement_items.is_deleted = 0
+                AND cash_disbursement.is_cancelled = 0
+                AND NOT EXISTS (SELECT * FROM cash_disbursement c WHERE c.is_cancelled = 1 AND c.parent_disbursement = cash_disbursement.id)
+            )
             SELECT
                 liquidation.check_date,
                 liquidation.check_number,
@@ -57,36 +75,35 @@ class m230502_013019_update_cibr_stored_procedure extends Migration
             
             WHERE
             check_range.bank_account_id = bank_account_id
+        
             
-                
         UNION ALL
-            
+        
         SELECT 
-            cash_disbursement.issuance_date as check_date,
-            cash_disbursement.check_or_ada_no as check_number,
-            CONCAT(payee.account_name,' - ',dv_aucs.particular) as particular,
-            SUM(advances_entries.amount) as amount,
-            0 as withdrawals,
-            0 as vat_nonvat,
-            0 as expanded_tax,
-            0 as liquidation_damage,
-            '' as gl_object_code,
-            '' as gl_account_title
-            FROM advances_entries
-            LEFT JOIN advances ON advances_entries.advances_id = advances.id
-            LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
-            LEFT JOIN dv_aucs ON cash_disbursement.dv_aucs_id = dv_aucs.id
-            LEFT JOIN payee ON dv_aucs.payee_id = payee.id
-            WHERE
-            advances.bank_account_id = bank_account_id
-            
-            AND advances.bank_account_id = bank_account_id
-            AND advances_entries.reporting_period = r_period
-            AND advances_entries.is_deleted NOT IN  (1,9)
-            AND dv_aucs.is_cancelled = 0
-            GROUP BY advances_entries.cash_disbursement_id
-        UNION ALL 
-    
+        cte_gd_checks.check_date ,
+        cte_gd_checks.check_number ,
+        CONCAT(payee.account_name,' - ',dv_aucs.particular) as particular,
+        SUM(advances_entries.amount) as amount,
+        0 as withdrawals,
+        0 as vat_nonvat,
+        0 as expanded_tax,
+        0 as liquidation_damage,
+        '' as gl_object_code,
+        '' as gl_account_title
+        FROM advances_entries
+        LEFT JOIN advances ON advances_entries.advances_id = advances.id
+        LEFT JOIN dv_aucs ON advances.dv_aucs_id = dv_aucs.id
+        LEFT JOIN cte_gd_checks ON dv_aucs.id = cte_gd_checks.fk_dv_aucs_id
+        LEFT JOIN payee ON dv_aucs.payee_id = payee.id
+        WHERE
+            advances.bank_account_id = bank_account_id  
+                AND advances.bank_account_id = bank_account_id
+                AND advances_entries.reporting_period = r_period
+        AND advances_entries.is_deleted NOT IN  (1,9)
+        AND dv_aucs.is_cancelled = 0
+        GROUP BY advances.id
+       UNION ALL 
+
         SELECT 
             liquidation.check_date ,
             liquidation.check_number,
@@ -104,7 +121,6 @@ class m230502_013019_update_cibr_stored_procedure extends Migration
         check_range.bank_account_id = bank_account_id
         AND liquidation.reporting_period = r_period
         AND liquidation.payee LIKE 'cancelled%';
-     
         END
 
     SQL;
@@ -117,9 +133,6 @@ class m230502_013019_update_cibr_stored_procedure extends Migration
      */
     public function safeDown()
     {
-        echo "m230502_013019_update_cibr_stored_procedure cannot be reverted.\n";
-
-        return false;
     }
 
     /*
@@ -131,7 +144,7 @@ class m230502_013019_update_cibr_stored_procedure extends Migration
 
     public function down()
     {
-        echo "m230502_013019_update_cibr_stored_procedure cannot be reverted.\n";
+        echo "m230725_065448_update_cibr_function_stored_procedure cannot be reverted.\n";
 
         return false;
     }

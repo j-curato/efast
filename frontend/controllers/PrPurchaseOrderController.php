@@ -2,6 +2,8 @@
 
 namespace frontend\controllers;
 
+use app\components\helpers\MyHelper;
+use app\models\Office;
 use app\models\PrAoqEntries;
 use Yii;
 use app\models\PrPurchaseOrder;
@@ -205,38 +207,43 @@ class PrPurchaseOrderController extends Controller
 
     public function insertItems($po_id, $po_number, $aoq_id)
     {
-        $alphabet = range('A', 'Z');
+        try {
+            $alphabet = range('A', 'Z');
 
-        $query = Yii::$app->db->createCommand("SELECT pr_aoq_entries.id,pr_aoq_entries.payee_id FROM pr_aoq_entries WHERE pr_aoq_entries.pr_aoq_id = :aoq_id
+            $query = Yii::$app->db->createCommand("SELECT pr_aoq_entries.id,pr_aoq_entries.payee_id FROM pr_aoq_entries WHERE pr_aoq_entries.pr_aoq_id = :aoq_id
         AND pr_aoq_entries.is_lowest = 1
         ")
-            ->bindValue(':aoq_id', $aoq_id)
-            ->queryAll();
-        $i = 0;
-        $result = ArrayHelper::index($query, null, 'payee_id');
+                ->bindValue(':aoq_id', $aoq_id)
+                ->queryAll();
+            $i = 0;
+            $result = ArrayHelper::index($query, null, 'payee_id');
 
-        foreach ($result as $key => $val) {
+            foreach ($result as $key => $val) {
 
-            $pr_purchase_order_item = new PrPurchaseOrderItem();
-            $pr_purchase_order_item->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-            $pr_purchase_order_item->fk_pr_purchase_order_id = $po_id;
+                $pr_purchase_order_item = new PrPurchaseOrderItem();
+                $pr_purchase_order_item->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                $pr_purchase_order_item->fk_pr_purchase_order_id = $po_id;
 
-            if (count($result) > 1) {
-                $pr_purchase_order_item->serial_number = $po_number . $alphabet[$i];
-            } else {
-                $pr_purchase_order_item->serial_number = $po_number;
-            }
-            if ($pr_purchase_order_item->save(false)) {
-                foreach ($val as $val2) {
-                    $aoq_items = new PrPurchaseOrderItemsAoqItems();
-                    $aoq_items->id  = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-                    $aoq_items->fk_purchase_order_item_id = $pr_purchase_order_item->id;
-                    $aoq_items->fk_aoq_entries_id = $val2['id'];
-                    if ($aoq_items->save(false)) {
+                if (count($result) > 1) {
+                    $pr_purchase_order_item->serial_number = $po_number . $alphabet[$i];
+                } else {
+                    $pr_purchase_order_item->serial_number = $po_number;
+                }
+                if ($pr_purchase_order_item->save(false)) {
+                    foreach ($val as $val2) {
+                        $aoq_items = new PrPurchaseOrderItemsAoqItems();
+                        $aoq_items->id  = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                        $aoq_items->fk_purchase_order_item_id = $pr_purchase_order_item->id;
+                        $aoq_items->fk_aoq_entries_id = $val2['id'];
+                        if ($aoq_items->save(false)) {
+                        }
                     }
                 }
+                $i++;
             }
-            $i++;
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
         }
     }
     public function actionCreate()
@@ -244,18 +251,31 @@ class PrPurchaseOrderController extends Controller
         $model = new PrPurchaseOrder();
         $model->payment_term = 'credit';
         $model->delivery_term = 'FOB Destination';
-
+        $model->fk_office_id = YIi::$app->user->identity->fk_office_id;
         if ($model->load(Yii::$app->request->post())) {
 
-            $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-            $model->po_number = $this->generatePoNumber($model->fk_contract_type_id, $model->po_date);
-
-            if ($model->save()) {
+            try {
+                $txn = MyHelper::beginTxn();
+                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                $model->po_number = $this->generatePoNumber($model->fk_contract_type_id, $model->po_date, $model->fk_office_id);
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save()) {
+                    throw new ErrorException('Model Save Failed');
+                }
                 if (!empty(array_unique($_POST['aoq_id']))) {
                     $this->newLowest(array_unique($_POST['aoq_id']), $model->fk_pr_aoq_id);
                 }
-                $this->insertItems($model->id, $model->po_number, $model->fk_pr_aoq_id);
+                $insItems =  $this->insertItems($model->id, $model->po_number, $model->fk_pr_aoq_id);
+                if ($insItems !== true) {
+                    throw new ErrorException($insItems);
+                }
+                $txn->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                $txn->rollBack();
+                return $e->getMessage();
             }
         }
 
@@ -276,16 +296,33 @@ class PrPurchaseOrderController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $old_office_id = $this->findModel($id)->fk_office_id;
+
         if ($model->load(Yii::$app->request->post())) {
 
-            // return json_encode($_POST['aoq_id']);
-
-            if (!empty(array_unique($_POST['aoq_id']))) {
-                $this->newLowest(array_unique($_POST['aoq_id']), $model->fk_pr_aoq_id);
-            }
-
-            if ($model->save()) {
+            try {
+                $txn = MyHelper::beginTxn();
+                // if (intval($old_office_id) !== intval($model->fk_office_id)) {
+                //     $model->po_number = $this->generatePoNumber($model->fk_contract_type_id, $model->po_date, $model->fk_office_id);
+                // }
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save()) {
+                    throw new ErrorException('Model Save Failed');
+                }
+                if (!empty(array_unique($_POST['aoq_id']))) {
+                    $this->newLowest(array_unique($_POST['aoq_id']), $model->fk_pr_aoq_id);
+                }
+                // $insItems =  $this->insertItems($model->id, $model->po_number, $model->fk_pr_aoq_id);
+                // if ($insItems !== true) {
+                //     throw new ErrorException($insItems);
+                // }
+                $txn->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                $txn->rollBack();
+                return $e->getMessage();
             }
         }
 
@@ -432,9 +469,12 @@ class PrPurchaseOrderController extends Controller
             }
         }
     }
-    public function generatePoNumber($contract_id, $date)
+    public function generatePoNumber($contract_id, $date, $office_id)
     {
+
         $reporting_period = date('Y-m-d');
+
+        $office = Office::findOne($office_id);
         $contract_type = Yii::$app->db->createCommand("SELECT pr_contract_type.contract_name FROM pr_contract_type WHERE id =:id")
             ->bindValue(':id', $contract_id)
             ->queryScalar();
@@ -453,7 +493,7 @@ class PrPurchaseOrderController extends Controller
         for ($i = strlen($last_number); $i < 4; $i++) {
             $zero .= 0;
         }
-        return 'RO-' . strtoupper($contract_type) . '-' . $date . '-' . $zero . $last_number;
+        return strtoupper($office->office_name) . '-' . strtoupper($contract_type) . '-' . $date . '-' . $zero . $last_number;
     }
     public function actionSearchPurchaseOrder($q = null, $id = null, $province = null)
     {

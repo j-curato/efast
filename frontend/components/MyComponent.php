@@ -25,6 +25,7 @@ class MyComponent extends Component
         return  User::find()
             ->joinWith('divisionName')
             ->joinWith('office')
+            ->joinWith('employee')
             ->where('user.id = :id', ['id' => Yii::$app->user->identity->id])
             ->one();
     }

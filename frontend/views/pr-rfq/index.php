@@ -32,6 +32,11 @@ $this->params['breadcrumbs'][] = $this->title;
         'pjax' => true,
         'columns' => [
 
+
+            [
+                'attribute' => 'fk_office_id',
+                'value' => 'office.office_name'
+            ],
             'rfq_number',
             [
                 'attribute' => 'pr_purchase_request_id',

@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\PrPurchaseOrder;
+use Yii;
 
 /**
  * PrPurchaseOrderSearch represents the model behind the search form of `app\models\PrPurchaseOrder`.
@@ -18,7 +19,7 @@ class PrPurchaseOrderSearch extends PrPurchaseOrder
     {
         return [
             [['id', 'fk_auth_official', 'fk_accounting_unit'], 'integer'],
-            [[ 'fk_pr_aoq_id', 'fk_mode_of_procurement_id', 'fk_contract_type_id', 'po_number', 'place_of_delivery', 'delivery_date', 'payment_term', 'delivery_term'], 'safe'],
+            [['fk_pr_aoq_id', 'fk_mode_of_procurement_id', 'fk_contract_type_id', 'po_number', 'place_of_delivery', 'delivery_date', 'payment_term', 'delivery_term'], 'safe'],
         ];
     }
 
@@ -43,7 +44,10 @@ class PrPurchaseOrderSearch extends PrPurchaseOrder
         $query = PrPurchaseOrder::find();
 
         // add conditions that should always apply here
-
+        if (!Yii::$app->user->can('super-user')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $query->where('pr_purchase_order.fk_office_id = :office_id', ['office_id' =>  $user_data->office->id]);
+        }
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);

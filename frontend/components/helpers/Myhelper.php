@@ -21,7 +21,7 @@ class MyHelper extends BaseObject
     }
     public static function uuid()
     {
-        return Yii::$app->db->createCommand('SELECT UUID_SHORT()')->queryScalar();
+        return Yii::$app->db->createCommand('SELECT UUID_SHORT() % 9223372036854775807')->queryScalar();
     }
     public static function checkAllotmentBalance(
         $allotment_id,
