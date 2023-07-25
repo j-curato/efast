@@ -100,7 +100,7 @@ $blnk = "                <tr>
                 <tr>
                     <th colspan="9" class="no-bdr ctr">
                         <br>
-                        Summary of LDDPAP-ADAs Issued and Invidual ADA Entries (SLIIE)
+                        Summary of LDDPAP-ADAs Issued and Individual ADA Entries (SLIIE)
                         <br>
                         <br>
                     </th>
