@@ -738,15 +738,20 @@ class PrPurchaseRequestController extends Controller
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-
         $out = ['results' => ['id' => '', 'text' => '']];
+
+
+
         if (!is_null($q)) {
             $query = new Query();
 
             $query->select([" id, `pr_number` as text"])
                 ->from('pr_purchase_request')
                 ->where(['like', 'pr_number', $q]);
-
+            if (!Yii::$app->user->can('super-user')) {
+                $user_data = Yii::$app->memem->getUserData();
+                $query->andWhere('fk_office_id = :fk_office_id', ['fk_office_id' =>  $user_data->office->id]);
+            }
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
