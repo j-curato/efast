@@ -1,6 +1,7 @@
 <?php
 
 use app\models\BacComposition;
+use app\models\Office;
 use app\models\PrContractType;
 use app\models\PrModeOfProcurement;
 use kartik\date\DatePicker;
@@ -67,7 +68,15 @@ if (!empty($model->id)) {
         <input type="hidden" name="" id="model_id" value="<?= $model_id ?>">
         <?php $form = ActiveForm::begin(); ?>
         <div class="row">
-            <div class="col-sm-3">
+            <div class="col-sm-2">
+                <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
+                    'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
+                    'pluginOptions' => [
+                        'placeholder' => 'Select Office'
+                    ]
+                ]) ?>
+            </div>
+            <div class="col-sm-2">
                 <?= $form->field($model, 'po_date')->widget(DatePicker::class, [
                     'pluginOptions' => [
                         'format' => 'yyyy-mm-dd',
@@ -99,7 +108,7 @@ if (!empty($model->id)) {
                 ]) ?>
             </div>
 
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                 <?= $form->field($model, 'fk_contract_type_id')->widget(Select2::class, [
                     'data' => ArrayHelper::map(PrContractType::find()->asArray()->all(), 'id', 'contract_name'),
                     'pluginOptions' => [
@@ -107,7 +116,7 @@ if (!empty($model->id)) {
                     ]
                 ]) ?>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                 <?= $form->field($model, 'fk_mode_of_procurement_id')->widget(Select2::class, [
                     'data' => ArrayHelper::map(PrModeOfProcurement::find()->asArray()->all(), 'id', 'mode_name'),
                     'pluginOptions' => [
@@ -205,7 +214,7 @@ if (!empty($model->id)) {
                 ]) ?>
             </div>
         </div>
-        <div class="row">
+        <!-- <div class="row">
             <div class="col-sm-6">
                 <?= $form->field($model, 'fk_requested_by')->widget(Select2::class, [
                     'data' => $requested_by,
@@ -254,7 +263,7 @@ if (!empty($model->id)) {
 
                 ]) ?>
             </div>
-        </div>
+        </div> -->
 
 
 
