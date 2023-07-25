@@ -221,8 +221,10 @@ if (!empty($model->fk_dv_aucs_id)) {
                 $object_code = $val['object_code'];
                 $account_title = $val['account_title'];
                 echo "<tr>
-                        <td style='width: 300px;max-width:300px'>
-                        <input type='hidden' name='items[$entry_row][item_id]' value='{$val['item_id']}'>
+                        <td style='width: 300px;max-width:300px'>";
+                echo !empty($val['item_id']) ? "  <input type='hidden' name='items[$entry_row][item_id]' value='{$val['item_id']}'>" : '';
+                echo   "
+                      
                             <div>
                                 <label for='chart-of-accounts'>UACS</label>
                                 <select required name='items[$entry_row][object_code]' class='chart-of-accounts' style='width: 100%'>
