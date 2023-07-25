@@ -330,7 +330,7 @@ class PrAoqController extends Controller
             $number_length++;
         }
 
-        return $office->office_name . '-' . $date->format('Y-m') . '-' . $zero . $last_num;
+        return $office->office_name . '-' . $date->format('Y-m-d') . '-' . $zero . $last_num;
     }
     public function aoqEntriesData($pr_aoq_id = null)
     {
