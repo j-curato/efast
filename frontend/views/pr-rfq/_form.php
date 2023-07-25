@@ -74,15 +74,20 @@ if (!empty($model->pr_purchase_request_id)) {
             ]); ?>
 
             <div class="row">
-                <div class="col-sm-2">
-                    <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
-                        'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
-                        'pluginOptions' => [
-                            'placeholder' => 'Select Office',
-                        ],
+                <?php
+                if (Yii::$app->user->can('super-user')) {
 
-                    ]) ?>
-                </div>
+                ?>
+                    <div class="col-sm-2">
+                        <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
+                            'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
+                            'pluginOptions' => [
+                                'placeholder' => 'Select Office',
+                            ],
+
+                        ]) ?>
+                    </div>
+                <?php } ?>
                 <div class="col-sm-2">
                     <?= $form->field($model, '_date')->widget(DatePicker::class, [
                         'pluginOptions' => [
@@ -382,7 +387,7 @@ $('#PrRfq').on('beforeSubmit', function(e) {
             let res = JSON.parse(data)
             swal({
                 icon: 'error',
-                title: res.error,
+                title: res.errors,
                 type: "error",
                 timer: 3000,
                 closeOnConfirm: false,

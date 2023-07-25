@@ -184,7 +184,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             // var_dump($search_chairperson);
 
                             // if (!empty($search_chairperson)) {
-                            $chairperson =   strtoupper($bac_compositions[$search_chairperson]['employee_name']);
+                            $chairperson =   strtoupper($bac_compositions[$search_chairperson]['employee_name'] ?? '');
                             // }
                             echo  "<span style='text-decoration:underline;font-weight:bold'>{$chairperson}</span>";
                             echo '<br>';
