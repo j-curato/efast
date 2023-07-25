@@ -121,5 +121,6 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
     public function getOffice()
     {
         return $this->hasOne(Office::class, ['id' => 'fk_office_id']);
+        
     }
 }
