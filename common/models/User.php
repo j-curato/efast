@@ -3,6 +3,7 @@
 namespace common\models;
 
 use app\models\Divisions;
+use app\models\Employee;
 use app\models\Office;
 use Yii;
 use yii\base\NotSupportedException;
@@ -62,14 +63,7 @@ class User extends ActiveRecord implements IdentityInterface
             ['fk_employee_id', 'string', 'max' => 255],
         ];
     }
-    public function getOffice()
-    {
-        return $this->hasOne(Office::class, ['id' => 'fk_office_id']);
-    }
-    public function getDivisionName()
-    {
-        return $this->hasOne(Divisions::class, ['id' => 'fk_division_id']);
-    }
+
     /**
      * {@inheritdoc}
      */
@@ -222,5 +216,17 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
+    }
+    public function getEmployee()
+    {
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_employee_id']);
+    }
+    public function getOffice()
+    {
+        return $this->hasOne(Office::class, ['id' => 'fk_office_id']);
+    }
+    public function getDivisionName()
+    {
+        return $this->hasOne(Divisions::class, ['id' => 'fk_division_id']);
     }
 }
