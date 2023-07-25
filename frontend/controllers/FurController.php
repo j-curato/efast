@@ -253,6 +253,7 @@ class FurController extends Controller
          )as prev_advances ON advances_entries.id  = prev_advances.id
         WHERE advances.bank_account_id = :bank_account_id
         AND advances_entries.is_deleted NOT IN (1,9) 
+        AND dv_aucs.is_cancelled = 0
         AND (
             IFNULL(current_advances.current_total_advances,0) !=0
             OR
@@ -286,121 +287,121 @@ class FurController extends Controller
     }
     public function actionGenerateFur()
     {
-        if ($_POST) {
+        if (Yii::$app->request->post()) {
             // $province = $_POST['province'];
             $reporting_period = $_POST['reporting_period'];
             $bank_account_id = $_POST['bank_account_id'];
             $x = explode('-', $reporting_period);
             $x[1] =  '0' . ($x[1] - 1);
+            return json_encode($this->generate($reporting_period, $bank_account_id));
+            // $prev = implode('-', $x);
 
-            $prev = implode('-', $x);
+            // // $query = Yii::$app->db->createCommand("CALL fur(:province,:reporting_period,:bank_account_id)")
+            // //     ->bindValue(':province', $province)
+            // //     ->bindValue(':reporting_period', $reporting_period)
+            // //     ->bindValue(':bank_account_id', $bank_account_id)
+            // //     ->queryAll();
+            // // $dataProvider = $query;
+            // // return json_encode($dataProvider);
+            // // $conso_fur = YIi::$app->db->createCommand('CALL conso_fur(:province,:reporting_period,:prev_r_period)')
+            // //     ->bindValue(':province', $province)
+            // //     ->bindValue(':reporting_period', $reporting_period)
+            // //     ->bindValue(':prev_r_period', $prev)
+            // //     ->queryAll();
+            // $conso_fur = [];
+            // // $result = ArrayHelper::index($query, null, 'advances_type');
 
-            // $query = Yii::$app->db->createCommand("CALL fur(:province,:reporting_period,:bank_account_id)")
-            //     ->bindValue(':province', $province)
+            // $query  = Yii::$app->db->createCommand("SELECT 
+            // SUBSTRING_INDEX(advances_entries.reporting_period,'-',1)as budget_year,
+            // advances_entries.reporting_period,
+            // advances.province,
+            // advances_entries.fund_source,
+            // dv_aucs.particular,
+            // advances_entries.report_type,
+            // accounting_codes.object_code,
+            // accounting_codes.account_title,
+
+
+            // IFNULL(current_advances.current_total_advances,0) as total_advances ,
+            // IFNULL(current_liquidation.current_total_withdrawals,0) as total_withdrawals,
+            // (
+            // IFNULL(prev_advances.prev_total_advances,0)-IFNULL(prev_liquidation.prev_total_withdrawals,0)
+            // ) as begining_balance
+
+            // FROM advances_entries
+            // LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id  = cash_disbursement.id 
+            // LEFT JOIN accounting_codes ON advances_entries.object_code = accounting_codes.object_code
+            // LEFT JOIN advances ON advances_entries.advances_id = advances.id
+            // LEFT JOIN dv_aucs ON advances.dv_aucs_id = dv_aucs.id
+            // LEFT  JOIN (SELECT liquidation_entries.advances_entries_id,SUM(liquidation_entries.withdrawals) as current_total_withdrawals
+            // FROM liquidation_entries
+            //  WHERE  liquidation_entries.reporting_period =:reporting_period
+            // GROUP BY liquidation_entries.advances_entries_id
+            //  )as current_liquidation ON advances_entries.id  = current_liquidation.advances_entries_id
+            // LEFT  JOIN (SELECT liquidation_entries.advances_entries_id,SUM(liquidation_entries.withdrawals) as prev_total_withdrawals 
+            // FROM liquidation_entries WHERE liquidation_entries.reporting_period <:reporting_period 
+            // GROUP BY liquidation_entries.advances_entries_id
+            //  )as prev_liquidation ON advances_entries.id  = prev_liquidation.advances_entries_id
+            // LEFT  JOIN (SELECT  advances_entries.amount as current_total_advances ,advances_entries.id
+            //  FROM advances_entries WHERE  advances_entries.reporting_period =:reporting_period
+            //  )as current_advances ON advances_entries.id  = current_advances.id
+            // LEFT  JOIN (SELECT  advances_entries.amount as prev_total_advances,advances_entries.id 
+            // FROM advances_entries WHERE advances_entries.reporting_period <:reporting_period
+            //  )as prev_advances ON advances_entries.id  = prev_advances.id
+            // WHERE advances.bank_account_id = :bank_account_id
+            // AND advances_entries.is_deleted NOT IN (1,9) 
+            // AND (
+            //     IFNULL(current_advances.current_total_advances,0) !=0
+            //     OR
+            // IFNULL(current_liquidation.current_total_withdrawals,0) !=0
+            // OR
+            // (
+            // IFNULL(prev_advances.prev_total_advances,0)-IFNULL(prev_liquidation.prev_total_withdrawals,0)
+            // ) !=0
+            // )
+            // ")
             //     ->bindValue(':reporting_period', $reporting_period)
             //     ->bindValue(':bank_account_id', $bank_account_id)
             //     ->queryAll();
-            // $dataProvider = $query;
-            // return json_encode($dataProvider);
-            // $conso_fur = YIi::$app->db->createCommand('CALL conso_fur(:province,:reporting_period,:prev_r_period)')
-            //     ->bindValue(':province', $province)
-            //     ->bindValue(':reporting_period', $reporting_period)
-            //     ->bindValue(':prev_r_period', $prev)
-            //     ->queryAll();
-            $conso_fur = [];
-            // $result = ArrayHelper::index($query, null, 'advances_type');
-
-            $query  = Yii::$app->db->createCommand("SELECT 
-            SUBSTRING_INDEX(advances_entries.reporting_period,'-',1)as budget_year,
-            advances_entries.reporting_period,
-            advances.province,
-            advances_entries.fund_source,
-            dv_aucs.particular,
-            advances_entries.report_type,
-            accounting_codes.object_code,
-            accounting_codes.account_title,
-                
-
-            IFNULL(current_advances.current_total_advances,0) as total_advances ,
-            IFNULL(current_liquidation.current_total_withdrawals,0) as total_withdrawals,
-            (
-            IFNULL(prev_advances.prev_total_advances,0)-IFNULL(prev_liquidation.prev_total_withdrawals,0)
-            ) as begining_balance
-            
-            FROM advances_entries
-            LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id  = cash_disbursement.id 
-            LEFT JOIN accounting_codes ON advances_entries.object_code = accounting_codes.object_code
-            LEFT JOIN advances ON advances_entries.advances_id = advances.id
-            LEFT JOIN dv_aucs ON advances.dv_aucs_id = dv_aucs.id
-            LEFT  JOIN (SELECT liquidation_entries.advances_entries_id,SUM(liquidation_entries.withdrawals) as current_total_withdrawals
-            FROM liquidation_entries
-             WHERE  liquidation_entries.reporting_period =:reporting_period
-            GROUP BY liquidation_entries.advances_entries_id
-             )as current_liquidation ON advances_entries.id  = current_liquidation.advances_entries_id
-            LEFT  JOIN (SELECT liquidation_entries.advances_entries_id,SUM(liquidation_entries.withdrawals) as prev_total_withdrawals 
-            FROM liquidation_entries WHERE liquidation_entries.reporting_period <:reporting_period 
-            GROUP BY liquidation_entries.advances_entries_id
-             )as prev_liquidation ON advances_entries.id  = prev_liquidation.advances_entries_id
-            LEFT  JOIN (SELECT  advances_entries.amount as current_total_advances ,advances_entries.id
-             FROM advances_entries WHERE  advances_entries.reporting_period =:reporting_period
-             )as current_advances ON advances_entries.id  = current_advances.id
-            LEFT  JOIN (SELECT  advances_entries.amount as prev_total_advances,advances_entries.id 
-            FROM advances_entries WHERE advances_entries.reporting_period <:reporting_period
-             )as prev_advances ON advances_entries.id  = prev_advances.id
-            WHERE advances.bank_account_id = :bank_account_id
-            AND advances_entries.is_deleted NOT IN (1,9) 
-            AND (
-                IFNULL(current_advances.current_total_advances,0) !=0
-                OR
-            IFNULL(current_liquidation.current_total_withdrawals,0) !=0
-            OR
-            (
-            IFNULL(prev_advances.prev_total_advances,0)-IFNULL(prev_liquidation.prev_total_withdrawals,0)
-            ) !=0
-            )
-            ")
-                ->bindValue(':reporting_period', $reporting_period)
-                ->bindValue(':bank_account_id', $bank_account_id)
-                ->queryAll();
-            $result = ArrayHelper::index($query, null, 'report_type');
+            // $result = ArrayHelper::index($query, null, 'report_type');
 
 
-            foreach ($result as $index => $val) {
+            // foreach ($result as $index => $val) {
 
-                $beginning_balance = floatval(array_sum(array_column($result[$index], 'begining_balance')));
-                $total_advances = floatval(array_sum(array_column($result[$index], 'total_advances')));
-                $total_withdrawals = floatval(array_sum(array_column($result[$index], 'total_withdrawals')));
-                $conso_fur[] = [
+            //     $beginning_balance = floatval(array_sum(array_column($result[$index], 'begining_balance')));
+            //     $total_advances = floatval(array_sum(array_column($result[$index], 'total_advances')));
+            //     $total_withdrawals = floatval(array_sum(array_column($result[$index], 'total_withdrawals')));
+            //     $conso_fur[] = [
 
-                    'report_type' => $index,
-                    'begining_balance' => $beginning_balance,
-                    'total_advances' => $total_advances,
-                    'total_withdrawals' => $total_withdrawals
-                ];
-            }
+            //         'report_type' => $index,
+            //         'begining_balance' => $beginning_balance,
+            //         'total_advances' => $total_advances,
+            //         'total_withdrawals' => $total_withdrawals
+            //     ];
+            // }
 
-            // $conso_fur[] = [
-            //     'advances_type' => 'Advances for Operating Expenses',
-            //     'begining_balance' => $opex_beginning_balance,
-            //     'total_advances' => $opex_total_advances,
-            //     'total_withdrawals' => $opex_total_withdrawals
-            // ];
-            // $conso_fur[] = [
-            //     'advances_type' => 'Advances to Special Disbursing Officer',
-            //     'begining_balance' => $sdo_beginning_balance,
-            //     'total_advances' => $sdo_total_advances,
-            //     'total_withdrawals' => $sdo_total_withdrawals
-            // ];
-            // ob_clean();
-            // echo "<pre>";
-            // var_dump($conso_fur);
-            // echo "</pre>";
-            // return ob_get_clean();
+            // // $conso_fur[] = [
+            // //     'advances_type' => 'Advances for Operating Expenses',
+            // //     'begining_balance' => $opex_beginning_balance,
+            // //     'total_advances' => $opex_total_advances,
+            // //     'total_withdrawals' => $opex_total_withdrawals
+            // // ];
+            // // $conso_fur[] = [
+            // //     'advances_type' => 'Advances to Special Disbursing Officer',
+            // //     'begining_balance' => $sdo_beginning_balance,
+            // //     'total_advances' => $sdo_total_advances,
+            // //     'total_withdrawals' => $sdo_total_withdrawals
+            // // ];
+            // // ob_clean();
+            // // echo "<pre>";
+            // // var_dump($conso_fur);
+            // // echo "</pre>";
+            // // return ob_get_clean();
 
-            return json_encode([
-                'fur' => $query,
-                'conso_fur' =>  $conso_fur,
-            ]);
+            // return json_encode([
+            //     'fur' => $query,
+            //     'conso_fur' =>  $conso_fur,
+            // ]);
         }
     }
 }
