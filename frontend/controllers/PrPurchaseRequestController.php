@@ -747,7 +747,8 @@ class PrPurchaseRequestController extends Controller
 
             $query->select([" id, `pr_number` as text"])
                 ->from('pr_purchase_request')
-                ->where(['like', 'pr_number', $q]);
+                ->where(['like', 'pr_number', $q])
+                ->andwhere('pr_purchase_request.is_cancelled = 0');
             if (!Yii::$app->user->can('super-user')) {
                 $user_data = Yii::$app->memem->getUserData();
                 $query->andWhere('fk_office_id = :fk_office_id', ['fk_office_id' =>  $user_data->office->id]);
