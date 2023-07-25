@@ -119,7 +119,7 @@ $itemRow = 0;
             ]) ?>
         </div>
         <?php
-        if (Yii::$app->user->can('super-iser')) {?>
+        if (Yii::$app->user->can('super-user')) { ?>
             <div class="col-sm-2">
                 <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
                     'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
