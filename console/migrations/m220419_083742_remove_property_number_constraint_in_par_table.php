@@ -12,16 +12,16 @@ class m220419_083742_remove_property_number_constraint_in_par_table extends Migr
      */
     public function safeUp()
     {
-        // $this->dropForeignKey(
-        //     '{{%fk-par-property_number}}',
-        //     '{{%par}}'
-        // );
+        $this->dropForeignKey(
+            '{{%fk-par-property_number}}',
+            '{{%par}}'
+        );
 
-        // // drops index for column `property_number`
-        // $this->dropIndex(
-        //     '{{%idx-par-property_number}}',
-        //     '{{%par}}'
-        // );
+        // drops index for column `property_number`
+        $this->dropIndex(
+            '{{%idx-par-property_number}}',
+            '{{%par}}'
+        );
     }
 
     /**
@@ -29,20 +29,20 @@ class m220419_083742_remove_property_number_constraint_in_par_table extends Migr
      */
     public function safeDown()
     {
-        // $this->createIndex(
-        //     '{{%idx-par-property_number}}',
-        //     '{{%par}}',
-        //     'property_number'
-        // );
+        $this->createIndex(
+            '{{%idx-par-property_number}}',
+            '{{%par}}',
+            'property_number'
+        );
 
-        // // add foreign key for table `{{%property}}`
-        // $this->addForeignKey(
-        //     '{{%fk-par-property_number}}',
-        //     '{{%par}}',
-        //     'property_number',
-        //     '{{%property}}',
-        //     'property_number',
-        // );
+        // add foreign key for table `{{%property}}`
+        $this->addForeignKey(
+            '{{%fk-par-property_number}}',
+            '{{%par}}',
+            'property_number',
+            '{{%property}}',
+            'property_number',
+        );
     }
 
     /*
