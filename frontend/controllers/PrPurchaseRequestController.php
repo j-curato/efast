@@ -415,8 +415,8 @@ class PrPurchaseRequestController extends Controller
                 $validate =  $this->validatePpmp(
 
                     $cseType,
-                    $item['unit_cost'],
-                    $item['quantity'],
+                    $item['unit_cost'] ?? 0,
+                    $item['quantity'] ?? 0,
                     $cse_or_non_cse_id,
                     !empty($item['item_id']) ? $item['item_id'] : ''
                 );
