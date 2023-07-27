@@ -965,7 +965,7 @@ class PrPurchaseRequestController extends Controller
 
         if (!is_null($q)) {
             $query = new Query();
-            $query->select([" CAST(id as VARCHAR(50)), UPPER(`stock_or_act_name`) as text"])
+            $query->select([" CAST(id as VARCHAR(50)) as id, UPPER(`stock_or_act_name`) as text"])
                 ->from('pr_ppmp_search_view')
                 ->where(['like', 'stock_or_act_name', $q])
                 ->andwhere('pr_ppmp_search_view.budget_year = :budget_year', ['budget_year' => $budget_year])
