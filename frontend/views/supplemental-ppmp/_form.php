@@ -211,6 +211,12 @@ $cse_type_data = [
                             'dataType' => 'json',
                             'delay' => 250,
                             'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                            'processResults' => new JsExpression('function(data,params) { 
+                                params.page = params.page || 1;
+                                return {
+                                    results: data.results,
+                                };
+                            }'),
                             'cache' => true
                         ],
                         'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
