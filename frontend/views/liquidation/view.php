@@ -68,6 +68,12 @@ FROM po_transmittal_entries
 AND po_transmittal_entries.is_deleted = 0")
     ->bindValue(':id', $model->id)
     ->queryScalar();
+
+
+$total_withdrawal = 0;
+$total_vat_nonvat = 0;
+$total_liquidation_damages = 0;
+$total_ewt = 0;
 ?>
 <div class="liquidation-view">
 
@@ -94,10 +100,6 @@ AND po_transmittal_entries.is_deleted = 0")
                 }
 
 
-                $total_withdrawal = 0;
-                $total_vat_nonvat = 0;
-                $total_liquidation_damages = 0;
-                $total_ewt = 0;
                 $display = 'display:none';
                 $new_uacs = '';
 
