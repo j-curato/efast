@@ -13,7 +13,7 @@ $this->title = $model->property_number;
 $this->params['breadcrumbs'][] = ['label' => 'Properties', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
-// $qrcode_filename = Yii::$app->request->baseurl . "/frontend/views/property/qrcodes/$model->property_number.png";
+$qrcode_filename = Yii::$app->request->baseurl . "/frontend/views/property/qrcodes/$model->property_number.png";
 // GENERATE QR CODE
 // if (!file_exists($qrcode_filename)) {
 //     $text = $model->id;

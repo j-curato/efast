@@ -14,7 +14,7 @@ class m230725_065448_update_cibr_function_stored_procedure extends Migration
     {
         $sql = <<<SQL
         DROP PROCEDURE IF EXISTS cibr_function;
-        CREATE PROCEDURE cibr_function (province VARCHAR(20),r_period VARCHAR(20))
+        CREATE PROCEDURE cibr_function (province VARCHAR(20),r_period VARCHAR(20),bank_account_id BIGINT)
         BEGIN 
             WITH cte_gd_checks as (
                 SELECT 
@@ -102,6 +102,7 @@ class m230725_065448_update_cibr_function_stored_procedure extends Migration
         AND advances_entries.is_deleted NOT IN  (1,9)
         AND dv_aucs.is_cancelled = 0
         GROUP BY advances.id
+        
        UNION ALL 
 
         SELECT 
