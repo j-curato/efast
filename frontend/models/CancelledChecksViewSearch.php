@@ -45,19 +45,13 @@ class CancelledChecksViewSearch extends CancelledChecksView
      */
     public function search($params)
     {
-        $q = CancelledChecksView::find();
-        $province = strtolower(Yii::$app->user->identity->province);
-        if (
-            $province === 'adn' ||
-            $province === 'ads' ||
-            $province === 'sdn' ||
-            $province === 'sds' ||
-            $province === 'pdi'
-        ) {
-            $q->where('province = :province', ['province' => $province]);
+        $query = CancelledChecksView::find();
+
+        if (!Yii::$app->user->can('ro_accounting_admin')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $query->where('province = :province', ['province' => $user_data->office->office_name]);
         }
         // add conditions that should always apply here
-        $query = $q;
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);

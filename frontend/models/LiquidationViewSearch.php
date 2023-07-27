@@ -59,7 +59,7 @@ class LiquidationViewSearch extends LiquidationView
         $query = LiquidationView::find();
         if (!Yii::$app->user->can('ro_accounting_admin')) {
             $user_data = Yii::$app->memem->getUserData();
-            $query->where('province LIKE :province', ['province' => $user_data->office->office_name]);
+            $query->where('province = :province', ['province' => $user_data->office->office_name]);
         }
 
         $query->orderBy('check_date DESC');
