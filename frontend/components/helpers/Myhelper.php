@@ -217,6 +217,7 @@ class MyHelper extends BaseObject
     }
     public static function getRbac()
     {
+        $user_data = Yii::$app->memem->getUserData();
         return Yii::$app->db->createCommand("SELECT 
         employee_search_view.employee_name,
         CONCAT(bac_position.position,'_', employee_search_view.employee_name) as pos,
@@ -226,7 +227,7 @@ class MyHelper extends BaseObject
         LEFT JOIN bac_position ON bac_composition_member.bac_position_id = bac_position.id
         LEFT JOIN employee_search_view ON bac_composition_member.employee_id = employee_search_view.employee_id
         WHERE bac_composition.fk_office_id = :office_id")
-            ->bindValue(':office_id', Yii::$app->user->identity->fk_office_id)
+            ->bindValue(':office_id', $user_data->office->id)
             ->queryAll();
     }
 }
