@@ -151,7 +151,7 @@ class PrAoqController extends Controller
                         $aoq =  PrAoqEntries::findOne($val['item_id']);
                     } else {
                         $aoq = new PrAoqEntries();
-                        $aoq->id = MyHelper::getUuid();
+                        $aoq->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()  % 9223372036854775807")->queryScalar();
                     }
                     $aoq->payee_id = $val['payee_id'];
                     $aoq->pr_aoq_id = $model_id;
