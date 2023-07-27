@@ -118,7 +118,7 @@ $user_data = Yii::$app->memem->getUserData();
             <?php }
             if (Yii::$app->user->can('back_date')) {
             ?>
-                <div class="col-sm-2">
+                <!-- <div class="col-sm-2">
                     <?= $form->field($model, 'back_date')->widget(DatePicker::class, [
                         'pluginOptions' => [
                             'format' => 'yyyy-mm-dd',
@@ -126,7 +126,7 @@ $user_data = Yii::$app->memem->getUserData();
                         ],
 
                     ]) ?>
-                </div>
+                </div> -->
 
             <?php
             }
