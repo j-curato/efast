@@ -865,7 +865,7 @@ class PrPurchaseRequestController extends Controller
         if (!is_null($q)) {
             $query = new Query();
 
-            $query->select([" id, `pr_number` as text"])
+            $query->select([" CAST(id AS CHAR(50)) as id, `pr_number` as text"])
                 ->from('pr_purchase_request')
                 ->where(['like', 'pr_number', $q])
                 ->andwhere('pr_purchase_request.is_cancelled = 0');
