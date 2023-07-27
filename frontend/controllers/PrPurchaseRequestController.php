@@ -541,7 +541,7 @@ class PrPurchaseRequestController extends Controller
                 $allotment_items = Yii::$app->request->post('allotment_items') ?? [];
                 $date_now = new DateTime();
                 $model->date = $date_now->format('Y-m-d');
-                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()  % 9223372036854775807")->queryScalar();
                 $model->pr_number = $this->getPrNumber($model->date, $model->fk_office_id, $model->fk_division_id);
                 $allotment_items_ttl = array_column($allotment_items, 'gross_amount');
                 if (strtolower($model->office->office_name) == 'ro') {
