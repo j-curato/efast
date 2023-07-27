@@ -363,7 +363,7 @@ class PrAoqController extends Controller
     {
         $query = Yii::$app->db->createCommand("SELECT
 
-        pr_rfq_item.id as rfq_item_id,
+        CAST(pr_rfq_item.id as CHAR(50)) as rfq_item_id,
         pr_stock.bac_code,
         unit_of_measure.unit_of_measure,
         pr_stock.stock_title,
