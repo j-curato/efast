@@ -24,15 +24,7 @@ use yii\widgets\ActiveForm;
             ]) ?>
         </div>
         <?php
-        $province = Yii::$app->user->identity->province;
-        if (
-            $province !== 'adn' &&
-            $province !== 'ads' &&
-            $province !== 'sdn' &&
-            $province !== 'sds' &&
-            $province !== 'pdi'
-        ) {
-        ?>
+        if (Yii::$app->user->can('ro_accounting_admin')) { ?>
             <div class="col-sm-3">
                 <?= $form->field($model, 'province')->widget(Select2::class, [
                     'data' => [

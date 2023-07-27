@@ -324,20 +324,20 @@ class AlphalistController extends Controller
     public function actionGenerate()
     {
 
-        if ($_POST) {
+        if (Yii::$app->request->post()) {
+            $user_data = Yii::$app->memem->getUserData();
+            $range = $_POST['range'] ?? [];
+            // $query->where('province = :province', ['province' => $user_data->office->office_name]);
+            $province = '';
 
-            if (empty($_POST['range'])) {
+            if (empty($range)) {
                 return;
             }
-            if (Yii::$app->user->identity->province !== 'ro_admin') {
-                $province = Yii::$app->user->identity->province;
+            if (Yii::$app->user->can('ro_accounting_admin')) {
+                $province = YIi::$app->request->post('province');
             } else {
-                if (empty($_POST['province'])) {
-                    return;
-                }
-                $province = $_POST['province'];
+                $province = $user_data->office->office_name;
             }
-            $range = $_POST['range'];
             $params = [];
             $sql = Yii::$app->db->getQueryBuilder()->buildCondition('liquidation_entries.fk_alphalist_id IS NULL', $params);
             return $this->generateQuery($province, $range, $sql);
