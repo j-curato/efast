@@ -42,15 +42,13 @@ class PoTransactionSearch extends PoTransaction
      */
     public function search($params)
     {
-        $province = Yii::$app->user->identity->province;
+
+
+       
         $q = PoTransaction::find();
-        if (
-            $province === 'adn' ||
-            $province === 'ads' ||
-            $province === 'sds' ||
-            $province === 'sdn' ||
-            $province === 'pdi'
-        ) {
+        if (!Yii::$app->user->can('ro_accounting_admin')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $province = strtolower($user_data->office->office_name);
             $q->where('tracking_number LIKE :province', ['province' => "$province%"]);
         }
         $query = $q;

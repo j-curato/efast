@@ -97,14 +97,15 @@ class CheckRangeController extends Controller
     public function actionCreate()
     {
         $model = new CheckRange();
-        if ($_POST) {
+        if (Yii::$app->request->post()) {
             $from =  intval($_POST['from']);
             $to =  intval($_POST['to']);
             $reporting_period = $_POST['reporting_period'];
             $begin_balance = $_POST['begin_balance'];
             $bank_account_id = !empty($_POST['bank_account_id']) ? $_POST['bank_account_id'] : null;
-            $province = Yii::$app->user->identity->province;
-            if ($province === 'ro_admin') {
+            $user_data = Yii::$app->memem->getUserData();
+            $province = strtolower($user_data->office->office_name);
+            if (Yii::$app->user->can('ro_accounting_admin')) {
                 $province = $_POST['province'];
             }
             if (!empty($_POST['model_id'])) {

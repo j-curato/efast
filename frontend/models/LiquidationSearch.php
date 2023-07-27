@@ -41,18 +41,13 @@ class LiquidationSearch extends Liquidation
      */
     public function search($params)
     {
-        $province = Yii::$app->user->identity->province;
-        $q = Liquidation::find();
-        if (
-            $province === 'adn' ||
-            $province === 'sdn' ||
-            $province === 'sds' ||
-            $province === 'sdn' ||
-            $province === 'pdi'
-        ) {
-            $q->where('province LIKE :province', ['province' => $province]);
+
+
+        $query = Liquidation::find();
+        if (!Yii::$app->user->can('ro_accounting_admin')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $query->where('province LIKE :province', ['province' =>  strtolower($user_data->office->office_name)]);
         }
-        $query = $q;
 
         $query = Liquidation::find();
 

@@ -112,10 +112,7 @@ class EmployeeController extends Controller
     public function actionCreate()
     {
         $model = new Employee();
-        if (!Yii::$app->user->can('super-user')) {
-            $model->province = Yii::$app->user->identity->province;
-            // return json_encode(Yii::$app->user->identity->province);
-        }
+
         if ($model->load(Yii::$app->request->post())) {
 
             $model->employee_id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();

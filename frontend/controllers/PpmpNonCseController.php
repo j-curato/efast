@@ -241,7 +241,8 @@ class PpmpNonCseController extends Controller
     public function actionCreate()
     {
         $model = new PpmpNonCse();
-        $user_province = Yii::$app->user->identity->province;
+        $user_data = Yii::$app->memem->getUserData();
+        $user_province = strtolower($user_data->office->office_name);
         if ($user_province === 'ro') {
             $model->responsible_center = Yii::$app->user->identity->division;
         } else {
@@ -411,7 +412,7 @@ class PpmpNonCseController extends Controller
         if (!empty($last_no)) {
             $last_no++;
         } else {
-            $last_no = 1;   
+            $last_no = 1;
         }
         $zero = '';
         for ($i = strlen($last_no); $i <= 4; $i++) {

@@ -21,7 +21,8 @@ $this->params['breadcrumbs'][] = $this->title;
 $province = [];
 
 if (!Yii::$app->user->can('super-user')) {
-    $user_province = YIi::$app->user->identity->province;
+    $user_data = Yii::$app->memem->getUserData();
+    $user_province = $user_data->office->office_name;
     $province = [$user_province => strtoupper($user_province)];
 } else {
     $province = [

@@ -15,14 +15,9 @@ use kartik\date\DatePicker;
 <div class="po-transaction-form">
 
     <?php
-    $province = Yii::$app->user->identity->province;
-    if (
-        $province === 'adn' ||
-        $province === 'sdn' ||
-        $province === 'sds' ||
-        $province === 'sdn' ||
-        $province === 'pdi'
-    ) {
+    $user_data = Yii::$app->memem->getUserData();
+    $province = strtolower($user_data->office->office_name);
+    if (!Yii::$app->user->can('ro_accounting_admin')) {
         $respons_center = (new \yii\db\Query())->select('*')
             ->from('po_responsibility_center')
             ->where('province =:province', ['province' => $province])
@@ -36,23 +31,23 @@ use kartik\date\DatePicker;
     <?= $form->field($model, 'reporting_period')->widget(DatePicker::class, [
 
         'pluginOptions' => [
-            'format'=>'yyyy-mm',
+            'format' => 'yyyy-mm',
             'autoclose' => true,
-            'minViewMode'=>'months',
+            'minViewMode' => 'months',
             'startView' => "months",
         ],
-        'options'=>[
-            'readOnly'=>true,
-            'style'=>'background-color:white'
+        'options' => [
+            'readOnly' => true,
+            'style' => 'background-color:white'
         ]
-    ]);?>
+    ]); ?>
     <?= $form->field($model, 'po_responsibility_center_id')->widget(Select2::class, [
         'data' => ArrayHelper::map($respons_center, 'id', 'name'),
         'options' => ['placeholder' => 'Select  Responsibility Center'],
         'pluginOptions' => [
             'allowClear' => true
         ],
-    ]);?>
+    ]); ?>
     <?= $form->field($model, 'payee')->textInput() ?>
 
 

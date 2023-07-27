@@ -3312,7 +3312,6 @@ class ReportController extends \yii\web\Controller
             ->from('po_responsibility_center')
             ->where("id =:id", ['id' => 4])
             ->one();
-        // $province = Yii::$app->user->identity->province;
         $province = 'sds';
         $latest_tracking_no = Yii::$app->db->createCommand(
             "SELECT substring_index(tracking_number,'-',-1)as q

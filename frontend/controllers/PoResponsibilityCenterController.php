@@ -21,25 +21,25 @@ class PoResponsibilityCenterController extends Controller
     public function behaviors()
     {
         return [
-            'access'=>[
-                'class'=>AccessControl::class,
-                'only'=>[
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
                     'update',
                     'delete',
                     'create',
                 ],
-                'rules'=>[
+                'rules' => [
                     [
-                        'actions'=>[
+                        'actions' => [
                             'update',
                             'delete',
                             'create',
                         ],
-                        'allow'=>true,
-                        'roles'=>['super-user']
+                        'allow' => true,
+                        'roles' => ['super-user']
                     ]
                 ]
-                
+
             ],
             'verbs' => [
                 'class' => VerbFilter::class,
@@ -86,8 +86,11 @@ class PoResponsibilityCenterController extends Controller
     public function actionCreate()
     {
         $model = new PoResponsibilityCenter();
-        $model->province = Yii::$app->user->identity->province;
 
+        if (!Yii::$app->user->can('ro_accounting_admin')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $model->province = strtolower($user_data->office->office_name);
+        }
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }

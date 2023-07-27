@@ -43,7 +43,7 @@ class PpmpNonCseSearch extends PpmpNonCse
     {
         $query = PpmpNonCse::find();
         if (!Yii::$app->user->can('super-user')) {
-            $user_province = Yii::$app->user->identity->province;
+            $user_province = '';
             if ($user_province === 'ro') {
                 $query->andWhere("responsible_center  = :r_center", ['r_center' => Yii::$app->user->identity->division]);
             } else {

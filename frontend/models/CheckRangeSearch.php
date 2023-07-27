@@ -42,20 +42,11 @@ class CheckRangeSearch extends CheckRange
      */
     public function search($params)
     {
-        $province = Yii::$app->user->identity->province;
-        $q = CheckRange::find();
-        if (
-            $province === 'adn' ||
-            $province === 'ads' ||
-            $province === 'sds' ||
-            $province === 'sdn' ||
-            $province === 'pdi'
-        ) {
-            $q->where('check_range.province = :province', ['province' => $province]);
+        $query = CheckRange::find();
+        if (!Yii::$app->user->can('ro_accounting_admin')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $query->where('check_range.province = :province', ['province' => $user_data->office->office_name]);
         }
-        $query = $q;
-
-
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
@@ -71,11 +62,11 @@ class CheckRangeSearch extends CheckRange
         // grid filtering conditions
         $query->andFilterWhere([
             'check_range.id' => $this->id,
-      
+
         ]);
         $query->andFilterWhere(['like', 'check_range.province', $this->province])
-        ->andFilterWhere(['like', 'check_range.from', $this->from])
-        ->andFilterWhere(['like', 'check_range.to', $this->to])
+            ->andFilterWhere(['like', 'check_range.from', $this->from])
+            ->andFilterWhere(['like', 'check_range.to', $this->to])
             ->andFilterWhere(['or', ['like', 'bank_account.account_number', $this->bank_account_id], ['like', 'bank_account.account_name', $this->bank_account_id]]);
 
         return $dataProvider;

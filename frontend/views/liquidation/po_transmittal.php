@@ -20,16 +20,16 @@ use yii\widgets\ActiveForm;
     <form id="add_data">
         <?php
         $viewSearchModel = new LiquidationViewSearch();
-        if (!empty(\Yii::$app->user->identity->province)) {
-            $viewSearchModel->province = \Yii::$app->user->identity->province;
-            // echo \Yii::$app->user->identity->province;
+        if (!YIi::$app->user->can('ro_accounting_admin')) {
+            $user_data = Yii::$app->memem->getUserData();
+
+            $viewSearchModel->province = strtolower($user_data->office->office_name);
         }
         $viewSearchModel->status = 'at_po';
 
         $viewDataProvider = $viewSearchModel->search(Yii::$app->request->queryParams);
 
         $viewDataProvider->pagination = ['pageSize' => 10];
-        // echo \Yii::$app->user->identity->province;
         $viewColumn = [
             [
                 'class' => '\kartik\grid\CheckboxColumn',
@@ -213,7 +213,7 @@ use yii\widgets\ActiveForm;
         $(".checkbox:checked").each(function() {
             checkedValue = $(this).closest('tr');
             checkedValue.closest('.checkbox').removeAttr('checked')
-           
+
 
             // console.log()
             // $.each(checkedValue.find('td:has([data-col-seq])').attr("data-col-seq"), () => {

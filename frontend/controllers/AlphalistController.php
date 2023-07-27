@@ -99,28 +99,19 @@ class AlphalistController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Alphalist();
 
+        $model = new Alphalist();
+        if (!YIi::$app->user->can('ro_accounting_admin')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $model->province = strtolower($user_data->office->office_name);
+        }
         if ($model->load(Yii::$app->request->post())) {
             $model->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-            $province = YIi::$app->user->identity->province;
-            if (
-                $province === 'adn' ||
-                $province === 'ads' ||
-                $province === 'sdn' ||
-                $province === 'sds' ||
-                $province === 'pdi'
-            ) {
-                $model->province = $province;
-            }
+
             $model->alphalist_number = $this->alphalistNumber($model->province);
 
             if ($model->save(false)) {
-
-
                 $d = new DateTime($model->check_range);
-                // echo $d->format('Y-m-t');
-
                 $query =  Yii::$app->db->createCommand("UPDATE liquidation_entries  SET fk_alphalist_id = :id
                 WHERE  EXISTS (SELECT z.id FROM (SELECT
                     x.id
@@ -141,7 +132,6 @@ class AlphalistController extends Controller
                     ->bindValue(':to_date', $d->format('Y-m-t'))
                     ->bindValue(':province', $model->province)
                     ->query();
-
                 return $this->redirect(['view', 'id' => $model->id]);
             }
         }

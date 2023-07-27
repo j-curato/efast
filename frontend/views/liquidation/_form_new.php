@@ -14,20 +14,14 @@ use yii\web\JsExpression;
 /* @var $form yii\widgets\ActiveForm */
 
 $transaction = [];
-$user_province = Yii::$app->user->identity->province;
+$user_data = Yii::$app->memem->getUserData();
+$user_province = strtolower($user_data->office->office_name);
 $entries_row = 0;
 $check_range_query = (new yii\db\Query())
     ->select(['id', "CONCAT(check_range.`from`,' to ',check_range.`to`) as range"])
     ->from('check_range');
 
-if (
-    $user_province === 'adn' ||
-    $user_province === 'ads' ||
-    $user_province === 'sdn' ||
-    $user_province === 'sds' ||
-    $user_province === 'pdi'
-
-) {
+if (!Yii::$app->user->can('ro_accounting_admin')) {
     $check_range_query->andWhere('province = :province', ['province' => $user_province]);
 }
 $check_range = $check_range_query->all();

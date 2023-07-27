@@ -41,19 +41,11 @@ class BankAccountSearch extends BankAccount
      */
     public function search($params)
     {
-
-        $province = Yii::$app->user->identity->province;
+        $user_data = Yii::$app->memem->getUserData();
+        $province = strtolower($user_data->office->office_name);
         $query = BankAccount::find();
-
         // add conditions that should always apply here
-        if (
-            $province === 'adn' ||
-            $province === 'ads' ||
-            $province === 'pdi' ||
-            $province === 'sds' ||
-            $province === 'sds'
-
-        ) {
+        if (!Yii::$app->user->can('ro_accounting_admin')) {
             $query->where(['province' => $province]);
         }
 

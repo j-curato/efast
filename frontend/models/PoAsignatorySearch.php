@@ -41,19 +41,11 @@ class PoAsignatorySearch extends PoAsignatory
      */
     public function search($params)
     {
-        $province = Yii::$app->user->identity->province;
-        $q = PoAsignatory::find();
-        if (
-            $province === 'adn' ||
-            $province === 'ads' ||
-            $province === 'sds' ||
-            $province === 'sdn' ||
-            $province === 'pdi'
-        ) {
-            $q->where('province = :province', ['province' => $province]);
+        $query = PoAsignatory::find();
+        if (!Yii::$app->user->can('ro_accounting_admin')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $query->where('province = :province', ['province' => $user_data->office->office_name]);
         }
-        $query = $q;
-
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([

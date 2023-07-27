@@ -19,7 +19,7 @@ class PoResponsibilityCenterSearch extends PoResponsibilityCenter
     {
         return [
             [['id'], 'integer'],
-            [['name', 'description','province'], 'safe'],
+            [['name', 'description', 'province'], 'safe'],
         ];
     }
 
@@ -41,19 +41,11 @@ class PoResponsibilityCenterSearch extends PoResponsibilityCenter
      */
     public function search($params)
     {
-        $province = Yii::$app->user->identity->province;
-        $q = PoResponsibilityCenter::find();
-        if (
-            $province === 'adn' ||
-            $province === 'ads' ||
-            $province === 'sds' ||
-            $province === 'sdn' ||
-            $province === 'pdi'
-        ) {
-            $q->where('province LIKE :province', ['province' => $province]);
+        $query = PoResponsibilityCenter::find();
+        if (!Yii::$app->user->can('ro_accounting_admin')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $query->where('province = :province', ['province' => $user_data->office->office_name]);
         }
-        $query = $q;
-
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
@@ -75,8 +67,7 @@ class PoResponsibilityCenterSearch extends PoResponsibilityCenter
 
         $query->andFilterWhere(['like', 'name', $this->name])
             ->andFilterWhere(['like', 'description', $this->description])
-            ->andFilterWhere(['like', 'province', $this->province])
-            ;
+            ->andFilterWhere(['like', 'province', $this->province]);
 
         return $dataProvider;
     }

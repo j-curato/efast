@@ -78,14 +78,10 @@ use yii\widgets\ActiveForm;
             $bank_accounts_query = (new \yii\db\Query())
                 ->select(['bank_account.id', "CONCAT(bank_account.account_number,'-',UPPER(bank_account.province),'-',bank_account.account_name) as account_name"])
                 ->from('bank_account');
-            $province = Yii::$app->user->identity->province;
-            if (
-                $province === 'adn' ||
-                $province === 'ads' ||
-                $province === 'pdi' ||
-                $province === 'sdn' ||
-                $province === 'sds'
-            ) {
+
+            $user_data = Yii::$app->memem->getUserData();
+            $province = $user_data->office->office_name;
+            if (!Yii::$app->user->can('ro_accounting_admin')) {
                 $bank_accounts_query->andWhere('bank_account.province = :province', ['province' => $province]);
             }
             $bank_accounts = $bank_accounts_query->all();

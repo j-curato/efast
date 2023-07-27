@@ -91,7 +91,11 @@ class PoAssignatoryController extends Controller
     public function actionCreate()
     {
         $model = new PoAsignatory();
-        $model->province = Yii::$app->user->identity->province;
+
+        if (!Yii::$app->user->can('ro_accounting_admin')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $model->province = strtolower($user_data->office->office_name);
+        }
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
@@ -154,17 +158,12 @@ class PoAssignatoryController extends Controller
     {
 
 
-        $province = Yii::$app->user->identity->province;
+        $user_data = Yii::$app->memem->getUserData();
+        $province = strtolower($user_data->office->office_name);
         $query = (new \yii\db\Query())
             ->select('*')
             ->from("po_asignatory");
-        if (
-            $province === 'adn' ||
-            $province === 'sdn' ||
-            $province === 'sds' ||
-            $province === 'sdn' ||
-            $province === 'pdi'
-        ) {
+        if (!YIi::$app->user->can('ro_accounting_admin')) {
             $query->where('po_asignatory.province =:province', ['province' => $province]);
         }
 

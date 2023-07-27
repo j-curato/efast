@@ -93,7 +93,10 @@ class PoTransactionController extends Controller
     {
         $model = new PoTransaction();
 
-        $model->province = Yii::$app->user->identity->province;
+        if (!Yii::$app->user->can('ro_accounting_admin')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $model->province = strtolower($user_data->office->office_name);
+        }
         // $model->po_responsibility_center_id = strtoupper(\Yii::$app->user->identity->province) .'-'. $model->po_responsibility_center_id ;
         if ($model->load(Yii::$app->request->post())) {
             $model->tracking_number = $this->getTrackingNumber($model->po_responsibility_center_id, $model->reporting_period);
@@ -176,7 +179,11 @@ class PoTransactionController extends Controller
             ->from('po_responsibility_center')
             ->where("id =:id", ['id' => $responsibility_center_id])
             ->one();
-        $province = Yii::$app->user->identity->province;
+
+        if (!Yii::$app->user->can('ro_accounting_admin')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $province = strtolower($user_data->office->office_name);
+        }
         if ($reporting_period_year <= 2021) {
 
             $latest_tracking_no = Yii::$app->db->createCommand(

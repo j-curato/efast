@@ -174,7 +174,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'province',
 
     ];
-    $province = \Yii::$app->user->identity->province;
+    $user_data = Yii::$app->memem->getUserData();
+    $province = strtolower($user_data->office->office_name);
     $viewSearchModel = new LiquidationViewSearch();
     $viewDataProvider = $viewSearchModel->search(Yii::$app->request->queryParams);
     $viewDataProvider->pagination = ['pageSize' => 10];

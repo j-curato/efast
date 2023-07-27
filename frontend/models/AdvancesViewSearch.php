@@ -60,7 +60,6 @@ class AdvancesViewSearch extends AdvancesView
      */
     public function search($params)
     {
-        $province = Yii::$app->user->identity->province;
         $query = AdvancesView::find();
         if (!Yii::$app->user->can('super-user')) {
             $user_data = Yii::$app->memem->getUserData();

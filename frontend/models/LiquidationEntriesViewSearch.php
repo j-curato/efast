@@ -59,16 +59,12 @@ class LiquidationEntriesViewSearch extends LiquidationEntriesView
      */
     public function search($params)
     {
-        $province = Yii::$app->user->identity->province;
+
         $q = LiquidationEntriesView::find();
-        if (
-            $province === 'adn' ||
-            $province === 'ads' ||
-            $province === 'sds' ||
-            $province === 'sdn' ||
-            $province === 'pdi'
-        ) {
-            $q->where('province LIKE :province', ['province' => $province]);
+
+        if (!Yii::$app->user->can('ro_accounting_admin')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $q->where('province LIKE :province', ['province' => strtolower($user_data->office->office_name)]);
         }
         $query = $q;
 

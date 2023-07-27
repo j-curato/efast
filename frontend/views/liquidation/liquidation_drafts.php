@@ -29,14 +29,14 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php
 
+    $user_data = Yii::$app->memem->getUserData();
+    $province = strtolower($user_data->office->office_name);
 
-
-    $province = \Yii::$app->user->identity->province;
     $viewSearchModel = new LiquidationViewSearch();
     $viewSearchModel->is_final = 0;
     $viewDataProvider = $viewSearchModel->search(Yii::$app->request->queryParams);
     $viewDataProvider->pagination = ['pageSize' => 10];
-    // echo \Yii::$app->user->identity->province;
+  
     $viewColumn = [
         'province',
         // [

@@ -15,8 +15,7 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
     <?php
-    $province = Yii::$app->user->identity->province;
-    if (Yii::$app->user->can('super-user')) {
+    if (Yii::$app->user->can('ro_accounting_admin')) {
     ?>
         <?= $form->field($model, 'fk_office_id')->widget(
             Select2::class,
