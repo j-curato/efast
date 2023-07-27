@@ -11,6 +11,8 @@ $this->title = $model->transmittal_number;
 $this->params['breadcrumbs'][] = ['label' => 'Po Transmittals', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
+$user_data = Yii::$app->memem->getUserData();
+// $query->where('province = :province', ['province' => $user_data->office->office_name]);
 ?>
 <div class="po-transmittal-view">
 
@@ -40,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $color = 'btn-danger';
                     $action = 'Pending';
                 }
-                if (Yii::$app->user->identity->province === 'ro_admin') {
+                if (Yii::$app->user->can('ro_accounting_admin')) {
                     echo Html::a($action, ['accept', 'id' => $model->id], [
                         'class' => "btn $color",
                         'data' => [
@@ -49,7 +51,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         ],
                     ]);
                 }
-                $province = strtolower(Yii::$app->user->identity->province);
+
                 $prov = '';
                 $provinces = [
                     'adn' => 'Agusan Del Norte',
@@ -58,14 +60,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     'sds' => 'Surigao Del Sur',
                     'pdi' => 'Dinagat Islands',
                 ];
-                if (
-                    $province === 'adn' ||
-                    $province === 'ads' ||
-                    $province === 'sdn' ||
-                    $province === 'sds' ||
-                    $province === 'pdi'
-                ) {
-                    $prov = $provinces[$province];
+                if (!Yii::$app->user->can('ro_accounting_admin')) {
+                    $prov = $user_data->office->office_name;
                 }
                 ?>
             </p>
