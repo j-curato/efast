@@ -68,7 +68,7 @@ class PurchaseRequestIndexSearch extends PurchaseRequestIndex
         if (!Yii::$app->user->can('super-user')) {
             $user_data = Yii::$app->memem->getUserData();
             $query->andWhere('office_name = :office_name', ['office_name' => $user_data->office->office_name]);
-            if (!Yii::$app->user->can('po_procurement_admin') || !YIi::$app->user->can('ro_procurement_admin')) {
+            if (!Yii::$app->user->can('po_procurement_admin') && !YIi::$app->user->can('ro_procurement_admin')) {
                 $query->andWhere('division = :division', ['division' => $user_data->divisionName->division]);
             }
             $query->andWhere('is_cancelled = "Good"');

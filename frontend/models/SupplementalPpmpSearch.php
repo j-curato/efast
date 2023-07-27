@@ -59,7 +59,7 @@ class SupplementalPpmpSearch extends SupplementalPpmp
         if (!Yii::$app->user->can('super-user')) {
             $user_data = Yii::$app->memem->getUserData();
             $query->andWhere('office.id = :office_id', ['office_id' => $user_data->office->id]);
-            if (!Yii::$app->user->can('po_procurement_admin') || !YIi::$app->user->can('ro_procurement_admin')) {
+            if (!Yii::$app->user->can('po_procurement_admin') && !YIi::$app->user->can('ro_procurement_admin')) {
                 $query->andWhere('divisions.id = :division_id', ['division_id' => $user_data->divisionName->id]);
             }
         }
