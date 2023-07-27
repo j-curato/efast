@@ -1081,7 +1081,7 @@ class PrPurchaseRequestController extends Controller
                     ->queryAll();
             } else if ($type === 'non_cse') {
                 $res = Yii::$app->db->createCommand("SELECT 
-                supplemental_ppmp_non_cse_items.id as item_id,
+                CAST(supplemental_ppmp_non_cse_items.id as CHAR(50)) as item_id,
                 pr_stock.id as stock_id,
                 pr_stock.stock_title,
                 IFNULL(supplemental_ppmp_non_cse_items.amount,0) as unit_cost,
