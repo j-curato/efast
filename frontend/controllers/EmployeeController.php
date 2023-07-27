@@ -204,7 +204,7 @@ class EmployeeController extends Controller
         $out = ['results' => ['id' => '', 'text' => '']];
         if (!is_null($q)) {
             $query = new Query();
-            $query->select('employee_id as id, UPPER(employee_name) AS text,employee_search_view.position ')
+            $query->select('CAST(employee_id as CHAR(50)) as id, UPPER(employee_name) AS text,employee_search_view.position ')
                 ->from('employee_search_view')
                 ->andWhere(['like', 'employee_name', $q]);
             if (!Yii::$app->user->can('super-user') && Yii::$app->user->can('provincial-office')) {
