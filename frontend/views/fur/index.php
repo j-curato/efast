@@ -28,6 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'heading' => 'List of Areas',
         ],
         'export' => false,
+        'pjax' => true,
         'columns' => [
 
             'reporting_period',

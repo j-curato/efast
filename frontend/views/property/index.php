@@ -98,6 +98,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'export' => [
             'fontAwesome' => true
         ],
+        'pjax'=>true,
         'toolbar' => [
 
 

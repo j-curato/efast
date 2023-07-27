@@ -26,6 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'type' => 'primary',
             'heading' => 'RLSDDPs'
         ],
+        'pjax' => true,
         'columns' => [
             'office_name',
             'serial_number',

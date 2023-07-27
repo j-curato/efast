@@ -61,6 +61,7 @@ $columns = [
         'export' => [
             'fontAwesome' => true
         ],
+        'pjax'=>true,
         'toolbar' => [
             [
                 'content' => ExportMenu::widget([

@@ -42,9 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'export' => false,
         'pjax' => true,
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
             'reporting_period',
             [
                 'label' => 'Province',

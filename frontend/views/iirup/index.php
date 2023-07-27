@@ -28,6 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'type' => 'primary',
             'heading' => 'IIRUPs'
         ],
+        'pjax'=>true,
         'columns' => [
 
             'serial_number',

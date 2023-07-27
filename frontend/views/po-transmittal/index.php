@@ -33,6 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'top' => 50,
             'position' => 'absolute',
         ],
+        'pjax' => true,
         'columns' => [
 
             'transmittal_number',

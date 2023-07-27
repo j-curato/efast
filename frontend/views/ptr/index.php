@@ -29,6 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'type' => GridView::TYPE_PRIMARY,
             'heading' => 'PTRs'
         ],
+        'pjax'=>true,
         'columns' => [
 
             'office_name',

@@ -41,9 +41,9 @@ $this->params['breadcrumbs'][] = $this->title;
             'position' => 'absolute',
         ],
         'export' => false,
+        'pjax' => true,
         'columns' => [
 
-            'id',
             'serial_number',
             'reporting_period',
             'province',

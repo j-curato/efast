@@ -30,6 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'type' => 'primary',
             'heading' => 'Alphalist'
         ],
+        'pjax' => true,
         'columns' => [
 
             'alphalist_number',
@@ -37,7 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             [
                 'class' => 'kartik\grid\ActionColumn',
-                'template' =>  Yii::$app->user->can('super-user')?'{view} {delete}':'{view} ',
+                'template' =>  Yii::$app->user->can('super-user') ? '{view} {delete}' : '{view} ',
 
                 // 'deleteOptions' => function () {
 

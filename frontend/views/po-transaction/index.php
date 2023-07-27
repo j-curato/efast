@@ -99,6 +99,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'type' => Gridview::TYPE_PRIMARY,
             'heading' => 'List of Transactions'
         ],
+        'pjax' => true,
         'toolbar' => [
             [
                 'content' =>

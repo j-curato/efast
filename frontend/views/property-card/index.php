@@ -56,6 +56,7 @@ $columns = [
         'export' => [
             'fontAwesome' => true
         ],
+        'pjax' => true,
         'toolbar' => [
 
 

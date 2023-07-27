@@ -31,6 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'type' => GridView::TYPE_PRIMARY,
             'heading' => 'List of RODs'
         ],
+        'pjax'=>true,
         'columns' => [
 
             'rod_number',
