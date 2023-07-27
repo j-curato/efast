@@ -231,10 +231,10 @@ class PrPurchaseRequestController extends Controller
                     ", $params)
                     ->bindValue(':non_cse_item_id', $ppmp_item_id)
                     ->queryOne();
-
-                $bal_amt = floatval($query['bal_amt']);
                 echo json_encode($query);
                 die();
+                $bal_amt = floatval($query['bal_amt']);
+
                 $bal = $bal_amt - ($amount * $qty);
 
                 if ($bal < 0) {
