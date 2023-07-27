@@ -63,20 +63,14 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-sm-3">
                 <label for="bank_account">Bank Account</label>
                 <?php
-                $user_province = Yii::$app->user->identity->province;
+                $user_data = Yii::$app->memem->getUserData();
                 $val = '';
                 $and = '';
                 $sql = '';
                 $params = [];
-                if (
-                    $user_province === 'adn' ||
-                    $user_province === 'ads' ||
-                    $user_province === 'sdn' ||
-                    $user_province === 'sds' ||
-                    $user_province === 'pdi'
-                ) {
+                if (!Yii::$app->user->can('ro_accounting_admin')) {
                     $and = 'WHERE';
-                    $sql = YIi::$app->db->getQueryBuilder()->buildCondition(['=', 'province', $user_province], $params);
+                    $sql = YIi::$app->db->getQueryBuilder()->buildCondition(['=', 'province', $user_data->office->office_name], $params);
                 }
                 $bank_accounts = Yii::$app->db->createCommand("SELECT id ,CONCAT(account_number,'-',province,'-',account_name) as account FROM bank_account
                 $and $sql
