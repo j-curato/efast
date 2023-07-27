@@ -1015,7 +1015,7 @@ class PrPurchaseRequestController extends Controller
             $res = [];
             if ($type === 'cse') {
                 $res = Yii::$app->db->createCommand("SELECT 
-                supplemental_ppmp_cse.id as item_id,
+                CAST(supplemental_ppmp_cse.id as CHAR(50)) as item_id,
                   'cse_item_id' as cse_type,
                 '' as `description`,
                 pr_stock.id as stock_id,
