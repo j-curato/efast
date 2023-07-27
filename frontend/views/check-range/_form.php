@@ -80,7 +80,7 @@ use yii\widgets\ActiveForm;
                 ->from('bank_account');
 
             $user_data = Yii::$app->memem->getUserData();
-            $province = $user_data->office->office_name;
+            $province = strtolower($user_data->office->office_name);
             if (!Yii::$app->user->can('ro_accounting_admin')) {
                 $bank_accounts_query->andWhere('bank_account.province = :province', ['province' => $province]);
             }
@@ -99,14 +99,7 @@ use yii\widgets\ActiveForm;
         <div class="form-group">
 
             <?php
-            if (
-                $province === 'adn' ||
-                $province === 'ads' ||
-                $province === 'pdi' ||
-                $province === 'sdn' ||
-                $province === 'sds'
-            ) {
-            } else {
+            if (YIi::$app->user->can('ro_accounting_admin')) {
                 echo " <label for='province'>Province</label>";
                 echo Select2::widget([
                     'data' => [
