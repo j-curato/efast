@@ -41,16 +41,11 @@ class AlphalistSearch extends Alphalist
      */
     public function search($params)
     {
-        $province = Yii::$app->user->identity->province;
+
         $query = Alphalist::find();
-        if (
-            $province === 'adn' ||
-            $province === 'ads' ||
-            $province === 'sdn' ||
-            $province === 'sds' ||
-            $province === 'pdi'
-        ) {
-            $query->where('province =:province', ['province' => $province]);
+        if (!Yii::$app->user->can('ro_accounting_admin')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $query->where('province =:province', ['province' => $user_data->office->office_name]);
         }
 
         // add conditions that should always apply here

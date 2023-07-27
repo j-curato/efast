@@ -41,20 +41,11 @@ class CibrSearch extends Cibr
      */
     public function search($params)
     {
-        $province = Yii::$app->user->identity->province;
-        $q = Cibr::find()->joinWith('bankAccount');
-
-        if (
-            $province === 'adn' ||
-            $province === 'ads' ||
-            $province === 'sds' ||
-            $province === 'sdn' ||
-            $province === 'pdi'
-        ) {
-            $q->where('bank_account.province LIKE :province', ['province' => $province]);
+        $query = Cibr::find()->joinWith('bankAccount');
+        if (!Yii::$app->user->can('ro_accounting_admin')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $query->where('bank_account.province = :province', ['province' =>  $user_data->office->office_name]);
         }
-        $query = $q;
-
 
         // add conditions that should always apply here
 

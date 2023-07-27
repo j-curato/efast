@@ -38,7 +38,6 @@ class PoTransactionController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'delete',
                             'update',
                             'create',
                             'get-transaction'

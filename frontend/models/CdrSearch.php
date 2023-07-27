@@ -41,18 +41,12 @@ class CdrSearch extends Cdr
      */
     public function search($params)
     {
-        $province = Yii::$app->user->identity->province;
-        $q = Cdr::find();
-        if (
-            $province === 'adn' ||
-            $province === 'ads' ||
-            $province === 'sds' ||
-            $province === 'sdn' ||
-            $province === 'pdi'
-        ) {
-            $q->where('province LIKE :province', ['province' => $province]);
+        $query = Cdr::find();
+        if (!Yii::$app->user->can('ro_accounting_admin')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $query->where('cdr.province = :province', ['province' =>  $user_data->office->office_name]);
         }
-        $query = $q;
+
 
         // add conditions that should always apply here
 

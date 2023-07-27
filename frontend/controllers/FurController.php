@@ -42,7 +42,7 @@ class FurController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['create_fur']
+                        'roles' => ['ro_accounting_admin']
                     ],
                     [
                         'actions' => [
@@ -52,7 +52,7 @@ class FurController extends Controller
                             'create',
                         ],
                         'allow' => true,
-                        'roles' => ['province']
+                        'roles' => ['po_fur', 'ro_accounting_admin']
                     ]
                 ]
             ],

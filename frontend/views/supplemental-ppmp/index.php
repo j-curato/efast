@@ -64,78 +64,44 @@ $this->params['breadcrumbs'][] = $this->title;
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    $columns = [
 
-    if (Yii::$app->user->can('super-user')) {
-        $columns = [
-
-            'budget_year',
-            'cse_type',
-            'serial_number',
-            'office_name',
-            'division',
-            'division_program_unit_name',
-            'stock_activity',
+        'budget_year',
+        'cse_type',
+        'serial_number',
+        'office_name',
+        'division',
+        'division_program_unit_name',
+        'stock_activity',
 
 
-            [
-                'attribute' => 'gross_amt',
-                'value' => function ($model) {
-                    return number_format($model->gross_amt, 2);
-                }
-            ],
-            [
-                'attribute' => 'bal_amt',
-                'value' => function ($model) {
-                    return number_format($model->bal_amt, 2);
-                }
-            ],
-            'ttl_qty',
-            'bal_qty',
-            'prepared_by',
-            'reviewed_by',
-            'approved_by',
-            'certified_avail',
-            [
-                'label' => 'Action',
-                'format' => 'raw',
-                'value' => function ($model) {
-                    return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id])
-                        . ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id]);
-                }
-            ]
-        ];
-    } else {
-        $columns = [
-            'budget_year',
-            'serial_number',
-            'division_program_unit_name',
-            'stock_activity',
-            'gross_amt',
-            'bal_amt',
-            'ttl_qty',
-            'bal_qty',
-
-
-
-            'prepared_by',
-            'reviewed_by',
-            'approved_by',
-            'certified_avail',
-            [
-                'label' => 'Action',
-                'format' => 'raw',
-                'value' => function ($model) {
-
-                    if ($model->cse_type === 'cse' && !Yii::$app->user->can('super-user')) {
-                        return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id]);
-                    } else {
-                        return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id])
-                            . ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id]);
-                    }
-                }
-            ]
-        ];
-    }
+        [
+            'attribute' => 'gross_amt',
+            'value' => function ($model) {
+                return number_format($model->gross_amt, 2);
+            }
+        ],
+        [
+            'attribute' => 'bal_amt',
+            'value' => function ($model) {
+                return number_format($model->bal_amt, 2);
+            }
+        ],
+        'ttl_qty',
+        'bal_qty',
+        'prepared_by',
+        'reviewed_by',
+        'approved_by',
+        'certified_avail',
+        [
+            'label' => 'Action',
+            'format' => 'raw',
+            'value' => function ($model) {
+                return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id])
+                    . ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id]);
+            }
+        ]
+    ];
     ?>
 
     <?= GridView::widget([

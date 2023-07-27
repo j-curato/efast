@@ -32,7 +32,6 @@ class AdvancesController extends Controller
             'access' => [
                 'class' => AccessControl::class,
                 'only' => [
-                    'logout',
                     'index',
                     'create',
                     'update',
@@ -47,7 +46,6 @@ class AdvancesController extends Controller
                 'rules' => [
                     [
                         'actions' => [
-                            'logout',
                             'index',
                             'create',
                             'update',
@@ -61,7 +59,7 @@ class AdvancesController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['super-user', 'create_advances']
+                        'roles' => ['ro_accounting_admin']
                     ],
                     [
                         'actions' => [
@@ -69,7 +67,7 @@ class AdvancesController extends Controller
                             'view',
                         ],
                         'allow' => true,
-                        'roles' => ['province', 'super-user', 'po-admin']
+                        'roles' => ['po_advances']
                     ],
 
 

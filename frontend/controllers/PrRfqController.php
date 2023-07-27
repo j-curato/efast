@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use app\components\helpers\MyHelper;
+use app\models\Office;
 use Yii;
 use app\models\PrRfq;
 use app\models\PrRfqItem;
@@ -53,7 +54,7 @@ class PrRfqController extends Controller
                             'cancel',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['rfq', 'super-user']
                     ]
                 ]
             ],
@@ -93,7 +94,7 @@ class PrRfqController extends Controller
         // return json_encode($rbac);
         return $this->render('view', [
             'model' => $this->findModel($id),
-            'rbac' =>$rbac
+            'rbac' => $rbac
         ]);
     }
 
@@ -132,8 +133,10 @@ class PrRfqController extends Controller
     {
 
         $model = new PrRfq();
+        $model->fk_office_id  = Yii::$app->user->identity->fk_office_id ?? '';
         if ($model->load(Yii::$app->request->post())) {
             $items = Yii::$app->request->post('items');
+
             try {
                 $transaction = Yii::$app->db->beginTransaction();
                 $province  = 'RO';
@@ -158,7 +161,7 @@ class PrRfqController extends Controller
                 $model->id  = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
                 // $model->bac_composition_id = $rbac_id['id'];
                 $model->province = $province;
-                $model->rfq_number = $this->getRfqNumber($model->_date);
+                $model->rfq_number = $this->getRfqNumber($model->_date, $model->fk_office_id);
 
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
@@ -218,7 +221,7 @@ class PrRfqController extends Controller
                 //     throw new ErrorException('No RBAC for selected Date');
                 // }
                 if (!$oldmodel->_date != $model->_date) {
-                    $model->rfq_number = $this->getRfqNumber($model->_date);
+                    $model->rfq_number = $this->getRfqNumber($model->_date, $model->fk_office_id);
                 }
                 // $model->bac_composition_id = $rbac_id['id'];
                 $model->province = $province;
@@ -275,16 +278,17 @@ class PrRfqController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    private function getRfqNumber($date)
+    private function getRfqNumber($date, $office_id)
     {
-        // RO-2022-01-29-001 
-        // $date = '2022-01-05';
-        $province = 'RO';
+        $office  = Office::findOne($office_id);
         $d  = DateTime::createFromFormat('Y-m-d', $date);
         $num  = 1;
-        $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(pr_rfq.rfq_number,'-',-1) AS UNSIGNED)  as last_num FROM pr_rfq WHERE rfq_number LIKE :_date 
+        $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(pr_rfq.rfq_number,'-',-1) AS UNSIGNED)  as last_num FROM pr_rfq 
+        WHERE rfq_number LIKE :_date 
+        AND fk_office_id = :office_id
         ORDER BY last_num DESC LIMIT 1")
             ->bindValue('_date', '%' . $date . '%')
+            ->bindValue('office_id', $office_id)
             ->queryScalar();
         if (!empty($query)) {
             $num = intval($query) + 1;
@@ -293,7 +297,7 @@ class PrRfqController extends Controller
         for ($i = strlen($num); $i < 4; $i++) {
             $zero .= 0;
         }
-        return $province . '-' . $date . '-' . $zero . $num;
+        return strtoupper($office->office_name) . '-' . $date . '-' . $zero . $num;
     }
     public function actionSearchRfq($q = null, $id = null, $province = null)
     {
@@ -307,7 +311,10 @@ class PrRfqController extends Controller
             $query->select([" id, `rfq_number` as text"])
                 ->from('pr_rfq')
                 ->where(['like', 'rfq_number', $q]);
-
+            if (!Yii::$app->user->can('super-user')) {
+                $user_data = Yii::$app->memem->getUserData();
+                $query->andWhere('fk_office_id = :fk_office_id', ['fk_office_id' =>  $user_data->office->id]);
+            }
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);

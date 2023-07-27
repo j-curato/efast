@@ -43,7 +43,7 @@ class AdvancesEntries extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['advances_id', 'cash_disbursement_id', 'sub_account1_id', 'book_id', 'is_deleted'], 'integer'],
+            [['advances_id', 'cash_disbursement_id', 'sub_account1_id', 'book_id', 'is_deleted', 'fk_advances_report_type_id'], 'integer'],
             [['amount'], 'number'],
             [['fund_source'], 'string'],
             [['object_code'], 'string', 'max' => 100],
@@ -53,20 +53,12 @@ class AdvancesEntries extends \yii\db\ActiveRecord
             [['cash_disbursement_id'], 'exist', 'skipOnError' => true, 'targetClass' => CashDisbursement::class, 'targetAttribute' => ['cash_disbursement_id' => 'id']],
             [['sub_account1_id'], 'exist', 'skipOnError' => true, 'targetClass' => SubAccounts1::class, 'targetAttribute' => ['sub_account1_id' => 'id']],
             [[
-                'id',
-                'advances_id',
-                'cash_disbursement_id',
-                'sub_account1_id',
-                'amount',
                 'object_code',
                 'fund_source',
-                'book_id',
                 'reporting_period',
                 'fund_source_type',
                 'division',
                 'advances_type',
-                'report_type',
-                'is_deleted',
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
@@ -91,6 +83,7 @@ class AdvancesEntries extends \yii\db\ActiveRecord
             'advances_type' => 'Advances Type',
             'report_type' => 'Report Type',
             'is_deleted' => 'Is Deleted',
+            'fk_advances_report_type_id' => 'Report Type',
         ];
     }
 

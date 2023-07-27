@@ -49,7 +49,17 @@ class BankAccountController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['ro_accounting_admin']
+                    ],
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'search-bank-account'
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['po_accounting_admin']
                     ],
 
                 ]

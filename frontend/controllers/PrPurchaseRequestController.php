@@ -411,6 +411,7 @@ class PrPurchaseRequestController extends Controller
             }
 
             try {
+
                 $validate =  $this->validatePpmp(
 
                     $cseType,
@@ -564,6 +565,7 @@ class PrPurchaseRequestController extends Controller
                 if ($insert_items !== true) {
                     throw new ErrorException($insert_items);
                 }
+
                 if (strtolower($model->office->office_name) == 'ro') {
                     $insert_allotments = $this->insertPrAllotments($model->id, $allotment_items);
                     if ($insert_allotments !== true) {
@@ -590,7 +592,86 @@ class PrPurchaseRequestController extends Controller
             'offices' => Yii::$app->memem->getOffices(),
         ]);
     }
+    private function clonePurchaseRequest($model_id, $new_date)
+    {
+        try {
 
+            $model = PrPurchaseRequest::findOne($model_id);
+            $cloneModel = new PrPurchaseRequest();
+
+            $cloneModel->setAttributes($model->getAttributes());
+
+            $cloneModel->id = MyHelper::getUuid();
+
+            $cloneModel->date = $new_date;
+            $cloneModel->pr_number = $this->getPrNumber($cloneModel->date, $cloneModel->fk_office_id, $cloneModel->fk_division_id, true);
+            if (!$cloneModel->validate()) {
+                throw new ErrorException(json_encode($cloneModel->errors));
+            }
+            if (!$cloneModel->save(false)) {
+                throw new ErrorException('Clone Model Save Failed');
+            }
+
+            YIi::$app->db->createCommand("INSERT INTO pr_purchase_request_item (
+              id,
+             pr_purchase_request_id,
+             pr_stock_id,
+             quantity,
+            unit_cost,
+            specification,
+            unit_of_measure_id,
+            fk_ppmp_non_cse_item_id,
+            fk_ppmp_cse_item_id
+            )
+            SELECT 
+            UUID_SHORT()% 9223372036854775807,
+            :clone_id,
+            pr_purchase_request_item.pr_stock_id,
+            pr_purchase_request_item.quantity,
+            pr_purchase_request_item.unit_cost,
+            pr_purchase_request_item.specification,
+            pr_purchase_request_item.unit_of_measure_id,
+            pr_purchase_request_item.fk_ppmp_non_cse_item_id,
+            pr_purchase_request_item.fk_ppmp_cse_item_id
+            FROM 
+            pr_purchase_request_item
+            WHERE 
+            pr_purchase_request_item.is_deleted = 0
+            AND pr_purchase_request_item.pr_purchase_request_id = :id")
+                ->bindValue(':id', $model->id)
+                ->bindValue(':clone_id', $cloneModel->id)
+                ->query();
+            Yii::$app->db->createCommand("INSERT INTO pr_purchase_request_allotments(id,fk_purchase_request_id,fk_record_allotment_entries_id,amount)
+                SELECT
+                UUID_SHORT()% 9223372036854775807,
+                :clone_id,
+                pr_purchase_request_allotments.fk_record_allotment_entries_id,
+                pr_purchase_request_allotments.amount
+                
+                FROM pr_purchase_request_allotments
+                WHERE 
+                pr_purchase_request_allotments.is_deleted = 0
+                AND pr_purchase_request_allotments.fk_purchase_request_id = :id")
+                ->bindValue(':id', $model->id)
+                ->bindValue(':clone_id', $cloneModel->id)
+                ->query();
+            return ['is_success' => true, 'model_id' => $cloneModel->id];
+        } catch (ErrorException $e) {
+            return ['is_success' => false, 'error_msg' => $e->getMessage()];
+        }
+    }
+    private function checkRfq($model_id)
+    {
+        return  YIi::$app->db->createCommand("SELECT 
+     GROUP_CONCAT(pr_rfq.rfq_number) as rfq_nums
+     FROM pr_rfq
+     WHERE  pr_rfq.is_cancelled = 0
+     AND  pr_rfq.pr_purchase_request_id = :id
+     GROUP BY 
+     pr_rfq.pr_purchase_request_id")
+            ->bindValue(':id', $model_id)
+            ->queryAll();
+    }
     /**
      * Updates an existing PrPurchaseRequest model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -609,26 +690,21 @@ class PrPurchaseRequestController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             try {
                 $transaction = Yii::$app->db->beginTransaction();
-                if (intval($oldModel->fk_office_id) !== intval($model->fk_office_id) || intval($oldModel->fk_division_id) !== intval($model->fk_division_id)) {
-                    $model->pr_number = $this->getPrNumber($model->date, $model->fk_office_id, $model->fk_division_id);
+                if ($model->is_cancelled) {
+                    throw new ErrorException("PR Cannot be Updated already Cancelled");
                 }
                 $pr_items = Yii::$app->request->post('pr_items') ?? [];
                 $allotment_items = Yii::$app->request->post('allotment_items') ?? [];
-                $check_rfqs = YIi::$app->db->createCommand("SELECT 
-                GROUP_CONCAT(pr_rfq.rfq_number) as rfq_nums
-                FROM pr_rfq
-                WHERE  pr_rfq.is_cancelled = 0
-                AND  pr_rfq.pr_purchase_request_id = :id
-                GROUP BY 
-                pr_rfq.pr_purchase_request_id")
-                    ->bindValue(':id', $model->id)
-                    ->queryAll();
 
+                if (intval($oldModel->fk_office_id) !== intval($model->fk_office_id) || intval($oldModel->fk_division_id) !== intval($model->fk_division_id)) {
+                    $model->pr_number = $this->getPrNumber($model->date, $model->fk_office_id, $model->fk_division_id);
+                }
+
+                $check_rfqs = $this->checkRfq($model->id);
                 if (!empty($check_rfqs)) {
                     throw new ErrorException('Unable to Update PR No. has RFQ"s.');
                 }
                 $allotment_items_ttl = array_column($allotment_items, 'gross_amount');
-
                 if (strtolower($model->office->office_name) == 'ro') {
                     $validate_ttl = $this->calculateItemsTotal($pr_items, $allotment_items_ttl);
                     if ($validate_ttl !== true) {
@@ -648,15 +724,31 @@ class PrPurchaseRequestController extends Controller
                     $pr_items,
                     true
                 );
+
                 if ($insert_items !== true) {
                     throw new ErrorException($insert_items);
                 }
-                $insert_allotments = $this->insertPrAllotments($model->id, $allotment_items, true);
-                if ($insert_allotments !== true) {
-                    throw new ErrorException($insert_allotments);
+
+                if (strtolower($model->office->office_name) == 'ro') {
+                    $insert_allotments = $this->insertPrAllotments($model->id, $allotment_items, true);
+                    if ($insert_allotments !== true) {
+                        throw new ErrorException($insert_allotments);
+                    }
                 }
+
+                $viewId = $model->id;
+                if (!empty(Yii::$app->request->post('PrPurchaseRequest')['back_date'])) {
+                    $clone = $this->clonePurchaseRequest($model->id, Yii::$app->request->post('PrPurchaseRequest')['back_date']);
+                    if ($clone['is_success'] !== true) {
+                        throw new ErrorException($clone['error_msg']);
+                    }
+                    $viewId = $clone['model_id'];
+                    $model->is_cancelled = 1;
+                    $model->save(false);
+                }
+
                 $transaction->commit();
-                return $this->redirect(['view', 'id' => $model->id]);
+                return $this->redirect(['view', 'id' => $viewId]);
             } catch (ErrorException $e) {
                 $transaction->rollBack();
                 return  $e->getMessage();
@@ -706,33 +798,60 @@ class PrPurchaseRequestController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    private function getPrNumber($d, $office_id, $division_id)
+    private function getPrNumber($d, $office_id, $division_id, $is_backdate = false)
     {
         $office = Yii::$app->db->createCommand("SELECT office_name FROM office WHERE office.id = :id")->bindValue(':id', $office_id)->queryScalar();
         $division = Yii::$app->db->createCommand("SELECT division FROM divisions WHERE divisions.id = :id")->bindValue(':id', $division_id)->queryScalar();
         $pr_office = $office . '-' . $division;
         $date = DateTime::createFromFormat('Y-m-d', $d);
-        $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(pr_number,'-',-1) AS UNSIGNED) as last_number 
+        $last_num_qry = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(pr_number,'-',-1) AS UNSIGNED) as last_number
             FROM pr_purchase_request
             WHERE pr_purchase_request.fk_office_id = :office_id
             AND pr_purchase_request.fk_division_id = :division_id
-            AND pr_purchase_request.pr_number LIKE :pr_number
             AND pr_purchase_request.is_final = 0
+            AND pr_purchase_request.date <= :dte
+            AND pr_purchase_request.date LIKE :yr
             ORDER BY last_number DESC LIMIT 1")
             ->bindValue(':office_id', $office_id)
             ->bindValue(':division_id', $division_id)
-            ->bindValue(':pr_number', '%' . $date->format('Y') . '%')
+            ->bindValue(':dte', $d)
+            ->bindValue(':yr', $date->format('Y') . '%')
             ->queryScalar();
-        $num  = 1;
-        if (!empty($query)) {
-            $num = intval($query) + 1;
-        }
-        $final = '';
-        for ($i =  strlen($num); $i < 4; $i++) {
-            $final .= 0;
+        if ($is_backdate) {
+            $last_ltr = YIi::$app->db->createCommand("SELECT 
+                 CASE
+                    WHEN SUBSTRING(pr_number, -1) REGEXP '[0-9]' THEN NULL
+                    ELSE CHAR(ASCII(SUBSTRING(pr_number, -1)) + 1)
+                  END as lst_ltr
+               FROM pr_purchase_request
+               WHERE pr_purchase_request.fk_office_id = :office_id
+               AND pr_purchase_request.fk_division_id = :division_id
+               AND pr_purchase_request.is_final = 0
+               AND pr_purchase_request.date = :dte
+               AND pr_purchase_request.date LIKE :yr
+                 ORDER BY lst_ltr DESC")
+                ->bindValue(':office_id', $office_id)
+                ->bindValue(':division_id', $division_id)
+                ->bindValue(':dte', $d)
+                ->bindValue(':yr', $date->format('Y') . '%')
+                ->queryScalar();
         }
 
-        return  strtoupper($pr_office) . '-' . $date->format('Y-m') . '-' . $final . $num;
+        $num  = 1;
+        if (!empty($last_num_qry)) {
+            $num = intval($last_num_qry);
+            !$is_backdate ? $num++ : '';
+        }
+        $zro = '';
+        for ($i =  strlen($num); $i < 4; $i++) {
+            $zro .= 0;
+        }
+        $lst_ltr = '';
+        if ($is_backdate) {
+            $lst_ltr = empty($last_ltr) ? 'A' : '';
+        }
+
+        return  strtoupper($pr_office) . '-' . $date->format('Y-m-d') . '-' . $zro . $num . $lst_ltr;
     }
     public function actionSearchPr($q = null, $id = null, $province = null)
     {

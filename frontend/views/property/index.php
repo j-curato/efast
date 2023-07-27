@@ -95,9 +95,9 @@ $this->params['breadcrumbs'][] = $this->title;
             'type' => GRIDVIEW::TYPE_PRIMARY,
             'heading' => 'Property',
         ],
-        // 'export' => [
-        //     'fontAwesome' => true
-        // ],
+        'export' => [
+            'fontAwesome' => true
+        ],
         'toolbar' => [
 
 
@@ -105,10 +105,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'content' => ExportMenu::widget([
                     'dataProvider' => $dataProvider,
                     'columns' => $cols,
-                    'filename' => "DV",
-                    'batchSize' => 10,
-                    'stream' => false,
-                    'target' => '_popup',
+                    'filename' => "Property",
 
                     'exportConfig' => [
                         ExportMenu::FORMAT_CSV => false,

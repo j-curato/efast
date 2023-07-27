@@ -166,7 +166,7 @@ class ParController extends Controller
             $model->fk_office_id = $office_id;
         }
         if ($model->load(Yii::$app->request->post())) {
-            $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+            $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()% 9223372036854775807")->queryScalar();
             $office_name = YIi::$app->db->createCommand("SELECT office.office_name FROM property
                 JOIN office ON property.fk_office_id = office.id
                 WHERE property.id = :id")
@@ -185,7 +185,7 @@ class ParController extends Controller
                 }
                 MyHelper::UdpateParCurUser($model->id, $model->fk_property_id);
                 $pc = new PropertyCard();
-                $pc->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                $pc->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()% 9223372036854775807")->queryScalar();
                 $pc->serial_number =    MyHelper::getPcNumber($model->fk_office_id);;
                 $pc->fk_par_id = $model->id;
                 $this->generateQr($pc->serial_number);

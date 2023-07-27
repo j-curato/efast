@@ -202,7 +202,7 @@ class PoTransmittalToCoaController extends Controller
                 $items = Yii::$app->request->post('items') ?? [];
                 $uniqueItems = array_map("unserialize", array_unique(array_map("serialize", $items)));
                 $txn  = Yii::$app->db->beginTransaction();
-                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT() % 9223372036854775807")->queryScalar();
                 $model->transmittal_number = $this->getTransmittalNumber($model->date);
 
                 if (!$model->validate()) {

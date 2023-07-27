@@ -47,7 +47,7 @@ class RodController extends Controller
                             'search-fund-source',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['po_rod']
                     ],
                     [
                         'actions' => [

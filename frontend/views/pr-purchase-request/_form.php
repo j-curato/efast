@@ -97,14 +97,13 @@ $user_data = Yii::$app->memem->getUserData();
     </div>
     <div>
 
-        <!-- <?= Html::beginForm([$action, 'id' => $model->id], 'post', ['id' => 'pr_form']); ?> -->
         <?php $form = ActiveForm::begin([
             'id' => 'PurchaseRequestForm'
         ]); ?>
         <div class="row">
-            <?php
-            if (Yii::$app->user->can('super-user')) {
-            ?>
+            <?php if (Yii::$app->user->can('super-user')) { ?>
+
+
                 <div class="col-sm-2">
                     <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
                         'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
@@ -116,8 +115,22 @@ $user_data = Yii::$app->memem->getUserData();
                 </div>
 
 
-            <?php } ?>
+            <?php }
+            if (Yii::$app->user->can('back_date')) {
+            ?>
+                <div class="col-sm-2">
+                    <?= $form->field($model, 'back_date')->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'format' => 'yyyy-mm-dd',
+                            'autoclose' => true
+                        ],
+
+                    ]) ?>
+                </div>
+
             <?php
+            }
+
             if (Yii::$app->user->can('ro_procurement_admin') || Yii::$app->user->can('po_procurement_admin')) { ?>
                 <div class="col-sm-2">
                     <?= $form->field($model, 'fk_division_id')->widget(Select2::class, [

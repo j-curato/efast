@@ -10,7 +10,6 @@ use Yii;
  * @property int $id
  * @property int|null $sub_account1_id
  * @property string|null $province
- * @property string|null $report_type
  * @property string|null $particular
  *
  * @property CashDisbursement $cashDisbursement
@@ -32,7 +31,7 @@ class Advances extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['province', 'report_type', 'reporting_period'], 'string', 'max' => 50],
+            [['province', 'reporting_period'], 'string', 'max' => 50],
             [['bank_account_id', 'reporting_period'], 'required'],
             [['bank_account_id'], 'integer'],
 
@@ -47,7 +46,6 @@ class Advances extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'province' => 'Province',
-            'report_type' => 'Report Type',
             'reporting_period' => 'Reporting Period',
             'nft_number' => 'NFT Number',
             'created_at' => 'Created At',

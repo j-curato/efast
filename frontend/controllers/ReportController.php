@@ -2436,7 +2436,7 @@ class ReportController extends \yii\web\Controller
                 ->bindValue(':from_reporting_period', $from_reporting_period)
                 ->queryAll();
             $cancelled_checks = ArrayHelper::index($qry, null, ['is_cancelled']);
-            $per_mode_of_payment = ArrayHelper::index($cancelled_checks[0]??[], null, ['mode_of_payment_name']);
+            $per_mode_of_payment = ArrayHelper::index($cancelled_checks[0] ?? [], null, ['mode_of_payment_name']);
             return json_encode([
                 'results' => $qry,
                 'adjustments' => $adjustments,
@@ -5762,6 +5762,9 @@ class ReportController extends \yii\web\Controller
             // if (empty($act_usr_id) && empty($actbl_ofr)) {
             //     return json_encode('');
             // }
+            if (!Yii::$app->user->can('ro_property_admin') && empty($actbl_ofr) && empty($act_usr_id)) {
+                return json_encode([]);
+            }
             $qry = new Query();
             $qry->select([
                 "property.property_number",
@@ -5781,14 +5784,13 @@ class ReportController extends \yii\web\Controller
                 new Expression('property_card.serial_number as pc_num')
             ])
                 ->from('property')
-                ->join('JOIN', 'par', 'property.id = par.fk_property_id')
+                ->join('LEFT JOIN', 'par', 'property.id = par.fk_property_id')
                 ->join('LEFT JOIN', 'property_card', 'par.id = property_card.fk_par_id')
                 ->join('LEFT JOIN', 'property_articles', 'property.fk_property_article_id = property_articles.id')
                 ->join('LEFT JOIN', 'employee_search_view as act_usr', 'par.fk_actual_user = act_usr.employee_id')
                 ->join('LEFT JOIN', 'employee_search_view as rcv_by', 'par.fk_received_by = rcv_by.employee_id')
                 ->join('LEFT JOIN',  'derecognition', 'property.id = derecognition.fk_property_id')
                 ->join('LEFT JOIN',  'location', 'par.fk_location_id = location.id')
-
                 ->andWhere('par.is_current_user = 1')
                 ->andWhere('derecognition.id IS NULL');
             if (!empty($act_usr_id)) {
@@ -5797,7 +5799,7 @@ class ReportController extends \yii\web\Controller
             if (!empty($actbl_ofr)) {
                 $qry->andWhere("par.fk_received_by= :actbl_ofr", ['actbl_ofr' => $actbl_ofr]);
             }
-            if (!empty($office)) {
+            if (!empty($office) && YIi::$app->user->can('ro_property_admin')) {
                 $qry->andWhere("property.fk_office_id= :office", ['office' => $office]);
             }
             $qry->orderBy("location.id");

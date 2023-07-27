@@ -235,15 +235,14 @@ use yii\helpers\Html;
                 <!-- User Account: style can be found in dropdown.less -->
 
                 <li class="dropdown user user-menu">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="height: 50px;">
                         <img src="<?= $directoryAsset ?>/img/user2-160x160.jpg" class="user-image" alt="User Image" />
-                        <span class="hidden-xs">Alexander Pierce</span>
+                        <!-- <span class="hidden-xs">Alexander Pierce</span> -->
                     </a>
                     <ul class="dropdown-menu">
                         <!-- User image -->
                         <li class="user-header">
                             <img src="<?= $directoryAsset ?>/img/user2-160x160.jpg" class="img-circle" alt="User Image" />
-
                             <p>
                                 Alexander Pierce - Web Developer
                                 <small>Member since Nov. 2012</small>
@@ -262,17 +261,16 @@ use yii\helpers\Html;
                             </div>
                         </li>
                         <!-- Menu Footer-->
-                        <li class="user-footer">
-                            <div class="pull-left">
-                                <?= Html::a('Profile', ['site/profile'], ['class' => 'btn btn-primary']) ?>
-                            </div>
-                            <div class="pull-right">
-                                <?= Html::a(
-                                    'Sign out',
-                                    ['/site/logout'],
-                                    ['data-method' => 'post', 'class' => 'btn btn-default']
-                                ) ?>
-                            </div>
+                        <li>
+                            <?= Html::a('Profile', ['site/profile'], ['class' => 'btn btn-primary', 'style'=>'color:white;']) ?>
+
+                        </li>
+                        <li>
+                            <?= Html::a(
+                                'Sign out',
+                                ['/site/logout'],
+                                ['data-method' => 'post', 'class' => 'btn btn-default']
+                            ) ?>
                         </li>
                     </ul>
                 </li>

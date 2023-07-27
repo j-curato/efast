@@ -1,6 +1,7 @@
 <?php
 
 use app\components\helpers\MyHelper;
+use kartik\date\DatePicker;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use yii\helpers\Url;
@@ -37,6 +38,28 @@ $this->params['breadcrumbs'][] = $this->title;
             'type' => 'primary',
             'heading' => 'Process ' . $type_dis
         ],
+        'toolbar' =>  [
+            [
+                'content' => "<form id='ors'>" .
+                    DatePicker::widget([
+                        'name' => 'year',
+                        'options' => [
+                            'style' => 'width:100px'
+                        ],
+                        'pluginOptions' => [
+                            'format' => 'yyyy',
+                            'startView' => 'years',
+                            'minViewMode' => 'years',
+                            'autoclose' => true
+                        ]
+                    ])
+                    . '' .
+                    Html::button('Export', ['type' => 'submit', 'class' => 'btn btn-success']) .
+                    "</form>",
+                'options' => ['class' => 'btn-group', 'style' => 'margin-right:20px;display:flex']
+            ],
+
+        ],
         'columns' => [
 
             'serial_number',
@@ -60,3 +83,19 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 </div>
+<script>
+    $(document).ready(() => {
+        $('#ors').submit((e) => {
+            e.preventDefault()
+            $.ajax({
+                type: 'POST',
+                url: window.location.pathname + "?r=process-ors/export",
+                data: $('#ors').serialize(),
+                success: (data) => {
+                    window.open(JSON.parse(data))
+                }
+            })
+
+        })
+    })
+</script>

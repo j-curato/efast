@@ -134,7 +134,7 @@ class PropertyController extends Controller
         }
         if ($model->load(Yii::$app->request->post())) {
             $model->property_number = $this->getPropertyNumber($model->fk_office_id);
-            $model->id = Yii::$app->db->createCommand('SELECT UUID_SHORT()')->queryScalar();
+            $model->id = Yii::$app->db->createCommand('SELECT UUID_SHORT() % 9223372036854775807')->queryScalar();
             $model->ppe_year = date('Y');
             $model->article = !empty($model->fk_property_article_id) ? PropertyArticles::findOne($model->fk_property_article_id)->article_name : '';
             try {
@@ -391,7 +391,7 @@ class PropertyController extends Controller
                                 ->queryScalar();
                         }
                         $property = new Property();
-                        $property->id = $db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                        $property->id = $db->createCommand("SELECT UUID_SHORT() % 9223372036854775807")->queryScalar();
                         $property->property_number = $this->getPropertyNumber($date_acquired, $province);
                         $property->property_number = $cells[0];
                         $property->unit_of_measure_id = $unit_of_measure_id;
@@ -408,7 +408,7 @@ class PropertyController extends Controller
 
                         if ($property->save(false)) {
                             $par = new Par();
-                            $par->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                            $par->id = Yii::$app->db->createCommand("SELECT UUID_SHORT() % 9223372036854775807")->queryScalar();
                             $par->par_number = $par_number;
                             // $par->par_number = $this->parNumber($par_date, $province);
                             $par->date = $par_date;

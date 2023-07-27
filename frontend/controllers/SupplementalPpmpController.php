@@ -64,7 +64,7 @@ class SupplementalPpmpController extends Controller
                             'get-stock-amount'
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['@', 'supplemental_ppmp']
                     ]
                 ]
             ],

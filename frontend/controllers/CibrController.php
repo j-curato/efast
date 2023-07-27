@@ -32,7 +32,6 @@ class CibrController extends Controller
                     'view',
                     'update',
                     'delete',
-                    'insert-cibr',
                     'final',
                     'get-cibr',
                     'add-link',
@@ -41,14 +40,13 @@ class CibrController extends Controller
                 'rules' => [
                     [
                         'actions' => [
-
                             'update',
                             'delete',
-                            'insert-cibr',
-                            'final'
+                            'final',
+
                         ],
                         'allow' => true,
-                        'roles' => ['create_cibr']
+                        'roles' => ['ro_accounting_admin']
                     ],
                     [
                         'actions' => [
@@ -60,7 +58,7 @@ class CibrController extends Controller
                             'export',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['po_cibr', 'ro_accounting_admin']
                     ],
                 ]
             ],
@@ -177,7 +175,6 @@ class CibrController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }
@@ -198,10 +195,6 @@ class CibrController extends Controller
     {
 
         $model = $this->findModel($id);
-        // var_dump($model->reporting_period);
-        // var_dump($model->province);
-        // var_dump($model->bank_account_id);
-        // return;
         Yii::$app->db->createCommand("DELETE FROM liquidation_reporting_period WHERE reporting_period =:reporting_period
         AND( province =:province
         OR bank_account_id =:bank_account_id)
@@ -230,37 +223,37 @@ class CibrController extends Controller
 
         throw new NotFoundHttpException('The requested data  does not exist.');
     }
-    public function actionInsertCibr()
-    {
-        if ($_POST) {
-            $reporting_period = $_POST['reporting_period'];
-            $bank_account_id = $_POST['bank_account_id'];
-            $cibr_id = !empty($_POST['id']) ? $_POST['id'] : '';
+    // public function actionInsertCibr()
+    // {
+    //     if ($_POST) {
+    //         $reporting_period = $_POST['reporting_period'];
+    //         $bank_account_id = $_POST['bank_account_id'];
+    //         $cibr_id = !empty($_POST['id']) ? $_POST['id'] : '';
 
 
-            $q = (new \yii\db\Query())
-                ->select('id')
-                ->from('cibr')
-                ->andWhere('reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
-                ->andWhere('bank_account_id =:bank_account_id', ['bank_account_id' => $bank_account_id])
-                ->one();
-            if (!empty($q)) {
-                return json_encode(['isSuccess' => false, 'error' => 'CIBR already Exist']);
-            }
-            if (!empty($cibr_id)) {
-                $cibr = Cibr::findOne($cibr_id);
-            } else {
-                $cibr = new Cibr();
-            }
-            $cibr->reporting_period = $reporting_period;
-            $cibr->bank_account_id = $bank_account_id;
-            if ($cibr->validate()) {
-                if ($cibr->save(false)) {
-                    return json_encode(['isSuccess' => true, 'Successfully Save']);
-                }
-            }
-        }
-    }
+    //         $q = (new \yii\db\Query())
+    //             ->select('id')
+    //             ->from('cibr')
+    //             ->andWhere('reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
+    //             ->andWhere('bank_account_id =:bank_account_id', ['bank_account_id' => $bank_account_id])
+    //             ->one();
+    //         if (!empty($q)) {
+    //             return json_encode(['isSuccess' => false, 'error' => 'CIBR already Exist']);
+    //         }
+    //         if (!empty($cibr_id)) {
+    //             $cibr = Cibr::findOne($cibr_id);
+    //         } else {
+    //             $cibr = new Cibr();
+    //         }
+    //         $cibr->reporting_period = $reporting_period;
+    //         $cibr->bank_account_id = $bank_account_id;
+    //         if ($cibr->validate()) {
+    //             if ($cibr->save(false)) {
+    //                 return json_encode(['isSuccess' => true, 'Successfully Save']);
+    //             }
+    //         }
+    //     }
+    // }
     public function actionFinal($id)
     {
         $model = $this->findModel($id);

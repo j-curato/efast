@@ -37,7 +37,7 @@ class Liquidation extends \yii\db\ActiveRecord
         return [
             [['payee_id', 'responsibility_center_id', 'po_transaction_id', 'check_range_id'], 'integer'],
             [['particular'], 'string'],
-            [['check_date', 'check_number', 'province', 'cancel_reporting_period'], 'string', 'max' => 50],
+            [['check_date',  'province', 'cancel_reporting_period'], 'string', 'max' => 100],
             [['reporting_period'], 'string', 'max' => 20],
             [[
                 'reporting_period',
