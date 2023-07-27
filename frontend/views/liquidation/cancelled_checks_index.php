@@ -17,12 +17,15 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="liquidation-index">
 
+    <p>
 
-    <?php if (Yii::$app->user->can('create_liquidation')) { ?>
-        <p>
-            <?= Html::a('<i class="glyphicon glyphicon-plus"></i> Create ', ['create-cancelled'], ['class' => 'btn btn-success modalButtonCreate']) ?>
-        </p>
-    <?php }
+        <?php if (Yii::$app->user->can('po_accounting_admin')) {
+            echo Html::a('<i class="glyphicon glyphicon-plus"></i> Create ', ['create-cancelled'], ['class' => 'btn btn-success modalButtonCreate']);
+        }
+        ?>
+    </p>
+
+    <?php
 
     $gridColumn = [
         'province',
