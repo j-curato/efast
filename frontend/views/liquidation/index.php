@@ -19,110 +19,115 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="liquidation-index">
 
-    <!-- <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">UPLOAD Cash Disbursement</h4>
-                </div>
-                <div class='modal-body'>
-                    <center><a href="import_formats/update_uacs_format.xlsx">Download Template Here to avoid error during Upload.</a></center>
-                    <hr>
-                    <?php
+
+    <?php if (Yii::$app->user->can('po_accounting_admin')) { ?>
+        <p>
+            <?= Html::a('Create Liquidation', ['create'], ['class' => 'btn btn-success']) ?>
+            <!-- <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button> -->
+
+            <?php
+            if (Yii::$app->user->can('super-user')) {
+                echo " <button class='btn btn-success' data-target='#updateUacsModal' data-toggle='modal'>Update Uacs</button>";
+            }
+            ?>
+        </p>
+
+        <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">UPLOAD Cash Disbursement</h4>
+                    </div>
+                    <div class='modal-body'>
+                        <center><a href="import_formats/update_uacs_format.xlsx">Download Template Here to avoid error during Upload.</a></center>
+                        <hr>
+                        <?php
 
 
-                    $form = ActiveForm::begin([
-                        'action' => ['liquidation/import'],
-                        'method' => 'post',
-                        'id' => 'formupload',
-                        'options' => [
-                            'enctype' => 'multipart/form-data',
-                        ], // important
-                    ]);
-                    // echo '<input type="file">';
-                    echo FileInput::widget([
-                        'name' => 'file',
-                        // 'options' => ['multiple' => true],
-                        'id' => 'fileupload',
-                        'pluginOptions' => [
-                            'showPreview' => true,
-                            'showCaption' => true,
-                            'showRemove' => true,
-                            'showUpload' => true,
-                        ]
-                    ]);
+                        $form = ActiveForm::begin([
+                            'action' => ['liquidation/import'],
+                            'method' => 'post',
+                            'id' => 'formupload',
+                            'options' => [
+                                'enctype' => 'multipart/form-data',
+                            ], // important
+                        ]);
+                        // echo '<input type="file">';
+                        echo FileInput::widget([
+                            'name' => 'file',
+                            // 'options' => ['multiple' => true],
+                            'id' => 'fileupload',
+                            'pluginOptions' => [
+                                'showPreview' => true,
+                                'showCaption' => true,
+                                'showRemove' => true,
+                                'showUpload' => true,
+                            ]
+                        ]);
 
-                    ActiveForm::end();
-
-
-                    ?>
-
-                </div>
-            </div>
-        </div>
-    </div> -->
-
-    <div class="modal fade" id="updateUacsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">UPLOAD WFP</h4>
-                </div>
-                <div class='modal-body'>
-                    <center><a href="/afms/frontend/web/import_formats/Transaction_Format.xlsx">Download Template Here to avoid error during Upload.</a></center>
-                    <hr>
-                    <label for="ledger"> SELECT GENERAL LEDGER</label>
-                    <?php
-                    $ledger = Yii::$app->db->createCommand("SELECT chart_of_accounts.id, CONCAT(chart_of_accounts.uacs,' - ',chart_of_accounts.general_ledger) as name FROM chart_of_accounts")->queryAll();
-                    ?>
-                    <?php
-
-                    $form = ActiveForm::begin([
-                        // 'action' => ['transaction/import-transaction'],
-                        // 'method' => 'POST',
-                        'id' => 'updateUacs',
-                        'options' => [
-                            'enctype' => 'multipart/form-data',
-                        ], // important
-                    ]);
-
-                    // echo '<input type="file">';
-                    echo "<br>";
-                    echo FileInput::widget([
-                        'name' => 'file',
-                        // 'options' => ['multiple' => true],
-                        'id' => 'updateUacsfile',
-                        'pluginOptions' => [
-                            'showPreview' => true,
-                            'showCaption' => true,
-                            'showRemove' => true,
-                            'showUpload' => true,
-                        ]
-                    ]);
+                        ActiveForm::end();
 
 
-                    ActiveForm::end();
+                        ?>
 
-                    ?>
-
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <p>
 
-        <?php if (Yii::$app->user->can('po_accounting_admin')) {
-            echo Html::a('Create Liquidation', ['create'], ['class' => 'btn btn-success']);
-        } ?>
-        <!-- <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button> -->
-        <?php
-        if (Yii::$app->user->can('super-user')) {
-            echo " <button class='btn btn-success' data-target='#updateUacsModal' data-toggle='modal'>Update Uacs</button>";
-        }
-        ?>
-    </p>
+        <div class="modal fade" id="updateUacsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">UPLOAD WFP</h4>
+                    </div>
+                    <div class='modal-body'>
+                        <center><a href="/afms/frontend/web/import_formats/Transaction_Format.xlsx">Download Template Here to avoid error during Upload.</a></center>
+                        <hr>
+                        <label for="ledger"> SELECT GENERAL LEDGER</label>
+                        <?php
+                        $ledger = Yii::$app->db->createCommand("SELECT chart_of_accounts.id, CONCAT(chart_of_accounts.uacs,' - ',chart_of_accounts.general_ledger) as name FROM chart_of_accounts")->queryAll();
+                        ?>
+                        <?php
+
+                        $form = ActiveForm::begin([
+                            // 'action' => ['transaction/import-transaction'],
+                            // 'method' => 'POST',
+                            'id' => 'updateUacs',
+                            'options' => [
+                                'enctype' => 'multipart/form-data',
+                            ], // important
+                        ]);
+
+                        // echo '<input type="file">';
+                        echo "<br>";
+                        echo FileInput::widget([
+                            'name' => 'file',
+                            // 'options' => ['multiple' => true],
+                            'id' => 'updateUacsfile',
+                            'pluginOptions' => [
+                                'showPreview' => true,
+                                'showCaption' => true,
+                                'showRemove' => true,
+                                'showUpload' => true,
+                            ]
+                        ]);
+
+
+                        ActiveForm::end();
+
+                        ?>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    <?php }
+    ?>
 
     <!-- LIQUIDATION ENTRIES AND MODEL NAA SA INDEX CONTROLLER GE CHANGE -->
 
