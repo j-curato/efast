@@ -218,7 +218,7 @@ class MyHelper extends BaseObject
     public static function getRbac()
     {
         $user_data = Yii::$app->memem->getUserData();
-        // qwe
+        // 
         return Yii::$app->db->createCommand("SELECT 
         employee_search_view.employee_name,
         CONCAT(bac_position.position,'_', employee_search_view.employee_name) as pos,
