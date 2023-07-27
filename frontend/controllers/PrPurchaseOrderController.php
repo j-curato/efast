@@ -221,7 +221,7 @@ class PrPurchaseOrderController extends Controller
             foreach ($result as $key => $val) {
 
                 $pr_purchase_order_item = new PrPurchaseOrderItem();
-                $pr_purchase_order_item->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                $pr_purchase_order_item->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()   % 9223372036854775807")->queryScalar();
                 $pr_purchase_order_item->fk_pr_purchase_order_id = $po_id;
 
                 if (count($result) > 1) {
@@ -232,7 +232,7 @@ class PrPurchaseOrderController extends Controller
                 if ($pr_purchase_order_item->save(false)) {
                     foreach ($val as $val2) {
                         $aoq_items = new PrPurchaseOrderItemsAoqItems();
-                        $aoq_items->id  = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                        $aoq_items->id  = Yii::$app->db->createCommand("SELECT UUID_SHORT()   % 9223372036854775807")->queryScalar();
                         $aoq_items->fk_purchase_order_item_id = $pr_purchase_order_item->id;
                         $aoq_items->fk_aoq_entries_id = $val2['id'];
                         if ($aoq_items->save(false)) {
@@ -256,7 +256,7 @@ class PrPurchaseOrderController extends Controller
 
             try {
                 $txn = MyHelper::beginTxn();
-                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()   % 9223372036854775807")->queryScalar();
                 $model->po_number = $this->generatePoNumber($model->fk_contract_type_id, $model->po_date, $model->fk_office_id);
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
@@ -379,8 +379,8 @@ class PrPurchaseOrderController extends Controller
             //     ->queryAll();
 
             $aoq_lowest = Yii::$app->db->createCommand("SELECT 
-                pr_aoq_entries.id as aoq_entry_id,
-                pr_aoq_entries.pr_rfq_item_id as rfq_item_id,
+                CAST(pr_aoq_entries.id as CHAR(50))  as aoq_entry_id,
+                CAST(pr_aoq_entries.pr_rfq_item_id as CHAR(50)) as rfq_item_id,
                 payee.account_name as payee,
                 pr_aoq_entries.amount as unit_cost,
                 pr_aoq_entries.remark,

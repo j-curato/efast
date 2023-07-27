@@ -182,7 +182,7 @@ class PrAoqController extends Controller
             try {
                 $transaction  = Yii::$app->db->beginTransaction();
                 $items  = Yii::$app->request->post('items') ?? [];
-                $model->id = MyHelper::getUuid();
+                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()  % 9223372036854775807")->queryScalar();
                 $model->aoq_number = $this->aoqNumberGenerator($model->rfq->deadline, $model->fk_office_id);
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
@@ -396,7 +396,7 @@ class PrAoqController extends Controller
         if (!is_null($q)) {
             $query = new Query();
 
-            $query->select([" id, `aoq_number` as text"])
+            $query->select([" CAST(id as CHAR(50)) as id, `aoq_number` as text"])
                 ->from('pr_aoq')
                 ->where(['like', 'aoq_number', $q]);
 
