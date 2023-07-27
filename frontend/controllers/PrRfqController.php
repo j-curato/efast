@@ -308,7 +308,7 @@ class PrRfqController extends Controller
         if (!is_null($q)) {
             $query = new Query();
 
-            $query->select([" id, `rfq_number` as text"])
+            $query->select([" CAST(id as CHAR(50)) as id, `rfq_number` as text"])
                 ->from('pr_rfq')
                 ->where(['like', 'rfq_number', $q]);
             if (!Yii::$app->user->can('super-user')) {
