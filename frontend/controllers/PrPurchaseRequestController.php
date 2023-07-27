@@ -410,8 +410,6 @@ class PrPurchaseRequestController extends Controller
             if (!empty($item['non_cse_item_id'])) {
                 $cseType = 'non_cse';
                 $cse_or_non_cse_id =  strval($item['non_cse_item_id']);
-                // echo $item['non_cse_item_id'];
-                // die();
             }
 
             try {
@@ -967,7 +965,7 @@ class PrPurchaseRequestController extends Controller
 
         if (!is_null($q)) {
             $query = new Query();
-            $query->select([" id, UPPER(`stock_or_act_name`) as text"])
+            $query->select([" CAST(id as VARCHAR(50)), UPPER(`stock_or_act_name`) as text"])
                 ->from('pr_ppmp_search_view')
                 ->where(['like', 'stock_or_act_name', $q])
                 ->andwhere('pr_ppmp_search_view.budget_year = :budget_year', ['budget_year' => $budget_year])
