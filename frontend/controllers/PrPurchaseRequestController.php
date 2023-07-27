@@ -410,6 +410,8 @@ class PrPurchaseRequestController extends Controller
             if (!empty($item['non_cse_item_id'])) {
                 $cseType = 'non_cse';
                 $cse_or_non_cse_id = $item['non_cse_item_id'];
+                echo $item['non_cse_item_id'];
+                die();
             }
 
             try {
