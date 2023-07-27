@@ -67,7 +67,9 @@ class SupplementalPpmpIndexSearch extends SupplementalPpmpIndex
         if (!Yii::$app->user->can('super-user')) {
             $user_data = Yii::$app->memem->getUserData();
             $query->andWhere('office_name = :office_name', ['office_name' => $user_data->office->office_name]);
-            $query->andWhere('division = :division', ['division' => $user_data->divisionName->division]);
+            if (!Yii::$app->user->can('po_procurement_admin') && !YIi::$app->user->can('ro_procurement_admin')) {
+                $query->andWhere('divisions.id = :division_id', ['division_id' => $user_data->divisionName->id]);
+            }
         }
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
