@@ -1072,7 +1072,6 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
             let itmGrs = parseInt(bal_qty) * parseFloat(val.unit_cost)
             let item_id = val.item_id
             let cse_type = val.cse_type
-            console.log(val)
             let row = `
                 <li style="width:100%;padding-right: 4rem;">
                      <div class='panel panel-default' style=' padding: 15px;'>
