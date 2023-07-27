@@ -64,6 +64,7 @@ class SupplementalPpmpIndexSearch extends SupplementalPpmpIndex
 
         // add conditions that should always apply here
 
+        $query->joinWith('divisionName');
         if (!Yii::$app->user->can('super-user')) {
             $user_data = Yii::$app->memem->getUserData();
             $query->andWhere('office_name = :office_name', ['office_name' => $user_data->office->office_name]);
