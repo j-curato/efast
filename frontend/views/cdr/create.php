@@ -11,7 +11,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="cdr-create">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <?= $this->render('_form_new', [
         'model' => $model,
