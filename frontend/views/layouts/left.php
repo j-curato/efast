@@ -24,8 +24,8 @@ $user_data = Yii::$app->memem->getUserData();
                 ?>
             </div>
             <!-- <div class="info"> -->
-            <div class="" style="text-align: center; color:white;padding-top:10px;padding-left:5px">
-                <p>
+            <div class="" style="text-align: center; color:white;padding-top:10px;padding-left:5px;white-space: normal;">
+                <span>
                     <?php
                     if (!empty($user_data->employee->employee_id)) {
                         $name = $user_data->employee->f_name . ' ' . $user_data->employee->m_name[0] . '. ' . $user_data->employee->l_name;
@@ -33,7 +33,7 @@ $user_data = Yii::$app->memem->getUserData();
                         $name .= !empty($user_data->employee->suffix) ? ', ' . $user_data->employee->suffix : '';
                         echo strtoupper($name);
                     }
-                    ?></p>
+                    ?></span>
             </div>
         </div>
         <!-- ?= $directoryAsset ?>/img/user2-160x160.jpg -->
