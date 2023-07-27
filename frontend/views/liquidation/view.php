@@ -142,7 +142,7 @@ AND po_transmittal_entries.is_deleted = 0")
 
                             <input type="text " style="display: none;" class="form-control" name="id" value='<?= $model->id ?>'>
 
-                            <input type="text " class="form-control" name="link" value='<?= $document_link ?>'>
+                            <input type="text " class="form-control" name="link" value='<?= $document_link ?? '' ?>'>
                         </div>
                         <div class="row" style="margin: 10px;padding:12px">
                             <div class="col-sm-3 col-sm-offset-5">
@@ -183,14 +183,14 @@ AND po_transmittal_entries.is_deleted = 0")
                     if (empty($model->po_transaction_id)) {
                         $payee  = !empty($model->payee) ? $model->payee : '';
                     } else {
-                        $payee  =  $model->poTransaction->payee;
+                        $payee  =  $model->poTransaction->payee ?? '';
                     }
 
                     $particular = '';
                     if (empty($model->po_transaction_id)) {
                         $particular  = !empty($model->particular) ? $model->particular : '';
                     } else {
-                        $particular  =  $model->poTransaction->particular;
+                        $particular  =  $model->poTransaction->particular ?? '';
                     }
                     $responsibility_center = !empty($model->po_transaction_id) ? $model->poTransaction->poResponsibilityCenter->name : '';
                     $total_gross = 0;
