@@ -158,7 +158,7 @@ class PrRfqController extends Controller
                 // if (empty($rbac_id)) {
                 //     throw new ErrorException('No RBAC for selected Date');
                 // }
-                $model->id  = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                $model->id  = Yii::$app->db->createCommand("SELECT UUID_SHORT()  % 9223372036854775807")->queryScalar();
                 // $model->bac_composition_id = $rbac_id['id'];
                 $model->province = $province;
                 $model->rfq_number = $this->getRfqNumber($model->_date, $model->fk_office_id);
