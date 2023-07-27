@@ -12,7 +12,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="purchase-order-transmittal-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::a('Create Purchase Order Transmittal', ['create'], ['class' => 'btn btn-success']) ?>
@@ -31,7 +30,6 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
 
             'serial_number',
-
 
             [
                 'label' => 'Action',
