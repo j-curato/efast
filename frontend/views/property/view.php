@@ -15,22 +15,22 @@ $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 $qrcode_filename = Yii::$app->request->baseurl . "/frontend/views/property/qrcodes/$model->property_number.png";
 // GENERATE QR CODE
-if (!file_exists($qrcode_filename)) {
-    $text = $model->id;
-    $path = 'qr_codes';
-    $qrCode = (new QrCode($text))
-        ->setSize(150);
-    header('Content-Type: ' . $qrCode->getContentType());
-    $base_path =  \Yii::getAlias('@webroot');
-    $qrCode->writeFile($base_path . "/frontend/views/property/qrcodes/$model->property_number.png");
-}
-// GENERATE BARCODE
-$optionsArray = array(
-    'elementId' => 'barcodeTarget', /* div or canvas id*/
-    'value' => $model->id, /* value for EAN 13 be careful to set right values for each barcode type */
-    'type' => 'code128',/*supported types ean8, ean13, upc, std25, int25, code11, code39, code93, code128, codabar, msi, datamatrix*/
+// if (!file_exists($qrcode_filename)) {
+//     $text = $model->id;
+//     $path = 'qr_codes';
+//     $qrCode = (new QrCode($text))
+//         ->setSize(150);
+//     header('Content-Type: ' . $qrCode->getContentType());
+//     $base_path =  \Yii::getAlias('@webroot');
+//     $qrCode->writeFile($base_path . "/frontend/views/property/qrcodes/$model->property_number.png");
+// }
+// // GENERATE BARCODE
+// $optionsArray = array(
+//     'elementId' => 'barcodeTarget', /* div or canvas id*/
+//     'value' => $model->id, /* value for EAN 13 be careful to set right values for each barcode type */
+//     'type' => 'code128',/*supported types ean8, ean13, upc, std25, int25, code11, code39, code93, code128, codabar, msi, datamatrix*/
 
-);
+// );
 BarcodeGenerator::widget($optionsArray);
 ?>
 <div class="property-view">
