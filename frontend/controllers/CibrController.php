@@ -223,37 +223,37 @@ class CibrController extends Controller
 
         throw new NotFoundHttpException('The requested data  does not exist.');
     }
-    // public function actionInsertCibr()
-    // {
-    //     if ($_POST) {
-    //         $reporting_period = $_POST['reporting_period'];
-    //         $bank_account_id = $_POST['bank_account_id'];
-    //         $cibr_id = !empty($_POST['id']) ? $_POST['id'] : '';
+    public function actionInsertCibr()
+    {
+        if ($_POST) {
+            $reporting_period = $_POST['reporting_period'];
+            $bank_account_id = $_POST['bank_account_id'];
+            $cibr_id = !empty($_POST['id']) ? $_POST['id'] : '';
 
 
-    //         $q = (new \yii\db\Query())
-    //             ->select('id')
-    //             ->from('cibr')
-    //             ->andWhere('reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
-    //             ->andWhere('bank_account_id =:bank_account_id', ['bank_account_id' => $bank_account_id])
-    //             ->one();
-    //         if (!empty($q)) {
-    //             return json_encode(['isSuccess' => false, 'error' => 'CIBR already Exist']);
-    //         }
-    //         if (!empty($cibr_id)) {
-    //             $cibr = Cibr::findOne($cibr_id);
-    //         } else {
-    //             $cibr = new Cibr();
-    //         }
-    //         $cibr->reporting_period = $reporting_period;
-    //         $cibr->bank_account_id = $bank_account_id;
-    //         if ($cibr->validate()) {
-    //             if ($cibr->save(false)) {
-    //                 return json_encode(['isSuccess' => true, 'Successfully Save']);
-    //             }
-    //         }
-    //     }
-    // }
+            $q = (new \yii\db\Query())
+                ->select('id')
+                ->from('cibr')
+                ->andWhere('reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
+                ->andWhere('bank_account_id =:bank_account_id', ['bank_account_id' => $bank_account_id])
+                ->one();
+            if (!empty($q)) {
+                return json_encode(['isSuccess' => false, 'error' => 'CIBR already Exist']);
+            }
+            if (!empty($cibr_id)) {
+                $cibr = Cibr::findOne($cibr_id);
+            } else {
+                $cibr = new Cibr();
+            }
+            $cibr->reporting_period = $reporting_period;
+            $cibr->bank_account_id = $bank_account_id;
+            if ($cibr->validate()) {
+                if ($cibr->save(false)) {
+                    return json_encode(['isSuccess' => true, 'Successfully Save']);
+                }
+            }
+        }
+    }
     public function actionFinal($id)
     {
         $model = $this->findModel($id);

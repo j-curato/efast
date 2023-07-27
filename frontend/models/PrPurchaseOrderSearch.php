@@ -65,7 +65,6 @@ class PrPurchaseOrderSearch extends PrPurchaseOrder
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-
             'delivery_date' => $this->delivery_date,
             'fk_auth_official' => $this->fk_auth_official,
             'fk_accounting_unit' => $this->fk_accounting_unit,
