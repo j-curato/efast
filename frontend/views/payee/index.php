@@ -15,11 +15,10 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="payee-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::a('Create Payee', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
-        <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal"> Import</button>
+        <!-- <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal"> Import</button> -->
     </p>
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
     ?>

@@ -67,6 +67,7 @@ $user_data = Yii::$app->memem->getUserData();
                         Yii::$app->user->can('po_check_range') ?  ['label' => 'Check Range', 'icon' => 'circle-o', 'url' => ['/check-range'],] : [],
                         Yii::$app->user->can('po_asignatory') ?     ['label' => 'PO Asignatory', 'icon' => 'circle-o', 'url' => ['/po-assignatory'],] : [],
                         Yii::$app->user->can('po_responsibility_center') ?     ['label' => 'PO Responsibility Center', 'icon' => 'circle-o', 'url' => ['/po-responsibility-center'],] : [],
+                        Yii::$app->user->can('po_accounting_admin') ?     ['label' => 'Payee', 'icon' => 'circle-o', 'url' => ['/payee'],] : [],
                     ],
                 ] : [],
                 Yii::$app->user->can('po_accounting') ?   [

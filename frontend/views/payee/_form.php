@@ -1,6 +1,7 @@
 <?php
 
 use app\models\Banks;
+use app\models\Office;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -16,7 +17,18 @@ $banks = YIi::$app->db->createCommand("SELECT UPPER(banks.name) as bank_name,ban
 
 <div class="payee-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin();
+
+    if (Yii::$app->user->can('super-user')) {
+
+    ?>
+        <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
+            'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
+            'pluginOptions' => [
+                'placeholder' => 'Select Office'
+            ]
+        ]) ?>
+    <?php } ?>
 
     <?= $form->field($model, 'fk_bank_id')->widget(Select2::class, [
 

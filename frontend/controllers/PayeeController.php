@@ -49,7 +49,7 @@ class PayeeController extends Controller
                             'search-payee',
                         ],
                         'allow' => true,
-                        'roles' => ['accounting', 'super-user']
+                        'roles' => ['accounting', 'super-user', 'po_accounting_admin']
                     ],
                     [
 
@@ -107,7 +107,7 @@ class PayeeController extends Controller
     public function actionCreate()
     {
         $model = new Payee();
-
+        $model->fk_office_id = Yii::$app->user->identity->fk_office_id ?? '';
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
         }

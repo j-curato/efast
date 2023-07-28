@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Payee;
+use Yii;
 
 /**
  * PayeeSearch represents the model behind the search form of `app\models\Payee`.
@@ -44,7 +45,9 @@ class PayeeSearch extends Payee
             ->andWhere('isEnable = 1');
 
         // add conditions that should always apply here
-
+        if (!Yii::$app->user->can('ro_procurement_admin')) {
+            $query->andWhere('fk_office_id = :office_id', ['office_id' => YIi::$app->user->identity->fk_office_id]);
+        }
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);

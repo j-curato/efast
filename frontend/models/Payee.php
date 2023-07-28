@@ -38,13 +38,13 @@ class Payee extends \yii\db\ActiveRecord
                 'account_name',
                 'fk_bank_id',
                 'account_num',
+                'fk_office_id',
             ], 'required'],
-            [['account_name'], 'unique'],
             [['account_name', 'registered_name', 'contact_person', 'registered_address', 'remark'], 'string', 'max' => 255],
             [['contact'], 'string', 'max' => 20],
             [['tin_number'], 'string', 'max' => 30],
             [['account_num'], 'string', 'max' => 255],
-            [['isEnable',   'fk_bank_id',], 'integer',],
+            [['isEnable',   'fk_bank_id', 'fk_office_id'], 'integer',],
             [[
                 'account_name',
                 'registered_name',
@@ -76,6 +76,7 @@ class Payee extends \yii\db\ActiveRecord
             'isEnable' => 'Enabled',
             'fk_bank_id' => 'Bank',
             'account_num' => 'Account Number',
+            'fk_office_id' => 'Office'
         ];
     }
 
