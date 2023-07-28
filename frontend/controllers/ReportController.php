@@ -88,7 +88,7 @@ class ReportController extends \yii\web\Controller
                     'dv-time-monitoring-export',
                     'dv-transmittal-summary',
                     'po-transmittal-summary',
-                    'province-adequacy',
+              
                     'upload-property',
                     'rpcppe',
                     'ppelc',
@@ -171,14 +171,13 @@ class ReportController extends \yii\web\Controller
 
                     [
                         'actions' => [
-                            'cibr',
-                            'cdr',
+                          
                             'advances-liquidation',
                             'province-adequacy'
 
                         ],
                         'allow' => true,
-                        'roles' => ['province', 'super-user']
+                        'roles' => ['po_accounting_admin', 'super-user']
                     ],
                     [
                         'actions' => [
