@@ -88,13 +88,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-sm-2">
                 <?php
 
-                if (
-                    Yii::$app->user->can('super-user') ||
-                    $user_province === 'adn' ||
-                    $user_province === 'ads' ||
-                    $user_province === 'pdi' ||
-                    $user_province === 'sdn' ||
-                    $user_province === 'sds'
+                if (Yii::$app->user->can('ro_accounting_admin')||Yii::$app->user->can('po_accounting_admin')
                 ) {
 
                     echo " <label for='division'>Division</label>";
