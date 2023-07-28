@@ -1212,21 +1212,14 @@ class ReportController extends \yii\web\Controller
 
     public function actionRod()
     {
-        if ($_POST) {
+        if (Yii::$app->request->post()) {
 
-            $province = !empty($_POST['province']) ? $_POST['province'] : '';
-
-            $fund_source = $_POST['fund_source'];
+            $province = Yii::$app->request->post('province') ?? '';
+            $fund_source = Yii::$app->request->post('fund_source');
             $params = [];
-            $user_province = strtolower(Yii::$app->user->identity->province);
-            if (
-                $user_province === 'adn' ||
-                $user_province === 'ads' ||
-                $user_province === 'sdn' ||
-                $user_province === 'sds' ||
-                $user_province === 'pdi'
-            ) {
-                $province = $user_province;
+            if (!Yii::$app->user->can('ro_accounting_admin')) {
+                $user_data = Yii::$app->memem->getUserData();
+                $province = $user_data->office->office_name;
             }
             $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['IN', 'liquidation_entries.advances_entries_id', $fund_source], $params);
             $query1 = (new \yii\db\Query())
@@ -1305,9 +1298,6 @@ class ReportController extends \yii\web\Controller
     public function actionFund($q = null, $id = null, $province = null)
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-
-        $user_province = strtolower(Yii::$app->user->identity->province);
-
         $out = ['results' => ['id' => '', 'text' => '']];
         if (!is_null($q)) {
             $query = new Query();
@@ -1315,14 +1305,9 @@ class ReportController extends \yii\web\Controller
                 ->from('advances_entries')
                 ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id = advances.id')
                 ->where(['like', 'advances_entries.fund_source', $q]);
-            if (
-                $user_province === 'adn' ||
-                $user_province === 'ads' ||
-                $user_province === 'sdn' ||
-                $user_province === 'sds' ||
-                $user_province === 'pdi'
-            ) {
-                $query->andWhere('advances.province = :province', ['province' => $user_province]);
+            if (!Yii::$app->user->can('ro_accounting_admin')) {
+                $user_data = Yii::$app->memem->getUserData();
+                $query->andWhere('advances.province = :province', ['province' => $user_data->office->office_name]);
             }
             $command = $query->createCommand();
             $data = $command->queryAll();
@@ -1526,22 +1511,13 @@ class ReportController extends \yii\web\Controller
             // $to_reporting_period = '2021-06';
             // $province = 'all';
             // $division =  'all';
-            $user_province = strtolower(Yii::$app->user->identity->province);
-            $user_division = strtolower(Yii::$app->user->identity->division);
-            if (
-                $user_province === 'adn' ||
-                $user_province === 'ads' ||
-                $user_province === 'pdi' ||
-                $user_province === 'sdn' ||
-                $user_province === 'sds'
-            ) {
-                $province = $user_province;
+           
+            $user_data = Yii::$app->memem->getUserData();
+            if (!Yii::$app->user->can('ro_accounting_admin')) {
+                $province = $user_data->office->office_name;
             }
-            if (
-                !empty($user_division)
-
-            ) {
-                $division = $user_division;
+            if (!YIi::$app->user->can('po_accounting_admin')) {
+                $division = $user_data->divisionName->division;
             }
             $q   = new Query();
 
@@ -1692,22 +1668,13 @@ class ReportController extends \yii\web\Controller
             // $to_reporting_period = ";SELECT * FROM users";
             // $province = 'all';
             // $division =  'all';
-            $user_province = strtolower(Yii::$app->user->identity->province);
-            $user_division = strtolower(Yii::$app->user->identity->division);
-            if (
-                $user_province === 'adn' ||
-                $user_province === 'ads' ||
-                $user_province === 'pdi' ||
-                $user_province === 'sdn' ||
-                $user_province === 'sds'
-            ) {
-                $province = $user_province;
+            $user_division = '';
+            $user_data = Yii::$app->memem->getUserData();
+            if (!YIi::$app->user->can('ro_accounting_admin')) {
+                $province = $user_data->office->office_name;
             }
-            if (
-                !empty($user_division)
-
-            ) {
-                $division = $user_division;
+            if (!YIi::$app->user->can('po_accounting_admin')) {
+                $division = $user_data->divisionName->division;
             }
 
 

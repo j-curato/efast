@@ -21,11 +21,8 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row">
 
             <?php
-            $user_province =  strtolower(Yii::$app->user->identity->province);
-            if (
-                Yii::$app->user->can('super-user') ||
-                $user_province === 'ro'
-            ) {
+
+            if (Yii::$app->user->can('ro_accounting_admin')) {
 
             ?>
                 <div class="col-sm-2">
@@ -131,7 +128,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div id='con'>
 
-                <h3>Summary Table</h3>
+        <h3>Summary Table</h3>
         <table class="" id="summary_table" style="margin-top: 30px;">
             <thead>
                 <th>Province</th>
@@ -369,9 +366,9 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
             $('#summary_table tbody').append(row)
             var year_keys = Object.keys(res[province])
             var total_begining_balance = 0
-                var total_current_advances = 0
-                var total_withdrawals = 0
-                var total_ending_balance = 0
+            var total_current_advances = 0
+            var total_withdrawals = 0
+            var total_ending_balance = 0
             for (var x = 0; x < year_keys.length; x++) {
 
                 // console.log(res[object[i]][year[x]])
@@ -385,7 +382,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                         </tr>`
                 $('#summary_table tbody').append(row)
                 var division_keys = Object.keys(res[province][year])
-               
+
                 for (var y = 0; y < division_keys.length; y++) {
                     var division = division_keys[y]
                     var begining_balance = parseFloat(res[province][year][division]['beginning_balance'])
