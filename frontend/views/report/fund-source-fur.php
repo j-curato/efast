@@ -98,8 +98,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php
                 $data = [];
                 if (
-                    Yii::$app->user->can('super-user')
-                    || Yii::$app->user->can('province')
+                    Yii::$app->user->can('ro_accounting_admin') || Yii::$app->user->can('po_accounting_admin')
                 ) {
                     $data = FundSourceType::find()->all();
                 } else if (Yii::$app->user->can('department-offices')) {
@@ -244,12 +243,12 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
     function displayDetailed(data) {
         $("#fur_table tbody").html('');
         const data_keys = Object.keys(data)
-        for (let i = data_keys.length-1; i >= 0; i--) {
+        for (let i = data_keys.length - 1; i >= 0; i--) {
             let total_current_total_advances = 0;
             let total_current_total_withdrawals = 0;
             let total_begin_balance = 0;
             let total_ending_balance = 0;
-            let key =data_keys[i];
+            let key = data_keys[i];
             const header_row = `<tr class='data_row'>
                         <td colspan='8' style='text-align:left;font-weight:bold'>` + 'Budget Year ' + key + `</td>
                         </tr>`
