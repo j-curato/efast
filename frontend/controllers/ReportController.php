@@ -1325,16 +1325,10 @@ class ReportController extends \yii\web\Controller
             $to_reporting_period = $_POST['to_reporting_period'];
             $fund_source_type = $_POST['fund_source_type'];
             $province = !empty($_POST['province']) ? $_POST['province'] : '';
-            $user_province = strtolower(Yii::$app->user->identity->province);
-            if (
-                $user_province === 'adn' ||
-                $user_province === 'ads' ||
-                $user_province === 'sdn' ||
-                $user_province === 'sds' ||
-                $user_province === 'pdi'
 
-            ) {
-                $province = $user_province;
+            if (!Yii::$app->user->can('ro_accounting_admin')) {
+                $user_data = Yii::$app->memem->getUserData();
+                $province = $user_data->office->office_name;
             }
             $and = '';
             $params = [];
