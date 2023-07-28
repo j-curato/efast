@@ -55,20 +55,24 @@ $row_number = 0;
                     ]
                 ) ?>
             </div>
-            <div class="col-sm-3">
-                <?= $form->field($model, 'fk_office_id')->widget(
-                    Select2::class,
-                    [
-                        'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
-                        'pluginOptions' => [
-                            'placeholder' => 'Select Office'
+            <?php
+            if (Yii::$app->user->can('ro_procurement_admin')) {
 
-                        ],
+            ?>
+                <div class="col-sm-3">
+                    <?= $form->field($model, 'fk_office_id')->widget(
+                        Select2::class,
+                        [
+                            'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
+                            'pluginOptions' => [
+                                'placeholder' => 'Select Office'
 
-                    ]
-                ) ?>
-            </div>
+                            ],
 
+                        ]
+                    ) ?>
+                </div>
+            <?php } ?>
         </div>
 
 
@@ -163,9 +167,11 @@ $row_number = 0;
 
             </tbody>
         </table>
+        <div class="row">
 
-        <div class="form-group">
-            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+            <div class="form-group col-sm-2 col-sm-offset-5">
+                <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
+            </div>
         </div>
 
         <?php ActiveForm::end(); ?>
