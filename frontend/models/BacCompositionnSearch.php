@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\BacComposition;
+use Yii;
 
 /**
  * BacCompositionnSearch represents the model behind the search form of `app\models\BacComposition`.
@@ -43,6 +44,9 @@ class BacCompositionnSearch extends BacComposition
         $query = BacComposition::find();
 
         // add conditions that should always apply here
+        if (!Yii::$app->user->can('ro_procurement_admin')) {
+            $query->andWhere('fk_office_id = :office_id', ['office_id' => Yii::$app->user->identity->fk_office_id]);
+        }
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

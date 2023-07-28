@@ -155,7 +155,9 @@ class PrRfqController extends Controller
                 $rbac_id = Yii::$app->db->createCommand("SELECT id FROM bac_composition
                  WHERE :_date  >= bac_composition.effectivity_date 
                  AND :_date<= bac_composition.expiration_date
-                 AND fk_office_id = :office_id")
+                 AND fk_office_id = :office_id 
+                 AND is_disabled = 0
+                 ")
                     ->bindValue(':_date', $model->_date)
                     ->bindValue(':office_id',   $model->fk_office_id)
                     ->queryOne();
@@ -163,7 +165,7 @@ class PrRfqController extends Controller
                     throw new ErrorException('No RBAC for selected Date');
                 }
                 $model->id  = Yii::$app->db->createCommand("SELECT UUID_SHORT()  % 9223372036854775807")->queryScalar();
-                // $model->bac_composition_id = $rbac_id['id'];
+                $model->bac_composition_id = $rbac_id['id'];
                 $model->province = $province;
                 $model->rfq_number = $this->getRfqNumber($model->_date, $model->fk_office_id);
 

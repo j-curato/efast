@@ -11,6 +11,7 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Json;
 
 /**
  * BacCompositionController implements the CRUD actions for BacComposition model.
@@ -44,7 +45,7 @@ class BacCompositionController extends Controller
                             'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['super-user', 'po_procurement_admin']
                     ]
                 ]
             ],
@@ -93,52 +94,57 @@ class BacCompositionController extends Controller
      */
     public function insertMember($model_id, $employee_id, $position)
     {
-        foreach ($employee_id as $i => $val) {
-            $item = new BacCompositionMember();
-            $item->bac_composition_id = $model_id;
-            $item->employee_id = $val;
-            $item->bac_position_id = $position[$i];
-            if ($item->save(false)) {
-            } else {
-                return false;
+
+        try {
+            foreach ($employee_id as $i => $val) {
+                $item = new BacCompositionMember();
+                $item->bac_composition_id = $model_id;
+                $item->employee_id = $val;
+                $item->bac_position_id = $position[$i];
+
+                if (!$item->validate()) {
+                    throw new ErrorException(json_encode($item->errors));
+                }
+                if (!$item->save(false)) {
+                    throw new ErrorException('Item Model Save Failed');
+                }
             }
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
         }
-        return true;
     }
     public function actionCreate()
     {
         $model = new BacComposition();
-
+        if (!Yii::$app->user->can('ro_procurement_admin')) {
+            $model->fk_office_id = Yii::$app->user->identity->fk_office_id;
+        }
         if ($model->load(Yii::$app->request->post())) {
-            if (empty($_POST['employee_id'])) {
-                return json_encode(['error' => true, 'message' => 'Please Insert Items']);
-            } else {
-                $employee_id = $_POST['employee_id'];
-                $position = $_POST['position'];
-            }
-
-            $transaction = Yii::$app->db->beginTransaction();
-
             try {
-                if ($flag = true) {
+                $transaction = Yii::$app->db->beginTransaction();
+                $employee_id = Yii::$app->request->post('employee_id');
+                $position = Yii::$app->request->post('position');
 
-                    if ($model->save(false)) {
-                        $flag =  $this->insertMember(
-                            $model->id,
-                            $employee_id,
-                            $position
-
-
-                        );
-                    }
+                if (empty($employee_id)) {
+                    throw new ErrorException('Please Insert Items');
                 }
-                if ($flag) {
-                    $transaction->commit();
-                    return $this->redirect(['view', 'id' => $model->id]);
-                } else {
-                    $transaction->rollBack();
-                    return json_encode('Error');
+
+                Yii::$app->db->createCommand('UPDATE bac_composition SET is_disabled = 1 WHERE bac_composition.fk_office_id = :office_id')
+                    ->bindValue(':office_id', $model->fk_office_id)
+                    ->execute();
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
                 }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save Failed');
+                }
+                $insItms =  $this->insertMember($model->id, $employee_id, $position);
+                if ($insItms !== true) {
+                    throw new ErrorException($insItms);
+                }
+                $transaction->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
                 $transaction->rollBack();
                 return var_dump($e->getMessage());
@@ -157,53 +163,53 @@ class BacCompositionController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
+    // public function actionUpdate($id)
+    // {
+    //     $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post())) {
-            if (empty($_POST['employee_id'])) {
-                return json_encode(['error' => true, 'message' => 'Please Insert Items']);
-            } else {
-                $employee_id = $_POST['employee_id'];
-                $position = $_POST['position'];
-            }
-
-
-            $transaction = Yii::$app->db->beginTransaction();
-            Yii::$app->db->createCommand("DELETE FROM bac_composition_member WHERE bac_composition_id = :id")
-                ->bindValue(':id', $model->id)
-                ->query();
-            try {
-                if ($flag = true) {
-
-                    if ($model->save(false)) {
-                        $flag =  $this->insertMember(
-                            $model->id,
-                            $employee_id,
-                            $position
+    //     if ($model->load(Yii::$app->request->post())) {
+    //         if (empty($_POST['employee_id'])) {
+    //             return json_encode(['error' => true, 'message' => 'Please Insert Items']);
+    //         } else {
+    //             $employee_id = $_POST['employee_id'];
+    //             $position = $_POST['position'];
+    //         }
 
 
-                        );
-                    }
-                }
-                if ($flag) {
-                    $transaction->commit();
-                    return $this->redirect(['view', 'id' => $model->id]);
-                } else {
-                    $transaction->rollBack();
-                    return json_encode('Error');
-                }
-            } catch (ErrorException $e) {
-                $transaction->rollBack();
-                return var_dump($e->getMessage());
-            }
-        }
+    //         $transaction = Yii::$app->db->beginTransaction();
+    //         Yii::$app->db->createCommand("DELETE FROM bac_composition_member WHERE bac_composition_id = :id")
+    //             ->bindValue(':id', $model->id)
+    //             ->query();
+    //         try {
+    //             if ($flag = true) {
 
-        return $this->render('update', [
-            'model' => $model,
-        ]);
-    }
+    //                 if ($model->save(false)) {
+    //                     $flag =  $this->insertMember(
+    //                         $model->id,
+    //                         $employee_id,
+    //                         $position
+
+
+    //                     );
+    //                 }
+    //             }
+    //             if ($flag) {
+    //                 $transaction->commit();
+    //                 return $this->redirect(['view', 'id' => $model->id]);
+    //             } else {
+    //                 $transaction->rollBack();
+    //                 return json_encode('Error');
+    //             }
+    //         } catch (ErrorException $e) {
+    //             $transaction->rollBack();
+    //             return var_dump($e->getMessage());
+    //         }
+    //     }
+
+    //     return $this->render('update', [
+    //         'model' => $model,
+    //     ]);
+    // }
 
     /**
      * Deletes an existing BacComposition model.

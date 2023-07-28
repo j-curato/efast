@@ -32,7 +32,7 @@ class BacComposition extends \yii\db\ActiveRecord
         return [
             [['effectivity_date', 'expiration_date'], 'safe'],
             [['effectivity_date', 'expiration_date', 'fk_office_id'], 'required'],
-            [['fk_office_id'], 'integer'],
+            [['fk_office_id', 'is_disabled'], 'integer'],
             [['rso_number'], 'string', 'max' => 255],
         ];
     }
@@ -48,7 +48,9 @@ class BacComposition extends \yii\db\ActiveRecord
             'expiration_date' => 'Expiration Date',
             'rso_number' => 'RSO No.',
             'created_at' => 'Created At',
-            'fk_office_id' => 'Office '
+            'fk_office_id' => 'Office ',
+            'is_disabled' => 'Disabled ',
+
         ];
     }
 

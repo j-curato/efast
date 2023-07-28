@@ -118,6 +118,7 @@ $user_data = Yii::$app->memem->getUserData();
                     'label' => 'Property',
                     'url' => '#',
                     'items' => [
+
                         [
                             'label' => 'Transaction',
                             'url' => '#',
@@ -172,6 +173,14 @@ $user_data = Yii::$app->memem->getUserData();
                     'label' => 'Procurement',
                     'url' => '#',
                     'items' => [
+                        [
+                            'label' => 'Master Records',
+                            'url' => '#',
+                            'items' => [
+                                Yii::$app->user->can('po_procurement_admin') ?     ['label' => 'RBAC', 'icon' => 'circle-o', 'url' => ['/bac-composition'],] : [],
+
+                            ],
+                        ],
                         [
                             'label' => 'Transaction',
                             'icon' => 'circle-o',
