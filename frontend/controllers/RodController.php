@@ -353,11 +353,7 @@ IFNULL(liquidation_entries.liquidation_damage,0) as gross_amount
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        $user_province = strtolower(Yii::$app->user->identity->province);
         $user_data = Yii::$app->memem->getUserData();
-
-
-
         $out = ['results' => ['id' => '', 'text' => '']];
         if (!is_null($q)) {
             $query = new Query();
