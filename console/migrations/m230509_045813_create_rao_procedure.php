@@ -45,6 +45,7 @@ class m230509_045813_create_rao_procedure extends Migration
             JOIN pr_purchase_request ON pr_purchase_request_allotments.fk_purchase_request_id = pr_purchase_request.id
             WHERE
             pr_purchase_request_allotments.is_deleted = 0
+            AND pr_purchase_request.is_cancelled = 0
             ),
             txnPrAllots as (
             SELECT 

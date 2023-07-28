@@ -235,14 +235,31 @@ use yii\helpers\Html;
                 <!-- User Account: style can be found in dropdown.less -->
 
                 <li class="dropdown user user-menu">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="height: 50px;">
-                        <img src="<?= $directoryAsset ?>/img/user2-160x160.jpg" class="user-image" alt="User Image" />
+
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="padding: 10px;">
+                        <!-- <img src="<?= $directoryAsset ?>/img/user2-160x160.jpg" class="user-image" alt="User Image" /> -->
                         <!-- <span class="hidden-xs">Alexander Pierce</span> -->
+
+                        <?php
+                        $imagePath = $directoryAsset . "/img/user2-160x160.jpg";
+                        $filePath = '@webroot/profile_pics';
+                        $usr_id = Yii::$app->user->identity->id;
+                        $realFilePathPng = Yii::getAlias($filePath . "/$usr_id.png");
+                        $realFilePathJpg = Yii::getAlias($filePath . "/$usr_id.jpg");
+                        if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
+                            // File exists in the folder
+                            $imagePath =  Yii::$app->request->baseUrl . '/profile_pics' . "/$usr_id.png";
+                        } else if (file_exists($realFilePathJpg) && is_file($realFilePathJpg)) {
+                            $imagePath =  Yii::$app->request->baseUrl . '/profile_pics' . "/$usr_id.jpg";
+                        }
+                        echo Html::img($imagePath, ['alt' => 'Image Example', 'style' => 'width:30.76px;height:30.76px; margin:0;padding:0;   border-radius: 50%;']);
+                        ?>
                     </a>
                     <ul class="dropdown-menu">
                         <!-- User image -->
                         <li class="user-header">
                             <img src="<?= $directoryAsset ?>/img/user2-160x160.jpg" class="img-circle" alt="User Image" />
+
                             <p>
                                 Alexander Pierce - Web Developer
                                 <small>Member since Nov. 2012</small>
@@ -262,7 +279,7 @@ use yii\helpers\Html;
                         </li>
                         <!-- Menu Footer-->
                         <li>
-                            <?= Html::a('Profile', ['site/profile'], ['class' => 'btn btn-primary', 'style'=>'color:white;']) ?>
+                            <?= Html::a('Profile', ['site/profile'], ['class' => 'btn btn-primary', 'style' => 'color:white;']) ?>
 
                         </li>
                         <li>

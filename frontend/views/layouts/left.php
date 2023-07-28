@@ -2,38 +2,81 @@
 
 use yii\helpers\Html;
 use dmstr\widgets\Menu;
+use kartik\file\FileInput;
+use kartik\form\ActiveForm;
+use yii\helpers\FileHelper;
 
 $user_data = Yii::$app->memem->getUserData();
+
 ?>
+
 <aside class="main-sidebar">
 
+    <style>
+        .button {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            /* Adjust the distance from the bottom as needed */
+            /* Adjust the distance from the left as needed */
+            padding: 10px 15px;
+
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            background-color: #787272;
+        }
+    </style>
 
     <section class="sidebar">
 
         <!-- Sidebar user panel -->
         <div class="user-panel" style="margin-bottom: 20px;height:18rem;">
-            <div class=" " style="text-align: center;padding:0;width:100%">
-                <!-- <div class=" image"> -->
-                <!-- <img src="<?= $directoryAsset ?>/img/user2-160x160.jpg" class="img-circle" alt="User Image" /> -->
-                <?php
-                // $imagePath = Yii::$app->request->baseUrl . '/images/code2.png';
-                $imagePath = $directoryAsset . "/img/user2-160x160.jpg";
-                echo Yii::$app->request->baseUrl;
-                // Display the image using Html::img
-                echo Html::img($imagePath, ['alt' => 'Image Example', 'style' => 'width:120px; margin:0;padding:0;']);
-                ?>
-            </div>
-            <!-- <div class="info"> -->
-            <div class="" style="text-align: center; color:white;padding-top:10px;padding-left:5px;white-space: normal;">
-                <span>
-                    <?php
-                    if (!empty($user_data->employee->employee_id)) {
-                        $name = $user_data->employee->f_name . ' ' . $user_data->employee->m_name[0] . '. ' . $user_data->employee->l_name;
+            <div>
 
-                        $name .= !empty($user_data->employee->suffix) ? ', ' . $user_data->employee->suffix : '';
-                        echo strtoupper($name);
+                <div class=" " style="text-align: center;padding:0;width:100%">
+                    <!-- <div class=" image"> -->
+                    <!-- <img src="<?= $directoryAsset ?>/img/user2-160x160.jpg" class="img-circle" alt="User Image" /> -->
+                    <?php
+                    $imagePath = $directoryAsset . "/img/user2-160x160.jpg";
+                    $filePath = '@webroot/profile_pics';
+                    $usr_id = Yii::$app->user->identity->id;
+                    $realFilePathPng = Yii::getAlias($filePath . "/$usr_id.png");
+                    $realFilePathJpg = Yii::getAlias($filePath . "/$usr_id.jpg");
+                    if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
+                        // File exists in the folder
+                        $imagePath =  Yii::$app->request->baseUrl . '/profile_pics' . "/$usr_id.png";
+                    } else if (file_exists($realFilePathJpg) && is_file($realFilePathJpg)) {
+                        $imagePath =  Yii::$app->request->baseUrl . '/profile_pics' . "/$usr_id.jpg";
                     }
-                    ?></span>
+                    // Display the image using Html::img
+                    echo Html::img($imagePath, ['alt' => 'Image Example', 'style' => 'width:120px;height:120px; margin:0;padding:0;']);
+                    ?>
+                    <div style="color:white">
+
+
+                        <div style="background-color: black;">
+                            <?= Html::a('<i class="fa fa-pencil"></i>', ['site/upload-image',], ['class' => '  uploadImage button',]); ?>
+                        </div>
+                    </div>
+                    <div>
+                    </div>
+                </div>
+
+                <!-- <div class="info"> -->
+                <div class="" style="text-align: center; color:white;padding-top:10px;padding-left:5px;white-space: normal;">
+                    <span>
+                        <?php
+                        if (!empty($user_data->employee->employee_id)) {
+                            $name = $user_data->employee->f_name . ' ' . $user_data->employee->m_name[0] . '. ' . $user_data->employee->l_name;
+
+                            $name .= !empty($user_data->employee->suffix) ? ', ' . $user_data->employee->suffix : '';
+                            echo strtoupper($name);
+                        }
+                        ?>
+                </div>
+                </span>
             </div>
         </div>
         <!-- ?= $directoryAsset ?>/img/user2-160x160.jpg -->
@@ -67,7 +110,7 @@ $user_data = Yii::$app->memem->getUserData();
                         Yii::$app->user->can('po_check_range') ?  ['label' => 'Check Range', 'icon' => 'circle-o', 'url' => ['/check-range'],] : [],
                         Yii::$app->user->can('po_asignatory') ?     ['label' => 'PO Asignatory', 'icon' => 'circle-o', 'url' => ['/po-assignatory'],] : [],
                         Yii::$app->user->can('po_responsibility_center') ?     ['label' => 'PO Responsibility Center', 'icon' => 'circle-o', 'url' => ['/po-responsibility-center'],] : [],
-                        Yii::$app->user->can('po_accounting_admin') ?     ['label' => 'Payee', 'icon' => 'circle-o', 'url' => ['/payee'],] : [],
+                        Yii::$app->user->can('super-user') ?     ['label' => 'Payee', 'icon' => 'circle-o', 'url' => ['/payee'],] : [],
                     ],
                 ] : [],
                 Yii::$app->user->can('po_accounting') ?   [
@@ -748,3 +791,14 @@ $user_data = Yii::$app->memem->getUserData();
     </section>
 
 </aside>
+<script>
+    $(document).ready(function() {
+        $(".uploadImage").click(function(e) {
+            e.preventDefault();
+            $("#genericModal")
+                .modal("show")
+                .find("#modalContent")
+                .load($(this).attr("href"));
+        });
+    })
+</script>
