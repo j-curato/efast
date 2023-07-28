@@ -90,10 +90,10 @@ class PrRfqController extends Controller
      */
     public function actionView($id)
     {
-        $rbac =  MyHelper::getRbac();
-        // return json_encode($rbac);
+        $model = $this->findModel($id);
+        $rbac =  MyHelper::getRbac($model->bac_composition_id);
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
             'rbac' => $rbac
         ]);
     }
@@ -152,12 +152,16 @@ class PrRfqController extends Controller
                 if (strtotime($model->deadline) < strtotime($model->_date)) {
                     throw new ErrorException('Deadline  must be greater than the RFQ date.');
                 }
-                // $rbac_id = Yii::$app->db->createCommand("SELECT id FROM bac_composition WHERE :_date  >= bac_composition.effectivity_date AND :_date<= bac_composition.expiration_date ")
-                //     ->bindValue(':_date', $model->_date)
-                //     ->queryOne();
-                // if (empty($rbac_id)) {
-                //     throw new ErrorException('No RBAC for selected Date');
-                // }
+                $rbac_id = Yii::$app->db->createCommand("SELECT id FROM bac_composition
+                 WHERE :_date  >= bac_composition.effectivity_date 
+                 AND :_date<= bac_composition.expiration_date
+                 AND fk_office_id = :office_id")
+                    ->bindValue(':_date', $model->_date)
+                    ->bindValue(':office_id',   $model->fk_office_id)
+                    ->queryOne();
+                if (empty($rbac_id)) {
+                    throw new ErrorException('No RBAC for selected Date');
+                }
                 $model->id  = Yii::$app->db->createCommand("SELECT UUID_SHORT()  % 9223372036854775807")->queryScalar();
                 // $model->bac_composition_id = $rbac_id['id'];
                 $model->province = $province;

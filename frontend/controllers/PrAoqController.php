@@ -100,10 +100,11 @@ class PrAoqController extends Controller
     public function actionView($id)
     {
         // return json_encode(MyHelper::getRbac());
+        $model =  $this->findModel($id);
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
             'aoq_items_query' => $this->getAoqItems($id),
-            'bac_compositions' => MyHelper::getRbac(),
+            'bac_compositions' => MyHelper::getRbac($model->rfq->bac_composition_id),
         ]);
     }
     private function getAoqItems($id)
