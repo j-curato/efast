@@ -88,7 +88,7 @@ class ReportController extends \yii\web\Controller
                     'dv-time-monitoring-export',
                     'dv-transmittal-summary',
                     'po-transmittal-summary',
-              
+
                     'upload-property',
                     'rpcppe',
                     'ppelc',
@@ -171,7 +171,7 @@ class ReportController extends \yii\web\Controller
 
                     [
                         'actions' => [
-                          
+
                             'advances-liquidation',
                             'province-adequacy'
 
@@ -4274,7 +4274,7 @@ class ReportController extends \yii\web\Controller
     }
     public function actionProvinceAdequacy()
     {
-        if ($_POST) {
+        if (Yii::$app->request->post()) {
 
             $province = $_POST['province'];
             $to_reporting_period = $_POST['reporting_period'];
@@ -4389,7 +4389,7 @@ class ReportController extends \yii\web\Controller
                 ->bindValue(':to_reporting_period', $to_reporting_period)
                 ->bindValue(':from_reporting_period', $from_reporting_period)
                 ->bindValue(':book', $book)
-                ->queryAll();
+                ->getRawSql();
             return json_encode($query);
         }
         return $this->render('province_adequacy');

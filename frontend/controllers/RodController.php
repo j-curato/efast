@@ -354,6 +354,9 @@ IFNULL(liquidation_entries.liquidation_damage,0) as gross_amount
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
         $user_province = strtolower(Yii::$app->user->identity->province);
+        $user_data = Yii::$app->memem->getUserData();
+
+
 
         $out = ['results' => ['id' => '', 'text' => '']];
         if (!is_null($q)) {
@@ -363,15 +366,10 @@ IFNULL(liquidation_entries.liquidation_damage,0) as gross_amount
                 ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id = advances.id')
                 ->where(['like', 'advances_entries.fund_source', $q])
                 ->andWhere('advances_entries.is_deleted !=1');
-            if (
-                $user_province === 'adn' ||
-                $user_province === 'ads' ||
-                $user_province === 'sdn' ||
-                $user_province === 'sds' ||
-                $user_province === 'pdi'
-            ) {
-                $query->andWhere('advances.province = :province', ['province' => $user_province]);
+            if (!Yii::$app->user->can('ro_accounting_admin')) {
+                $query->andWhere('advances.province = :province', ['province' => $user_data->office->office_name]);
             }
+
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
