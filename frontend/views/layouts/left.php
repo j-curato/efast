@@ -152,7 +152,7 @@ $user_data = Yii::$app->memem->getUserData();
                                 Yii::$app->user->can('po_smry_fnd_src_fur') ?     ['label' => 'Summary Fund Source FUR', 'icon' => 'circle-o', 'url' => ['/report/summary-fund-source-fur'],] : [],
                                 Yii::$app->user->can('po_smry_bgt_fur') ?     ['label' => 'Summary Budget Year FUR', 'icon' => 'circle-o', 'url' => ['/report/budget-year-fur'],] : [],
                                 Yii::$app->user->can('po_adqcy_rsrc') ?     ['label' => 'Adequacy of Resource', 'icon' => 'circle-o', 'url' => ['/report/province-adequacy'],] : [],
-                                Yii::$app->user->can('po_accounting_admin') ?     ['label' => 'MLP', 'icon' => 'circle-o', 'url' => ['/monthly-liquidation-program'],] : [],
+                                // Yii::$app->user->can('po_accounting_admin') ?     ['label' => 'MLP', 'icon' => 'circle-o', 'url' => ['/monthly-liquidation-program'],] : [],
 
                             ],
                         ]
