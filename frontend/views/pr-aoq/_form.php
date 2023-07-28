@@ -69,7 +69,7 @@ $row = 1;
                     ]
                 ) ?>
             </div>
-            <div class="col-sm-2">
+            <!-- <div class="col-sm-2">
 
                 <?= $form->field($model, 'pr_date')->widget(DatePicker::class, [
                     'pluginOptions' => [
@@ -77,7 +77,7 @@ $row = 1;
                         'format' => 'yyyy-mm-dd',
                     ]
                 ]) ?>
-            </div>
+            </div> -->
         </div>
 
 
@@ -146,8 +146,11 @@ $row = 1;
             </tbody>
 
         </table>
-        <div class="form-group">
-            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        <div class="row">
+
+            <div class="form-group col-sm-2 col-sm-offset-5">
+                <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
+            </div>
         </div>
 
         <?php ActiveForm::end(); ?>

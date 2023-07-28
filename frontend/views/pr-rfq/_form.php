@@ -248,7 +248,7 @@ if (!empty($model->pr_purchase_request_id)) {
             </table>
             <div class="row">
 
-                <div class="form-group col-sm-3 col-sm-offset-4">
+                <div class="form-group col-sm-2 col-sm-offset-5">
                     <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
                 </div>
             </div>
