@@ -68,14 +68,19 @@ if (!empty($model->id)) {
         <input type="hidden" name="" id="model_id" value="<?= $model_id ?>">
         <?php $form = ActiveForm::begin(); ?>
         <div class="row">
-            <div class="col-sm-2">
-                <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
-                    'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
-                    'pluginOptions' => [
-                        'placeholder' => 'Select Office'
-                    ]
-                ]) ?>
-            </div>
+            <?php
+            if (Yii::$app->user->can('ro_procurement_admin')) {
+
+            ?>
+                <div class="col-sm-2">
+                    <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
+                        'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
+                        'pluginOptions' => [
+                            'placeholder' => 'Select Office'
+                        ]
+                    ]) ?>
+                </div>
+            <?php } ?>
             <div class="col-sm-2">
                 <?= $form->field($model, 'po_date')->widget(DatePicker::class, [
                     'pluginOptions' => [
