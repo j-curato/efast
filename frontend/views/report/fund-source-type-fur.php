@@ -32,11 +32,8 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row">
 
             <?php
-            $user_province =  strtolower(Yii::$app->user->identity->province);
-            if (
-                Yii::$app->user->can('super-user') ||
-                $user_province === 'ro'
-            ) {
+
+            if (Yii::$app->user->can('ro_accounting_admin')) {
 
             ?>
                 <div class="col-sm-2">
@@ -103,15 +100,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 <?php
 
                 if (
-                    Yii::$app->user->can('super-user') ||
-                    $user_province === 'adn' ||
-                    $user_province === 'ads' ||
-                    $user_province === 'pdi' ||
-                    $user_province === 'sdn' ||
-                    $user_province === 'sds'
+                    Yii::$app->user->can('ro_accounting_admin') || Yii::$app->user->can('po_accounting_admin')
                 ) {
-               
-                echo " <label for='division'>Division</label>";
+
+                    echo " <label for='division'>Division</label>";
                     echo Select2::widget([
                         'name' => 'division',
                         'id' => 'division',

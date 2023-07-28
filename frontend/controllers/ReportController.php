@@ -1502,16 +1502,16 @@ class ReportController extends \yii\web\Controller
     public function actionSummaryFundSourceFur()
     {
 
-        if ($_POST) {
-            $from_reporting_period = $_POST['from_reporting_period'];
-            $to_reporting_period = $_POST['to_reporting_period'];
-            $province = !empty($_POST['province']) ? $_POST['province'] : '';
-            $division = !empty($_POST['division']) ? $_POST['division'] : '';
+        if (Yii::$app->request->post()) {
+            $from_reporting_period = Yii::$app->request->post('from_reporting_period');
+            $to_reporting_period = Yii::$app->request->post('to_reporting_period');
+            $province =  Yii::$app->request->post('province') ?? '';
+            $division =  Yii::$app->request->post('division') ?? '';
             // $from_reporting_period = '2021-02';
             // $to_reporting_period = '2021-06';
             // $province = 'all';
             // $division =  'all';
-           
+
             $user_data = Yii::$app->memem->getUserData();
             if (!Yii::$app->user->can('ro_accounting_admin')) {
                 $province = $user_data->office->office_name;

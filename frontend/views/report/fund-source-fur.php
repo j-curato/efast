@@ -32,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row">
 
             <?php
-            if (Yii::$app->user->can('super-user') || Yii::$app->user->can('department-offices')) {
+            if (Yii::$app->user->can('ro_accounting_admin')) {
 
             ?>
                 <div class="col-sm-2">
