@@ -183,17 +183,11 @@ class RodController extends Controller
         if ($_POST) {
 
             $fund_source = $_POST['fund_source'];
-            $province = empty($_POST['province']) ? '' : $_POST['province'];
-            $rod_number = empty($_POST['rod_number']) ? '' : $_POST['rod_number'];
-            $user_province = strtolower(Yii::$app->user->identity->province);
-            if (
-                $user_province === 'adn' ||
-                $user_province === 'ads' ||
-                $user_province === 'sdn' ||
-                $user_province === 'sds' ||
-                $user_province === 'pdi'
-            ) {
-                $province = $user_province;
+            $province = empty($_POST['province']) ?? '';
+            $rod_number = empty($_POST['rod_number']) ?? "";
+            $user_data = Yii::$app->memem->getUserData();
+            if (!YIi::$app->user->can('ro_accounting_admin')) {
+                $province = $user_data->office->office_name;
             }
             $transaction = Yii::$app->db->beginTransaction();
 
@@ -239,18 +233,13 @@ class RodController extends Controller
 
     public function actionGetRod()
     {
-        if ($_POST) {
+        if (Yii::$app->request->post()) {
 
-            $province = !empty($_POST['province']) ? $_POST['province'] : '';
-            $user_province = strtolower(Yii::$app->user->identity->province);
-            if (
-                $user_province === 'adn' ||
-                $user_province === 'ads' ||
-                $user_province === 'sdn' ||
-                $user_province === 'sds' ||
-                $user_province === 'pdi'
-            ) {
-                $province = $user_province;
+            $province = !empty(Yii::$app->request->post('province')) ?? '';
+
+            $user_data = Yii::$app->memem->getUserData();
+            if (!YIi::$app->user->can('ro_accounting_admin')) {
+                $province = $user_data->office->office_name;
             }
 
             $fund_source = !empty($_POST['fund_source']) ? $_POST['fund_source'] : '';
