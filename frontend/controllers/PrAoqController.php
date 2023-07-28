@@ -184,6 +184,7 @@ class PrAoqController extends Controller
                 $items  = Yii::$app->request->post('items') ?? [];
                 $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()  % 9223372036854775807")->queryScalar();
                 $model->aoq_number = $this->aoqNumberGenerator($model->rfq->deadline, $model->fk_office_id);
+                $model->pr_date = $model->rfq->deadline;
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
