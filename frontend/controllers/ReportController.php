@@ -4389,9 +4389,7 @@ class ReportController extends \yii\web\Controller
                 ->bindValue(':to_reporting_period', $to_reporting_period)
                 ->bindValue(':from_reporting_period', $from_reporting_period)
                 ->bindValue(':book', $book)
-                ->getRawSql();
-            echo $query;
-            die();
+                ->queryAll();
             return json_encode($query);
         }
         return $this->render('province_adequacy');
