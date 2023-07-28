@@ -428,7 +428,7 @@ class PrPurchaseRequestController extends Controller
                     $q =  PrPurchaseRequestItem::findOne($item['item_id']);
                 } else {
                     $q = new PrPurchaseRequestItem();
-                    $q->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                    Yii::$app->db->createCommand("SELECT UUID_SHORT() % 9223372036854775807")->queryScalar();
                 }
                 $q->pr_purchase_request_id = $model_id;
                 $q->pr_stock_id =   $item['pr_stocks_id'];
