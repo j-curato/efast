@@ -401,7 +401,10 @@ class PrAoqController extends Controller
             $query->select([" CAST(id as CHAR(50)) as id, `aoq_number` as text"])
                 ->from('pr_aoq')
                 ->where(['like', 'aoq_number', $q]);
-
+            if (!Yii::$app->user->can('ro_procurement_admin')) {
+                $user_data = Yii::$app->memem->getUserData();
+                $query->andWhere('fk_office_id = :fk_office_id', ['fk_office_id' =>  $user_data->office->id]);
+            }
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
