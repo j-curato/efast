@@ -97,7 +97,6 @@ class PoTransactionController extends Controller
             $user_data = Yii::$app->memem->getUserData();
             $model->province = strtolower($user_data->office->office_name);
         }
-        // $model->po_responsibility_center_id = strtoupper(\Yii::$app->user->identity->province) .'-'. $model->po_responsibility_center_id ;
         if ($model->load(Yii::$app->request->post())) {
             $model->tracking_number = $this->getTrackingNumber($model->po_responsibility_center_id, $model->reporting_period);
             if ($model->save(false)) {
@@ -227,7 +226,7 @@ class PoTransactionController extends Controller
 
 
         // $final_number .= $last_number;
-        $tracking_number = strtoupper(\Yii::$app->user->identity->province) . '-' . trim($responsibility_center['name']) . '-' . $date . '-' . $final_number;
+        $tracking_number = strtoupper($province) . '-' . trim($responsibility_center['name']) . '-' . $date . '-' . $final_number;
         return  $tracking_number;
     }
     public function actionGetTransaction()
@@ -255,19 +254,16 @@ class PoTransactionController extends Controller
     }
     public function actionGetAllTransaction()
     {
-        $province = strtolower(Yii::$app->user->identity->province);
-        $query = (new \yii\db\Query())
-            ->select('*')
-            ->from('po_transaction');
-        if (
-            $province === 'adn' ||
-            $province === 'ads' ||
-            $province === 'sds' ||
-            $province === 'sdn' ||
-            $province === 'pdi'
-        ) {
-            $query->where('po_transaction.tracking_number LIKE :tracking_number', ['tracking_number' => "$province%"]);
+        if (!Yii::$app->user->can('ro_accounting_admin')) {
+
+            $user_data = Yii::$app->memem->getUserData();
+            $query = (new \yii\db\Query())
+                ->select('*')
+                ->from('po_transaction');
+
+            $query->where('po_transaction.tracking_number LIKE :tracking_number', ['tracking_number' => $user_data->office->office_name . "%"]);
         }
+
         $q =    $query->all();
 
         return json_encode($q);
@@ -375,8 +371,6 @@ class PoTransactionController extends Controller
         $offset = ($page - 1) * $limit;
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        $user_province = strtolower(Yii::$app->user->identity->province);
-
         $out = ['results' => ['id' => '', 'text' => '']];
         if ($id > 0) {
         } else if (!is_null($q)) {
@@ -384,15 +378,11 @@ class PoTransactionController extends Controller
             $query->select('po_transaction.id, po_transaction.tracking_number AS text')
                 ->from('po_transaction')
                 ->where(['like', 'po_transaction.tracking_number', $q]);
-            if (
-                $user_province === 'adn' ||
-                $user_province === 'ads' ||
-                $user_province === 'sdn' ||
-                $user_province === 'sds' ||
-                $user_province === 'pdi'
-            ) {
-                $query->andWhere('po_transaction.province = :province', ['province' => $user_province]);
+            if (!Yii::$app->user->can('ro_accounting_admin')) {
+                $user_data = Yii::$app->memem->getUserData();
+                $query->andWhere('po_transaction.province = :province', ['province' => $user_data->office->office_name]);
             }
+
             $query->offset($offset)
                 ->limit($limit);
             $command = $query->createCommand();

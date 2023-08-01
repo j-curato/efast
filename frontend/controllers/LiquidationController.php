@@ -723,11 +723,11 @@ class LiquidationController extends Controller
             // }
 
             // }
-
+            $user_data = Yii::$app->memem->getUserData();
             $liq_r_period = (new \yii\db\Query())
                 ->select('reporting_period')
                 ->from('liquidation_reporting_period')
-                ->where('province LIKE :province', ['province' => Yii::$app->user->identity->province])
+                ->where('province LIKE :province', ['province' => $user_data->office->office_name])
                 ->all();
             $r = ArrayHelper::getColumn($liq_r_period, 'reporting_period');
 
@@ -1590,14 +1590,9 @@ class LiquidationController extends Controller
                     ['from_reporting_period' => $from_reporting_period, 'to_reporting_period' => $to_reporting_period]
                 );
 
-            if (
-                $province === 'adn' ||
-                $province === 'ads' ||
-                $province === 'sdn' ||
-                $province === 'sds' ||
-                $province === 'pdi'
-            ) {
-                $q->andWhere('province = :province', ['province' => $province]);
+            if (!Yii::$app->user->can('ro_accounting_admin')) {
+                $user_data = Yii::$app->memem->getUserData();
+                $q->andWhere('province = :province', ['province' => $user_data->office->office_name]);
             }
 
             $query = $q->all();
