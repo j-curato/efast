@@ -410,6 +410,7 @@ class SupplementalPpmpController extends Controller
                     $user_data = Yii::$app->memem->getUserData();
                     $model->fk_office_id = $user_data->office->id;
                     $model->fk_division_id =  $_POST['fk_office_id'] ?? $user_data->divisionName->id;
+                    throw new ErrorException('PPMP Save Failed');
                 }
                 $model->serial_number = $this->serialNumber($model->budget_year, $model->cse_type);
                 $model->is_supplemental = 1;
@@ -420,7 +421,6 @@ class SupplementalPpmpController extends Controller
                 if (!$model->save(false)) {
                     throw new ErrorException('PPMP Save Failed');
                 }
-                throw new ErrorException('PPMP Save Failed');
 
                 if ($model->cse_type === 'cse') {
                     $insert_cse = $this->insertCseItems($model->id, $cse_items);
