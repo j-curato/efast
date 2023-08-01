@@ -498,193 +498,194 @@ $user_data = Yii::$app->memem->getUserData();
     </style>
     <?php
     if (strtolower($user_data->office->office_name) === 'ro') {
+        $division = Yii::$app->user->identity->division;
+        $searchModel = new RecordAllotmentDetailedSearch();
+        $searchModel->budget_year = date('Y');
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors', $division);
+        $dataProvider->pagination = ['pageSize' => 10];
+        $office = '';
+        $division = '';
+
+        if (Yii::$app->user->can('super-user')) {
+            $office =   'office_name';
+            $division =   'division';
+            $col = [
+                [
+                    'label' => 'Actions',
+                    'format' => 'raw',
+                    'value' => function ($model) {
+                        return  Html::input('text', 'item[allotment_id]', $model->allotment_entry_id, ['class' => 'allotment_id']);
+                    },
+                    'hidden' => true
+                ],
+                [
+                    'label' => 'Actions',
+                    'format' => 'raw',
+                    'value' => function ($model) {
+                        return  Html::button(Icon::show('plus', ['framework' => Icon::FA]), ['class' => 'btn-xs btn-primary  add', 'onClick' => 'addAllotment(this)']);
+                    },
+                ],
+
+                [
+                    'attribute' => 'budget_year',
+                    // 'hidden' => true
+
+                ],
+                [
+                    'attribute' => 'office_name',
+                    'filterType' => GridView::FILTER_SELECT2,
+                    'filter' => ArrayHelper::map(Office::find()->asArray()->all(), 'office_name', 'office_name'),
+                    'filterWidgetOptions' => [
+                        'pluginOptions' => ['allowClear' => true],
+                    ],
+                    'filterInputOptions' => ['placeholder' => 'Select Office', 'multiple' => false],
+                    'format' => 'raw'
+                ],
+                [
+                    'attribute' => 'division',
+                    'filterType' => GridView::FILTER_SELECT2,
+                    'filter' => ArrayHelper::map($divisions_list, 'division', 'division'),
+                    'filterWidgetOptions' => [
+                        'pluginOptions' => ['allowClear' => true],
+                    ],
+                    'filterInputOptions' => ['placeholder' => 'Select Division', 'multiple' => false],
+                    'format' => 'raw'
+                ],
+                'allotmentNumber',
+
+                [
+                    'attribute' => 'mfo_name',
+                    'filterType' => GridView::FILTER_SELECT2,
+                    'filter' => ArrayHelper::map($mfo_list, 'mfo', 'mfo'),
+                    'filterWidgetOptions' => [
+                        'pluginOptions' => ['allowClear' => true],
+                    ],
+                    'filterInputOptions' => ['placeholder' => 'Select MFO/PAP Code', 'multiple' => false],
+                    'format' => 'raw',
+                    'value' => function ($model) {
+                        return $model->mfo_code . '-' . $model->mfo_name;
+                    }
+                ],
+                [
+                    'attribute' => 'fund_source_name',
+                    'filterType' => GridView::FILTER_SELECT2,
+                    'filter' => ArrayHelper::map($fund_source_list, 'name', 'name'),
+                    'filterWidgetOptions' => [
+                        'pluginOptions' => ['allowClear' => true],
+                    ],
+                    'filterInputOptions' => ['placeholder' => 'Select Fund Source', 'multiple' => false],
+                    'format' => 'raw'
+                ],
+                'account_title',
+                [
+                    'attribute' => 'amount',
+                    'format' => ['decimal', 2],
+                    // 'hAlign' => 'right'
+                ],
+                [
+                    'attribute' => 'balance',
+                    'format' => ['decimal', 2],
+                    // 'hAlign' => 'right'
+                ],
+
+
+            ];
+        } else {
+            $col = [
+                [
+                    'label' => 'Actions',
+                    'format' => 'raw',
+                    'value' => function ($model) {
+                        return  Html::input('text', 'item[allotment_id]', $model->allotment_entry_id, ['class' => 'allotment_id']);
+                    },
+                    'hidden' => true
+                ],
+                [
+                    'label' => 'Actions',
+                    'format' => 'raw',
+                    'value' => function ($model) {
+                        return  Html::button(Icon::show('plus', ['framework' => Icon::FA]), ['class' => 'btn-xs btn-primary  add', 'onClick' => 'addAllotment(this)']);
+                    },
+                ],
+
+                [
+                    'attribute' => 'budget_year',
+                    // 'hidden' => true
+
+                ],
+                [
+                    'attribute' => 'office_name',
+                    'filterType' => GridView::FILTER_SELECT2,
+                    'filter' => ArrayHelper::map(Office::find()->asArray()->all(), 'office_name', 'office_name'),
+                    'filterWidgetOptions' => [
+                        'pluginOptions' => ['allowClear' => true],
+                    ],
+                    'filterInputOptions' => ['placeholder' => 'Select Office', 'multiple' => false],
+                    'format' => 'raw'
+                ],
+                'allotmentNumber',
+                'allotment_class',
+
+                [
+                    'attribute' => 'mfo_name',
+                    'filterType' => GridView::FILTER_SELECT2,
+                    'filter' => ArrayHelper::map($mfo_list, 'mfo', 'mfo'),
+                    'filterWidgetOptions' => [
+                        'pluginOptions' => ['allowClear' => true],
+                    ],
+                    'filterInputOptions' => ['placeholder' => 'Select MFO/PAP Code', 'multiple' => false],
+                    'format' => 'raw',
+                    'value' => function ($model) {
+                        return $model->mfo_code . '-' . $model->mfo_name;
+                    }
+                ],
+                [
+                    'attribute' => 'fund_source_name',
+                    'filterType' => GridView::FILTER_SELECT2,
+                    'filter' => ArrayHelper::map($fund_source_list, 'name', 'name'),
+                    'filterWidgetOptions' => [
+                        'pluginOptions' => ['allowClear' => true],
+                    ],
+                    'filterInputOptions' => ['placeholder' => 'Select Fund Source', 'multiple' => false],
+                    'format' => 'raw'
+                ],
+                'account_title',
+                [
+                    'attribute' => 'amount',
+                    'format' => ['decimal', 2],
+                    // 'hAlign' => 'right'
+                ],
+                [
+                    'attribute' => 'balance',
+                    'format' => ['decimal', 2],
+                    // 'hAlign' => 'right'
+                ],
+
+
+            ];
+        }
+
+
+        echo  GridView::widget([
+            'dataProvider' => $dataProvider,
+            'filterModel' => $searchModel,
+
+            'floatHeaderOptions' => [
+                'top' => 50,
+                'position' => 'absolute',
+            ],
+            'panel' => [
+                'type' => GridView::TYPE_PRIMARY,
+                'heading' => 'Allotments'
+            ],
+            'export' => false,
+            'pjax' => true,
+
+
+            'columns' => $col
+        ]);
     }
-    $division = Yii::$app->user->identity->division;
-    $searchModel = new RecordAllotmentDetailedSearch();
-    $searchModel->budget_year = date('Y');
-    $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'ors', $division);
-    $dataProvider->pagination = ['pageSize' => 10];
-    $office = '';
-    $division = '';
-
-    if (Yii::$app->user->can('super-user')) {
-        $office =   'office_name';
-        $division =   'division';
-        $col = [
-            [
-                'label' => 'Actions',
-                'format' => 'raw',
-                'value' => function ($model) {
-                    return  Html::input('text', 'item[allotment_id]', $model->allotment_entry_id, ['class' => 'allotment_id']);
-                },
-                'hidden' => true
-            ],
-            [
-                'label' => 'Actions',
-                'format' => 'raw',
-                'value' => function ($model) {
-                    return  Html::button(Icon::show('plus', ['framework' => Icon::FA]), ['class' => 'btn-xs btn-primary  add', 'onClick' => 'addAllotment(this)']);
-                },
-            ],
-
-            [
-                'attribute' => 'budget_year',
-                // 'hidden' => true
-
-            ],
-            [
-                'attribute' => 'office_name',
-                'filterType' => GridView::FILTER_SELECT2,
-                'filter' => ArrayHelper::map(Office::find()->asArray()->all(), 'office_name', 'office_name'),
-                'filterWidgetOptions' => [
-                    'pluginOptions' => ['allowClear' => true],
-                ],
-                'filterInputOptions' => ['placeholder' => 'Select Office', 'multiple' => false],
-                'format' => 'raw'
-            ],
-            [
-                'attribute' => 'division',
-                'filterType' => GridView::FILTER_SELECT2,
-                'filter' => ArrayHelper::map($divisions_list, 'division', 'division'),
-                'filterWidgetOptions' => [
-                    'pluginOptions' => ['allowClear' => true],
-                ],
-                'filterInputOptions' => ['placeholder' => 'Select Division', 'multiple' => false],
-                'format' => 'raw'
-            ],
-            'allotmentNumber',
-
-            [
-                'attribute' => 'mfo_name',
-                'filterType' => GridView::FILTER_SELECT2,
-                'filter' => ArrayHelper::map($mfo_list, 'mfo', 'mfo'),
-                'filterWidgetOptions' => [
-                    'pluginOptions' => ['allowClear' => true],
-                ],
-                'filterInputOptions' => ['placeholder' => 'Select MFO/PAP Code', 'multiple' => false],
-                'format' => 'raw',
-                'value' => function ($model) {
-                    return $model->mfo_code . '-' . $model->mfo_name;
-                }
-            ],
-            [
-                'attribute' => 'fund_source_name',
-                'filterType' => GridView::FILTER_SELECT2,
-                'filter' => ArrayHelper::map($fund_source_list, 'name', 'name'),
-                'filterWidgetOptions' => [
-                    'pluginOptions' => ['allowClear' => true],
-                ],
-                'filterInputOptions' => ['placeholder' => 'Select Fund Source', 'multiple' => false],
-                'format' => 'raw'
-            ],
-            'account_title',
-            [
-                'attribute' => 'amount',
-                'format' => ['decimal', 2],
-                // 'hAlign' => 'right'
-            ],
-            [
-                'attribute' => 'balance',
-                'format' => ['decimal', 2],
-                // 'hAlign' => 'right'
-            ],
-
-
-        ];
-    } else {
-        $col = [
-            [
-                'label' => 'Actions',
-                'format' => 'raw',
-                'value' => function ($model) {
-                    return  Html::input('text', 'item[allotment_id]', $model->allotment_entry_id, ['class' => 'allotment_id']);
-                },
-                'hidden' => true
-            ],
-            [
-                'label' => 'Actions',
-                'format' => 'raw',
-                'value' => function ($model) {
-                    return  Html::button(Icon::show('plus', ['framework' => Icon::FA]), ['class' => 'btn-xs btn-primary  add', 'onClick' => 'addAllotment(this)']);
-                },
-            ],
-
-            [
-                'attribute' => 'budget_year',
-                // 'hidden' => true
-
-            ],
-            [
-                'attribute' => 'office_name',
-                'filterType' => GridView::FILTER_SELECT2,
-                'filter' => ArrayHelper::map(Office::find()->asArray()->all(), 'office_name', 'office_name'),
-                'filterWidgetOptions' => [
-                    'pluginOptions' => ['allowClear' => true],
-                ],
-                'filterInputOptions' => ['placeholder' => 'Select Office', 'multiple' => false],
-                'format' => 'raw'
-            ],
-            'allotmentNumber',
-            'allotment_class',
-
-            [
-                'attribute' => 'mfo_name',
-                'filterType' => GridView::FILTER_SELECT2,
-                'filter' => ArrayHelper::map($mfo_list, 'mfo', 'mfo'),
-                'filterWidgetOptions' => [
-                    'pluginOptions' => ['allowClear' => true],
-                ],
-                'filterInputOptions' => ['placeholder' => 'Select MFO/PAP Code', 'multiple' => false],
-                'format' => 'raw',
-                'value' => function ($model) {
-                    return $model->mfo_code . '-' . $model->mfo_name;
-                }
-            ],
-            [
-                'attribute' => 'fund_source_name',
-                'filterType' => GridView::FILTER_SELECT2,
-                'filter' => ArrayHelper::map($fund_source_list, 'name', 'name'),
-                'filterWidgetOptions' => [
-                    'pluginOptions' => ['allowClear' => true],
-                ],
-                'filterInputOptions' => ['placeholder' => 'Select Fund Source', 'multiple' => false],
-                'format' => 'raw'
-            ],
-            'account_title',
-            [
-                'attribute' => 'amount',
-                'format' => ['decimal', 2],
-                // 'hAlign' => 'right'
-            ],
-            [
-                'attribute' => 'balance',
-                'format' => ['decimal', 2],
-                // 'hAlign' => 'right'
-            ],
-
-
-        ];
-    }
-
-
-    echo  GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-
-        'floatHeaderOptions' => [
-            'top' => 50,
-            'position' => 'absolute',
-        ],
-        'panel' => [
-            'type' => GridView::TYPE_PRIMARY,
-            'heading' => 'Allotments'
-        ],
-        'export' => false,
-        'pjax' => true,
-
-
-        'columns' => $col
-    ])  ?>
+    ?>
 
 </div>
 <style>
