@@ -399,13 +399,14 @@ class SupplementalPpmpController extends Controller
             $model->fk_division_program_unit_id = $_POST['fk_division_program_unit_id'];
             $model->fk_approved_by = $_POST['fk_approved_by'];
             $model->fk_certified_funds_available_by = $_POST['fk_certified_funds_available_by'];
-            if (!YIi::$app->user->can('super-user')) {
-                $user_data = Yii::$app->memem->getUserData();
-                $model->fk_office_id = $user_data->office->id;
-                $model->fk_division_id = $user_data->divisionName->id;
-            } else {
+
+            if (Yii::$app->user->can('ro_procurement_admin')) {
                 $model->fk_division_id = $_POST['fk_division_id'];
                 $model->fk_office_id = $_POST['fk_office_id'];
+            } else {
+                $user_data = Yii::$app->memem->getUserData();
+                $model->fk_office_id = $user_data->office->id;
+                $model->fk_division_id =  $_POST['fk_office_id'] ?? $user_data->divisionName->id;
             }
             $model->serial_number = $this->serialNumber($model->budget_year, $model->cse_type);
             $model->is_supplemental = 1;
@@ -467,16 +468,14 @@ class SupplementalPpmpController extends Controller
             $model->fk_reviewed_by = $_POST['fk_reviewed_by'];
             $model->fk_approved_by = $_POST['fk_approved_by'];
             $model->fk_certified_funds_available_by = $_POST['fk_certified_funds_available_by'];
-            if (!YIi::$app->user->can('super-user')) {
-                $user_data = Yii::$app->memem->getUserData();
-                $model->fk_office_id = $user_data->office->id;
-
-                $model->fk_division_id = $user_data->divisionName->id;
-            } else {
+            if (Yii::$app->user->can('ro_procurement_admin')) {
                 $model->fk_division_id = $_POST['fk_division_id'];
                 $model->fk_office_id = $_POST['fk_office_id'];
+            } else {
+                $user_data = Yii::$app->memem->getUserData();
+                $model->fk_office_id = $user_data->office->id;
+                $model->fk_division_id =  $_POST['fk_office_id'] ?? $user_data->divisionName->id;
             }
-
 
             try {
                 $transaction = Yii::$app->db->beginTransaction();
