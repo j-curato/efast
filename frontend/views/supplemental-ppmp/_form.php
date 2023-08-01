@@ -99,7 +99,7 @@ $cse_type_data = [
                 ]) ?>
             </div>
             <?php
-            if (Yii::$app->user->can('super-user')) {
+            if (Yii::$app->user->can('ro_procurement_admin')) {
 
             ?>
                 <div class="col-sm-2">
@@ -133,6 +133,12 @@ $cse_type_data = [
 
                     ]) ?>
                 </div>
+            <?php
+            }
+
+            if (Yii::$app->user->can('ro_procurement_admin') || Yii::$app->user->can('po_procurement_admin')) {
+
+            ?>
                 <div class="col-sm-2">
                     <label for="fk_division_id">Division</label>
                     <?= Select2::widget([

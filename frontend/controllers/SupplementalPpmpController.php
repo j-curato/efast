@@ -409,7 +409,6 @@ class SupplementalPpmpController extends Controller
                 } else {
                     $user_data = Yii::$app->memem->getUserData();
                     $model->fk_office_id = $user_data->office->id;
-                    throw new ErrorException('PPMP Save Failed');
                     $model->fk_division_id =  $_POST['fk_office_id'] ?? $user_data->divisionName->id;
                 }
                 $model->serial_number = $this->serialNumber($model->budget_year, $model->cse_type);
@@ -460,27 +459,28 @@ class SupplementalPpmpController extends Controller
 
 
         if (Yii::$app->request->post()) {
-            $cse_items = !empty($_POST['cse_items']) ? $_POST['cse_items'] : [];
-            $non_cse_items = !empty($_POST['ppmp_non_cse']) ? $_POST['ppmp_non_cse'] : [];
-            $model->date = date("Y-m-d");
-            $model->budget_year = $_POST['budget_year'];
-            $model->cse_type = $_POST['cse_type'];
-            $model->fk_division_program_unit_id = $_POST['fk_division_program_unit_id'];
-            $model->fk_prepared_by = $_POST['fk_prepared_by'];
-            $model->fk_reviewed_by = $_POST['fk_reviewed_by'];
-            $model->fk_approved_by = $_POST['fk_approved_by'];
-            $model->fk_certified_funds_available_by = $_POST['fk_certified_funds_available_by'];
-            if (Yii::$app->user->can('ro_procurement_admin')) {
-                $model->fk_division_id = $_POST['fk_division_id'];
-                $model->fk_office_id = $_POST['fk_office_id'];
-            } else {
-                $user_data = Yii::$app->memem->getUserData();
-                $model->fk_office_id = $user_data->office->id;
-                $model->fk_division_id =  $_POST['fk_office_id'] ?? $user_data->divisionName->id;
-            }
-
             try {
                 $transaction = Yii::$app->db->beginTransaction();
+                $cse_items = !empty($_POST['cse_items']) ? $_POST['cse_items'] : [];
+                $non_cse_items = !empty($_POST['ppmp_non_cse']) ? $_POST['ppmp_non_cse'] : [];
+                $model->date = date("Y-m-d");
+                $model->budget_year = $_POST['budget_year'];
+                $model->cse_type = $_POST['cse_type'];
+                $model->fk_division_program_unit_id = $_POST['fk_division_program_unit_id'];
+                $model->fk_prepared_by = $_POST['fk_prepared_by'];
+                $model->fk_reviewed_by = $_POST['fk_reviewed_by'];
+                $model->fk_approved_by = $_POST['fk_approved_by'];
+                $model->fk_certified_funds_available_by = $_POST['fk_certified_funds_available_by'];
+                if (Yii::$app->user->can('ro_procurement_admin')) {
+                    $model->fk_division_id = $_POST['fk_division_id'];
+                    $model->fk_office_id = $_POST['fk_office_id'];
+                } else {
+                    $user_data = Yii::$app->memem->getUserData();
+                    $model->fk_office_id = $user_data->office->id;
+                    $model->fk_division_id =  $_POST['fk_office_id'] ?? $user_data->divisionName->id;
+                }
+
+
                 if (intval($model->is_final) === 1) {
                     throw new ErrorException('Cannot Update Supplemental is Already Final');
                 }
