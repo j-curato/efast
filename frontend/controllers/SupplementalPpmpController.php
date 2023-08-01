@@ -409,8 +409,8 @@ class SupplementalPpmpController extends Controller
                 } else {
                     $user_data = Yii::$app->memem->getUserData();
                     $model->fk_office_id = $user_data->office->id;
-                    $model->fk_division_id =  $_POST['fk_office_id'] ?? $user_data->divisionName->id;
                     throw new ErrorException('PPMP Save Failed');
+                    $model->fk_division_id =  $_POST['fk_office_id'] ?? $user_data->divisionName->id;
                 }
                 $model->serial_number = $this->serialNumber($model->budget_year, $model->cse_type);
                 $model->is_supplemental = 1;
