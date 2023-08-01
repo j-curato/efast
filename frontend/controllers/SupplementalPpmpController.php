@@ -477,7 +477,7 @@ class SupplementalPpmpController extends Controller
                 } else {
                     $user_data = Yii::$app->memem->getUserData();
                     $model->fk_office_id = $user_data->office->id;
-                    $model->fk_division_id =  $_POST['fk_office_id'] ?? $user_data->divisionName->id;
+                    $model->fk_division_id =  $_POST['fk_division_id'] ?? $user_data->divisionName->id;
                 }
 
 
