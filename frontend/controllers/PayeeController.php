@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\Payee;
 use app\models\PayeeSearch;
+use ErrorException;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use yii\db\conditions\LikeCondition;
 use yii\db\Query;
@@ -108,7 +109,11 @@ class PayeeController extends Controller
     {
         $model = new Payee();
         $model->fk_office_id = Yii::$app->user->identity->fk_office_id ?? '';
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+        if ($model->load(Yii::$app->request->post())) {
+            // $model->id = Yii::$app->db->createCommand('SELECT UUID_SHORT() % 9223372036854775807')->queryScalar();
+            if (!$model->save(false)) {
+                throw new ErrorException('Model Save FAiled');
+            }
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
@@ -259,9 +264,18 @@ class PayeeController extends Controller
                 ->from('payee')
                 ->where(['like', 'payee.account_name', $q])
                 ->andWhere('payee.isEnable = 1');
-
+            $user_data = Yii::$app->memem->getUserData();
+            $office = strtolower($user_data->office->office_name);
+            if (
+                $office === 'adn' ||
+                $office === 'ads' ||
+                $office === 'sdn' ||
+                $office === 'sds' ||
+                $office === 'pdi'
+            ) {
+                $query->andWhere('payee.fk_office_id= :office_id', ['office_id' => $user_data->office->id]);
+            }
             if (!empty($page)) {
-
                 $query->offset($offset)
                     ->limit($limit);
             }
