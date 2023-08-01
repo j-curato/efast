@@ -497,6 +497,8 @@ $user_data = Yii::$app->memem->getUserData();
         }
     </style>
     <?php
+    if (strtolower($user_data->office->office_name) === 'ro') {
+    }
     $division = Yii::$app->user->identity->division;
     $searchModel = new RecordAllotmentDetailedSearch();
     $searchModel->budget_year = date('Y');
@@ -665,9 +667,7 @@ $user_data = Yii::$app->memem->getUserData();
     }
 
 
-    ?>
-
-    <?= strtolower($user_data->office->office_name) === 'ro' ? GridView::widget([
+    echo  GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
 
@@ -684,7 +684,7 @@ $user_data = Yii::$app->memem->getUserData();
 
 
         'columns' => $col
-    ]) : ''; ?>
+    ])  ?>
 
 </div>
 <style>
