@@ -420,6 +420,8 @@ class SupplementalPpmpController extends Controller
                 if (!$model->save(false)) {
                     throw new ErrorException('PPMP Save Failed');
                 }
+                throw new ErrorException('PPMP Save Failed');
+
                 if ($model->cse_type === 'cse') {
                     $insert_cse = $this->insertCseItems($model->id, $cse_items);
                     if ($insert_cse !== true) {
@@ -431,7 +433,6 @@ class SupplementalPpmpController extends Controller
                         throw new ErrorException($insert_non_cse);
                     }
                 }
-                throw new ErrorException('PPMP Save Failed');
                 $transaction->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
