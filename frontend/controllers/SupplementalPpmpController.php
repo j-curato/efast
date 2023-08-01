@@ -388,31 +388,32 @@ class SupplementalPpmpController extends Controller
         $model->fk_approved_by = '99684622555676858';
         $model->fk_certified_funds_available_by = '99684622555676773';
         if (Yii::$app->request->isPost) {
-            $cse_items = !empty($_POST['cse_items']) ? $_POST['cse_items'] : [];
-            $non_cse_items = !empty($_POST['ppmp_non_cse']) ? $_POST['ppmp_non_cse'] : [];
-            $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT() % 9223372036854775807")->queryScalar();
-            $model->date = date("Y-m-d");
-            $model->budget_year = $_POST['budget_year'];
-            $model->cse_type = $_POST['cse_type'];
-            $model->fk_prepared_by = $_POST['fk_prepared_by'];
-            $model->fk_reviewed_by = $_POST['fk_reviewed_by'];
-            $model->fk_division_program_unit_id = $_POST['fk_division_program_unit_id'];
-            $model->fk_approved_by = $_POST['fk_approved_by'];
-            $model->fk_certified_funds_available_by = $_POST['fk_certified_funds_available_by'];
-
-            if (Yii::$app->user->can('ro_procurement_admin')) {
-                $model->fk_division_id = $_POST['fk_division_id'];
-                $model->fk_office_id = $_POST['fk_office_id'];
-            } else {
-                $user_data = Yii::$app->memem->getUserData();
-                $model->fk_office_id = $user_data->office->id;
-                $model->fk_division_id =  $_POST['fk_office_id'] ?? $user_data->divisionName->id;
-            }
-            $model->serial_number = $this->serialNumber($model->budget_year, $model->cse_type);
-            $model->is_supplemental = 1;
 
             try {
                 $transaction = Yii::$app->db->beginTransaction();
+                $cse_items = !empty($_POST['cse_items']) ? $_POST['cse_items'] : [];
+                $non_cse_items = !empty($_POST['ppmp_non_cse']) ? $_POST['ppmp_non_cse'] : [];
+                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT() % 9223372036854775807")->queryScalar();
+                $model->date = date("Y-m-d");
+                $model->budget_year = $_POST['budget_year'];
+                $model->cse_type = $_POST['cse_type'];
+                $model->fk_prepared_by = $_POST['fk_prepared_by'];
+                $model->fk_reviewed_by = $_POST['fk_reviewed_by'];
+                $model->fk_division_program_unit_id = $_POST['fk_division_program_unit_id'];
+                $model->fk_approved_by = $_POST['fk_approved_by'];
+                $model->fk_certified_funds_available_by = $_POST['fk_certified_funds_available_by'];
+
+                if (Yii::$app->user->can('ro_procurement_admin')) {
+                    $model->fk_division_id = $_POST['fk_division_id'];
+                    $model->fk_office_id = $_POST['fk_office_id'];
+                } else {
+                    $user_data = Yii::$app->memem->getUserData();
+                    $model->fk_office_id = $user_data->office->id;
+                    $model->fk_division_id =  $_POST['fk_office_id'] ?? $user_data->divisionName->id;
+                }
+                $model->serial_number = $this->serialNumber($model->budget_year, $model->cse_type);
+                $model->is_supplemental = 1;
+
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
@@ -430,7 +431,7 @@ class SupplementalPpmpController extends Controller
                         throw new ErrorException($insert_non_cse);
                     }
                 }
-
+                throw new ErrorException('PPMP Save Failed');
                 $transaction->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
