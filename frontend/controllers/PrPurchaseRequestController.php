@@ -959,7 +959,7 @@ class PrPurchaseRequestController extends Controller
         if (!Yii::$app->user->can('super-user')) {
             $user_data = Yii::$app->memem->getUserData();
             $office_id = $user_data->office->id;
-            $division_id = $user_data->divisionName->id;
+            $division_id = $division_id ?? $user_data->divisionName->id;
         }
 
         if (!is_null($q)) {
