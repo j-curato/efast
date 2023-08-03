@@ -1575,12 +1575,6 @@ class LiquidationController extends Controller
             $from_reporting_period = $_POST['from_reporting_period'];
             $to_reporting_period = $_POST['to_reporting_period'];
 
-
-
-            $province = strtolower(Yii::$app->user->identity->province);
-
-
-            // $province = strtolower(Yii::$app->user->identity->province);
             $q = (new \yii\db\Query())
                 ->select(["*",])
                 ->from('liquidation_entries_view')
