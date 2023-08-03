@@ -164,14 +164,15 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td colspan="<?= $header_count  ?>" class='no-border'>
                         <div style="float: left;margin-left:20%;text-align:center;margin-top:2em">
                             <?php
-                            $search_vice =  array_search('vice-chairperson', array_column($bac_compositions, 'position'));
-                            $vice_chairperson = '';
-                            if (!empty($search_vice)) {
-                                $vice_chairperson =   strtoupper($bac_compositions[$search_vice]['employee_name']);
-                            }
-
+                            $search_vice =   array_search('vice-chairperson', array_column($bac_compositions, 'position'));;
+                            // var_dump($bac_compositions);
+                            // var_dump($search_vice);
+                            // $vice_chairperson = '';
+                            // if (!empty($search_vice)) {
+                            //     $vice_chairperson =   strtoupper($bac_compositions[$search_vice]['employee_name']);
+                            // }
+                            $vice_chairperson =   strtoupper($bac_compositions[$search_vice]['employee_name'] ?? '');
                             echo  "<span style='text-decoration:underline;font-weight:bold'>{$vice_chairperson}</span>";
-
                             echo '<br>';
                             echo 'Vice-Chairperson';
                             ?>
