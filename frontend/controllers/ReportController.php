@@ -5722,9 +5722,9 @@ class ReportController extends \yii\web\Controller
             // if (empty($act_usr_id) && empty($actbl_ofr)) {
             //     return json_encode('');
             // }
-            // if (!Yii::$app->user->can('ro_property_admin') && empty($actbl_ofr) && empty($act_usr_id)) {
-            //     return json_encode([]);
-            // }
+            if (!Yii::$app->user->can('po_property_admin') && empty($actbl_ofr)) {
+                return json_encode([]);
+            }
             $qry = new Query();
             $qry->select([
                 "property.property_number",

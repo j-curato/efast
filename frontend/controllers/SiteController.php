@@ -14,6 +14,7 @@ use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use common\models\LoginForm;
+use common\models\UploadImage;
 use common\models\User;
 use DateInterval;
 use DateTime;
@@ -23,6 +24,7 @@ use frontend\models\SignupForm;
 use frontend\models\ContactForm;
 use yii\helpers\FileHelper;
 use yii\helpers\Url;
+use yii\web\UploadedFile;
 
 /**
  * Site controller
@@ -240,7 +242,7 @@ class SiteController extends Controller
      */
     public function actionSignup()
     {
-        // $this->layout = 'register';
+        $this->layout = 'register';
         $model = new SignupForm();
         if ($model->load(Yii::$app->request->post())) {
 
@@ -531,5 +533,18 @@ class SiteController extends Controller
             return 'succ';
         }
         return 'wala';
+    }
+    function actionUploadImage()
+    {
+
+        $model = new UploadImage();
+        if (Yii::$app->request->isPost) {
+            $model->file = UploadedFile::getInstance($model, 'file');
+            if ($model->upload()) {
+                // file is uploaded successfully
+                return $this->redirect(['index']);
+            }
+        }
+        return $this->renderAjax('upload_form', ['model' => $model]);
     }
 }
