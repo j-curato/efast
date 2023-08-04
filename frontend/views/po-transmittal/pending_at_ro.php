@@ -52,7 +52,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'label' => 'action',
             'format' => 'raw',
             'value' => function ($model) {
-                $r = yii::$app->request->baseUrl . "/index.php?r=po-transmittal/view&id=$model->transmittal_number";
+                $r = yii::$app->request->baseUrl . "/index.php?r=po-transmittal/view&id=$model->id";
                 return ' ' . Html::a('', $r, ['class' => 'btn-xs fa fa-eye']);
             }
         ],
