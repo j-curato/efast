@@ -949,7 +949,7 @@ class PrPurchaseRequestController extends Controller
             }
         }
     }
-    public function actionSearchPpmp($page = 1, $q = null, $id = null, $budget_year = '', $office_id = '', $division_id = '')
+    public function actionSearchPpmp($page = 1, $q = null, $id = null, $budget_year = '', $office_id = '', $division_id = null)
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
         $limit = 10;
@@ -979,7 +979,8 @@ class PrPurchaseRequestController extends Controller
             $query->offset($offset)
                 ->limit($limit);
             $command = $query->createCommand();
-            // return json_encode($command->getRawSql());
+            // echo $command->getRawSql();
+            // die();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
             $out['pagination'] = ['more' => !empty($data) ? true : false];
