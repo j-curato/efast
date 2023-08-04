@@ -5717,13 +5717,14 @@ class ReportController extends \yii\web\Controller
 
             $act_usr_id  = !empty(MyHelper::post('act_usr_id')) ? MyHelper::post('act_usr_id') : null;
             $actbl_ofr  = !empty(MyHelper::post('actbl_ofr')) ? MyHelper::post('actbl_ofr') : null;
-            $office  = !empty(MyHelper::post('office')) ? MyHelper::post('office') : null;
+            $user_data = Yii::$app->memem->getUserData();
+            $office  = Yii::$app->user->can('ro_property_admin') ? Yii::$app->request->post('office') ?? null : $user_data->office->id;
             // if (empty($act_usr_id) && empty($actbl_ofr)) {
             //     return json_encode('');
             // }
-            if (!Yii::$app->user->can('ro_property_admin') && empty($actbl_ofr) && empty($act_usr_id)) {
-                return json_encode([]);
-            }
+            // if (!Yii::$app->user->can('ro_property_admin') && empty($actbl_ofr) && empty($act_usr_id)) {
+            //     return json_encode([]);
+            // }
             $qry = new Query();
             $qry->select([
                 "property.property_number",
@@ -5758,10 +5759,11 @@ class ReportController extends \yii\web\Controller
             if (!empty($actbl_ofr)) {
                 $qry->andWhere("par.fk_received_by= :actbl_ofr", ['actbl_ofr' => $actbl_ofr]);
             }
-            if (!empty($office) && YIi::$app->user->can('ro_property_admin')) {
+            if (YIi::$app->user->can('ro_property_admin')) {
                 $qry->andWhere("property.fk_office_id= :office", ['office' => $office]);
             }
             $qry->orderBy("location.id");
+
             return json_encode($result = ArrayHelper::index($qry->all(), null, 'actble_ofr'));
         }
         return $this->render('user_properties');
