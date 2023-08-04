@@ -12,7 +12,6 @@ class m230728_025244_alter_id_in_payee_table extends Migration
      */
     public function safeUp()
     {
-        $this->alterColumn('payee', 'id', $this->bigInteger());
     }
 
     /**

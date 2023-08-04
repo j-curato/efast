@@ -57,7 +57,8 @@ class SupplementalPpmp extends \yii\db\ActiveRecord
             [[
                 'id', 'budget_year', 'fk_office_id', 'fk_division_id', 'fk_division_program_unit_id', 'fk_prepared_by',
                 'fk_reviewed_by', 'fk_approved_by', 'fk_certified_funds_available_by',
-                'is_final', 'is_supplemental'
+                'is_final', 'is_supplemental',
+                'fk_created_by'
             ], 'integer'],
             [['date', 'created_at'], 'safe'],
             [['serial_number', 'cse_type'], 'string', 'max' => 255],
@@ -88,6 +89,7 @@ class SupplementalPpmp extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
             'is_final' => 'Final',
             'is_supplemental' => 'Supplemental',
+            'fk_created_by' => 'Created By'
         ];
     }
 

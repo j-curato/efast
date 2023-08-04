@@ -36,7 +36,6 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
             [['date', 'created_at', 'cancelled_at'], 'safe'],
             [[
                 'book_id',
-
                 'requested_by_id',
                 'approved_by_id',
                 'is_cloud',
@@ -46,7 +45,8 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
                 'fk_office_id',
                 'fk_division_id',
                 'fk_division_program_unit_id', 'is_fixed_expense',
-                'is_cancelled'
+                'is_cancelled',
+                'fk_created_by'
             ], 'integer'],
             [['purpose'], 'string'],
             [['pr_number'], 'string', 'max' => 255],
@@ -96,6 +96,7 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
             'is_fixed_expense' => 'Fixed Expense',
             'cancelled_at' => 'Cancelled At',
             'is_cancelled' => 'is Cancelled',
+            'fk_created_by' => 'Created BY'
         ];
     }
     public function getRequestedBy()
@@ -121,6 +122,5 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
     public function getOffice()
     {
         return $this->hasOne(Office::class, ['id' => 'fk_office_id']);
-        
     }
 }

@@ -402,7 +402,7 @@ class SupplementalPpmpController extends Controller
                 $model->fk_division_program_unit_id = $_POST['fk_division_program_unit_id'];
                 $model->fk_approved_by = $_POST['fk_approved_by'];
                 $model->fk_certified_funds_available_by = $_POST['fk_certified_funds_available_by'];
-
+                $model->fk_created_by = Yii::$app->user->identity->id;
                 if (Yii::$app->user->can('ro_procurement_admin')) {
                     $model->fk_division_id = $_POST['fk_division_id'];
                     $model->fk_office_id = $_POST['fk_office_id'];
