@@ -31,7 +31,7 @@ class Employee extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['property_custodian', 'employee_id', 'fk_office_id'], 'integer'],
+            [['property_custodian', 'employee_id', 'fk_office_id', 'fk_division_id'], 'integer'],
             [[
                 'property_custodian',
                 'employee_id',
@@ -39,6 +39,7 @@ class Employee extends \yii\db\ActiveRecord
                 'f_name',
                 'l_name',
                 'm_name',
+                'fk_division_id'
             ], 'required'],
             [['employee_number', 'f_name', 'l_name', 'm_name', 'status', 'position', 'suffix', 'province'], 'string', 'max' => 255],
             [[
@@ -76,6 +77,7 @@ class Employee extends \yii\db\ActiveRecord
             'suffix' => 'Suffix',
             'province' => 'Province',
             'fk_office_id' => 'Office/Province',
+            'fk_division_id' => 'Division',
         ];
     }
     public function getOffice()
