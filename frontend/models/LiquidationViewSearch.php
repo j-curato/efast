@@ -62,7 +62,7 @@ class LiquidationViewSearch extends LiquidationView
             $query->where('province = :province', ['province' => $user_data->office->office_name]);
         }
 
-        $query->orderBy('check_date DESC');
+
 
         // add conditions that should always apply here
 
@@ -100,7 +100,7 @@ class LiquidationViewSearch extends LiquidationView
             ->andFilterWhere(['like', 'status', $this->status])
             ->andFilterWhere(['like', 'account_name', $this->account_name])
             ->andFilterWhere(['like', 'province', $this->province]);
-
+        $query->orderBy('dv_number DESC');
         // var_dump($query->createCommand()->getRawSql());
 
         // die();
