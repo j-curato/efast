@@ -3,6 +3,7 @@
 namespace frontend\controllers;
 
 use app\components\helpers\MyHelper;
+use app\models\Office;
 use Yii;
 use app\models\SupplementalPpmp;
 use app\models\SupplementalPpmpCse;
@@ -111,16 +112,19 @@ class SupplementalPpmpController extends Controller
             ->bindValue(':id', $id)
             ->queryAll();
     }
-    private function serialNumber($budget_year, $cse_type)
+    private function serialNumber($budget_year, $cse_type, $office_id)
     {
+        $office  = Office::findOne($office_id);
         $latest_dv = Yii::$app->db->createCommand("SELECT CAST(substring_index(serial_number, '-', -1)AS UNSIGNED) as q 
                 from supplemental_ppmp
                 WHERE 
                 budget_year = :budget_year
                 AND
                cse_type = :cse_type
+               AND fk_office_id = :office_id
                 ORDER BY q DESC  LIMIT 1")
             ->bindValue(':budget_year', $budget_year)
+            ->bindValue(':office_id', $office_id)
             ->bindValue(':cse_type', $cse_type)
             ->queryScalar();
         !empty($book_id) ? $book_id : $book_id = 5;
@@ -133,7 +137,7 @@ class SupplementalPpmpController extends Controller
             $x .= 0;
         }
 
-        return strtoupper(str_replace('_', '-', $cse_type)) . '-' . $budget_year . '-' . $x . $num;
+        return strtoupper($office->office_name) . '-' . strtoupper(str_replace('_', '-', $cse_type)) . '-' . $budget_year . '-' . $x . $num;
     }
     private function insertCseItems($id, $items = [])
     {
@@ -411,7 +415,7 @@ class SupplementalPpmpController extends Controller
                     $model->fk_office_id = $user_data->office->id;
                     $model->fk_division_id =  $_POST['fk_division_id'] ?? $user_data->divisionName->id;
                 }
-                $model->serial_number = $this->serialNumber($model->budget_year, $model->cse_type);
+                $model->serial_number = $this->serialNumber($model->budget_year, $model->cse_type, $model->fk_office_id);
                 $model->is_supplemental = 1;
 
                 if (!$model->validate()) {
@@ -516,6 +520,17 @@ class SupplementalPpmpController extends Controller
 
 
                 if ($model->cse_type === 'cse') {
+                    $check_pr = Yii::$app->db->createCommand("SELECT 
+                    GROUP_CONCAT(vw_supplemental_cse_prs.pr_number)as prs 
+                     FROM vw_supplemental_cse_prs
+                     WHERE vw_supplemental_cse_prs.ppmp_id = :id
+                    GROUP BY
+                    vw_supplemental_cse_prs.ppmp_id")
+                        ->bindValue(':id', $model->id)
+                        ->queryScalar();
+                    if (!empty($check_pr)) {
+                        throw new ErrorException("This item cannot be edited because a purchase request has already been made for it. Please advise the procurement unit to cancel Purchase Request No./s $check_pr");
+                    }
                     $insert_cse = $this->insertCseItems($model->id, $cse_items);
                     if ($insert_cse !== true) {
                         throw new ErrorException($insert_cse);
@@ -713,7 +728,7 @@ class SupplementalPpmpController extends Controller
                     $ppmp = new SupplementalPpmp();
 
                     $ppmp->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-                    $ppmp->serial_number = $this->serialNumber($budget_year, $cse_type);
+                    $ppmp->serial_number = $this->serialNumber($budget_year, $cse_type, '');
                     $ppmp->budget_year = $budget_year;
                     $ppmp->cse_type = strtolower($cse_type);
                     $ppmp->fk_office_id = $office_id;
