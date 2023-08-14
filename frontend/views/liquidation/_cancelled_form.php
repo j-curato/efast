@@ -21,25 +21,17 @@ use yii\helpers\ArrayHelper;
 <div class="liquidation-form">
 
     <?php
-    $province = strtolower(Yii::$app->user->identity->province);
-    if (!Yii::$app->user->can('super-user')) {
-        $check = (new \yii\db\Query())
-            ->select([
-                'id',
-                "CONCAT(check_range.from,' to ',check_range.to) as range"
-            ])
-            ->from('check_range')
-            ->where('province =:province', ['province' => $province])
-            ->all();
-    } else {
-        $check = (new \yii\db\Query())
-            ->select([
-                'id',
-                "CONCAT(check_range.from,' to ',check_range.to) as range"
-            ])
-            ->from('check_range')
-            ->all();
+    $check_qry = (new \yii\db\Query())
+        ->select([
+            'id',
+            "CONCAT(check_range.from,' to ',check_range.to) as range"
+        ])
+        ->from('check_range');
+    if (!Yii::$app->user->can('ro_accounting_admin')) {
+        $user_data = Yii::$app->memem->getUserData();
+        $check_qry->where('province =:province', ['province' => $user_data->office->office_name]);
     }
+    $check  = $check_qry->all();
     ?>
     <?php $form = ActiveForm::begin([
         'id' => 'CancelledForm',

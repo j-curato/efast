@@ -92,16 +92,15 @@ class BacCompositionController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function insertMember($model_id, $employee_id, $position)
+    public function insertMember($model_id, $items)
     {
 
         try {
-            foreach ($employee_id as $i => $val) {
+            foreach ($items as $i => $itm) {
                 $item = new BacCompositionMember();
                 $item->bac_composition_id = $model_id;
-                $item->employee_id = $val;
-                $item->bac_position_id = $position[$i];
-
+                $item->employee_id = $itm['employee_id'];
+                $item->bac_position_id = $itm['position'];
                 if (!$item->validate()) {
                     throw new ErrorException(json_encode($item->errors));
                 }
@@ -123,10 +122,9 @@ class BacCompositionController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             try {
                 $transaction = Yii::$app->db->beginTransaction();
-                $employee_id = Yii::$app->request->post('employee_id');
-                $position = Yii::$app->request->post('position');
+                $items  = Yii::$app->request->post('items');
 
-                if (empty($employee_id)) {
+                if (empty($items)) {
                     throw new ErrorException('Please Insert Items');
                 }
 
@@ -139,7 +137,7 @@ class BacCompositionController extends Controller
                 if (!$model->save(false)) {
                     throw new ErrorException('Model Save Failed');
                 }
-                $insItms =  $this->insertMember($model->id, $employee_id, $position);
+                $insItms =  $this->insertMember($model->id, $items);
                 if ($insItms !== true) {
                     throw new ErrorException($insItms);
                 }
