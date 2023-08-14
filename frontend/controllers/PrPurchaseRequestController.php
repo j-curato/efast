@@ -1121,8 +1121,8 @@ class PrPurchaseRequestController extends Controller
                     ->queryAll();
             } else if ($type === 'fixed_expenses') {
                 $res = Yii::$app->db->createCommand("SELECT 
-                supplemental_ppmp_non_cse_items.id as item_id,
-                pr_stock.id as stock_id,
+                 CAST(supplemental_ppmp_non_cse_items.id as CHAR(50)) as item_id,
+                 CAST( pr_stock.id  as CHAR(50))as stock_id,
                 pr_stock.stock_title,
                 IFNULL(supplemental_ppmp_non_cse_items.amount,0) as unit_cost,
                 IFNULL(unit_of_measure.unit_of_measure,'') as unit_of_measure,
