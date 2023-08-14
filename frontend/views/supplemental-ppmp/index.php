@@ -78,13 +78,13 @@ $this->params['breadcrumbs'][] = $this->title;
         [
             'attribute' => 'gross_amt',
             'value' => function ($model) {
-                return number_format($model->gross_amt, 2);
+                return number_format($model->gross_amt ?? 0, 2);
             }
         ],
         [
             'attribute' => 'bal_amt',
             'value' => function ($model) {
-                return number_format($model->bal_amt, 2);
+                return number_format($model->bal_amt ?? 0, 2);
             }
         ],
         'ttl_qty',
