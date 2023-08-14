@@ -230,9 +230,7 @@ class PrPurchaseRequestController extends Controller
                  WHERE supplemental_ppmp_non_cse_items.id = :non_cse_item_id
                     ", $params)
                     ->bindValue(':non_cse_item_id', $ppmp_item_id)
-                    ->getRawSql();
-                echo $query;
-                die();
+                    ->queryOne();
 
                 $bal_amt = floatval($query['bal_amt']);
 
