@@ -293,7 +293,7 @@ class PrRfqController extends Controller
         WHERE rfq_number LIKE :_date 
         AND fk_office_id = :office_id
         ORDER BY last_num DESC LIMIT 1")
-            ->bindValue('_date', '%' . $date . '%')
+            ->bindValue('_date', '%' . $d->format('Y') . '%')
             ->bindValue('office_id', $office_id)
             ->queryScalar();
         if (!empty($query)) {
