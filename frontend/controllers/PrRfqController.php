@@ -226,9 +226,9 @@ class PrRfqController extends Controller
                 // if (empty($rbac_id)) {
                 //     throw new ErrorException('No RBAC for selected Date');
                 // }
-                if (!$oldmodel->_date != $model->_date) {
-                    $model->rfq_number = $this->getRfqNumber($model->_date, $model->fk_office_id);
-                }
+                // if (!$oldmodel->_date != $model->_date) {
+                //     $model->rfq_number = $this->getRfqNumber($model->_date, $model->fk_office_id);
+                // }
                 // $model->bac_composition_id = $rbac_id['id'];
                 $model->province = $province;
 
