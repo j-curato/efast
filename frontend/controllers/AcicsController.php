@@ -196,10 +196,14 @@ class AcicsController extends Controller
                 $params = [];
                 $sql = ' AND ';
                 $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $itemIds], $params);
-                Yii::$app->db->createCommand("UPDATE acics_cash_items SET is_deleted = 1 
-                WHERE 
-                acics_cash_items.is_deleted = 0
-                AND acics_cash_items.fk_acic_id = :id
+                Yii::$app->db->createCommand("UPDATE acics_cash_items
+                JOIN cash_disbursement ON acics_cash_items.fk_cash_disbursement_id = cash_disbursement.id
+               
+                SET acics_cash_items.is_deleted = 1 
+               WHERE 
+               acics_cash_items.is_deleted = 0
+               AND acics_cash_items.fk_acic_id = :id
+               AND NOT EXISTS (SELECT rci_items.fk_cash_disbursement_id FROM rci_items WHERE rci_items.is_deleted = 0 AND rci_items.fk_cash_disbursement_id=cash_disbursement.id)
                 $sql", $params)
                     ->bindValue(':id', $model_id)
                     ->execute();
