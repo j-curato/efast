@@ -513,7 +513,7 @@ $this->registerJsFile("@web/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsse
         clone.find('.csh_rcv_id').attr('name', `cshRcvItems[${cshRcvItmRowNum}][csh_rcv_id]`)
         clone.find('.add-action').parent().remove()
         clone.append(`<td>
-            <input type='text' class='mask-amount amount form-control' onkeyup='updateMainAmount(this)' required>
+            <input type='text' class='mask-amount amount form-control' onkeyup='updateMainAmount(this)' >
             <input type='hidden' name='cshRcvItems[${cshRcvItmRowNum}][amount]' class='amount main-amount cash_receive_amt' >
         </td>`)
         clone.append("<td><button type='button' class='remove btn-xs btn-danger' onclick='remove(this)'><i class='fa fa-minus'></i></button></td>")
