@@ -70,7 +70,10 @@ class RequestForInspectionSearch extends RequestForInspection
             $user_data = Yii::$app->memem->getUserData();
             $query->andWhere('request_for_inspection.fk_office_id = :office', ['office' => $user_data->office->id]);
             if (!Yii::$app->user->can('ro_inspection_admin') || !Yii::$app->user->can('ro_inspection_admin')) {
+   
                 $query->andWhere('request_for_inspection.fk_division_id = :division', ['division' => $user_data->divisionName->id ?? '']);
+
+           
             }
         }
         // add conditions that should always apply here
@@ -94,7 +97,6 @@ class RequestForInspectionSearch extends RequestForInspection
         $query->joinWith('inspector as inspector');
         $query->joinWith('propertyUnit as property_unit');
         $query->joinWith('office.unitHead as unit_head');
-
 
         // grid filtering conditions
         $query->andFilterWhere([
@@ -129,6 +131,7 @@ class RequestForInspectionSearch extends RequestForInspection
                 'or', ['like', 'pr_office.division', $this->fk_pr_office_id],
                 ['like', 'pr_office.unit', $this->fk_pr_office_id],
             ]);
+            $query->orderBy('request_for_inspection.created_at DESC');
 
         // print_r($query->createCommand()->getRawSql());
         // die();

@@ -59,7 +59,7 @@ if (!empty($model->fk_requested_by)) {
             if (!$model->is_final) {
                 echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) . ' ';
 
-                if (Yii::$app->user->can('super-user')) {
+                if (Yii::$app->user->can('ro_inspection_admin') || Yii::$app->user->can('po_inspection_admin')) {
                     echo Html::a('Final', ['final', 'id' => $model->id], [
                         'class' => 'btn btn-danger',
                         'data' => [
@@ -175,7 +175,7 @@ if (!empty($model->fk_requested_by)) {
                             <td class='center v-align-top'>{$from_date}</td>
                             <td class='center v-align-top'>{$to_date}</td>";
 
-                    if (Yii::$app->user->can('super-user')) {
+                    if (Yii::$app->user->can('ro_procurement_admin') || Yii::$app->user->can('po_procurement_admin')) {
                         echo "<td>" . HTML::a('PO Link', ['pr-purchase-order/view', 'id' => $val['po_id']], ['class' => 'btn btn-link']) . "</td>";
                     }
                     echo " </tr>";
