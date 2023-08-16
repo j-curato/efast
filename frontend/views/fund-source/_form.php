@@ -15,11 +15,15 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'description')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'description')->textarea(['maxlength' => true]) ?>
+    <?= $form->field($model, 'note')->textarea(['maxlength' => true]) ?>
 
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+    <div class="row">
+        <div class="form-group col-sm-2 col-sm-offset-5">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        </div>
     </div>
+
 
     <?php ActiveForm::end();
 
@@ -38,3 +42,8 @@ use yii\widgets\ActiveForm;
 
 
 </div>
+<style>
+    textarea{
+        max-width: 100%;
+    }
+</style>

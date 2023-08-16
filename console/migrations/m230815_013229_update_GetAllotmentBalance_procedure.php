@@ -101,7 +101,7 @@ class m230815_013229_update_GetAllotmentBalance_procedure extends Migration
          FROM 
          process_ors_txn_items
          LEFT JOIN transaction_items ON process_ors_txn_items.fk_transaction_item_id = transaction_items.id
-		JOIN process_ors ON process_ors_txn_items.fk_process_ors_id = process_ors.id
+		 JOIN process_ors ON process_ors_txn_items.fk_process_ors_id = process_ors.id
          WHERE process_ors_txn_items.is_deleted = 0 AND process_ors.is_cancelled = 0",
         @orsTxnItmQry,
         "),

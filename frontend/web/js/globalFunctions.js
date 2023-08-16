@@ -369,9 +369,13 @@ async function getAllFundSource() {
     success: function (data) {
       const res = JSON.parse(data);
       $.each(res, function (key, val) {
+        let txt = val.name;
+        if (val.note) {
+          txt += " - " + val.note;
+        }
         fund_sources.push({
           id: val.id,
-          text: val.name,
+          text: txt,
         });
       });
     },

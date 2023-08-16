@@ -30,9 +30,8 @@ class FundSource extends \yii\db\ActiveRecord
             [['name', 'description'], 'required'],
             [['name', 'description'], 'string', 'max' => 255],
             [[
-                'id',
-                'name',
                 'description',
+                'note'
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
@@ -46,6 +45,7 @@ class FundSource extends \yii\db\ActiveRecord
             'id' => 'ID',
             'name' => 'Name',
             'description' => 'Description',
+            'note' => 'Note'
         ];
     }
 }

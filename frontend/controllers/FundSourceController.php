@@ -105,7 +105,7 @@ class FundSourceController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->render('create', [
+        return $this->renderAjax('create', [
             'model' => $model,
         ]);
     }
@@ -125,7 +125,7 @@ class FundSourceController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->render('update', [
+        return $this->renderAjax('update', [
             'model' => $model,
         ]);
     }
@@ -161,7 +161,8 @@ class FundSourceController extends Controller
     }
     public function actionGetFundSources()
     {
-        $na = (new \yii\db\Query())->select('*')->from('fund_source')->all();
+        $na = YIi::$app->db->createCommand("SELECT id,`name`,note FROM fund_source")
+            ->queryAll();
         return json_encode($na);
     }
 }
