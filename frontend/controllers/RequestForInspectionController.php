@@ -326,11 +326,11 @@ class RequestForInspectionController extends Controller
                 foreach ($po_id_items as $val) {
 
                     $ir = new InspectionReport();
-                    $ir->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                    $ir->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()%9223372036854775807")->queryScalar();
                     $ir->ir_number = YIi::$app->memem->irNumber();
                     if ($ir->validate()) {
                         $iar = new Iar();
-                        $iar->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                        $iar->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()%9223372036854775807")->queryScalar();
                         $iar->iar_number = Yii::$app->memem->iarNumber();
                         $iar->fk_ir_id = $ir->id;
                         if ($iar->save(false)) {
@@ -338,7 +338,7 @@ class RequestForInspectionController extends Controller
                         if ($ir->save(false)) {
                             foreach ($val  as $val2) {
                                 $ir_item = new InspectionReportItems();
-                                $ir_item->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                                $ir_item->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()%9223372036854775807")->queryScalar();
                                 $ir_item->fk_inspection_report_id = $ir->id;
                                 $ir_item->fk_request_for_inspection_item_id = $val2['rfi_item_id'];
                                 if ($ir_item->save(false)) {
@@ -384,13 +384,13 @@ class RequestForInspectionController extends Controller
                     foreach ($val  as $val2) {
 
                         $ir = new InspectionReport();
-                        $ir->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                        $ir->id = Yii::$app->db->createCommand("SELECT UUID_SHORT() %9223372036854775807")->queryScalar();
                         $ir->ir_number = YIi::$app->memem->irNumber();
                         if ($ir->validate()) {
 
                             if ($ir->save(false)) {
                                 $iar = new Iar();
-                                $iar->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                                $iar->id = Yii::$app->db->createCommand("SELECT UUID_SHORT() %9223372036854775807")->queryScalar();
                                 $iar->iar_number = Yii::$app->memem->iarNumber();
                                 $iar->fk_ir_id = $ir->id;
                                 if ($iar->save(false)) {
@@ -399,7 +399,7 @@ class RequestForInspectionController extends Controller
                                 foreach ($val2 as $val3) {
 
                                     $ir_item = new InspectionReportNoPoItems();
-                                    $ir_item->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                                    $ir_item->id = YIi::$app->db->createCommand("SELECT UUID_SHORT() %9223372036854775807")->queryScalar();
                                     $ir_item->fk_inspection_report_id = $ir->id;
                                     $ir_item->fk_rfi_without_po_item_id = $val3['id'];
                                     if ($ir_item->save(false)) {

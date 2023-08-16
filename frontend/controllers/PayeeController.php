@@ -266,13 +266,7 @@ class PayeeController extends Controller
                 ->andWhere('payee.isEnable = 1');
             $user_data = Yii::$app->memem->getUserData();
             $office = strtolower($user_data->office->office_name);
-            if (
-                $office === 'adn' ||
-                $office === 'ads' ||
-                $office === 'sdn' ||
-                $office === 'sds' ||
-                $office === 'pdi'
-            ) {
+            if (!Yii::$app->user->can('super-user')) {
                 $query->andWhere('payee.fk_office_id= :office_id', ['office_id' => $user_data->office->id]);
             }
             if (!empty($page)) {
