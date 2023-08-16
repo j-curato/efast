@@ -537,13 +537,13 @@ class RequestForInspectionController extends Controller
         $model->fk_division_id = $user_data->divisionName->id ?? '';
         $model->fk_created_by =  Yii::$app->user->identity->id;
 
-        // if (!Yii::$app->user->can('super-user')) {
-        //     $user_division = strtolower(Yii::$app->user->identity->division ?? '');
-        //     $division_id = Yii::$app->db->createCommand("SELECT id FROM responsibility_center WHERE responsibility_center.name=:division")
-        //         ->bindValue(':division', $user_division)
-        //         ->queryScalar();
-        //     $model->fk_responsibility_center_id = $division_id;
-        // }
+        if (!Yii::$app->user->can('super-user')) {
+            $user_division = strtolower(Yii::$app->user->identity->division ?? '');
+            $division_id = Yii::$app->db->createCommand("SELECT id FROM responsibility_center WHERE responsibility_center.name=:division")
+                ->bindValue(':division', $user_division)
+                ->queryScalar();
+            $model->fk_responsibility_center_id = $division_id;
+        }
         if ($model->load(Yii::$app->request->post())) {
             try {
                 $txn = Yii::$app->db->beginTransaction();
