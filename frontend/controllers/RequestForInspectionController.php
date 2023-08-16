@@ -537,7 +537,7 @@ class RequestForInspectionController extends Controller
         $model->fk_created_by =  Yii::$app->user->identity->id;
 
         if (!Yii::$app->user->can('super-user')) {
-            $user_division = strtolower(Yii::$app->user->identity->division);
+            $user_division = strtolower(Yii::$app->user->identity->division ?? '');
             $division_id = Yii::$app->db->createCommand("SELECT id FROM responsibility_center WHERE responsibility_center.name=:division")
                 ->bindValue(':division', $user_division)
                 ->queryScalar();
