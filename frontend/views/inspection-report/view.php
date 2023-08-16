@@ -56,7 +56,7 @@ if (!empty($model->fk_end_user)) {
             echo Html::a('RFI Link', ['request-for-inspection/view', 'id' => $rfi_id], ['class' => 'btn btn-primary']);
         }
         if (!empty($iar_id)) {
-            echo ' ' . Html::a('IAR Link', ['iar/view', 'id' => $iar_id], ['class' => 'btn btn-warning']);
+            echo ' ' . Html::a('IAR Link', ['iar/view', 'id' => $iar_id], ['class' => 'btn btn-link']);
         }
         echo ' ' . Html::a('Add End-User', ['update', 'id' => $model->id], ['class' => 'btn btn-success', 'title' => 'Update']);
 

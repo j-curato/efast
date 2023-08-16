@@ -57,9 +57,9 @@ class PurchaseOrdersForRfiSearch extends PurchaseOrdersForRfi
         if (!yii::$app->user->can('ro_inspection_admin')) {
             $user_data = Yii::$app->memem->getUserData();
             $query->andWhere('purchase_orders_for_rfi.office_name = :office', ['office' => $user_data->office->office_name]);
-            if (!Yii::$app->user->can('ro_inspection_admin') || !Yii::$app->user->can('ro_inspection_admin')) {
-                $query->andWhere('purchase_orders_for_rfi.division = :division', ['division' => $user_data->divisionName->division ?? '']);
-            }
+            // if (!Yii::$app->user->can('ro_inspection_admin') || !Yii::$app->user->can('ro_inspection_admin')) {
+            //     $query->andWhere('purchase_orders_for_rfi.division = :division', ['division' => $user_data->divisionName->division ?? '']);
+            // }
         }
         // add conditions that should always apply here
 

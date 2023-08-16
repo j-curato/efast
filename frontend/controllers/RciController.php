@@ -99,6 +99,7 @@ rci_items.fk_rci_id= :id
     {
         return Yii::$app->db->createCommand("SELECT
                 rci_items.id,
+                cash_disbursement.id as cash_disbursement_id,
                 cash_disbursement.reporting_period,
                 cash_disbursement_items.id as cash_item_id,
                cash_disbursement.check_or_ada_no,
