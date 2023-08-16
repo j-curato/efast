@@ -120,7 +120,7 @@ rci_items.fk_rci_id= :id
        LEFT JOIN chart_of_accounts ON cash_disbursement_items.fk_chart_of_account_id = chart_of_accounts.id
        LEFT JOIN mode_of_payments ON cash_disbursement.fk_mode_of_payment_id = mode_of_payments.id
        LEFT JOIN (SELECT * FROM acics_cash_items WHERE acics_cash_items.is_deleted = 0) as gd_acic_itm ON cash_disbursement.id = gd_acic_itm.fk_cash_disbursement_id
-       LEFT JOIN acics ON acics_cash_items.fk_acic_id = acics.id
+       LEFT JOIN acics ON gd_acic_itm.fk_acic_id = acics.id
        
         WHERE 
         rci_items.fk_rci_id = :id
