@@ -7,6 +7,7 @@ use app\models\InspectionReport;
 use app\models\InspectionReportItems;
 use app\models\InspectionReportNoPoItems;
 use app\models\NoPoInspectionReportItems;
+use app\models\Office;
 use app\models\PurchaseOrdersForRfiSearch;
 use Yii;
 use app\models\RequestForInspection;
@@ -60,7 +61,7 @@ class RequestForInspectionController extends Controller
                             'final',
                         ],
                         'allow' => true,
-                        'roles' => ['request-for-inspection', 'super-user', 'ro-admin']
+                        'roles' => ['request_for_inspection', 'super-user', 'ro-admin']
                     ],
                     [
                         'actions' => [
@@ -219,109 +220,83 @@ class RequestForInspectionController extends Controller
             ->queryAll();
         return $purchase_orders;
     }
+    private function  CheckPOqtyBal($qty, $po_itm_id, $rfi_item_id = '')
+    {
+        $sql = '';
+        $params = [];
+
+        if (!empty($rfi_item_id)) {
+            $sql = ' AND ';
+            $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['!=', 'request_for_inspection_items.id', $rfi_item_id], $params);
+        }
+        $q = YIi::$app->db->createCommand("SELECT 
+        pr_purchase_request_item.quantity - IFNULL(aoq_items_quantity.quantity,0) as remaining_quantity
+        FROM 
+        pr_purchase_order_items_aoq_items
+        INNER JOIN pr_aoq_entries ON pr_purchase_order_items_aoq_items.fk_aoq_entries_id = pr_aoq_entries.id
+        INNER JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
+        INNER JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
+        LEFT JOIN (SELECT 
+                        request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id,
+                        SUM(request_for_inspection_items.quantity) as quantity
+                        FROM request_for_inspection_items 
+                        WHERE 
+                         request_for_inspection_items.is_deleted !=1
+                         $sql
+        GROUP BY request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id) as aoq_items_quantity 
+        ON pr_purchase_order_items_aoq_items.id = aoq_items_quantity.fk_pr_purchase_order_items_aoq_item_id
+        WHERE 
+        pr_purchase_order_items_aoq_items.id  = :id", $params)
+            ->bindValue(':id', $po_itm_id)
+            ->queryScalar();
+
+        if (intval($qty) > intval($q)) {
+            return "Quantity should not be greater than {$q} ";
+        }
+        return true;
+    }
     /**
      * Creates a new RequestForInspection model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    private function insertItems($rfi_id, $po_ids = [], $item_ids = [], $quantity = [], $date_from = [], $date_to = [])
+    private function insertItems($rfi_id, $items = [])
     {
-        if (!empty($po_ids)) {
-            try {
-                $i = 1;
-                foreach ($po_ids as $index => $val) {
-                    if (!empty($item_ids[$index])) {
-                        $item = RequestForInspectionItems::findOne($item_ids[$index]);
-                        if (!empty($quantity[$index])) {
-                            $q = YIi::$app->db->createCommand("SELECT 
-                            pr_purchase_request_item.quantity - IFNULL(aoq_items_quantity.quantity,0) as remaining_quantity
-                            FROM 
-                            pr_purchase_order_items_aoq_items
-                            INNER JOIN pr_aoq_entries ON pr_purchase_order_items_aoq_items.fk_aoq_entries_id = pr_aoq_entries.id
-                            INNER JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
-                            INNER JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
-                            LEFT JOIN (SELECT 
-                                            request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id,
-                                            SUM(request_for_inspection_items.quantity) as quantity
-                                            FROM request_for_inspection_items 
-                                            WHERE request_for_inspection_items.id !=:rfi_id
-                                            AND request_for_inspection_items.is_deleted !=1
-                            GROUP BY request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id) as aoq_items_quantity 
-                            ON pr_purchase_order_items_aoq_items.id = aoq_items_quantity.fk_pr_purchase_order_items_aoq_item_id
-                            WHERE 
-                            pr_purchase_order_items_aoq_items.id  = :id")
-                                ->bindValue(':id', $val)
-                                ->bindValue(':rfi_id', $item->id)
-                                ->queryScalar();
-
-                            if (intval($quantity[$index]) > intval($q)) {
-                                return ['isSuccess' => false, 'error_message' => "Quantity should not be greater than {$q} in line $i"];
-                                // return "Quantity should not be greater than {$q} in line $index";
-                            }
-                        }
-                    } else {
-
-                        $item = new RequestForInspectionItems();
-                        if (!empty($quantity[$index])) {
-                            $q = YIi::$app->db->createCommand("SELECT 
-                            pr_purchase_request_item.quantity - IFNULL(aoq_items_quantity.quantity,0) as remaining_quantity
-                            FROM 
-                            pr_purchase_order_items_aoq_items
-                            INNER JOIN pr_aoq_entries ON pr_purchase_order_items_aoq_items.fk_aoq_entries_id = pr_aoq_entries.id
-                            INNER JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
-                            INNER JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
-                            LEFT JOIN (SELECT 
-                                            request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id,
-                                            SUM(request_for_inspection_items.quantity) as quantity
-                                            FROM request_for_inspection_items 
-                                            WHERE request_for_inspection_items.is_deleted !=1
-                            GROUP BY request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id) as aoq_items_quantity 
-                            ON pr_purchase_order_items_aoq_items.id = aoq_items_quantity.fk_pr_purchase_order_items_aoq_item_id
-                            WHERE 
-                            pr_purchase_order_items_aoq_items.id  = :id")
-                                ->bindValue(':id', $val)
-                                ->queryScalar();
-
-                            if (intval($quantity[$index]) > intval($q)) {
-                                return ['isSuccess' => false, 'error_message' => "Quantity should not be greater than {$q} in line $i"];
-                            }
-                        }
+        try {
+            $i = 1;
+            foreach ($items as $index => $itm) {
+                if (!empty($itm['item_id'])) {
+                    $rfi_item = RequestForInspectionItems::findOne($itm['item_id']);
+                    $chk  = $this->CheckPOqtyBal($itm['quantity'], $itm['purchase_order_id'], $rfi_item->id);
+                    if ($chk !== true) {
+                        throw new ErrorException($chk . "in line $index");
                     }
+                } else {
 
-
-
-                    $item->fk_request_for_inspection_id = $rfi_id;
-                    $item->fk_pr_purchase_order_items_aoq_item_id = $val;
-                    $item->quantity = !empty($quantity[$index]) ? $quantity[$index] : 0;
-                    $item->from = !empty($date_from[$index]) ?  $date_from[$index] : null;
-                    $item->to = !empty($date_to[$index]) ?  $date_to[$index] : null;
-                    $new_record = $item->isNewRecord;
-                    if (empty($date_from[$index])) {
-                        return ['isSuccess' => false, 'error_message' => "From Date is Required in line $i"];
+                    $rfi_item = new RequestForInspectionItems();
+                    $chk  = $this->CheckPOqtyBal($itm['quantity'], $itm['purchase_order_id']);
+                    if ($chk !== true) {
+                        throw new ErrorException($chk . "in line $index");
                     }
-                    if (empty($date_to[$index])) {
-                        return ['isSuccess' => false, 'error_message' => "To Date is Required in line $i"];
-                    }
-                    if ($item->validate()) {
-
-                        if ($item->save(false)) {
-                            // echo $item->fk_purchase_order_item_id;
-                            // echo '<br>';
-                            if ($new_record) {
-                                // $this->withPoInsertInspectionReport($item->id);
-                            }
-                        }
-                    } else {
-                        return $item->errors;
-                    }
-                    $i++;
                 }
-                // die();
-            } catch (ErrorException $e) {
-                return $e->getMessage();
+
+                $rfi_item->fk_request_for_inspection_id = $rfi_id;
+                $rfi_item->fk_pr_purchase_order_items_aoq_item_id = $itm['purchase_order_id'];
+                $rfi_item->quantity =  $itm['quantity'];
+                $rfi_item->from =  $itm['date_from'];
+                $rfi_item->to =  $itm['date_to'];
+
+                if (!$rfi_item->validate()) {
+                    throw new ErrorException(json_encode($rfi_item->errors));
+                }
+                if (!$rfi_item->save(false)) {
+                    throw new ErrorException('WIth PO Item Save Failed');
+                }
             }
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
         }
-        return ['isSuccess' => true];
     }
     private function withPoInsertInspectionReport($rfi_id)
     {
@@ -485,69 +460,37 @@ class RequestForInspectionController extends Controller
 
         return true;
     }
-    private function insertNoPoItems(
-        $rfi_id,
-        $project_name = [],
-        $stock_name = [],
-        $specification = [],
-        $unit_of_measure = [],
-        $payee = [],
-        $unit_cost = [],
-        $no_po_quantity = [],
-        $from_date = [],
-        $to_date = [],
-        $no_po_item_ids = []
+    private function insertNoPoItems($rfi_id, $items = [])
+    {
 
-    ) {
-        $line_no = 1;
         try {
-            foreach ($project_name as $index => $val) {
-
-                if (!empty($no_po_item_ids[$index])) {
-                    $items =  RfiWithoutPoItems::findOne($no_po_item_ids[$index]);
+            foreach ($items as $index => $itm) {
+                if (!empty($itm['item_id'])) {
+                    $rfi_item =  RfiWithoutPoItems::findOne($itm['item_id']);
                 } else {
-
-                    $items = new RfiWithoutPoItems();
+                    $rfi_item = new RfiWithoutPoItems();
                 }
-
-                $validateItems = $this->validateNoPoItems(
-                    $val,
-                    $stock_name[$index],
-                    $specification[$index],
-                    $unit_of_measure[$index],
-                    $payee[$index],
-                    $unit_cost[$index],
-                    $no_po_quantity[$index],
-                    $from_date[$index],
-                    $to_date[$index]
-                );
-
-                if ($validateItems !== true) {
-                    return ['isSuccess' => false, 'error_message' => $validateItems . $line_no];
+                $rfi_item->fk_request_for_inspection_id = $rfi_id;
+                $rfi_item->project_name = $itm['project_name'];
+                $rfi_item->fk_stock_id = $itm['stock_name'];
+                $rfi_item->specification = $itm['specification'];
+                $rfi_item->fk_unit_of_measure_id = $itm['unit_of_measure'];
+                $rfi_item->fk_payee_id = $itm['payee'];
+                $rfi_item->unit_cost = $itm['unit_cost'];
+                $rfi_item->quantity = $itm['no_po_quantity'];
+                $rfi_item->from_date = $itm['from_date'];
+                $rfi_item->to_date = $itm['to_date'];
+                if (!$rfi_item->validate()) {
+                    throw new ErrorException(json_encode($rfi_item->errors));
                 }
-                $items->fk_request_for_inspection_id = $rfi_id;
-                $items->project_name = $val;
-                $items->fk_stock_id = $stock_name[$index];
-                $items->specification = $specification[$index];
-                $items->fk_unit_of_measure_id = $unit_of_measure[$index];
-                $items->fk_payee_id = $payee[$index];
-                $items->unit_cost = $unit_cost[$index];
-                $items->quantity = $no_po_quantity[$index];
-                $items->from_date = $from_date[$index];
-                $items->to_date = $to_date[$index];
-
-                if ($items->validate()) {
-                    if ($items->save(false)) {
-                    }
-                } else {
-                    return ['isSuccess' => false, 'error_message' => $items->errors];
+                if (!$rfi_item->save(false)) {
+                    throw new ErrorException('No PO Model Save Failed');
                 }
-                $line_no++;
             }
+            return true;
         } catch (ErrorException $e) {
             return ['isSuccess' => false, 'error_message' => $e->getMessage()];
         }
-        return ['isSuccess' => true];
     }
     private function noPo_items($rfi_id = '')
     {
@@ -586,8 +529,12 @@ class RequestForInspectionController extends Controller
         $model = new RequestForInspection();
         $searchModel = new PurchaseOrdersForRfiSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $model->fk_property_unit = 99684622555676819;
+        $model->fk_property_unit = 100099198938013553;
         $model->fk_chairperson = 99684622555676844;
+        $user_data = Yii::$app->memem->getUserData();
+        $model->fk_office_id = $user_data->office->id;
+        $model->fk_division_id = $user_data->divisionName->id ?? '';
+        $model->fk_created_by =  Yii::$app->user->identity->id;
 
         if (!Yii::$app->user->can('super-user')) {
             $user_division = strtolower(Yii::$app->user->identity->division);
@@ -596,115 +543,43 @@ class RequestForInspectionController extends Controller
                 ->queryScalar();
             $model->fk_responsibility_center_id = $division_id;
         }
-        if (Yii::$app->request->isPost) {
-            $date = !empty($_POST['date']) ? $_POST['date'] : '';
-            $fk_responsibility_center_id = !empty($_POST['fk_responsibility_center_id']) ? $_POST['fk_responsibility_center_id'] : '';
-            $transaction_type = !empty($_POST['transaction_type']) ? $_POST['transaction_type'] : '';
-            $fk_requested_by = !empty($_POST['fk_requested_by']) ? $_POST['fk_requested_by'] : '';
-            $fk_chairperson = !empty($_POST['fk_chairperson']) ? $_POST['fk_chairperson'] : '';
-            $fk_inspector = !empty($_POST['fk_inspector']) ? $_POST['fk_inspector'] : '';
-            $fk_property_unit = !empty($_POST['fk_property_unit']) ? $_POST['fk_property_unit'] : '';
-            // return JSON::encode(array('isSuccess' => false, 'error_message' => 'qwe'));
-            $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-            // return $this->redirect(['view', 'id' => $model->id]);
-            $model->rfi_number = $this->rfiNumber();
-            $model->date =  $date;
-            $model->fk_chairperson = $fk_chairperson;
-            $model->fk_inspector =  $fk_inspector;
-            $model->fk_property_unit = $fk_property_unit;
-            $model->fk_requested_by =  $fk_requested_by;
-            if (Yii::$app->user->can('super-user')) {
-                $model->fk_responsibility_center_id =  $fk_responsibility_center_id;
-            }
-            $model->transaction_type = $transaction_type;
-            $transaction = Yii::$app->db->beginTransaction();
-
+        if ($model->load(Yii::$app->request->post())) {
             try {
-                if ($model->validate()) {
-
-
-                    if ($flag = $model->save(false)) {
-                        if ($model->transaction_type !== 'with_po') {
-                            $project_name = !empty($_POST['project_name']) ? $_POST['project_name'] : [];
-                            $stock_name = !empty($_POST['stock_name']) ? $_POST['stock_name'] : [];
-                            $specification = !empty($_POST['specification']) ? $_POST['specification'] : [];
-                            $unit_of_measure = !empty($_POST['unit_of_measure']) ? $_POST['unit_of_measure'] : [];
-                            $payee = !empty($_POST['payee']) ? $_POST['payee'] : [];
-                            $unit_cost = !empty($_POST['unit_cost']) ? $_POST['unit_cost'] : [];
-                            $no_po_quantity = !empty($_POST['no_po_quantity']) ? $_POST['no_po_quantity'] : [];
-                            $from_date = !empty($_POST['from_date']) ? $_POST['from_date'] : [];
-                            $to_date = !empty($_POST['to_date']) ? $_POST['to_date'] : [];
-                            $res = $this->insertNoPoItems(
-                                $model->id,
-                                $project_name,
-                                $stock_name,
-                                $specification,
-                                $unit_of_measure,
-                                $payee,
-                                $unit_cost,
-                                $no_po_quantity,
-                                $from_date,
-                                $to_date
-
-                            );
-                            if ($res['isSuccess']) {
-
-
-
-                                $transaction->commit();
-                                return $this->redirect(['view', 'id' => $model->id]);
-                            } else {
-                                $transaction->rollBack();
-                                return JSON::encode(array('isSuccess' => false, 'error_message' => $res['error_message']));
-                            }
-                        } else {
-                            $po_ids = !empty($_POST['purchase_order_id']) ? $_POST['purchase_order_id'] : [];
-                            $date_from = !empty($_POST['date_from']) ? $_POST['date_from'] : [];
-                            $date_to = !empty($_POST['date_to']) ? $_POST['date_to'] : [];
-                            $quantity = !empty($_POST['quantity']) ? $_POST['quantity'] : [];
-                            if (empty($po_ids)) {
-                                $transaction->rollBack();
-                                return JSON::encode(array('isSuccess' => false, 'error_message' => 'Select PO'));
-                            }
-                            $success = $this->insertItems(
-                                $model->id,
-                                array_unique($po_ids),
-                                [],
-                                $quantity,
-                                $date_from,
-                                $date_to
-                            );
-                            if ($success['isSuccess']) {
-
-                                // $insert_ir = $this->withPoInsertInspectionReport($model->id, $model->rfi_number);
-                                // if ($insert_ir['isSuccess']) {
-
-                                $transaction->commit();
-                                return $this->redirect(['view', 'id' => $model->id]);
-                                // } else {
-                                //     $transaction->rollBack();
-                                //     return JSON::encode(array('isSuccess' => false, 'error_message' => $insert_ir['error_message']));
-                                // }
-                            } else {
-                                $transaction->rollBack();
-                                return JSON::encode(array('isSuccess' => false, 'error_message' => $success['error_message']));
-                            }
-                        }
-                    }
-                    if ($flag) {
-                        $transaction->commit();
+                $txn = Yii::$app->db->beginTransaction();
+                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT() % 9223372036854775807")->queryScalar();
+                $model->rfi_number = $this->rfiNumber($model->fk_office_id);
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save Failed');
+                }
+                if ($model->transaction_type !== 'with_po') {
+                    $noPoItems = Yii::$app->request->post('noPoItems');
+                    $res = $this->insertNoPoItems(
+                        $model->id,
+                        $noPoItems
+                    );
+                    if ($res !== true) {
+                        throw new ErrorException(json_encode($res));
                     }
                 } else {
-                    $transaction->rollBack();
-                    return JSON::encode(array('isSuccess' => false, 'error_message' => $model->errors));
+                    $poItems = Yii::$app->request->post('poItems');
+                    $res = $this->insertItems(
+                        $model->id,
+                        $poItems
+                    );
+                    if ($res !== true) {
+                        throw new ErrorException(json_encode($res));
+                    }
                 }
+                $txn->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
-                return JSON::encode(array('isSuccess' => false, 'error_message' => $e->getMessage()));
+                $txn->rollBack();
+                return $e->getMessage();
             }
         }
-
-
-
 
         return $this->render('create', [
             'model' => $model,
@@ -743,124 +618,41 @@ class RequestForInspectionController extends Controller
         if ($model->is_final && !Yii::$app->user->can('super-user')) {
             return $this->redirect(['index']);
         }
-        if (YIi::$app->request->isPost) {
-
-            // if ($model->is_final !== true) {
-
-            $date = !empty($_POST['date']) ? $_POST['date'] : '';
-            $fk_responsibility_center_id = !empty($_POST['fk_responsibility_center_id']) ? $_POST['fk_responsibility_center_id'] : '';
-            $transaction_type = !empty($_POST['transaction_type']) ? $_POST['transaction_type'] : '';
-            $fk_requested_by = !empty($_POST['fk_requested_by']) ? $_POST['fk_requested_by'] : '';
-            $fk_chairperson = !empty($_POST['fk_chairperson']) ? $_POST['fk_chairperson'] : '';
-            $fk_inspector = !empty($_POST['fk_inspector']) ? $_POST['fk_inspector'] : '';
-            $fk_property_unit = !empty($_POST['fk_property_unit']) ? $_POST['fk_property_unit'] : '';
-            // return JSON::encode(array('isSuccess' => false, 'error_message' => 'qwe'));
-            // return $this->redirect(['view', 'id' => $model->id]);
-            $model->date =  $date;
-            $model->fk_chairperson = $fk_chairperson;
-            $model->fk_inspector =  $fk_inspector;
-            $model->fk_property_unit = $fk_property_unit;
-            $model->fk_requested_by =  $fk_requested_by;
-            if (Yii::$app->user->can('super-user')) {
-                $model->fk_responsibility_center_id =  $fk_responsibility_center_id;
-            }
-            $model->transaction_type = $transaction_type;
-            $no_po_item_id = !empty($_POST['no_po_item_ids']) ? $_POST['no_po_item_ids'] : [];
-
-            $transaction = Yii::$app->db->beginTransaction();
-            // return json_encode($item_ids);
+        if ($model->load(Yii::$app->request->post())) {
             try {
+                $txn = Yii::$app->db->beginTransaction();
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save Failed');
+                }
+                if ($model->transaction_type !== 'with_po') {
+                    $noPoItems = Yii::$app->request->post('noPoItems');
+                    $res = $this->insertNoPoItems(
+                        $model->id,
+                        $noPoItems
+                    );
 
-                if ($model->validate()) {
-                    if ($flag = $model->save(false)) {
-                        if (!empty($item_ids)) {
-
-                            $params = [];
-                            $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $item_ids], $params);
-                            Yii::$app->db->createCommand("UPDATE request_for_inspection_items SET is_deleted = 1, deleted_at = CURRENT_TIMESTAMP WHERE 
-                                $sql AND request_for_inspection_items.fk_request_for_inspection_id = :id", $params)
-                                ->bindValue(':id', $model->id)->query();
-                        }
-                        if (!empty($no_po_item_id)) {
-
-                            $params = [];
-                            $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $no_po_item_id], $params);
-                            Yii::$app->db->createCommand("UPDATE rfi_without_po_items SET is_deleted = 1, deleted_at = CURRENT_TIMESTAMP WHERE 
-                                $sql AND rfi_without_po_items.fk_request_for_inspection_id = :id", $params)
-                                ->bindValue(':id', $model->id)->query();
-                        }
-                        if ($model->transaction_type !== 'with_po') {
-                            $project_name = !empty($_POST['project_name']) ? $_POST['project_name'] : [];
-                            $stock_name = !empty($_POST['stock_name']) ? $_POST['stock_name'] : [];
-                            $specification = !empty($_POST['specification']) ? $_POST['specification'] : [];
-                            $unit_of_measure = !empty($_POST['unit_of_measure']) ? $_POST['unit_of_measure'] : [];
-                            $payee = !empty($_POST['payee']) ? $_POST['payee'] : [];
-                            $unit_cost = !empty($_POST['unit_cost']) ? $_POST['unit_cost'] : [];
-                            $no_po_quantity = !empty($_POST['no_po_quantity']) ? $_POST['no_po_quantity'] : [];
-                            $from_date = !empty($_POST['from_date']) ? $_POST['from_date'] : [];
-                            $to_date = !empty($_POST['to_date']) ? $_POST['to_date'] : [];
-
-
-                            $res = $this->insertNoPoItems(
-                                $model->id,
-                                $project_name,
-                                $stock_name,
-                                $specification,
-                                $unit_of_measure,
-                                $payee,
-                                $unit_cost,
-                                $no_po_quantity,
-                                $from_date,
-                                $to_date,
-                                $no_po_item_id
-
-                            );
-                            if ($res['isSuccess']) {
-
-
-
-                                $transaction->commit();
-                                return $this->redirect(['view', 'id' => $model->id]);
-                            } else {
-                                $transaction->rollBack();
-                                return JSON::encode(array('isSuccess' => false, 'error_message' => $res['error_message']));
-                            }
-                        } else {
-                            $po_ids = !empty($_POST['purchase_order_id']) ? $_POST['purchase_order_id'] : [];
-                            $date_from = !empty($_POST['date_from']) ? $_POST['date_from'] : [];
-                            $date_to = !empty($_POST['date_to']) ? $_POST['date_to'] : [];
-                            $quantity = !empty($_POST['quantity']) ? $_POST['quantity'] : [];
-                            $item_ids = !empty($_POST['item_id']) ? $_POST['item_id'] : [];
-                            if (empty($po_ids)) {
-                                $transaction->rollBack();
-                                return JSON::encode(array('isSuccess' => false, 'error_message' => 'Select PO'));
-                            }
-                            $success = $this->insertItems(
-                                $model->id,
-                                array_unique($po_ids),
-                                $item_ids,
-                                $quantity,
-                                $date_from,
-                                $date_to
-                            );
-                            if ($success['isSuccess']) {
-                                $transaction->commit();
-                                return $this->redirect(['view', 'id' => $model->id]);
-                            } else {
-                                $transaction->rollBack();
-                                return JSON::encode(array('isSuccess' => false, 'error_message' => $success['error_message']));
-                            }
-                        }
+                    if ($res !== true) {
+                        throw new ErrorException(json_encode($res));
                     }
                 } else {
-                    $transaction->rollBack();
-                    Yii::$app->response->format = Response::FORMAT_JSON;
-                    return ActiveForm::validate($model);
+                    $poItems = Yii::$app->request->post('poItems');
+                    $res = $this->insertItems(
+                        $model->id,
+                        $poItems
+                    );
+                    if ($res !== true) {
+                        throw new ErrorException(json_encode($res));
+                    }
                 }
+                $txn->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
+                $txn->rollBack();
                 return $e->getMessage();
             }
-            // }
         }
 
 
@@ -923,12 +715,16 @@ class RequestForInspectionController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    private function rfiNumber()
+    private function rfiNumber($office_id)
     {
-
+        $ofc = Office::findOne($office_id);
         $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(rfi_number,'-',-1)  AS UNSIGNED) as last_number
          FROM request_for_inspection
-         ORDER BY last_number DESC LIMIT 1")->queryScalar();
+         WHERE 
+            fk_office_id = :office_id
+         ORDER BY last_number DESC LIMIT 1")
+            ->bindValue(':office_id', $office_id)
+            ->queryScalar();
 
         $num = 1;
         if (!empty($query)) {
@@ -939,7 +735,7 @@ class RequestForInspectionController extends Controller
 
             $zero .= 0;
         }
-        return date('Y') . '-' . $zero . $num;
+        return strtoupper($ofc->office_name) . '-' . date('Y') . '-' . $zero . $num;
     }
     public function actionSearchRfi($q = null, $id = null)
     {

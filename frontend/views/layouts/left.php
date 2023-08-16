@@ -218,14 +218,14 @@ $user_data = Yii::$app->memem->getUserData();
                     'label' => 'Procurement',
                     'url' => '#',
                     'items' => [
-                        [
+                        YII::$app->user->can('po_procurement_admin') ? [
                             'label' => 'Master Records',
                             'url' => '#',
                             'items' => [
                                 Yii::$app->user->can('po_procurement_admin') ?     ['label' => 'RBAC', 'icon' => 'circle-o', 'url' => ['/bac-composition'],] : [],
 
                             ],
-                        ],
+                        ] : [],
                         [
                             'label' => 'Transaction',
                             'icon' => 'circle-o',
@@ -241,7 +241,7 @@ $user_data = Yii::$app->memem->getUserData();
 
                             ],
                         ],
-                        [
+                        YII::$app->user->can('po_procurement_admin') ? [
                             'label' => 'Reports',
                             'icon' => 'circle-o',
                             'url' => '#',
@@ -250,13 +250,25 @@ $user_data = Yii::$app->memem->getUserData();
                                 Yii::$app->user->can('super-user') ?     ['label' => 'PO Summary', 'icon' => 'circle-o', 'url' => ['/report/pr-summary'],] : [],
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Procurement Search', 'icon' => 'circle-o', 'url' => ['/report/proc-summary'],] : [],
                             ],
-                        ],
+                        ] : [],
 
 
 
 
                     ],
                 ] : [],
+                Yii::$app->user->can('inspection') ?  [
+                    'label' => 'Inspection',
+                    'url' => '#',
+                    'items' => [
+
+                        Yii::$app->user->can('request_for_inspection') ?     ['label' => 'Request for Inspection', 'icon' => 'circle-o', 'url' => ['/request-for-inspection'],] : [],
+                        Yii::$app->user->can('inspection_report') ?     ['label' => 'Inspection Report', 'icon' => 'circle-o', 'url' => ['/inspection-report'],] : [],
+                        Yii::$app->user->can('iar') ?     ['label' => 'IAR', 'icon' => 'circle-o', 'url' => ['/iar'],] : [],
+                    ],
+                ]  : [],
+
+
 
             ],
 

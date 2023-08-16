@@ -34,23 +34,15 @@ class RequestForInspection extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'rfi_number', 'date', 'fk_requested_by', 'fk_responsibility_center_id','transaction_type'], 'required'],
-            [['id', 'fk_chairperson', 'fk_inspector', 'fk_property_unit', 'fk_pr_office_id', 'is_final', 'fk_requested_by'], 'integer'],
+            [['id', 'rfi_number', 'date', 'fk_requested_by', 'fk_responsibility_center_id', 'transaction_type', 'fk_office_id', 'fk_division_id'], 'required'],
+            [[
+                'id', 'fk_chairperson', 'fk_inspector', 'fk_property_unit', 'fk_pr_office_id', 'is_final', 'fk_requested_by', 'fk_office_id',
+                'fk_division_id',
+                'fk_created_by'
+            ], 'integer'],
             [['date', 'created_at'], 'safe'],
             [['rfi_number', 'transaction_type'], 'string', 'max' => 255],
-            [['rfi_number'], 'unique'],
-            [['id'], 'unique'],
-            [[
-                'rfi_number',
-                'date',
-                'fk_pr_office_id',
-                'fk_chairperson',
-                'fk_inspector',
-                'fk_property_unit',
-                'fk_requested_by',
-                'fk_responsibility_center_id',
-
-            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+            [['rfi_number', 'id'], 'unique'],
         ];
     }
 
@@ -61,7 +53,7 @@ class RequestForInspection extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'rfi_number' => 'Rfi Number',
+            'rfi_number' => 'RFI No.',
             'date' => 'Date',
             'fk_chairperson' => 'Chairperson',
             'fk_inspector' => 'Inspector',
@@ -72,6 +64,9 @@ class RequestForInspection extends \yii\db\ActiveRecord
             'fk_requested_by' => 'Requested By',
             'fk_responsibility_center_id' => 'Division',
             'transaction_type' => 'Transaction Type',
+            'fk_office_id' => 'Office',
+            'fk_division_id' => 'Division',
+            'fk_created_by' => 'Created By'
 
 
         ];

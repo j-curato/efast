@@ -23,20 +23,17 @@ SweetAlertAsset::register($this);
 
             <?php
 
-            if (!$model->is_final && !Yii::$app->user->can('super-user')) {
-                $check_rfqs = YIi::$app->db->createCommand("SELECT id FROM pr_rfq WHERE pr_purchase_request_id = :id")
-                    ->bindValue(':id', $model->id)
-                    ->queryAll();
-                if (empty($check_rfqs) && !Yii::$app->user->can('super-user')) {
-                    echo     Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
-                }
+            $check_rfqs = YIi::$app->db->createCommand("SELECT id FROM pr_rfq WHERE pr_purchase_request_id = :id")
+                ->bindValue(':id', $model->id)
+                ->queryAll();
+            if (empty($check_rfqs) || Yii::$app->user->can('super-user')) {
+                echo     Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
             }
+
             ?>
             <button type="button" class="print btn btn-warning">Print</button>
             <?php
-
-            if (Yii::$app->user->can('super-user')) {
-                echo     Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) . ' ';
+            if (Yii::$app->user->can('ro_procurement_admin') || Yii::$app->user->can('po_procurement_admin')) {
                 $btn_color = $model->is_cancelled ? 'btn btn-success' : 'btn btn-danger';
                 $cncl_txt = $model->is_cancelled ? 'UnCancel' : 'Cancel';
                 if (!$model->is_cancelled) {
@@ -45,6 +42,8 @@ SweetAlertAsset::register($this);
                         'id' => 'cancel'
 
                     ]);
+                } else {
+                    echo "<h5 style='color:red;'>This PR is Cancelled.</h5>";
                 }
             }
             ?>

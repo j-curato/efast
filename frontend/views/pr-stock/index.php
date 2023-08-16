@@ -1,5 +1,6 @@
 <?php
 
+use kartik\export\ExportMenu;
 use kartik\file\FileInput;
 use kartik\form\ActiveForm;
 use kartik\grid\GridView;
@@ -67,6 +68,27 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
+
+    $cols = [
+        'bac_code',
+        'stock_title',
+        [
+            'label' => 'Unit of Measure',
+            'attribute' => 'unit_of_measure_id',
+            'value' => 'unitOfMeasure.unit_of_measure'
+        ],
+        'budget_year',
+        [
+            'attribute' => 'amount',
+            'hAlign' => 'right',
+            'format' => ['decimal', 2]
+        ],
+
+        [
+            'class' => 'kartik\grid\ActionColumn',
+            'deleteOptions' => ['style' => 'display:none']
+        ],
+    ];
     ?>
 
     <?= GridView::widget([
@@ -76,26 +98,34 @@ $this->params['breadcrumbs'][] = $this->title;
             'type' => GridView::TYPE_PRIMARY,
             'heading' => 'Stocks'
         ],
-        'columns' => [
-            'bac_code',
-            'stock_title',
-            [
-                'label' => 'Unit of Measure',
-                'attribute' => 'unit_of_measure_id',
-                'value' => 'unitOfMeasure.unit_of_measure'
-            ],
-            'budget_year',
-            [
-                'attribute' => 'amount',
-                'hAlign' => 'right',
-                'format' => ['decimal', 2]
-            ],
+        'toolbar' => [
+
 
             [
-                'class' => 'kartik\grid\ActionColumn',
-                'deleteOptions' => ['style' => 'display:none']
-            ],
+                'content' => ExportMenu::widget([
+                    'dataProvider' => $dataProvider,
+                    'columns' => $cols,
+                    'filename' => "DV",
+                    'batchSize' => 10,
+                    'stream' => false,
+                    'target' => '_popup',
+
+                    'exportConfig' => [
+                        ExportMenu::FORMAT_CSV => false,
+                        ExportMenu::FORMAT_TEXT => false,
+                        ExportMenu::FORMAT_PDF => false,
+                        ExportMenu::FORMAT_HTML => false,
+                        ExportMenu::FORMAT_EXCEL => false,
+
+                    ]
+
+                ]),
+                'options' => [
+                    'class' => 'btn-group mr-2', 'style' => 'margin-right:20px'
+                ]
+            ]
         ],
+        'columns' => $cols
     ]); ?>
 
 

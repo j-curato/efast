@@ -51,7 +51,7 @@ class InspectionReportController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['ro-common-user']
+                        'roles' => ['ro-common-user', 'inspection_report']
                     ],
                 ]
             ],

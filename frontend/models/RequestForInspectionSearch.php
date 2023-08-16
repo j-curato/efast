@@ -66,8 +66,12 @@ class RequestForInspectionSearch extends RequestForInspection
     {
         $query = RequestForInspection::find();
         $query->joinWith('responsibilityCenter');
-        if (!yii::$app->user->can('super-user')) {
-            $query->andWhere('responsibility_center.name = :division', ['division' => Yii::$app->user->identity->division]);
+        if (!yii::$app->user->can('ro_inspection_admin')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $query->andWhere('request_for_inspection.fk_office_id = :office', ['office' => $user_data->office->id]);
+            if (!Yii::$app->user->can('ro_inspection_admin') || !Yii::$app->user->can('ro_inspection_admin')) {
+                $query->andWhere('request_for_inspection.fk_division_id = :division', ['division' => $user_data->divisionName->id ?? '']);
+            }
         }
         // add conditions that should always apply here
 

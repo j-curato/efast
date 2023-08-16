@@ -46,7 +46,7 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
                 'fk_division_id',
                 'fk_division_program_unit_id', 'is_fixed_expense',
                 'is_cancelled',
-                'fk_created_by'
+            
             ], 'integer'],
             [['purpose'], 'string'],
             [['pr_number'], 'string', 'max' => 255],

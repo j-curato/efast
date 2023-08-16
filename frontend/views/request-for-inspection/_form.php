@@ -1,8 +1,12 @@
 <?php
 
+use app\models\Divisions;
+use app\models\Office;
 use aryelds\sweetalert\SweetAlert;
 use aryelds\sweetalert\SweetAlertAsset;
+use kartik\form\ActiveForm;
 use kartik\grid\GridView;
+use kartik\icons\Icon;
 use kartik\widgets\DatePicker;
 use kartik\widgets\Select2;
 use yii\bootstrap\Button;
@@ -10,6 +14,7 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\JsExpression;
 
+$this->registerJsFile("@web/js/vue.js", ['position' => $this::POS_HEAD]);
 /* @var $this yii\web\View */
 /* @var $model app\models\RequestForInspection */
 /* @var $form yii\widgets\ActiveForm */
@@ -79,30 +84,56 @@ if (!empty($model->transaction_type)) {
 
 ?>
 
-<div class="request-for-inspection-form">
-
+<div class="request-for-inspection-form" id="app">
     <div class="cons">
-        <?= Html::beginForm([$action, 'id' => $model->id], 'post', ['id' => 'rfi_form']); ?>
+        <?php
+        // Html::beginForm([$action, 'id' => $model->id], 'post', ['id' => 'rfi_form']);
+        ?>
+        <?php $form = ActiveForm::begin([
+            'id' => $model->formName()
+        ]); ?>
         <div class="row">
-            <div class="col-sm-3">
-                <label for="date">Date</label>
-                <?= DatePicker::widget([
+            <?php
+
+            if (YIi::$app->user->can('super-user')) {
+
+            ?>
+                <div class="col-sm-2">
+                    <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
+                        'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
+                        'pluginOptions' => [
+                            'placeholder' => 'Select Office'
+                        ]
+                    ]) ?>
+                </div>
+
+            <?php }
+
+            if (YIi::$app->user->can('po_inspection_admin') || YIi::$app->user->can('ro_inspection_admin')) {
+            ?>
+
+                <div class="col-sm-2">
+                    <?= $form->field($model, 'fk_division_id')->widget(Select2::class, [
+                        'data' => ArrayHelper::map(Divisions::find()->asArray()->all(), 'id', 'division'),
+                        'pluginOptions' => [
+                            'placeholder' => 'Select Division'
+                        ]
+                    ]) ?>
+                </div>
+            <?php } ?>
+            <div class="col-sm-2">
+                <?= $form->field($model, 'date')->widget(DatePicker::class, [
                     'name' => 'date',
-                    'value' => $model->date,
                     'pluginOptions' => [
                         'autoclose' => true,
                         'format' => 'yyyy-mm-dd',
-                        'required' => true
                     ]
                 ]) ?>
-
             </div>
             <?php if (YIi::$app->user->can('super-user')) { ?>
-                <div class="col-sm-3">
-                    <label for="fk_responsibility_center_id">Responsible Center</label>
+                <div class="col-sm-2">
 
-
-                    <?= Select2::widget([
+                    <?= $form->field($model, 'fk_responsibility_center_id')->widget(Select2::class, [
                         'data' => $rspnse_center,
                         'value' => $model->fk_responsibility_center_id,
                         'name' => 'fk_responsibility_center_id',
@@ -130,12 +161,8 @@ if (!empty($model->transaction_type)) {
                 </div>
             <?php } ?>
             <div class="col-sm-3">
-
-                <label for="transaction_type">Transaction Type</label>
-                <?= Select2::widget([
+                <?= $form->field($model, 'transaction_type')->widget(Select2::class, [
                     'data' => $transaction_type,
-                    'value' => $model->transaction_type,
-
                     'name' => 'transaction_type',
                     'id' => 'transaction_type',
                     'options' => ['placeholder' => 'Select Transaction Type'],
@@ -147,11 +174,8 @@ if (!empty($model->transaction_type)) {
         </div>
         <div class="row">
             <div class="col-sm-3">
-                <label for="fk_requested_by">Requested By</label>
-                <?= Select2::widget([
+                <?= $form->field($model, 'fk_requested_by')->widget(Select2::class, [
                     'data' => $requested_by,
-                    'name' => 'fk_requested_by',
-                    'value' => $model->fk_requested_by,
                     'options' => ['placeholder' => 'Search for a Employee ...'],
                     'pluginOptions' => [
                         'allowClear' => false,
@@ -174,13 +198,8 @@ if (!empty($model->transaction_type)) {
                 ]) ?>
             </div>
             <div class="col-sm-3">
-                <label for="fk_chairperson">Chairperson</label>
-
-
-                <?= Select2::widget([
+                <?= $form->field($model, 'fk_chairperson')->widget(Select2::class, [
                     'data' => $chairperson,
-                    'name' => 'fk_chairperson',
-                    'value' => $model->fk_chairperson,
                     'options' => ['placeholder' => 'Search for a Employee ...'],
                     'pluginOptions' => [
                         'allowClear' => false,
@@ -204,12 +223,9 @@ if (!empty($model->transaction_type)) {
 
             </div>
             <div class="col-sm-3">
-                <label for="fk_inspector"> Inspector</label>
 
-                <?= Select2::widget([
+                <?= $form->field($model, 'fk_inspector')->widget(Select2::class, [
                     'data' => $inspector,
-                    'name' => 'fk_inspector',
-                    'value' => $model->fk_inspector,
                     'options' => ['placeholder' => 'Search for a Employee ...'],
                     'pluginOptions' => [
                         'allowClear' => false,
@@ -232,12 +248,8 @@ if (!empty($model->transaction_type)) {
                 ]) ?>
             </div>
             <div class="col-sm-3">
-                <label for="fk_property_unit">Property Unit</label>
-
-                <?= Select2::widget([
+                <?= $form->field($model, 'fk_property_unit')->widget(Select2::class, [
                     'data' => $property_unit,
-                    'name' => 'fk_property_unit',
-                    'value' => $model->fk_property_unit,
                     'options' => ['placeholder' => 'Search for a Employee ...'],
                     'pluginOptions' => [
                         'allowClear' => false,
@@ -264,36 +276,15 @@ if (!empty($model->transaction_type)) {
 
             <thead>
                 <tr>
-
-                    <th>
-                        Project Name
-                    </th>
-                    <th>
-                        Stock Name
-                    </th>
-                    <th>
-                        Specification
-                    </th>
-                    <th>
-                        Unit of Measure
-                    </th>
-                    <th>
-                        Payee
-                    </th>
-
-                    <th>
-                        Unit Cost
-                    </th>
-
-                    <th>
-                        Quantity
-                    </th>
-                    <th>
-                        From Date
-                    </th>
-                    <th>
-                        To Date
-                    </th>
+                    <th>Project Name</th>
+                    <th>Stock Name</th>
+                    <th>Specification</th>
+                    <th>Unit of Measure</th>
+                    <th>Payee</th>
+                    <th>Unit Cost</th>
+                    <th>Quantity</th>
+                    <th>From Date</th>
+                    <th>To Date</th>
 
                 </tr>
             </thead>
@@ -301,7 +292,6 @@ if (!empty($model->transaction_type)) {
                 <?php
                 if (!empty($no_po_items)) {
                     foreach ($no_po_items as $item) {
-
                         $id = $item['id'];
                         $project_name = $item['project_name'];
                         $stock_title = $item['stock_title'];
@@ -317,56 +307,54 @@ if (!empty($model->transaction_type)) {
                         $to_date = $item['to_date'];
                         $stock_id = $item['stock_id'];
                         echo "  <tr>
-                <td style='display:none;'>
-                <input type='hidden' class='no_po_item_id form-control' name='no_po_item_ids[$no_po_item_row]' value='$id'>
-            </td>
-            <td class='text_area'>
-                <textarea name='project_name[$no_po_item_row]' cols='20' rows='1' class='project_name form-control'>$project_name</textarea>
-            </td>
-            <td class='stock_col'>
-                <select name='stock_name[$no_po_item_row]' class='stock_name stock form-control'>
-                    <option value='$stock_id'>$stock_title</option>
-                </select>
-            </td>
-            <td class='text_area'>
-                 <textarea cols='20' rows='1' class='specification-view form-control' >$specification_view</textarea>
-                <textarea  name='specification[$no_po_item_row]' cols='20' rows='1' class='specification form-control'>$specification</textarea>
-            </td>
-            <td>
-                <select name='unit_of_measure[$no_po_item_row]' class='unit-of-measure form-control'>
-                    <option value='$unit_of_measure_id'>$unit_of_measure</option>
-                </select>
-            </td>
-            <td class='payee_col'>
-                <select name='payee[$no_po_item_row]' class='payee form-control'>
-                    <option value='$payee_id'>$payee_name</option>
-                </select>
-            </td>
-            <td>
-                <input type='text' class='mask-amount form-control' value='$unit_cost'>
-                <input type='hidden' class='unit_cost  main-amount form-control' name='unit_cost[$no_po_item_row]' value='$unit_cost'>
-            </td>
-            <td class='quantity_col'>
-                <input type='number' class='no_po_quantity form-control' name='no_po_quantity[$no_po_item_row]' value='$quantity'>
-            </td>
-            <td>
-                <input type='date' class='from_date form-control' name='from_date[$no_po_item_row]' value='$from_date'>
-            </td>
-            <td>
-                <input type='date' class='to_date form-control' name='to_date[$no_po_item_row]' value='$to_date'>
-            </td>
-        <td>
-            <div class='btn-group'>
-                <a class='add_no_po_entry btn btn-primary btn-xs' type='button'><i class='fa fa-plus fa-fw'></i> </a>
-                <a class='remove_no_po_entry btn btn-danger btn-xs ' type='button' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
-            </div>
-        </td>
-       </tr>";
+                                    <td style='display:none;'>
+                                        <input type='hidden' class='no_po_item_id form-control' name='noPoItems[$no_po_item_row][item_id]' value='$id'>
+                                    </td>
+                                    <td class='text_area'>
+                                        <textarea name='noPoItems[$no_po_item_row][project_name]' cols='20' rows='1' class='project_name form-control'>$project_name</textarea>
+                                    </td>
+                                    <td class='stock_col'>
+                                        <select name='noPoItems[$no_po_item_row][stock_name]' class='stock_name stock form-control'>
+                                            <option value='$stock_id'>$stock_title</option>
+                                        </select>
+                                    </td>
+                                    <td class='text_area'>
+                                        <textarea cols='20' rows='1' class='specification-view form-control' >$specification_view</textarea>
+                                        <textarea  name='noPoItems[$no_po_item_row][specification]' cols='20' rows='1' class='specification form-control'>$specification</textarea>
+                                    </td>
+                                    <td>
+                                        <select name='noPoItems[$no_po_item_row][unit_of_measure]' class='unit-of-measure form-control'>
+                                            <option value='$unit_of_measure_id'>$unit_of_measure</option>
+                                        </select>
+                                    </td>
+                                    <td class='payee_col'>
+                                        <select name='noPoItems[$no_po_item_row][payee]' class='payee form-control'>
+                                            <option value='$payee_id'>$payee_name</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type='text' class='mask-amount form-control' value='$unit_cost'>
+                                        <input type='hidden' class='unit_cost  main-amount form-control' name='noPoItems[$no_po_item_row][unit_cost]' value='$unit_cost'>
+                                    </td>
+                                    <td class='quantity_col'>
+                                        <input type='number' class='no_po_quantity form-control' name='noPoItems[$no_po_item_row][no_po_quantity]' value='$quantity'>
+                                    </td>
+                                    <td>
+                                        <input type='date' class='from_date form-control' name='noPoItems[$no_po_item_row][from_date]' value='$from_date'>
+                                    </td>
+                                    <td>
+                                        <input type='date' class='to_date form-control' name='noPoItems[$no_po_item_row][to_date]' value='$to_date'>
+                                    </td>
+                                <td>
+                                    <div class='btn-group'>
+                                        <a class='add_no_po_entry btn btn-primary btn-xs' type='button'><i class='fa fa-plus fa-fw'></i> </a>
+                                        <a class='remove_no_po_entry btn btn-danger btn-xs ' type='button' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                                    </div>
+                                </td>
+                            </tr>";
                         $no_po_item_row++;
                     }
                 }
-
-
                 ?>
 
             </tbody>
@@ -375,46 +363,19 @@ if (!empty($model->transaction_type)) {
             <table id="entry_table">
                 <thead>
                     <tr>
-                        <th>
-                            Po Number
-                        </th>
-                        <th>
-                            Project Name
-                        </th>
-                        <th>
-                            Stock Name
-                        </th>
-                        <th>
-                            Specification
-                        </th>
-                        <th>
-                            Unit of Measure
-                        </th>
-                        <th>
-                            Payee
-                        </th>
-                        <th>
-                            Balance Quantity
-                        </th>
-                        <th>
-                            Unit Cost
-                        </th>
-                        <th>
-                            Division
-                        </th>
-                        <th>
-                            Unit
-                        </th>
-                        <th>
-                            Quantity
-                        </th>
-                        <th>
-                            From Date
-                        </th>
-                        <th>
-                            To Date
-                        </th>
-
+                        <th>Po Number</th>
+                        <th>Project Name</th>
+                        <th>Stock Name</th>
+                        <th>Specification</th>
+                        <th>Unit of Measure</th>
+                        <th>Payee</th>
+                        <th>Balance Quantity</th>
+                        <th>Unit Cost</th>
+                        <th>Division</th>
+                        <th>Unit</th>
+                        <th>Quantity</th>
+                        <th>From Date</th>
+                        <th>To Date</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -425,53 +386,53 @@ if (!empty($model->transaction_type)) {
                         foreach ($items as $val) {
                             $unit_cost = number_format($val['unit_cost'], 2);
                             echo "<tr>
-                    <td style='display:none'><input class='item_id' value='{$val['id']}' name='item_id[$entry_row]'/></td>
-                   <td style='display:none'><input class='po_aoq_item_id' value='{$val['po_aoq_item_id']}' name='purchase_order_id[$entry_row]'/></td>
-                    <td>
-                        <span class='activity' >{$val['po_number']}</span>
-                    </td>
-                    <td class='limit-width'>
-                        <span class='activity' >{$val['project_title']}</span>
-                    </td>
-                    <td class='limit-width'>
-                        <span class='activity' >{$val['stock_title']}</span>
-                    </td>
-                    <td class='limit-width'>
-                        <span class='activity' >{$val['specification']}</span>
-                    </td>
-                    <td class='limit-width'>
-                        <span class='activity' >{$val['unit_of_measure']}</span>
-                    </td>
-                    <td>
-                        <span class='activity' >{$val['payee']}</span>
-                    </td>
-                    <td class='center'>
-                        <span class='activity' >{$val['balance_quantity']}</span>
-                    </td>
-                    <td class='center'>
-                        <span class='activity' >{$unit_cost}</span>
-                    </td>
-                    <td>
-                        <span class='activity' >{$val['division']}</span>
-                    </td>
-                    <td>
-                        <span class='activity' >{$val['unit']}</span>
-                    </td>
-                    <td>
-                    <input value='{$val['quantity']}'  class='quantity form-control' type='text' name='quantity[$entry_row]'/>
-                    </td>
-                    <td>
-                     <input   name='date_from[$entry_row]' class='date_from form-control' type='date'  value='{$val['date_from']}' required />
-                    </td>
-                    <td>
-                    <input name='date_to[$entry_row]'  class='date_to form-control' type='date'  value='{$val['date_to']}' required/>
-                    </td>
-                
-                    <td style='float:left;'>
-                        <a class='add_row btn btn-primary btn-xs' type='button'><i class='fa fa-plus fa-fw'></i> </a>
-                        <a class='remove btn btn-danger btn-xs ' type='button' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
-                    </td>
-            </tr>";
+                                    <td style='display:none'><input class='item_id' value='{$val['id']}' name='poItems[$entry_row][item_id]'/></td>
+                                    <td style='display:none'><input class='po_aoq_item_id' value='{$val['po_aoq_item_id']}' name='poItems[$entry_row][purchase_order_id]'/></td>
+                                    <td>
+                                        <span class='activity' >{$val['po_number']}</span>
+                                    </td>
+                                    <td class='limit-width'>
+                                        <span class='activity' >{$val['project_title']}</span>
+                                    </td>
+                                    <td class='limit-width'>
+                                        <span class='activity' >{$val['stock_title']}</span>
+                                    </td>
+                                    <td class='limit-width'>
+                                        <span class='activity' >{$val['specification']}</span>
+                                    </td>
+                                    <td class='limit-width'>
+                                        <span class='activity' >{$val['unit_of_measure']}</span>
+                                    </td>
+                                    <td>
+                                        <span class='activity' >{$val['payee']}</span>
+                                    </td>
+                                    <td class='center'>
+                                        <span class='activity' >{$val['balance_quantity']}</span>
+                                    </td>
+                                    <td class='center'>
+                                        <span class='activity' >{$unit_cost}</span>
+                                    </td>
+                                    <td>
+                                        <span class='activity' >{$val['division']}</span>
+                                    </td>
+                                    <td>
+                                        <span class='activity' >{$val['unit']}</span>
+                                    </td>
+                                    <td>
+                                    <input value='{$val['quantity']}'  class='quantity form-control' type='text' name='poItems[$entry_row][quantity]'/>
+                                    </td>
+                                    <td>
+                                    <input   name='poItems[$entry_row][date_from]' class='date_from form-control' type='date'  value='{$val['date_from']}' required />
+                                    </td>
+                                    <td>
+                                    <input name='poItems[$entry_row][date_to]'  class='date_to form-control' type='date'  value='{$val['date_to']}' required/>
+                                    </td>
+                                
+                                    <td style='float:left;'>
+                                        <a class='add_row btn btn-primary btn-xs' type='button'><i class='fa fa-plus fa-fw'></i> </a>
+                                        <a class='remove btn btn-danger btn-xs ' type='button' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                                    </td>
+                            </tr>";
                             $entry_row++;
                         }
                     }
@@ -482,11 +443,12 @@ if (!empty($model->transaction_type)) {
         </div>
         <div class="row">
             <div class="col-sm-3 col-md-offset-4">
-
                 <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%;margin:3rem 0 4rem 0']); ?>
             </div>
         </div>
-        <?= Html::endForm(); ?>
+
+        <?php ActiveForm::end(); ?>
+
     </div>
 
 
@@ -512,7 +474,7 @@ if (!empty($model->transaction_type)) {
                     'label' => 'Action',
                     'format' => 'raw',
                     'value' => function ($model) {
-                        return Button::widget(['label' => '+', 'options' => ['class' => 'add btn-xs btn-primary', 'onClick' => 'add(this)']]);
+                        return  Html::button(Icon::show('plus', ['framework' => Icon::FA]), ['class' => 'btn-xs btn-primary  add', 'onClick' => 'addPoItem(this)']);
                     }
                 ],
                 [
@@ -626,37 +588,33 @@ if (!empty($model->transaction_type)) {
     }
 </style>
 <?php
-$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-$this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-$this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile("@web/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile("@web/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile("@web/js/validate.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
-<!-- <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script> -->
 <script>
     let entry_row = <?= $entry_row ?>;
     let no_po_item_row = <?= $no_po_item_row ?>;
     let with_error = 0;
 
-    function add(row) {
+    function addPoItem(row) {
         const source = $(row).closest('tr')
         const clone = source.clone()
         clone.find('.quantity').attr('type', 'text')
         clone.find('.quantity').parent().attr('class', '')
-        clone.find('.quantity').attr('name', `quantity[${entry_row}]`)
+        clone.find('.quantity').attr('name', `poItems[${entry_row}][quantity]`)
 
         clone.find('.date_from').parent().attr('class', '')
         clone.find('.date_from').prop('required', true)
-        clone.find('.date_from').attr('name', `date_from[${entry_row}]`)
+        clone.find('.date_from').attr('name', `poItems[${entry_row}][date_from]`)
 
 
         clone.find('.date_to').parent().attr('class', '')
         clone.find('.date_to').prop('required', true)
-        clone.find('.date_to').attr('name', `date_to[${entry_row}]`)
-
-
-
+        clone.find('.date_to').attr('name', `poItems[${entry_row}][date_to]`)
 
         clone.find('.add').parent().remove()
-        clone.find('.po_id').attr('name', `purchase_order_id[${entry_row}]`)
+        clone.find('.po_id').attr('name', `poItems[${entry_row}][purchase_order_id]`)
         clone.append(` <td style='float:left;'>
                             <a class='add_row btn btn-primary btn-xs' type='button'><i class='fa fa-plus fa-fw'></i> </a>
                             <a class='remove btn btn-danger btn-xs ' type='button' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
@@ -668,39 +626,39 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
     function addNoPoItem() {
         $('#no_po_entry tbody').append(`<tr>
                     <td class='text_area'>
-                        <textarea name="project_name[${no_po_item_row}]" cols="20" rows="1" class="project_name form-control" required></textarea>
+                        <textarea name="noPoItems[${no_po_item_row}][project_name]" cols="20" rows="1" class="project_name form-control" required></textarea>
                     </td>
                     <td>
-                        <select name="stock_name[${no_po_item_row}]" class="stock_name stock form-control" required>
+                        <select name="noPoItems[${no_po_item_row}][stock_name]" class="stock_name stock form-control" required>
                             <option value="">Select Stock</option>
                         </select>
                     </td>
                     <td class='text_area'>
                     <textarea cols="20" rows="1" class="specification-view form-control"></textarea>
-                        <textarea name="specification[${no_po_item_row}]" cols="20" rows="1" class="specification form-control"></textarea>
+                        <textarea name="noPoItems[${no_po_item_row}][specification]" cols="20" rows="1" class="specification form-control"></textarea>
                     </td>
                     <td>
-                        <select name="unit_of_measure[${no_po_item_row}]" class="unit-of-measure form-control" required>
+                        <select name="noPoItems[${no_po_item_row}][unit_of_measure]" class="unit-of-measure form-control" required>
                             <option value="">Select Unit of Measure</option>
                         </select>
                     </td>
                     <td class='payee_col'>
-                        <select name="payee[${no_po_item_row}]" class="payee form-control" required>
+                        <select name="noPoItems[${no_po_item_row}][payee]" class="payee form-control" required>
                             <option value="">Select Payee</option>
                         </select>
                     </td>
                     <td>
                     <input type='text' class='mask-amount form-control' required>
-                        <input type="hidden" class="unit_cost main-amount form-control" name="unit_cost[${no_po_item_row}]">
+                        <input type="hidden" class="unit_cost main-amount form-control" name="noPoItems[${no_po_item_row}][unit_cost]">
                     </td>
                     <td class='quantity_col'>
-                        <input type="number" class="no_po_quantity form-control" name="no_po_quantity[${no_po_item_row}]" required>
+                        <input type="number" class="no_po_quantity form-control" name="noPoItems[${no_po_item_row}][no_po_quantity]" required>
                     </td>
                     <td>
-                        <input type="date" class="from_date form-control" name="from_date[${no_po_item_row}]" required>
+                        <input type="date" class="from_date form-control" name="noPoItems[${no_po_item_row}][from_date]" required>
                     </td>
                     <td>
-                        <input type="date" class="to_date form-control" name="to_date[${no_po_item_row}]" required>
+                        <input type="date" class="to_date form-control" name="noPoItems[${no_po_item_row}][to_date]" required>
                     </td>
                     <td>
                         <div class="btn-group">
@@ -716,7 +674,6 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
         no_po_item_row++
     }
     $(document).ready(function() {
-
         $('#no_po_entry').on('click', '.add_no_po_entry', (e) => {
             e.preventDefault()
             addNoPoItem()
@@ -770,8 +727,8 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
             entry_row++
         });
 
-        $('#transaction_type').change(() => {
-            const type = $('#transaction_type').val()
+        $('#requestforinspection-transaction_type').change(() => {
+            const type = $('#requestforinspection-transaction_type').val()
 
             if (type === 'with_po') {
                 $('.with_po').show()
@@ -948,10 +905,70 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
 </script>
 <?php
 SweetAlertAsset::register($this);
-
-$script = <<< JS
-
-
+$js = <<< JS
+    $("#RequestForInspection").on("beforeSubmit", function (event) {
+        event.preventDefault();
+        var form = $(this);
+        $.ajax({
+            url: form.attr("action"),
+            type: form.attr("method"),
+            data: form.serialize(),
+            success: function (data) {
+                let res = JSON.parse(data)
+                swal({
+                    icon: 'error',
+                    title: res,
+                    type: "error",
+                    timer: 3000,
+                    closeOnConfirm: false,
+                    closeOnCancel: false
+                })
+            },
+            error: function (data) {
+        
+            }
+        });
+        return false;
+    });
 JS;
-$this->registerJs($script);
+$this->registerJs($js);
 ?>
+<script>
+    // new Vue({
+    //     el: '#app',
+    //     data: {
+    //         msg: 'Message Ni'
+    //     },
+    //     mounted() {
+    //         const vm = this;
+
+    //         $('#entry_table').on('click', '.jqueryButton', function(event) {
+    //             event.preventDefault();
+    //             vm.handleClick(this);
+
+    //         })
+    //         $('#po_list').on('click', '.addItemBtn', function(event) {
+    //             event.preventDefault();
+    //             vm.addPoItem(this);
+
+    //         });
+    //     },
+    //     methods: {
+    //         handleClick(event) {
+
+    //             const row = $(event).closest('tr');
+    //             console.log(row)
+    //             if (row) {
+    //                 row.remove();
+    //             }
+    //         },
+    //         addPoItem(ths) {
+    //             console.log($(ths).closest('tr'))
+    //             const source = $(ths).closest('tr')
+    //             const clone = source.clone()
+    //             clone.find('.add').parent().remove()
+    //             $('#entry_table tbody').append(clone)
+    //         },
+    //     }
+    // });
+</script>
