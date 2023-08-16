@@ -39,6 +39,7 @@ class Payee extends \yii\db\ActiveRecord
                 'fk_bank_id',
                 'account_num',
                 'fk_office_id',
+                'registered_name'
             ], 'required'],
             [['account_name', 'registered_name', 'contact_person', 'registered_address', 'remark'], 'string', 'max' => 255],
             [['contact'], 'string', 'max' => 20],

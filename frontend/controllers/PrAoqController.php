@@ -114,7 +114,7 @@ class PrAoqController extends Controller
     pr_purchase_request_item.quantity,
     pr_stock.stock_title as `description`,
     IFNULL(REPLACE(pr_purchase_request_item.specification,'[n]','<br>'),'') as specification,
-    payee.account_name as payee,
+    IFNULL(payee.registered_name,payee.account_name) as payee,
     IF(IFNULL(pr_aoq_entries.amount,0)!=0,pr_aoq_entries.amount,'-') as amount,
     pr_purchase_request.purpose,
     pr_aoq_entries.remark,

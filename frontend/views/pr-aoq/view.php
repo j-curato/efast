@@ -100,7 +100,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 $payeeHeaderRow = "<tr>";
                 $payee_position = [];
                 $payee_count  = 5;
-                $payee_head_query = Yii::$app->db->createCommand("SELECT payee.account_name as payee
+                $payee_head_query = Yii::$app->db->createCommand("SELECT IFNULL(payee.registered_name,payee.account_name) as payee
                     FROM `pr_aoq_entries`
                     LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
                     WHERE pr_aoq_entries.pr_aoq_id = :id
