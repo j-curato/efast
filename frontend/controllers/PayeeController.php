@@ -260,9 +260,9 @@ class PayeeController extends Controller
             $out['results'] = ['id' => $id, 'text' => Payee::findOne($id)->account_name];
         } else if (!is_null($q)) {
             $query = new Query();
-            $query->select('payee.id, payee.account_name AS text')
+            $query->select('payee.id, payee.registered_name AS text')
                 ->from('payee')
-                ->where(['like', 'payee.account_name', $q])
+                ->where(['like', 'payee.registered_name', $q])
                 ->andWhere('payee.isEnable = 1');
             $user_data = Yii::$app->memem->getUserData();
             $office = strtolower($user_data->office->office_name);
