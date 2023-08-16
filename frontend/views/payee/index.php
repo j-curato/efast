@@ -98,6 +98,7 @@ $this->params['breadcrumbs'][] = $this->title;
         //'contact',
         //'remark',
         //'tin_number',
+        'fk_office_id',
 
         [
             'label' => 'Action',

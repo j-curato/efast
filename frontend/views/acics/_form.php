@@ -29,6 +29,7 @@ $cancelItmRowNum = 0;
     <ul class="notes">
         <li>Notes</li>
         <li>Click the name of the table to open or close it.</li>
+        <li>Cancelling a check must have a corresponding cash receive</li>
     </ul>
     <?php $form = ActiveForm::begin([
         'id' => $model->formName()
