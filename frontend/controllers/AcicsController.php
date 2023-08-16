@@ -195,7 +195,7 @@ class AcicsController extends Controller
                 $itemIds = array_column($items, 'item_id');
                 $params = [];
                 $sql = ' AND ';
-                $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'id', $itemIds], $params);
+                $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'acics_cash_items.id', $itemIds], $params);
                 Yii::$app->db->createCommand("UPDATE acics_cash_items
                 JOIN cash_disbursement ON acics_cash_items.fk_cash_disbursement_id = cash_disbursement.id
                
