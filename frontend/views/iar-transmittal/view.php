@@ -75,7 +75,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $end_user = $val['end_user'];
                     $purpose = $val['purpose'];
                     $inspector_name = $val['inspector_name'];
-                    $responsible_center = $val['responsible_center'];
+                    $division = $val['division'];
                     $po_number = $val['po_number'];
                     $payee_name = $val['payee_name'];
                     $requested_by_name = $val['requested_by_name'];
@@ -88,7 +88,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td>$end_user</td>
                         <td>$purpose</td>
                         <td>$inspector_name</td>
-                        <td>$responsible_center</td>
+                        <td>$division</td>
                         <td>$po_number</td>
                         <td>$payee_name</td>
                         <td>$requested_by_name</td>
