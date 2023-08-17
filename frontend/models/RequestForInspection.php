@@ -110,6 +110,52 @@ class RequestForInspection extends \yii\db\ActiveRecord
        AND rfi_without_po_items.is_deleted !=1
        ")
             ->bindValue(':id', $this->id)
+
+            ->queryAll();
+    }
+    public function getWithPoItems()
+    {
+        return Yii::$app->db->createCommand("SELECT
+                    request_for_inspection_items.id,
+                    pr_purchase_order_items_aoq_items.id as po_aoq_item_id,
+                    pr_purchase_order_item.serial_number as po_number,
+                    payee.account_name as payee,
+                    pr_stock.stock_title,
+                    REPLACE(REPLACE(pr_purchase_request_item.specification,'[n][n]','<br>'),'[n]','<br>') as specification,
+                    pr_purchase_request.purpose,
+                    request_for_inspection_items.quantity,
+                    request_for_inspection_items.from as date_from,
+                    request_for_inspection_items.to as date_to,
+                    pr_project_procurement.title as project_title,
+                    pr_office.division,
+                    pr_office.unit,
+                    pr_purchase_request_item.quantity - IFNULL(aoq_items_quantity.quantity,0) as balance_quantity,
+                    unit_of_measure.unit_of_measure,
+                    pr_aoq_entries.amount as unit_cost,
+                    pr_purchase_order_item.fk_pr_purchase_order_id as po_id
+                   
+            FROM 
+            request_for_inspection_items						
+            INNER JOIN pr_purchase_order_items_aoq_items ON request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id = pr_purchase_order_items_aoq_items.id
+            INNER JOIN pr_purchase_order_item ON pr_purchase_order_items_aoq_items.fk_purchase_order_item_id = pr_purchase_order_item.id
+            INNER JOIN pr_aoq_entries ON pr_purchase_order_items_aoq_items.fk_aoq_entries_id = pr_aoq_entries.id
+            INNER JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
+            INNER JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
+            LEFT  JOIN  payee ON pr_aoq_entries.payee_id = payee.id
+            LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
+            LEFT JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id
+            LEFT JOIN pr_project_procurement ON pr_purchase_request.pr_project_procurement_id = pr_project_procurement.id
+            LEFT JOIN pr_office ON pr_project_procurement.pr_office_id = pr_office.id
+            LEFT JOIN unit_of_measure ON pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
+            LEFT JOIN (SELECT 
+                request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id,
+                SUM(request_for_inspection_items.quantity) as quantity
+                FROM request_for_inspection_items GROUP BY request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id) as aoq_items_quantity
+                 ON pr_purchase_order_items_aoq_items.id = aoq_items_quantity.fk_pr_purchase_order_items_aoq_item_id
+            WHERE request_for_inspection_items.fk_request_for_inspection_id = :id
+            AND request_for_inspection_items.is_deleted !=1
+            ")
+            ->bindValue(':id', $this->id)
             ->queryAll();
     }
 

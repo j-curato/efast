@@ -155,10 +155,8 @@ if (!empty($model->fk_requested_by)) {
                 <th class="center">To Date</th>
             </tr>
             <?php
-            if (!empty($purchase_orders) && $model->transaction_type === 'with_po') {
-
-                foreach ($purchase_orders as $val) {
-
+            if ($model->transaction_type === 'with_po') {
+                foreach ($model->getWithPoItems() as $val) {
                     $from_date = !empty($val['date_from']) ? DateTime::createFromFormat('Y-m-d', $val['date_from'])->format('F d, Y') : '';
                     $to_date = !empty($val['date_to']) ? DateTime::createFromFormat('Y-m-d', $val['date_to'])->format('F d, Y') : '';
                     echo "<tr>
@@ -181,7 +179,7 @@ if (!empty($model->fk_requested_by)) {
                     echo " </tr>";
                 }
             } else {
-                foreach ($no_po_items as $item) {
+                foreach ($model->getNoPoItems() as $item) {
 
                     $project_name = $item['project_name'];
                     $specification_view = str_replace('[n]', '<br>', $item['specification']);

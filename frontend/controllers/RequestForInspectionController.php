@@ -110,7 +110,7 @@ class RequestForInspectionController extends Controller
     private function irLinks($id)
     {
 
-        return  YIi::$app->db->createCommand("SELECT 
+        return  Yii::$app->db->createCommand("SELECT 
                     inspection_report.id,
                     inspection_report.ir_number,
                     iar.iar_number,
@@ -156,15 +156,14 @@ class RequestForInspectionController extends Controller
         $model =  $this->findModel($id);
         $po_details = [];
         $no_po_items = [];
-        if ($model->transaction_type === 'with_po') {
-            $po_details = $this->poDetails($id);
-        } else {
-            $no_po_items = $this->noPo_items($id);
-        }
+        // if ($model->transaction_type === 'with_po') {
+        //     $po_details = $this->poDetails($id);
+        // } else {
+        //     $no_po_items = $this->noPo_items($id);
+        // }
         return $this->render('view', [
             'model' => $model,
-            'purchase_orders' => $po_details,
-            'no_po_items' => $model->getNoPoItems(),
+            // 'purchase_orders' => $po_details,
             'ir_links' => $this->irLinks($id)
         ]);
     }
