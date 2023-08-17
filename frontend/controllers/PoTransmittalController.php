@@ -140,6 +140,7 @@ class PoTransmittalController extends Controller
          WHERE 
          po_transmittal_entries.fk_po_transmittal_id =:id 
         AND po_transmittal_entries.is_deleted = 0
+        ORDER BY  liquidation_view.check_number
         ")
             ->bindValue(':id', $id)
             ->queryAll();
