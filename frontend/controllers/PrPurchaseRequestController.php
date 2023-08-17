@@ -1149,13 +1149,11 @@ class PrPurchaseRequestController extends Controller
 									 ) as item_in_pr_total ON supplemental_ppmp_non_cse_items.id = item_in_pr_total.fk_ppmp_non_cse_item_id
                 WHERE supplemental_ppmp_non_cse.type =  'fixed expenses'
                 AND supplemental_ppmp.fk_office_id = :office_id 
-                AND supplemental_ppmp.fk_division_id = :division_id
                 AND supplemental_ppmp_non_cse_items.is_deleted = 0
                 AND supplemental_ppmp_non_cse.is_deleted = 0
                 AND IFNULL(supplemental_ppmp_non_cse_items.amount,0) - IFNULL(item_in_pr_total.total_pr_amt,0)  >0
                 ")
                     ->bindValue(':office_id', $office_id)
-                    ->bindValue(':division_id', $division_id)
                     ->queryAll();
             }
             return json_encode($res);
