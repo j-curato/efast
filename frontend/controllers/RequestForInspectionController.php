@@ -164,7 +164,7 @@ class RequestForInspectionController extends Controller
         return $this->render('view', [
             'model' => $model,
             'purchase_orders' => $po_details,
-            'no_po_items' => $no_po_items,
+            'no_po_items' => $model->getNoPoItems(),
             'ir_links' => $this->irLinks($id)
         ]);
     }

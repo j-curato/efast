@@ -81,6 +81,37 @@ class RequestForInspection extends \yii\db\ActiveRecord
         }
         return strtoupper($ofc->office_name) . '-' . date('Y') . '-' . $zero . $num;
     }
+    public function getNoPoItems()
+    {
+
+        return Yii::$app->db->createCommand("SELECT  
+        rfi_without_po_items.id,
+        rfi_without_po_items.project_name,
+       IFNULL(pr_stock.stock_title,'') as stock_title,
+       pr_stock.id as stock_id,
+       rfi_without_po_items.specification,
+       REPLACE(rfi_without_po_items.specification,'[n]','\n') as specification_view,
+       unit_of_measure.unit_of_measure,
+       unit_of_measure.id as unit_of_measure_id,
+       payee.account_name as payee_name,
+       payee.id as payee_id,
+       rfi_without_po_items.unit_cost,
+       rfi_without_po_items.quantity,
+       rfi_without_po_items.from_date,
+       rfi_without_po_items.to_date
+       
+       FROM request_for_inspection
+       LEFT JOIN rfi_without_po_items ON request_for_inspection.id = rfi_without_po_items.fk_request_for_inspection_id
+       LEFT JOIN pr_stock ON rfi_without_po_items.fk_stock_id = pr_stock.id
+       LEFT JOIN payee ON rfi_without_po_items.fk_payee_id = payee.id
+       LEFT JOIN unit_of_measure ON rfi_without_po_items.fk_unit_of_measure_id = unit_of_measure.id
+       WHERE 
+       request_for_inspection.id = :id
+       AND rfi_without_po_items.is_deleted !=1
+       ")
+            ->bindValue(':id', $this->id)
+            ->queryAll();
+    }
 
     /**
      * {@inheritdoc}

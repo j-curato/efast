@@ -96,7 +96,7 @@ class RequestForInspectionSearch extends RequestForInspection
         $query->joinWith('chairperson as chairperson');
         $query->joinWith('inspector as inspector');
         $query->joinWith('propertyUnit as property_unit');
-        $query->joinWith('office.unitHead as unit_head');
+        // $query->joinWith('office.unitHead as unit_head');
 
         // grid filtering conditions
         $query->andFilterWhere([
