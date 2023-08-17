@@ -1,6 +1,7 @@
 <?php
 
 use app\components\helpers\MyHelper;
+use kartik\export\ExportMenu;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 
@@ -78,6 +79,33 @@ $this->params['breadcrumbs'][] = $this->title;
         'panel' => [
             'type' => Gridview::TYPE_PRIMARY,
             'heading' => 'Purchase Requests'
+        ],
+        'toolbar' => [
+
+
+            [
+                'content' => ExportMenu::widget([
+                    'dataProvider' => $dataProvider,
+                    'columns' => $cols,
+                    'filename' => "DV",
+                    'batchSize' => 10,
+                    'stream' => false,
+                    'target' => '_popup',
+
+                    'exportConfig' => [
+                        ExportMenu::FORMAT_CSV => false,
+                        ExportMenu::FORMAT_TEXT => false,
+                        ExportMenu::FORMAT_PDF => false,
+                        ExportMenu::FORMAT_HTML => false,
+                        ExportMenu::FORMAT_EXCEL => false,
+
+                    ]
+
+                ]),
+                'options' => [
+                    'class' => 'btn-group mr-2', 'style' => 'margin-right:20px'
+                ]
+            ]
         ],
         'pjax' => true,
         'columns' => $cols,

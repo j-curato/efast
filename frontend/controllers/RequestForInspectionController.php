@@ -299,7 +299,7 @@ class RequestForInspectionController extends Controller
             return $e->getMessage();
         }
     }
-    private function withPoInsertInspectionReport($rfi_id)
+    private function withPoInsertInspectionReport($rfi_id, $rfi_office)
     {
         $query = Yii::$app->db->createCommand("SELECT 
         request_for_inspection_items.id as rfi_item_id,
@@ -317,107 +317,104 @@ class RequestForInspectionController extends Controller
         $res = ArrayHelper::index($query, null, [function ($element) {
             return $element['po_id'];
         }, 'inspection_date']);
-        // var_dump($res);
-        // die();
-
         try {
             foreach ($res as $po_id_items) {
-
                 foreach ($po_id_items as $val) {
-
                     $ir = new InspectionReport();
-                    $ir->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()%9223372036854775807")->queryScalar();
-                    $ir->ir_number = YIi::$app->memem->irNumber();
-                    if ($ir->validate()) {
-                        $iar = new Iar();
-                        $iar->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()%9223372036854775807")->queryScalar();
-                        $iar->iar_number = Yii::$app->memem->iarNumber();
-                        $iar->fk_ir_id = $ir->id;
-                        if ($iar->save(false)) {
+                    $ir->office_name = $rfi_office;
+                    if (!$ir->validate()) {
+                        throw new ErrorException(json_encode($ir->errors));
+                    }
+                    if (!$ir->save(false)) {
+                        throw new ErrorException('IR Model Save Failed');
+                    }
+                    $iar = new Iar();
+                    $iar->fk_ir_id = $ir->id;
+                    $iar->office_name =  $rfi_office;
+                    if (!$iar->validate()) {
+                        throw new ErrorException(json_encode($iar->errors));
+                    }
+                    if (!$iar->save(false)) {
+                        throw new ErrorException('IAR Model Save Failed');
+                    }
+                    foreach ($val  as $val2) {
+                        $ir_item = new InspectionReportItems();
+                        $ir_item->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()%9223372036854775807")->queryScalar();
+                        $ir_item->fk_inspection_report_id = $ir->id;
+                        $ir_item->fk_request_for_inspection_item_id = $val2['rfi_item_id'];
+                        if (!$ir_item->validate()) {
+                            throw new ErrorException(json_encode($ir_item->errors));
                         }
-                        if ($ir->save(false)) {
-                            foreach ($val  as $val2) {
-                                $ir_item = new InspectionReportItems();
-                                $ir_item->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()%9223372036854775807")->queryScalar();
-                                $ir_item->fk_inspection_report_id = $ir->id;
-                                $ir_item->fk_request_for_inspection_item_id = $val2['rfi_item_id'];
-                                if ($ir_item->save(false)) {
-                                }
-                            }
+                        if (!$ir_item->save(false)) {
+                            throw new ErrorException("IR Item Model Save Failed");
                         }
-                    } else {
-                        return ['isSuccess' => false, 'error_message' => $ir->errors];
                     }
                 }
             }
         } catch (ErrorException $e) {
-            return ['isSuccess' => false, 'error_message' => $e->getMessage()];
+            return $e->getMessage();
         }
 
-        return ['isSuccess' => true];
+        return true;
     }
-    private function noPoInsertInspectionReport($rfi_id)
+    private function noPoInsertInspectionReport($rfi_id, $rfi_office)
     {
         $items = Yii::$app->db->createCommand("SELECT 
         rfi_without_po_items.id,
         CONCAT(rfi_without_po_items.`from_date`,'-',rfi_without_po_items.`to_date`) as inspection_date,
         rfi_without_po_items.project_name,
         rfi_without_po_items.fk_payee_id
-
         FROM rfi_without_po_items
         WHERE 
         rfi_without_po_items.fk_request_for_inspection_id = :id
         AND rfi_without_po_items.is_deleted !=1")
             ->bindValue(':id', $rfi_id)
             ->queryAll();
-
         $res = ArrayHelper::index($items, null, [function ($element) {
             return $element['project_name'];
         }, 'inspection_date', 'fk_payee_id']);
-        // print_r(json_encode($res));
-        // die();
-
         try {
             foreach ($res as $items) {
-
                 foreach ($items as $val) {
                     foreach ($val  as $val2) {
-
                         $ir = new InspectionReport();
-                        $ir->id = Yii::$app->db->createCommand("SELECT UUID_SHORT() %9223372036854775807")->queryScalar();
-                        $ir->ir_number = YIi::$app->memem->irNumber();
-                        if ($ir->validate()) {
-
-                            if ($ir->save(false)) {
-                                $iar = new Iar();
-                                $iar->id = Yii::$app->db->createCommand("SELECT UUID_SHORT() %9223372036854775807")->queryScalar();
-                                $iar->iar_number = Yii::$app->memem->iarNumber();
-                                $iar->fk_ir_id = $ir->id;
-                                if ($iar->save(false)) {
-                                }
-
-                                foreach ($val2 as $val3) {
-
-                                    $ir_item = new InspectionReportNoPoItems();
-                                    $ir_item->id = YIi::$app->db->createCommand("SELECT UUID_SHORT() %9223372036854775807")->queryScalar();
-                                    $ir_item->fk_inspection_report_id = $ir->id;
-                                    $ir_item->fk_rfi_without_po_item_id = $val3['id'];
-                                    if ($ir_item->save(false)) {
-                                    }
-                                }
+                        $ir->office_name = $rfi_office;
+                        if (!$ir->validate()) {
+                            throw new ErrorException(json_encode($ir->errors));
+                        }
+                        if (!$ir->save(false)) {
+                            throw new ErrorException('IR Model Save Failed');
+                        }
+                        $iar = new Iar();
+                        $iar->fk_ir_id = $ir->id;
+                        $iar->office_name =  $rfi_office;
+                        if (!$iar->validate()) {
+                            throw new ErrorException(json_encode($iar->errors));
+                        }
+                        if (!$iar->save(false)) {
+                            throw new ErrorException('IAR Model Save Failed');
+                        }
+                        foreach ($val2 as $val3) {
+                            $ir_item = new InspectionReportNoPoItems();
+                            $ir_item->id = YIi::$app->db->createCommand("SELECT UUID_SHORT() %9223372036854775807")->queryScalar();
+                            $ir_item->fk_inspection_report_id = $ir->id;
+                            $ir_item->fk_rfi_without_po_item_id = $val3['id'];
+                            if (!$ir_item->validate()) {
+                                throw new ErrorException(json_encode($ir_item->errors));
                             }
-                        } else {
-                            return ['isSuccess' => false, 'error_message' => $ir->errors];
+                            if (!$ir_item->save(false)) {
+                                throw new ErrorException("IR Item Model Save Failed");
+                            }
                         }
                     }
                 }
             }
         } catch (ErrorException $e) {
-            return ['isSuccess' => false, 'error_message' => $e->getMessage()];
+            return $e->getMessage();
         }
 
 
-        return ['isSuccess' => true];
+        return  true;
     }
     private function validateNoPoItems(
         $project_name = '',
@@ -547,8 +544,7 @@ class RequestForInspectionController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             try {
                 $txn = Yii::$app->db->beginTransaction();
-                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT() % 9223372036854775807")->queryScalar();
-                $model->rfi_number = $this->rfiNumber($model->fk_office_id);
+                // $model->rfi_number = $this->rfiNumber($model->fk_office_id);
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
@@ -677,27 +673,30 @@ class RequestForInspectionController extends Controller
     public function actionFinal($id)
     {
 
-        $model = $this->findModel($id);
-        $model->is_final = 1;
-        // $this->noPoInsertInspectionReport($model->id);
-        if ($model->save(false)) {
+        try {
+            $txn = Yii::$app->db->beginTransaction();
+            $model = $this->findModel($id);
+            $model->is_final = 1;
+            if (!$model->save(false)) {
+                throw new ErrorException("RFI Model Save Failed");
+            }
             if ($model->transaction_type === 'with_po') {
-
-                $insert = $this->withPoInsertInspectionReport($model->id)['isSuccess'];
-                if ($insert === true) {
-                    return $this->redirect(['view', 'id' => $model->id]);
-                } else {
-                    return var_dump($insert);
+                $insert = $this->withPoInsertInspectionReport($model->id, $model->office->office_name);
+                if ($insert !== true) {
+                    throw new ErrorException($insert);
                 }
             } else {
-                $insert_iars = $this->noPoInsertInspectionReport($model->id);
+                $ins = $this->noPoInsertInspectionReport($model->id, $model->office->office_name);
 
-                if ($insert_iars['isSuccess'] === true) {
-                    return $this->redirect(['view', 'id' => $model->id]);
-                } else {
-                    return var_dump($insert_iars);
+                if ($ins !== true) {
+                    throw new ErrorException($ins);
                 }
             }
+            $txn->commit();
+            return $this->redirect(['view', 'id' => $model->id]);
+        } catch (ErrorException $e) {
+            $txn->rollBack();
+            return $e->getMessage();
         }
     }
 

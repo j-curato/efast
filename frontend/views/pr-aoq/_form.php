@@ -42,33 +42,36 @@ $row = 1;
                     ]) ?>
                 </div>
             <?php } ?>
-            <div class="col-sm-2">
-                <?= $form->field($model, 'pr_rfq_id')->widget(
-                    Select2::class,
+            <?php if ($model->isNewRecord) : ?>
+                <div class="col-sm-2">
+                    <?= $form->field($model, 'pr_rfq_id')->widget(
+                        Select2::class,
 
-                    [
-                        'data' => $pr_rfq,
-                        'options' => ['placeholder' => 'Search for a Purchase Request'],
-                        'pluginOptions' => [
-                            'allowClear' => true,
-                            'minimumInputLength' => 1,
-                            'language' => [
-                                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                        [
+                            'data' => $pr_rfq,
+                            'options' => ['placeholder' => 'Search for a Purchase Request'],
+                            'pluginOptions' => [
+                                'allowClear' => true,
+                                'minimumInputLength' => 1,
+                                'language' => [
+                                    'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                                ],
+                                'ajax' => [
+                                    'url' => Yii::$app->request->baseUrl . '?r=pr-rfq/search-rfq',
+                                    'dataType' => 'json',
+                                    'delay' => 250,
+                                    'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                                    'cache' => true
+                                ],
+                                'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                                'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                                'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
                             ],
-                            'ajax' => [
-                                'url' => Yii::$app->request->baseUrl . '?r=pr-rfq/search-rfq',
-                                'dataType' => 'json',
-                                'delay' => 250,
-                                'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                                'cache' => true
-                            ],
-                            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                        ],
-                    ]
-                ) ?>
-            </div>
+                        ]
+                    ) ?>
+                </div>
+            <?php endif; ?>
+
             <!-- <div class="col-sm-2">
 
                 <?= $form->field($model, 'pr_date')->widget(DatePicker::class, [

@@ -34,7 +34,7 @@ class RequestForInspection extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'rfi_number', 'date', 'fk_requested_by', 'transaction_type', 'fk_office_id', 'fk_division_id'], 'required'],
+            [['date', 'fk_requested_by', 'transaction_type', 'fk_office_id', 'fk_division_id'], 'required'],
             [[
                 'id', 'fk_chairperson', 'fk_inspector', 'fk_property_unit', 'fk_pr_office_id', 'is_final', 'fk_requested_by', 'fk_office_id',
                 'fk_division_id',
@@ -43,7 +43,43 @@ class RequestForInspection extends \yii\db\ActiveRecord
             [['date', 'created_at'], 'safe'],
             [['rfi_number', 'transaction_type'], 'string', 'max' => 255],
             [['rfi_number', 'id'], 'unique'],
+
         ];
+    }
+
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            if ($this->isNewRecord) {
+                if (empty($this->id)) {
+                    $this->id = Yii::$app->db->createCommand("SELECT UUID_SHORT() % 9223372036854775807")->queryScalar();
+                }
+                if (empty($this->rfi_number)) {
+                    $this->rfi_number = $this->generateSerialNumber();
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+    private function generateSerialNumber()
+    {
+        $ofc = Office::findOne($this->fk_office_id);
+        $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(rfi_number,'-',-1)  AS UNSIGNED) as last_number
+         FROM request_for_inspection
+         WHERE fk_office_id = :office_id
+         ORDER BY last_number DESC LIMIT 1")
+            ->bindValue(':office_id', $ofc->id)
+            ->queryScalar();
+        $num = 1;
+        if (!empty($query)) {
+            $num  = intval($query) + 1;
+        }
+        $zero = '';
+        for ($i = strlen($num); $i < 4; $i++) {
+            $zero .= 0;
+        }
+        return strtoupper($ofc->office_name) . '-' . date('Y') . '-' . $zero . $num;
     }
 
     /**
@@ -96,7 +132,7 @@ class RequestForInspection extends \yii\db\ActiveRecord
     }
     public function getOffice()
     {
-        return $this->hasOne(PrOffice::class, ['id' => 'fk_pr_office_id']);
+        return $this->hasOne(Office::class, ['id' => 'fk_office_id']);
     }
     public function getResponsibilityCenter()
     {

@@ -24,7 +24,8 @@ class IarIndexSearch extends IarIndex
                 'iar_number',
                 'ir_number',
                 'rfi_number',
-                'responsible_center',
+                'office_name',
+                'division',
                 'inspector_name',
                 'requested_by_name',
                 'end_user',
@@ -56,9 +57,12 @@ class IarIndexSearch extends IarIndex
         $query = IarIndex::find();
 
 
-
-        if (!Yii::$app->user->can('super-user')) {
-            $query->where('responsible_center =:division', ['division' => Yii::$app->user->identity->division]);
+        if (!yii::$app->user->can('ro_inspection_admin')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $query->andWhere('iar_index.office_name = :office', ['office' => $user_data->office->office_name]);
+            if (!Yii::$app->user->can('ro_inspection_admin') || !Yii::$app->user->can('po_inspection_admin')) {
+                $query->andWhere('iar_index.division = :division', ['division' => $user_data->divisionName->division ?? '']);
+            }
         }
 
         // add conditions that should always apply here
@@ -84,7 +88,8 @@ class IarIndexSearch extends IarIndex
         $query->andFilterWhere(['like', 'iar_number', $this->iar_number])
             ->andFilterWhere(['like', 'ir_number', $this->ir_number])
             ->andFilterWhere(['like', 'rfi_number', $this->rfi_number])
-            ->andFilterWhere(['like', 'responsible_center', $this->responsible_center])
+            ->andFilterWhere(['like', 'office_name', $this->office_name])
+            ->andFilterWhere(['like', 'division', $this->division])
             ->andFilterWhere(['like', 'inspector_name', $this->inspector_name])
             ->andFilterWhere(['like', 'requested_by_name', $this->requested_by_name])
             ->andFilterWhere(['like', 'end_user', $this->end_user])

@@ -28,7 +28,8 @@ class InspectionReportIndexSearch extends InspectionReportIndex
                 'end_user',
                 'requested_by_name',
                 'payee_name',
-                'responsible_center',
+                'office_name',
+                'division',
                 'purpose',
             ], 'safe'],
         ];
@@ -54,8 +55,12 @@ class InspectionReportIndexSearch extends InspectionReportIndex
     {
         $query = InspectionReportIndex::find();
 
-        if (!Yii::$app->user->can('super-user')) {
-            $query->where('responsible_center =:division', ['division' => Yii::$app->user->identity->division]);
+        if (!yii::$app->user->can('ro_inspection_admin')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $query->andWhere('inspection_report_index.office_name = :office', ['office' => $user_data->office->office_name]);
+            if (!Yii::$app->user->can('ro_inspection_admin') || !Yii::$app->user->can('po_inspection_admin')) {
+                $query->andWhere('inspection_report_index.division = :division', ['division' => $user_data->divisionName->division ?? '']);
+            }
         }
 
         // add conditions that should always apply here
@@ -86,7 +91,8 @@ class InspectionReportIndexSearch extends InspectionReportIndex
             ->andFilterWhere(['like', 'requested_by_name', $this->requested_by_name])
             ->andFilterWhere(['like', 'payee_name', $this->payee_name])
             ->andFilterWhere(['like', 'purpose', $this->purpose])
-            ->andFilterWhere(['like', 'responsible_center', $this->responsible_center]);
+            ->andFilterWhere(['like', 'office_name', $this->office_name])
+            ->andFilterWhere(['like', 'division', $this->division]);
 
 
         $query->orderBy('ir_number');

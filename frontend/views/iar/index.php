@@ -26,11 +26,12 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'pjax' => true,
         'columns' => [
+            'office_name',
+            'division',
             'iar_number',
             'ir_number',
             'rfi_number',
             'purpose',
-            'responsible_center',
             'inspector_name',
             'requested_by_name',
             'end_user',
