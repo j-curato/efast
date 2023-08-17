@@ -43,7 +43,7 @@ use yii\widgets\ActiveForm;
         'ir_number',
         'rfi_number',
         'purpose',
-        'responsible_center',
+        'division',
         'inspector_name',
         'requested_by_name',
         'end_user',
@@ -118,7 +118,7 @@ use yii\widgets\ActiveForm;
                     $end_user = $val['end_user'];
                     $purpose = $val['purpose'];
                     $inspector_name = $val['inspector_name'];
-                    $responsible_center = $val['responsible_center'];
+                    $division = $val['division'];
                     $po_number = $val['po_number'];
                     $payee_name = $val['payee_name'];
                     $requested_by_name = $val['requested_by_name'];
@@ -130,7 +130,7 @@ use yii\widgets\ActiveForm;
                         <td>$ir_number</td>
                         <td>$rfi_number</td>
                         <td>$purpose</td>
-                        <td>$responsible_center</td>
+                        <td>$division</td>
                         <td>$inspector_name</td>
                         <td>$requested_by_name</td>
                         <td>$end_user</td>
