@@ -811,7 +811,6 @@ class PrPurchaseRequestController extends Controller
             ORDER BY last_number DESC LIMIT 1")
             ->bindValue(':office_id', $office_id)
             ->bindValue(':division_id', $division_id)
-            ->bindValue(':dte', $d)
             ->bindValue(':yr', $date->format('Y') . '%')
             ->queryScalar();
         if ($is_backdate) {
