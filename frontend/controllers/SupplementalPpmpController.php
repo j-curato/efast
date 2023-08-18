@@ -241,7 +241,7 @@ class SupplementalPpmpController extends Controller
                     }
 
                     $ppmp_non_cse_item->fk_supplemental_ppmp_non_cse_id = $ppmp_non_cse->id;
-                    $ppmp_non_cse_item->amount = $item['amount'];
+                    $ppmp_non_cse_item->amount = $item['amount'] ?? 0;
                     $ppmp_non_cse_item->fk_pr_stock_id = $item['stock_id'];
                     $ppmp_non_cse_item->description = $item['description'];
                     $ppmp_non_cse_item->quantity = $item['qty'];
