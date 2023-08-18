@@ -531,11 +531,6 @@ class PrPurchaseRequestController extends Controller
 
 
         if ($model->load(Yii::$app->request->post())) {
-            // if (!Yii::$app->user->can('super-user')) {
-            //     $user_data = Yii::$app->memem->getUserData();
-            //     $office_id = $user_data->office->id;
-            //     $division_id = $user_data->divisionName->id;
-            // }
             try {
                 $transaction = Yii::$app->db->beginTransaction();
                 $pr_items = Yii::$app->request->post('pr_items') ?? [];
@@ -1007,7 +1002,7 @@ class PrPurchaseRequestController extends Controller
             //     $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['=', 'supplemental_ppmp_non_cse_items.id', $id_arr[2]], $params);
             //     // return $id_arr[2];
             // }
-            if (!Yii::$app->user->can('super-user')) {
+            if (!Yii::$app->user->can('po_procurement_admin') || !Yii::$app->user->can('ro_procurement_admin')) {
                 $user_data = Yii::$app->memem->getUserData();
                 $office_id = $user_data->office->id;
                 $division_id = $division_id ?? $user_data->divisionName->id;
@@ -1118,6 +1113,13 @@ class PrPurchaseRequestController extends Controller
                     ->bindValue(':id', $id)
                     ->queryAll();
             } else if ($type === 'fixed_expenses') {
+                $fixExpenseParams = [];
+                $fixExpenseSql = '';
+                if (!empty($id_arr[2])) {
+                    $fixExpenseSql .= ' AND ';
+                    $fixExpenseSql .= Yii::$app->db->getQueryBuilder()->buildCondition(['=', 'supplemental_ppmp.fk_division_id', $id_arr[2]], $fixExpenseParams);
+                    // return $id_arr[2];
+                }
                 $res = Yii::$app->db->createCommand("SELECT 
                  CAST(supplemental_ppmp_non_cse_items.id as CHAR(50)) as item_id,
                  CAST( pr_stock.id  as CHAR(50))as stock_id,
@@ -1149,11 +1151,13 @@ class PrPurchaseRequestController extends Controller
 									 ) as item_in_pr_total ON supplemental_ppmp_non_cse_items.id = item_in_pr_total.fk_ppmp_non_cse_item_id
                 WHERE supplemental_ppmp_non_cse.type =  'fixed expenses'
                 AND supplemental_ppmp.fk_office_id = :office_id 
+                AND supplemental_ppmp.fk_division_id = :division_id 
                 AND supplemental_ppmp_non_cse_items.is_deleted = 0
                 AND supplemental_ppmp_non_cse.is_deleted = 0
                 AND IFNULL(supplemental_ppmp_non_cse_items.amount,0) - IFNULL(item_in_pr_total.total_pr_amt,0)  >0
                 ")
                     ->bindValue(':office_id', $office_id)
+                    ->bindValue(':division_id', $division_id)
                     ->queryAll();
             }
             return json_encode($res);
