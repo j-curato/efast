@@ -45,18 +45,20 @@ class PayeeController extends Controller
                             'create',
                             'delete',
                             'update',
-                            'view',
+
                             'import',
                             'search-payee',
                         ],
                         'allow' => true,
-                        'roles' => ['accounting', 'super-user', 'po_accounting_admin']
+                        'roles' => ['accounting', 'super-user',]
                     ],
                     [
 
                         'actions' => [
                             'get-payee',
                             'search-payee',
+                            'index',
+                            'view',
                         ],
                         'allow' => true,
                         'roles' => ['@']

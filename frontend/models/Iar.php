@@ -53,8 +53,6 @@ class Iar extends \yii\db\ActiveRecord
     }
     private function generateSerialNum()
     {
-
-        $num = 1;
         $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(iar_number,'-',-1) AS UNSIGNED) as last_num
          FROM iar 
          WHERE 
@@ -62,14 +60,8 @@ class Iar extends \yii\db\ActiveRecord
          ORDER BY last_num DESC LIMIT 1")
             ->bindValue(':office', $this->office_name . '%')
             ->queryScalar();
-        if (!empty($query)) {
-            $num = intval($query) + 1;
-        }
-        $zero = '';
-        for ($i = strlen($num); $i <= 4; $i++) {
-            $zero .= 0;
-        }
-        return strtoupper($this->office_name) . '-' . date('Y') . '-' . $zero . $num;
+        $nxtNum = !empty($query) ? intval($query) + 1 : 1;
+        return strtoupper($this->office_name) . '-' . date('Y') . '-' . str_pad($nxtNum, 4, '0', STR_PAD_LEFT);
     }
     /**
      * {@inheritdoc}

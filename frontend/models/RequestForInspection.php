@@ -64,22 +64,14 @@ class RequestForInspection extends \yii\db\ActiveRecord
     }
     private function generateSerialNumber()
     {
-        $ofc = Office::findOne($this->fk_office_id);
         $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(rfi_number,'-',-1)  AS UNSIGNED) as last_number
          FROM request_for_inspection
          WHERE fk_office_id = :office_id
          ORDER BY last_number DESC LIMIT 1")
-            ->bindValue(':office_id', $ofc->id)
+            ->bindValue(':office_id', $this->fk_office_id)
             ->queryScalar();
-        $num = 1;
-        if (!empty($query)) {
-            $num  = intval($query) + 1;
-        }
-        $zero = '';
-        for ($i = strlen($num); $i < 4; $i++) {
-            $zero .= 0;
-        }
-        return strtoupper($ofc->office_name) . '-' . date('Y') . '-' . $zero . $num;
+        $nxtNum = !empty($query) ? intval($query) + 1 : 1;
+        return strtoupper($this->office->office_name) . '-' . date('Y') . '-' .  str_pad($nxtNum, 4, '0', STR_PAD_LEFT);
     }
     public function getNoPoItems()
     {
@@ -107,8 +99,7 @@ class RequestForInspection extends \yii\db\ActiveRecord
        LEFT JOIN unit_of_measure ON rfi_without_po_items.fk_unit_of_measure_id = unit_of_measure.id
        WHERE 
        request_for_inspection.id = :id
-       AND rfi_without_po_items.is_deleted !=1
-       ")
+       AND rfi_without_po_items.is_deleted !=1")
             ->bindValue(':id', $this->id)
 
             ->queryAll();
