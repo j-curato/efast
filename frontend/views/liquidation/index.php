@@ -279,7 +279,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'toolbar' => [
             [
 
-                'content' => "<h6>Export By Reporting Period</h6><form  id='export_filter'><div class='row'>
+                'content' => "<h4  style='margin-top:35px' >Export By Reporting Period</h4><form  id='export_filter'><div class='row'>
                     <div class='col-sm-2'>" . DatePicker::widget([
                     'name' => 'from_reporting_period',
                     'id' => 'from_reporting_period',
