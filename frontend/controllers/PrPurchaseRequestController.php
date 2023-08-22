@@ -988,7 +988,7 @@ class PrPurchaseRequestController extends Controller
 
             $ppmp_id = $_POST['id'];
             $office_id = !empty($_POST['office']) ? $_POST['office'] : '';
-            $division_id = !empty($_POST['division']) ? $_POST['division'] : '';
+            $division_id = Yii::$app->request->post('division') ?? null;
             $id_arr = explode('-', $ppmp_id);
             $id = $id_arr[0];
             $type = $id_arr[1];
@@ -1009,17 +1009,30 @@ class PrPurchaseRequestController extends Controller
             $res = [];
             if ($type === 'cse') {
                 $res = Yii::$app->db->createCommand("SELECT 
-                CAST(supplemental_ppmp_cse.id as CHAR(50)) as item_id,
-                  'cse_item_id' as cse_type,
-                '' as `description`,
-                pr_stock.id as stock_id,
-                pr_stock.stock_title,
-                pr_stock.amount as unit_cost,
-                IFNULL(unit_of_measure.unit_of_measure,'') as unit_of_measure,
-                IFNULL(unit_of_measure.id,'') as unit_of_measure_id,
-                supplemental_ppmp_cse.amount,(
-                IFNULL(supplemental_ppmp_cse.jan_qty,0)+
-                IFNULL(supplemental_ppmp_cse.feb_qty,0)+
+                    CAST(supplemental_ppmp_cse.id as CHAR(50)) as item_id,
+                    'cse_item_id' as cse_type,
+                    '' as `description`,
+                    pr_stock.id as stock_id,
+                    pr_stock.stock_title,
+                    pr_stock.amount as unit_cost,
+                    IFNULL(unit_of_measure.unit_of_measure,'') as unit_of_measure,
+                    IFNULL(unit_of_measure.id,'') as unit_of_measure_id,
+                    supplemental_ppmp_cse.amount,(
+                    IFNULL(supplemental_ppmp_cse.jan_qty,0)+
+                    IFNULL(supplemental_ppmp_cse.feb_qty,0)+
+                    IFNULL(supplemental_ppmp_cse.mar_qty,0)+
+                    IFNULL(supplemental_ppmp_cse.apr_qty,0)+
+                    IFNULL(supplemental_ppmp_cse.may_qty,0)+
+                    IFNULL(supplemental_ppmp_cse.jun_qty,0)+
+                    IFNULL(supplemental_ppmp_cse.jul_qty,0)+
+                    IFNULL(supplemental_ppmp_cse.aug_qty,0)+
+                    IFNULL(supplemental_ppmp_cse.sep_qty,0)+
+                    IFNULL(supplemental_ppmp_cse.oct_qty,0)+
+                    IFNULL(supplemental_ppmp_cse.nov_qty,0)+
+                    IFNULL(supplemental_ppmp_cse.dec_qty,0))- IFNULL(ppmp_in_pr.total_pr_qty,0) as bal_qty,
+            
+                    (IFNULL(supplemental_ppmp_cse.jan_qty,0)+
+                    IFNULL(supplemental_ppmp_cse.feb_qty,0)+
                 IFNULL(supplemental_ppmp_cse.mar_qty,0)+
                 IFNULL(supplemental_ppmp_cse.apr_qty,0)+
                 IFNULL(supplemental_ppmp_cse.may_qty,0)+
@@ -1029,47 +1042,34 @@ class PrPurchaseRequestController extends Controller
                 IFNULL(supplemental_ppmp_cse.sep_qty,0)+
                 IFNULL(supplemental_ppmp_cse.oct_qty,0)+
                 IFNULL(supplemental_ppmp_cse.nov_qty,0)+
-                IFNULL(supplemental_ppmp_cse.dec_qty,0))- IFNULL(ppmp_in_pr.total_pr_qty,0) as bal_qty,
-           
-                (IFNULL(supplemental_ppmp_cse.jan_qty,0)+
-                IFNULL(supplemental_ppmp_cse.feb_qty,0)+
-              IFNULL(supplemental_ppmp_cse.mar_qty,0)+
-              IFNULL(supplemental_ppmp_cse.apr_qty,0)+
-              IFNULL(supplemental_ppmp_cse.may_qty,0)+
-              IFNULL(supplemental_ppmp_cse.jun_qty,0)+
-              IFNULL(supplemental_ppmp_cse.jul_qty,0)+
-              IFNULL(supplemental_ppmp_cse.aug_qty,0)+
-              IFNULL(supplemental_ppmp_cse.sep_qty,0)+
-              IFNULL(supplemental_ppmp_cse.oct_qty,0)+
-              IFNULL(supplemental_ppmp_cse.nov_qty,0)+
-              IFNULL(supplemental_ppmp_cse.dec_qty,0)
-            )* IFNULL(supplemental_ppmp_cse.amount,0) - IFNULL(ppmp_in_pr.total_pr_amt,0) as bal_amt    
-                 FROM supplemental_ppmp_cse
-                LEFT JOIN pr_stock ON supplemental_ppmp_cse.fk_pr_stock_id  = pr_stock.id
-                LEFT JOIN unit_of_measure ON supplemental_ppmp_cse.fk_unit_of_measure_id = unit_of_measure.id
-                LEFT JOIN (SELECT 
-            pr_purchase_request_item.fk_ppmp_cse_item_id,
-            SUM(pr_purchase_request_item.quantity *pr_purchase_request_item.unit_cost) as total_pr_amt,
-            SUM(pr_purchase_request_item.quantity) as total_pr_qty
-            FROM pr_purchase_request_item
-            JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id
-            WHERE pr_purchase_request_item.is_deleted = 0
-            AND  pr_purchase_request.is_cancelled = 0
-            GROUP BY pr_purchase_request_item.fk_ppmp_cse_item_id) as ppmp_in_pr ON supplemental_ppmp_cse.id = ppmp_in_pr.fk_ppmp_cse_item_id
-                 WHERE supplemental_ppmp_cse.id = :id
-                 AND  (IFNULL(supplemental_ppmp_cse.jan_qty,0)+
-                IFNULL(supplemental_ppmp_cse.feb_qty,0)+
-              IFNULL(supplemental_ppmp_cse.mar_qty,0)+
-              IFNULL(supplemental_ppmp_cse.apr_qty,0)+
-              IFNULL(supplemental_ppmp_cse.may_qty,0)+
-              IFNULL(supplemental_ppmp_cse.jun_qty,0)+
-              IFNULL(supplemental_ppmp_cse.jul_qty,0)+
-              IFNULL(supplemental_ppmp_cse.aug_qty,0)+
-              IFNULL(supplemental_ppmp_cse.sep_qty,0)+
-              IFNULL(supplemental_ppmp_cse.oct_qty,0)+
-              IFNULL(supplemental_ppmp_cse.nov_qty,0)+
-              IFNULL(supplemental_ppmp_cse.dec_qty,0)
-            )* IFNULL(supplemental_ppmp_cse.amount,0) - IFNULL(ppmp_in_pr.total_pr_amt,0)
+                IFNULL(supplemental_ppmp_cse.dec_qty,0)
+                )* IFNULL(supplemental_ppmp_cse.amount,0) - IFNULL(ppmp_in_pr.total_pr_amt,0) as bal_amt    
+                    FROM supplemental_ppmp_cse
+                    LEFT JOIN pr_stock ON supplemental_ppmp_cse.fk_pr_stock_id  = pr_stock.id
+                    LEFT JOIN unit_of_measure ON supplemental_ppmp_cse.fk_unit_of_measure_id = unit_of_measure.id
+                    LEFT JOIN (SELECT 
+                pr_purchase_request_item.fk_ppmp_cse_item_id,
+                SUM(pr_purchase_request_item.quantity *pr_purchase_request_item.unit_cost) as total_pr_amt,
+                SUM(pr_purchase_request_item.quantity) as total_pr_qty
+                FROM pr_purchase_request_item
+                JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id
+                WHERE pr_purchase_request_item.is_deleted = 0
+                AND  pr_purchase_request.is_cancelled = 0
+                GROUP BY pr_purchase_request_item.fk_ppmp_cse_item_id) as ppmp_in_pr ON supplemental_ppmp_cse.id = ppmp_in_pr.fk_ppmp_cse_item_id
+                    WHERE supplemental_ppmp_cse.id = :id
+                    AND  (IFNULL(supplemental_ppmp_cse.jan_qty,0)+
+                    IFNULL(supplemental_ppmp_cse.feb_qty,0)+
+                IFNULL(supplemental_ppmp_cse.mar_qty,0)+
+                IFNULL(supplemental_ppmp_cse.apr_qty,0)+
+                IFNULL(supplemental_ppmp_cse.may_qty,0)+
+                IFNULL(supplemental_ppmp_cse.jun_qty,0)+
+                IFNULL(supplemental_ppmp_cse.jul_qty,0)+
+                IFNULL(supplemental_ppmp_cse.aug_qty,0)+
+                IFNULL(supplemental_ppmp_cse.sep_qty,0)+
+                IFNULL(supplemental_ppmp_cse.oct_qty,0)+
+                IFNULL(supplemental_ppmp_cse.nov_qty,0)+
+                IFNULL(supplemental_ppmp_cse.dec_qty,0)
+                )* IFNULL(supplemental_ppmp_cse.amount,0) - IFNULL(ppmp_in_pr.total_pr_amt,0)
                  ")
                     ->bindValue(':id', $id)
                     ->queryAll();
