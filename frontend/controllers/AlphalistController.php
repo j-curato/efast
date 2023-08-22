@@ -106,7 +106,7 @@ class AlphalistController extends Controller
             $model->province = strtolower($user_data->office->office_name);
         }
         if ($model->load(Yii::$app->request->post())) {
-            $model->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+            $model->id = YIi::$app->db->createCommand("SELECT UUID_SHORT() %9223372036854775807")->queryScalar();
 
             $model->alphalist_number = $this->alphalistNumber($model->province);
 
