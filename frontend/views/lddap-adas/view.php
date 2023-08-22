@@ -183,7 +183,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td colspan="8" class="no-bdr">
 
                         <div class='signatory'>
-                            <u><b>JOHN VOLTAIRE S. ANCLA </b></u><br>
+                            <u><b>JOHN VOLTAIRE S. ANCLA, CPA </b></u><br>
                             <span> Chief Administrative Officer </span>
                         </div>
                         <div class="signatory">
