@@ -806,7 +806,6 @@ class PrPurchaseRequestController extends Controller
             WHERE pr_purchase_request.fk_office_id = :office_id
             AND pr_purchase_request.fk_division_id = :division_id
             AND pr_purchase_request.is_final = 0
-            AND pr_purchase_request.date <= :dte
             AND pr_purchase_request.date LIKE :yr
             ORDER BY last_number DESC LIMIT 1")
             ->bindValue(':office_id', $office_id)
