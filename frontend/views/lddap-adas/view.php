@@ -140,8 +140,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <td colspan="8" class="no-bdr">
                         <div class="signatory">
-                            <u><b>CHARLIE C. DECHOS, CPA</b></u><br>
-                            <span>Regional Accountant </span>
+                            <u><b>REGINE MAE O. BITCO, CPA</b></u><br>
+                            <span>Accountant II </span>
                         </div>
                         <div class="signatory">
 
@@ -183,8 +183,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td colspan="8" class="no-bdr">
 
                         <div class='signatory'>
-                            <u><b>MARRY ANN L. PASCUAL </b></u><br>
-                            <span>Administrative Officer V </span>
+                            <u><b>JOHN VOLTAIRE S. ANCLA </b></u><br>
+                            <span> Chief Administrative Officer </span>
                         </div>
                         <div class="signatory">
 
