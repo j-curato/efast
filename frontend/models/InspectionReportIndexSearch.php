@@ -58,7 +58,7 @@ class InspectionReportIndexSearch extends InspectionReportIndex
         if (!yii::$app->user->can('ro_inspection_admin')) {
             $user_data = Yii::$app->memem->getUserData();
             $query->andWhere('inspection_report_index.office_name = :office', ['office' => $user_data->office->office_name]);
-            if (!Yii::$app->user->can('ro_inspection_admin') || !Yii::$app->user->can('po_inspection_admin')) {
+            if (!Yii::$app->user->can('ro_inspection_admin') && !Yii::$app->user->can('po_inspection_admin')) {
                 $query->andWhere('inspection_report_index.division = :division', ['division' => $user_data->divisionName->division ?? '']);
             }
         }
