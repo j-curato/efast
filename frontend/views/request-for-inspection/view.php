@@ -2,7 +2,6 @@
 
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-us
 
 
 /* @var $this yii\web\View */
