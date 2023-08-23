@@ -163,7 +163,7 @@ if (!empty($model->fk_requested_by)) {
                             <td class='center v-align-top' >{$val['po_number']}</td>
                             <td class='center v-align-top'>{$val['purpose']}</td>
                             <td class='center v-align-top'>{$val['payee']}</td>
-                            <td >
+                            <td class='center v-align-top'>
                             <span class='bold'>{$val['stock_title']}</span>
                             <br>
                             {$val['specification']}
@@ -195,7 +195,7 @@ if (!empty($model->fk_requested_by)) {
    
                     <td class='center v-align-top'>{$project_name}</td>
                     <td class='center v-align-top'>{$payee_name}</td>
-                    <td >
+                    <td class='center v-align-top'>
                     <span class='bold'>{$stock_title}</span>
                     <br>
                     {$specification_view}
