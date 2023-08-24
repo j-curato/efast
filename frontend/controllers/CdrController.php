@@ -150,6 +150,41 @@ class CdrController extends Controller
             'model' => $model,
         ]);
     }
+    public function actionInsertCdr()
+    {
+        if ($_POST) {
+            $reporting_period = $_POST['reporting_period'];
+            $bank_account_id = $_POST['bank_account_id'];
+            // $book_name = $_POST['book'];
+            $report_type = $_POST['report_type'];
+            $query = (new \yii\db\Query())
+                ->select('id')
+                ->from('cdr')
+                ->where('reporting_period =:reporting_period', ['reporting_period' => $reporting_period])
+                ->andWhere('fk_bank_account_id LIKE :fk_bank_account_id', ['fk_bank_account_id' => $bank_account_id])
+                ->andWhere('report_type LIKE :report_type', ['report_type' => $report_type])
+                ->one();
+            if (!empty($query)) {
+                return json_encode(['isSuccess' => false, 'error' => 'na save na ']);
+            }
+            $province = Yii::$app->db->createCommand("SELECT province FROM bank_account WHERE id =:id")
+                ->bindValue(':id', $bank_account_id)
+                ->queryScalar();
+            $cdr = new Cdr();
+            $cdr->reporting_period = $reporting_period;
+            $cdr->fk_bank_account_id = $bank_account_id;
+            $cdr->report_type = $report_type;
+            $cdr->province = $province;
+
+            if ($cdr->validate()) {
+                if ($cdr->save(false)) {
+                    return json_encode(['isSuccess' => true, 'error' => 'Success', 'id' => $cdr->id]);
+                }
+            } else {
+                return json_encode(['isSuccess' => false, 'error' => $cdr->errors]);
+            }
+        }
+    }
 
     /**
      * Updates an existing Cdr model.
