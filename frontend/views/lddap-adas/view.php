@@ -145,8 +145,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
                         <div class="signatory">
 
-                            <u><b>GAY A. TIDALGO, CESO IV </b></u><br>
-                            <span>Regional Director </span>
+                            <u><b>BRENDA B. CORVERA, CESO V </b></u><br>
+                            <span>Assistant Regional Director </span>
                         </div>
 
                     </td>
