@@ -118,7 +118,6 @@ class AlphalistController extends Controller
                     FROM liquidation_entries as x
                     INNER JOIN liquidation ON x.liquidation_id = liquidation.id
                     INNER JOIN advances_entries ON x.advances_entries_id = advances_entries.id 
-                    INNER JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
                     WHERE liquidation.province = :province
                     AND liquidation.check_date >='2022-04-01'
                     AND  liquidation.check_date <= :to_date
@@ -161,13 +160,12 @@ class AlphalistController extends Controller
             $d = new DateTime($model->check_range);
             // echo $d->format('Y-m-t');
 
-            $query =  Yii::$app->db->createCommand("UPDATE liquidation_entries  SET fk_alphalist_id = :id
+            return Yii::$app->db->createCommand("UPDATE liquidation_entries  SET fk_alphalist_id = :id
               WHERE  EXISTS (SELECT z.id FROM (SELECT
                 x.id
                 FROM liquidation_entries as x
                 INNER JOIN liquidation ON x.liquidation_id = liquidation.id
                 INNER JOIN advances_entries ON x.advances_entries_id = advances_entries.id 
-                INNER JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
                 WHERE liquidation.province = :province
                 AND liquidation.check_date >='2022-04-01'
                 AND  liquidation.check_date <= :to_date
@@ -180,7 +178,7 @@ class AlphalistController extends Controller
                 ->bindValue(':id', $model->id)
                 ->bindValue(':to_date', $d->format('Y-m-t'))
                 ->bindValue(':province', $model->province)
-                ->query();
+                ->getRawSql();
 
             return $this->redirect(['view', 'id' => $model->id]);
         }
