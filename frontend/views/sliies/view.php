@@ -193,8 +193,8 @@ $blnk = "                <tr>
                                 <br>
                                 <br>
                                 <br>
-                                <u><b>REGINE MAE O. BITCO, CPA</b></u><br>
-                                <span>Accountant II </span>
+                                <u><b>MARRY ANN L. PASCUAL</b></u><br>
+                                <span>Administrative Officer V</span>
                             </div>
                         </div>
                         <div style="width:50%;height:100px;float:left">
