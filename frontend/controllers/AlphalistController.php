@@ -160,7 +160,7 @@ class AlphalistController extends Controller
             $d = new DateTime($model->check_range);
             // echo $d->format('Y-m-t');
 
-            return Yii::$app->db->createCommand("UPDATE liquidation_entries  SET fk_alphalist_id = :id
+            Yii::$app->db->createCommand("UPDATE liquidation_entries  SET fk_alphalist_id = :id
               WHERE  EXISTS (SELECT z.id FROM (SELECT
                 x.id
                 FROM liquidation_entries as x
@@ -178,7 +178,7 @@ class AlphalistController extends Controller
                 ->bindValue(':id', $model->id)
                 ->bindValue(':to_date', $d->format('Y-m-t'))
                 ->bindValue(':province', $model->province)
-                ->getRawSql();
+                ->execute();
 
             return $this->redirect(['view', 'id' => $model->id]);
         }
