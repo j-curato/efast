@@ -174,6 +174,35 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
             ->bindValue(':id', $this->id)
             ->queryAll();
     }
+    public function getPrDetails()
+    {
+        return Yii::$app->db->createCommand("SELECT 
+        pr_purchase_request.pr_number,
+        pr_purchase_request.date as date_propose,
+        books.`name` as book_name,
+        pr_purchase_request.purpose,
+        requested_by.employee_name as requested_by,
+        approved_by.employee_name as approved_by,
+        pr_project_procurement.title as project_title,
+        pr_project_procurement.amount as project_amount,
+        office.office_name,
+        divisions.division,
+        division_program_unit.name as unit,
+        prepared_by.employee_name as prepared_by
+        FROM `pr_purchase_request`
+        LEFT JOIN employee_search_view  as requested_by ON  pr_purchase_request.requested_by_id = requested_by.employee_id
+        LEFT JOIN employee_search_view as approved_by ON pr_purchase_request.approved_by_id = approved_by.employee_id
+        LEFT JOIN books ON pr_purchase_request.book_id = books.id
+        LEFT JOIN pr_project_procurement ON pr_purchase_request.pr_project_procurement_id = pr_project_procurement.id
+        LEFT JOIN employee_search_view as prepared_by ON pr_project_procurement.employee_id = prepared_by.employee_id
+        LEFT JOIN office ON pr_purchase_request.fk_office_id = office.id
+        LEFT JOIN divisions ON pr_purchase_request.fk_division_id = divisions.id
+        LEFT JOIN division_program_unit ON pr_purchase_request.fk_division_program_unit_id = division_program_unit.id
+        WHERE 
+        pr_purchase_request.id = :id")
+            ->bindValue(':id', $this->id)
+            ->queryOne();
+    }
     /**
      * {@inheritdoc}
      */

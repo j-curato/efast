@@ -4,6 +4,7 @@ namespace frontend\controllers;
 
 use app\components\helpers\MyHelper;
 use app\models\Office;
+use app\models\PrPurchaseRequest;
 use Yii;
 use app\models\PrRfq;
 use app\models\PrRfqItem;
@@ -92,6 +93,8 @@ class PrRfqController extends Controller
     {
         $model = $this->findModel($id);
         $rbac =  MyHelper::getRbac($model->bac_composition_id);
+
+
         return $this->render('view', [
             'model' => $model,
             'rbac' => $rbac
@@ -105,7 +108,8 @@ class PrRfqController extends Controller
      */
     private function insertItems($model_id, $items)
     {
-
+        // var_dump($items);
+        // die();
         foreach ($items as $itm) {
 
             // CHECK IF THE PURCHASE REQUEST ID ALREADY EXISTS IN PR_RFQ_ITEM_TABLE WITH THE SAME RFQ_ID
@@ -136,7 +140,6 @@ class PrRfqController extends Controller
         $model->fk_office_id  = Yii::$app->user->identity->fk_office_id ?? '';
         if ($model->load(Yii::$app->request->post())) {
             $items = Yii::$app->request->post('items');
-
             try {
                 $transaction = Yii::$app->db->beginTransaction();
                 $province  = 'RO';
@@ -156,18 +159,17 @@ class PrRfqController extends Controller
                  WHERE :_date  >= bac_composition.effectivity_date 
                  AND :_date<= bac_composition.expiration_date
                  AND fk_office_id = :office_id 
-                 AND is_disabled = 0
-                 ")
+                 AND is_disabled = 0")
                     ->bindValue(':_date', $model->_date)
                     ->bindValue(':office_id',   $model->fk_office_id)
                     ->queryOne();
                 if (empty($rbac_id)) {
                     throw new ErrorException('No RBAC for selected Date');
                 }
-                $model->id  = Yii::$app->db->createCommand("SELECT UUID_SHORT()  % 9223372036854775807")->queryScalar();
+                // $model->id  = Yii::$app->db->createCommand("SELECT UUID_SHORT()  % 9223372036854775807")->queryScalar();
                 $model->bac_composition_id = $rbac_id['id'];
                 $model->province = $province;
-                $model->rfq_number = $this->getRfqNumber($model->_date, $model->fk_office_id);
+                // $model->rfq_number = $this->getRfqNumber($model->_date, $model->fk_office_id);
 
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
@@ -357,6 +359,17 @@ class PrRfqController extends Controller
             } catch (ErrorException $e) {
                 return json_encode(['error' => true, 'message' => $e->getMessage()]);
             }
+        }
+    }
+    public function actionGetPrItems()
+    {
+        if (Yii::$app->request->post()) {
+            $id = Yii::$app->request->post('id');
+            $pr = PrPurchaseRequest::findOne($id);
+            return json_encode([
+                'prItems' => $pr->getPrItems(),
+                'prDetails' => $pr->getPrDetails()
+            ]);
         }
     }
 }

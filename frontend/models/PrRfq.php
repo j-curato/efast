@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use DateTime;
 use Yii;
 
 /**
@@ -32,7 +33,7 @@ class PrRfq extends \yii\db\ActiveRecord
     {
         return [
             [[
-                'id', 'rfq_number', 'pr_purchase_request_id',
+                'pr_purchase_request_id',
                 '_date',
                 'deadline',
                 'fk_office_id'
@@ -44,9 +45,23 @@ class PrRfq extends \yii\db\ActiveRecord
             [['id'], 'unique'],
             [[
                 'project_location',
-
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
+    }
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($this)) {
+            if ($this->isNewRecord) {
+                if (empty($this->rfq_number)) {
+                    $this->rfq_number = $this->generateRfqNumber();
+                }
+                if (empty($this->id)) {
+                    $this->id =  Yii::$app->db->createCommand("SELECT UUID_SHORT()  % 9223372036854775807")->queryScalar();
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     public function getAoqLinks()
@@ -54,6 +69,40 @@ class PrRfq extends \yii\db\ActiveRecord
         return Yii::$app->db->createCommand("SELECT id, aoq_number,pr_aoq.is_cancelled  FROM pr_aoq WHERE pr_rfq_id = :id")
             ->bindValue(':id', $this->id)
             ->queryAll();
+    }
+    public function getItems()
+    {
+
+        return Yii::$app->db->createCommand("SELECT 
+            pr_rfq_item.id as item_id,
+            pr_purchase_request_item.id as prItemId,
+            pr_purchase_request_item.specification,
+            pr_purchase_request_item.quantity,
+            pr_purchase_request_item.unit_cost,
+            pr_stock.stock_title,
+            pr_stock.bac_code,
+            unit_of_measure.unit_of_measure
+            FROM pr_rfq_item
+            JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
+            JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id
+            JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
+            LEFT JOIN unit_of_measure ON pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
+            WHERE pr_rfq_item.pr_rfq_id = :id")
+            ->bindValue(':id', $this->id)
+            ->queryAll();
+    }
+    private function generateRfqNumber()
+    {
+        $d  = DateTime::createFromFormat('Y-m-d', $this->_date);
+        $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(pr_rfq.rfq_number,'-',-1) AS UNSIGNED)  as last_num FROM pr_rfq 
+                WHERE rfq_number LIKE :_date 
+                AND fk_office_id = :office_id
+                ORDER BY last_num DESC LIMIT 1")
+            ->bindValue('_date', '%' . $d->format('Y') . '%')
+            ->bindValue('office_id', $this->fk_office_id)
+            ->queryScalar();
+        $num = !empty($query) ? intval($query) + 1 : 1;
+        return strtoupper($this->office->office_name) . '-' . $this->_date . '-' . str_pad($num, 4, '0', STR_PAD_LEFT);
     }
 
     /**

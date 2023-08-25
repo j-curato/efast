@@ -215,18 +215,18 @@ SweetAlertAsset::register($this);
 
                 <?php
                 $grandTotal = 0;
-                foreach ($model->rfqItems as $index => $val) {
-                    $specs = preg_replace('#\[n\]#', "<br>", $val->purchaseRequestItem->specification);
-                    $total_cost = intval($val->purchaseRequestItem->quantity) * floatval($val->purchaseRequestItem->unit_cost);
+                foreach ($model->getItems() as $index => $val) {
+                    $specs = preg_replace('#\[n\]#', "<br>", $val['specification']);
+                    $total_cost = intval($val['quantity']) * floatval($val['unit_cost']);
                     $grandTotal += $total_cost;
                     $i = $index + 1;
                     echo "<tr>
                         <td class='bordered'>$i</td>
-                        <td class='bordered'> <span  style='font-weight:bold'>" . $val->purchaseRequestItem->stock->stock_title . "</span></br>
+                        <td class='bordered'> <span  style='font-weight:bold'>" . $val['stock_title'] . "</span></br>
                         <span style='font-style:italic'>" . "{$specs}</span></td>
-                        <td class='bordered' style='text-align:center' >{$val->purchaseRequestItem->quantity}</td>
-                        <td style='text-align:center;'>" . $val->purchaseRequestItem->unitOfMeasure->unit_of_measure . "</td>
-                        <td class='bordered amount' >" . number_format($val->purchaseRequestItem->unit_cost, 2) . "</td>
+                        <td class='bordered' style='text-align:center' >{$val['quantity']}</td>
+                        <td style='text-align:center;'>" . $val['unit_of_measure'] . "</td>
+                        <td class='bordered amount' >" . number_format($val['unit_cost'], 2) . "</td>
                         <td class='bordered amount' >" . number_format($total_cost, 2) . "</td>
                         <td class='bdr-none'></td>
                         <td class='bordered'></td>
@@ -235,7 +235,6 @@ SweetAlertAsset::register($this);
                 }
                 echo "<tr>
                         <td class='bordered' colspan='5' style='text-align:center'><b>TOTAL</b></td>
-                
                         <td class='bordered amount' >" . number_format($grandTotal, 2) . "</td>
                         <td class='bdr-none'></td>
                         <td class='bordered'></td>
@@ -244,9 +243,7 @@ SweetAlertAsset::register($this);
                 ?>
                 <tr>
                     <td class='bordered' colspan="6">
-
                         <span style="font-weight: bold;">
-
                             <?= $model->purchaseRequest->purpose ?>
                         </span>
                     </td>

@@ -15,7 +15,6 @@ use yii\widgets\ActiveForm;
 /* @var $model app\models\PrRfq */
 /* @var $form yii\widgets\ActiveForm */
 
-$model->project_location = 'DTI Regional Office XIII, Butuan City';
 $pr = '';
 $employee = '';
 $items = json_encode([]);
@@ -76,7 +75,6 @@ if (!empty($model->pr_purchase_request_id)) {
             <div class="row">
                 <?php
                 if (Yii::$app->user->can('super-user')) {
-
                 ?>
                     <div class="col-sm-2">
                         <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
@@ -114,30 +112,32 @@ if (!empty($model->pr_purchase_request_id)) {
                     ]) ?>
 
                 </div>
-                <div class="col-sm-3">
-                    <?= $form->field($model, 'pr_purchase_request_id')->widget(Select2::class, [
-                        'data' => $pr,
-                        'options' => ['placeholder' => 'Search for a Purchase Request'],
-                        'pluginOptions' => [
-                            'allowClear' => true,
-                            'minimumInputLength' => 1,
-                            'language' => [
-                                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                <?php if (empty($model->pr_purchase_request_id)) : ?>
+                    <div class="col-sm-3">
+                        <?= $form->field($model, 'pr_purchase_request_id')->widget(Select2::class, [
+                            'data' => $pr,
+                            'options' => ['placeholder' => 'Search for a Purchase Request'],
+                            'pluginOptions' => [
+                                'allowClear' => true,
+                                'minimumInputLength' => 1,
+                                'language' => [
+                                    'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                                ],
+                                'ajax' => [
+                                    'url' => Yii::$app->request->baseUrl . '?r=pr-purchase-request/search-pr',
+                                    'dataType' => 'json',
+                                    'delay' => 250,
+                                    'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                                    'cache' => true
+                                ],
+                                'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                                'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                                'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
                             ],
-                            'ajax' => [
-                                'url' => Yii::$app->request->baseUrl . '?r=pr-purchase-request/search-pr',
-                                'dataType' => 'json',
-                                'delay' => 250,
-                                'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                                'cache' => true
-                            ],
-                            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                        ],
 
-                    ]) ?>
-                </div>
+                        ]) ?>
+                    </div>
+                <?php endif; ?>
 
                 <div class="col-sm-3">
                     <?= $form->field($model, 'employee_id')->widget(Select2::class, [
@@ -183,14 +183,6 @@ if (!empty($model->pr_purchase_request_id)) {
                         <td>
                             <span class='pr_data_header'> Book:</span>
                             <span id="book"></span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="3">
-                            <span class='pr_data_header'>
-                                Project Title:
-                            </span>
-                            <span id="project_title"></span>
                         </td>
                     </tr>
                     <tr>
@@ -243,10 +235,83 @@ if (!empty($model->pr_purchase_request_id)) {
                     <th>Total Unit Cost</th>
                 </thead>
                 <tbody>
+                    <?php
+                    $prDetailes = [];
+                    if (!empty($model->id)) {
+                        $prDetailes = !empty($model->id) ? $model->purchaseRequest->getPrDetails() : [];
+                        $items = $model->getItems();
+                        $prItemIds = array_column($items, 'prItemId');
+                        $prItems = $model->purchaseRequest->getPrItems();
+                        $itemsNotSelected = array_filter($prItems, function ($item) use ($prItemIds) {
+                            return  !in_array($item['item_id'], $prItemIds);
+                        });
+                        foreach ($items as $itm) {
+                            $grossAmt = floatval($itm['unit_cost']) * intval($itm['quantity']);
+                            $specs =   preg_replace('#\[n\]#', "<br>", $itm['specification']);
+                            echo "<tr>
+                                <td>
+                                    <input type='checkbox' class='form-check-input' value='{$itm['prItemId']}' name='items[][pr_id]' checked >
+                                </td>
+                                <td>
+                                    {$itm['bac_code']}
+                                </td>
+                                <td>
+                                    {$itm['stock_title']}
+                                </td>
+                                <td>
+                                    {$itm['unit_of_measure']}
+                                </td>
+                                <td>
+                                    {$specs}
+                                </td>
+                                <td>
+                                    
+                                    " . number_format($itm['unit_cost'], 2) . "
+                                </td> 
+                                <td>
+                                    {$itm['quantity']}
+                                </td>
+                                <td>
+                                    " . number_format($grossAmt, 2) . "
+                                </td>
+                            </tr>";
+                        }
+                        foreach ($itemsNotSelected as $itm) {
+                            $grossAmt = floatval($itm['unit_cost']) * intval($itm['quantity']);
+                            $specs =   preg_replace('#\[n\]#', "<br>", $itm['specification']);
+                            echo "<tr>
+                                    <td>
+                                        <input type='checkbox' class='form-check-input' value='{$itm['item_id']}' name='items[][pr_id]'  >
+                                    </td>
+                                    <td>
+                                        {$itm['bac_code']}
+                                    </td>
+                                    <td>
+                                        {$itm['stock_title']}
+                                    </td>
+                                    <td>
+                                        {$itm['unit_of_measure']}
+                                    </td>
+                                    <td>
+                                        {$specs}
+                                    </td>
+                                    <td>
+                                        
+                                        " . number_format($itm['unit_cost'], 2) . "
+                                    </td> 
+                                    <td>
+                                        {$itm['quantity']}
+                                    </td>
+                                    <td>
+                                        " . number_format($grossAmt, 2) . "
+                                    </td>
+                                </tr>";
+                        }
+                    }
+                    ?>
                 </tbody>
             </table>
             <div class="row">
-
                 <div class="form-group col-sm-2 col-sm-offset-5">
                     <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
                 </div>
@@ -308,10 +373,25 @@ $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [
 
     }
 
+    function DisplayPrDetails(data) {
+
+        $('#date_propose').text(data['date_propose'])
+        $('#pr_number').text(data['pr_number'])
+        $('#book').text(data['book_name'])
+        $('#project_title').text(data['project_title'])
+        $('#purpose').text(data['purpose'])
+        $('#office').text(data['office_name'])
+        $('#division').text(data['division'])
+        $('#unit').text(data['unit'])
+        $('#prepared_by').text(data['prepared_by'])
+        $('#requested_by').text(data['requested_by'])
+        $('#approved_by').text(data['approved_by'])
+    }
+
     function getPrItems() {
         $.ajax({
             type: 'POST',
-            url: window.location.pathname + '?r=pr-purchase-request/get-items',
+            url: window.location.pathname + '?r=pr-rfq/get-pr-items',
             data: {
                 id: $('#prrfq-pr_purchase_request_id').val(),
                 _csrf: csrfToken
@@ -319,31 +399,26 @@ $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [
             success: function(data) {
                 $('#data-table tbody').html('')
                 var res = JSON.parse(data)
-                $('#date_propose').text(res.pr_data['date_propose'])
-                $('#pr_number').text(res.pr_data['pr_number'])
-                $('#book').text(res.pr_data['book_name'])
-                $('#project_title').text(res.pr_data['project_title'])
-                $('#purpose').text(res.pr_data['purpose'])
-                $('#office').text(res.pr_data['office'])
-                $('#division').text(res.pr_data['division'])
-                $('#unit').text(res.pr_data['unit'])
-                $('#prepared_by').text(res.pr_data['prepared_by'])
-                $('#requested_by').text(res.pr_data['requested_by'])
-                $('#approved_by').text(res.pr_data['approved_by'])
-                displayPrItems(res.pr_items_data)
+                // $('#date_propose').text(res.prDetails['date_propose'])
+                // $('#pr_number').text(res.prDetails['pr_number'])
+                // $('#book').text(res.prDetails['book_name'])
+                // $('#project_title').text(res.prDetails['project_title'])
+                // $('#purpose').text(res.prDetails['purpose'])
+                // $('#office').text(res.prDetails['office'])
+                // $('#division').text(res.prDetails['division'])
+                // $('#unit').text(res.prDetails['unit'])
+                // $('#prepared_by').text(res.prDetails['prepared_by'])
+                // $('#requested_by').text(res.prDetails['requested_by'])
+                // $('#approved_by').text(res.prDetails['approved_by'])
+                displayPrItems(res.prItems)
+                DisplayPrDetails(res.prDetails)
+                // if (itms.length > 0) {
 
-
-                var itms = <?php echo $items ?>;
-
-
-                if (itms.length > 0) {
-
-                    for (var i = 0; i < itms.length; i++) {
-                        console.log(itms[i]['id'])
-                        item_id = itms[i]['id']
-                        $(`input[data-value='${item_id}']`).prop('checked', true)
-                    }
-                }
+                //     for (var i = 0; i < itms.length; i++) {
+                //         item_id = itms[i]['id']
+                //         $(`input[data-value='${item_id}']`).prop('checked', true)
+                //     }
+                // }
 
 
 
@@ -354,7 +429,7 @@ $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [
 
     }
     $(document).ready(function(e) {
-        getPrItems()
+        DisplayPrDetails(<?= json_encode($prDetailes) ?>)
         $('#prrfq-pr_purchase_request_id').on('change', function(e) {
             e.preventDefault()
             getPrItems()
