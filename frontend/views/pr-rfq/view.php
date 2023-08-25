@@ -26,14 +26,9 @@ SweetAlertAsset::register($this);
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
             <?php
-            if (Yii::$app->user->can('super-user')) {
+            if (Yii::$app->user->can('po_procurement_admin') || Yii::$app->user->can('ro_procurement_admin')) {
                 $btn_color = $model->is_cancelled ? 'btn btn-success' : 'btn btn-danger';
                 $cncl_txt = $model->is_cancelled ? 'UnCancel' : 'Cancel';
-                // echo  Html::a($cncl_txt, ['cancel', 'id' => $model->id], [
-                //     'class' => $btn_color,
-                //     'id' => 'cancel'
-
-                // ]);
                 if (!$model->is_cancelled) {
                     echo  Html::a($cncl_txt, ['cancel', 'id' => $model->id], [
                         'class' => $btn_color,
@@ -42,7 +37,7 @@ SweetAlertAsset::register($this);
                     ]);
                 }
             }
-            echo   Html::a('Purchase Request Link ', ['pr-purchase-request/view', 'id' => $model->pr_purchase_request_id], ['class' => 'btn btn-warning ', 'style' => 'margin:3px'])
+            echo   Html::a('Purchase Request Link ', ['pr-purchase-request/view', 'id' => $model->pr_purchase_request_id], ['class' => 'btn btn-link ', 'style' => 'margin:3px'])
             ?>
         </p>
         <table>
@@ -326,34 +321,25 @@ SweetAlertAsset::register($this);
 
         </table>
 
-        <?php
-
-        if (Yii::$app->user->can('super-user')) {
-            $aoqs = Yii::$app->db->createCommand("SELECT id, aoq_number,pr_aoq.is_cancelled  FROM pr_aoq WHERE pr_rfq_id = :id")
-                ->bindValue(':id', $model->id)
-                ->queryAll();
-        ?>
+        <?php if (Yii::$app->user->can('ro_procurement_admin') || YIi::$app->user->can('po_procurement_admin')) : ?>
             <table id="link_table" class="table table-striped" style="margin-top:3rem">
-
                 <tbody>
                     <tr class="danger">
                         <th colspan="3" style="text-align: center;border:none">AOQ LINKS</th>
                     </tr>
-
                     <?php
-
-                    foreach ($aoqs as $val) {
+                    foreach ($model->getAoqLinks() as $val) {
                         $isCancelled = $val['is_cancelled'] ? 'Cancelled' : '';
                         echo "<tr>
                             <td style='border:none;'>{$val['aoq_number']}</td>
-                            <td style='border:none;'>" . Html::a('AOQ Link ', ['pr-aoq/view', 'id' => $val['id']], ['class' => 'btn btn-warning ', 'style' => 'margin:3px']) . "</td>
+                            <td style='border:none;'>" . Html::a('AOQ Link ', ['pr-aoq/view', 'id' => $val['id']], ['class' => 'btn btn-link ', 'style' => 'margin:3px']) . "</td>
                             <td style='border:none;'>$isCancelled</td>
                             </tr>";
                     }
                     ?>
                 </tbody>
             </table>
-        <?php } ?>
+        <?php endif; ?>
     </div>
 
 

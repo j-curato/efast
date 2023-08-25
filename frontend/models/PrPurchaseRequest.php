@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use DateTime;
 use Yii;
 
 /**
@@ -46,7 +47,7 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
                 'fk_division_id',
                 'fk_division_program_unit_id', 'is_fixed_expense',
                 'is_cancelled',
-            
+
             ], 'integer'],
             [['purpose'], 'string'],
             [['pr_number'], 'string', 'max' => 255],
@@ -71,6 +72,108 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
         ];
     }
 
+
+    private function generatePrNumber($is_backdate = false)
+    {
+        $date = DateTime::createFromFormat('Y-m-d', $this->date);
+        $last_num_qry = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(pr_number,'-',-1) AS UNSIGNED) as last_number
+            FROM pr_purchase_request
+            WHERE pr_purchase_request.fk_office_id = :office_id
+            AND pr_purchase_request.fk_division_id = :division_id
+            AND pr_purchase_request.is_final = 0
+            AND pr_purchase_request.date <= :dte
+            AND pr_purchase_request.date LIKE :yr
+            ORDER BY last_number DESC LIMIT 1")
+            ->bindValue(':office_id', $this->fk_office_id)
+            ->bindValue(':division_id', $this->fk_division_id)
+            ->bindValue(':dte', $this->date)
+            ->bindValue(':yr', $date->format('Y') . '%')
+            ->queryScalar();
+        if ($is_backdate) {
+            $last_ltr = YIi::$app->db->createCommand("SELECT 
+                 CASE
+                    WHEN SUBSTRING(pr_number, -1) REGEXP '[0-9]' THEN NULL
+                    ELSE CHAR(ASCII(SUBSTRING(pr_number, -1)) + 1)
+                  END as lst_ltr
+               FROM pr_purchase_request
+               WHERE pr_purchase_request.fk_office_id = :office_id
+               AND pr_purchase_request.fk_division_id = :division_id
+               AND pr_purchase_request.is_final = 0
+               AND pr_purchase_request.date = :dte
+               AND pr_purchase_request.date LIKE :yr
+                 ORDER BY lst_ltr DESC")
+                ->bindValue(':office_id', $this->fk_office_id)
+                ->bindValue(':division_id', $this->fk_division_id)
+                ->bindValue(':dte',  $this->date)
+                ->bindValue(':yr', $date->format('Y') . '%')
+                ->queryScalar();
+        }
+
+        $num  = 1;
+        if (!empty($last_num_qry)) {
+            $num = intval($last_num_qry);
+            !$is_backdate ? $num++ : '';
+        }
+        $zro = '';
+        for ($i =  strlen($num); $i < 4; $i++) {
+            $zro .= 0;
+        }
+        $lst_ltr = '';
+        if ($is_backdate) {
+            $lst_ltr = empty($last_ltr) ? 'A' : '';
+        }
+
+        return  strtoupper($this->office->office_name) . '-' . strtoupper($this->divisionDetails->division) . '-' . $date->format('Y-m-d') . '-' . $zro . $num . $lst_ltr;
+    }
+
+    public function getTxnLinks()
+    {
+        return Yii::$app->db->createCommand("SELECT 
+        transaction_pr_items.fk_pr_allotment_id,
+        transaction_pr_items.fk_transaction_id as txn_id,
+        `transaction`.tracking_number as txn_num
+        FROM
+        pr_purchase_request_allotments
+        JOIN  transaction_pr_items ON pr_purchase_request_allotments.id = transaction_pr_items.fk_pr_allotment_id
+        JOIN `transaction` ON transaction_pr_items.fk_transaction_id = `transaction`.id 
+        WHERE 
+        pr_purchase_request_allotments.is_deleted = 0
+        AND transaction_pr_items.is_deleted = 0
+        AND pr_purchase_request_allotments.fk_purchase_request_id = :id
+        GROUP BY
+        transaction_pr_items.fk_pr_allotment_id,
+        transaction_pr_items.fk_transaction_id,
+        `transaction`.tracking_number")
+            ->bindValue(':id', $this->id)
+            ->queryAll();
+    }
+
+    public function getRfqLinks()
+    {
+        return Yii::$app->db->createCommand("SELECT id, rfq_number,pr_rfq.is_cancelled FROM pr_rfq WHERE pr_purchase_request_id = :id")
+            ->bindValue(':id', $this->id)
+            ->queryAll();
+    }
+    public function hasRfq()
+    {
+        $qry =  Yii::$app->db->createCommand("SELECT EXISTS (SELECT id FROM pr_rfq WHERE pr_purchase_request_id = :id)")
+            ->bindValue(':id', $this->id)
+            ->queryScalar();
+
+        return intval($qry) === 1 ? true : false;
+    }
+    public function getPrItems()
+    {
+        return Yii::$app->db->createCommand("CALL GetPrItems(:id)")
+            ->bindValue(':id', $this->id)
+            ->queryAll();
+    }
+    public function getPrAllotments()
+    {
+        return Yii::$app->db->createCommand("CALL GetPrAllotments(:id)")
+            ->bindValue(':id', $this->id)
+            ->queryAll();
+    }
     /**
      * {@inheritdoc}
      */
@@ -122,5 +225,9 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
     public function getOffice()
     {
         return $this->hasOne(Office::class, ['id' => 'fk_office_id']);
+    }
+    public function getDivisionDetails()
+    {
+        return $this->hasOne(Divisions::class, ['id' => 'fk_division_id']);
     }
 }

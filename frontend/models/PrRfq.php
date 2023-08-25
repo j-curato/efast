@@ -49,6 +49,13 @@ class PrRfq extends \yii\db\ActiveRecord
         ];
     }
 
+    public function getAoqLinks()
+    {
+        return Yii::$app->db->createCommand("SELECT id, aoq_number,pr_aoq.is_cancelled  FROM pr_aoq WHERE pr_rfq_id = :id")
+            ->bindValue(':id', $this->id)
+            ->queryAll();
+    }
+
     /**
      * {@inheritdoc}
      */

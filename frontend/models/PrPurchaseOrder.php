@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "pr_purchase_order".
@@ -78,7 +79,59 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
+    public function getRfiLinks()
+    {
+        return Yii::$app->db->createCommand("SELECT 
+                pr_purchase_order_item.serial_number as po_number,
+            request_for_inspection.rfi_number,
+                pr_stock.stock_title,
+                request_for_inspection_items.quantity,
+                request_for_inspection_items.fk_request_for_inspection_id
+                FROM `pr_purchase_order_items_aoq_items`
+                INNER JOIN request_for_inspection_items ON pr_purchase_order_items_aoq_items.id = request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id
+                LEFT JOIN pr_aoq_entries ON pr_purchase_order_items_aoq_items.fk_aoq_entries_id = pr_aoq_entries.id
+                LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id  = pr_rfq_item.id
+                LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
+                LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
+                LEFT JOIN pr_purchase_order_item ON pr_purchase_order_items_aoq_items.fk_purchase_order_item_id = pr_purchase_order_item.id
+                LEFT JOIN request_for_inspection ON request_for_inspection_items.fk_request_for_inspection_id = request_for_inspection.id
 
+                WHERE 
+                pr_purchase_order_item.fk_pr_purchase_order_id = :id
+                AND request_for_inspection_items.is_deleted !=1")
+            ->bindValue(':id', $this->id)
+            ->queryAll();
+    }
+    public function getItems()
+    {
+        $query = Yii::$app->db->createCommand("SELECT 
+            pr_purchase_order_item.serial_number,
+            payee.account_name as payee,
+            IFNULL(payee.tin_number,'')as tin_number, 
+            IFNULL(payee.registered_address,'')as `address`, 
+            pr_aoq_entries.amount as unit_cost,
+            pr_aoq_entries.remark,
+            pr_purchase_request_item.quantity,
+            IFNULL(REPLACE( pr_purchase_request_item.specification, '[n]', '<br>'),'') as specification,
+            pr_stock.stock_title as `description`,
+            pr_stock.bac_code,
+            unit_of_measure.unit_of_measure,
+            pr_aoq_entries.amount * pr_purchase_request_item.quantity as total_cost
+            
+            FROM pr_purchase_order
+            LEFT JOIN pr_purchase_order_item ON pr_purchase_order.id = pr_purchase_order_item.fk_pr_purchase_order_id
+            LEFT JOIN pr_purchase_order_items_aoq_items ON pr_purchase_order_item.id  = pr_purchase_order_items_aoq_items.fk_purchase_order_item_id
+            LEFT JOIN  pr_aoq_entries ON pr_purchase_order_items_aoq_items.fk_aoq_entries_id = pr_aoq_entries.id
+            LEFT JOIN payee ON pr_aoq_entries.payee_id  = payee.id
+            LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
+            LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
+            LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
+            LEFT JOIN unit_of_measure on pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
+            WHERE pr_purchase_order.id = :id")
+            ->bindValue(':id', $this->id)
+            ->queryAll();
+        return  ArrayHelper::index($query, null, 'serial_number');
+    }
     /**
      * {@inheritdoc}
      */

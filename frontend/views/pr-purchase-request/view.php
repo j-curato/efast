@@ -20,16 +20,10 @@ SweetAlertAsset::register($this);
 
     <div class="container ">
         <p>
-
             <?php
-
-            $check_rfqs = YIi::$app->db->createCommand("SELECT id FROM pr_rfq WHERE pr_purchase_request_id = :id")
-                ->bindValue(':id', $model->id)
-                ->queryAll();
-            if (empty($check_rfqs) || Yii::$app->user->can('super-user')) {
-                echo     Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
+            if (!$model->hasRfq() || Yii::$app->user->can('super-user')) {
+                echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
             }
-
             ?>
             <button type="button" class="print btn btn-warning">Print</button>
             <?php
@@ -95,17 +89,13 @@ SweetAlertAsset::register($this);
                         <span>
                             Date:
                         </span>
-                        <span><?php
-                                echo  DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y')
-                                ?></span>
+                        <span><?= DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y') ?></span>
 
                     </th>
                 </tr>
                 <tr>
 
-                    <th class="center">
-
-                        Stock/ Property No.</th>
+                    <th class="center">Stock/ Property No.</th>
                     <th class="center">Unit</th>
                     <th class="center">Item Description</th>
                     <th class="center">Quantity</th>
@@ -115,14 +105,11 @@ SweetAlertAsset::register($this);
 
             </thead>
             <tbody>
-
                 <?php
                 $total = 0;
-
-                foreach ($items as $i => $val) {
+                foreach ($model->getPrItems() as $i => $val) {
                     $unit_cost = $val['unit_cost'];
                     $quantity = $val['quantity'];
-
                     $total_cost = intval($quantity) * floatval($unit_cost);
                     $total += $total_cost;
                     $stock_title = $val['stock_title'];
@@ -136,7 +123,6 @@ SweetAlertAsset::register($this);
                     <td class='center'>{$unit_of_measure}</td>
                     <td><span class='description'>" .  $stock_title . "</span>" .
                         "<br><span class='specs'>"
-
                         . $specification
                         . "</specs></td>
                     <td class='center'>{$quantity}</td>
@@ -222,14 +208,11 @@ SweetAlertAsset::register($this);
                                 <tr>
 
                                     <td>
-
                                         <span> Signature:</span>
                                         <br>
                                         <span> Printed Name:</span>
                                         <br>
                                         <span> Designation</span>
-
-
 
                                     </td>
                                     <td class="center">
@@ -283,7 +266,6 @@ SweetAlertAsset::register($this);
                 <tr class="info">
                     <th colspan="4" class="center">
                         <h4>
-
                             Allotment
                     </th>
                     </h4>
@@ -297,7 +279,7 @@ SweetAlertAsset::register($this);
             </thead>
             <tbody>
                 <?php
-                foreach ($allotment_items as $item) {
+                foreach ($model->getPrAllotments() as $item) {
                     echo "<tr>
                     <td>{$item['mfo_name']}</td>
                     <td>{$item['fund_source_name']}</td>
@@ -309,49 +291,41 @@ SweetAlertAsset::register($this);
             </tbody>
         </table>
 
-
-        <table class="table">
-            <tr class="warning">
-                <th>Transaction Links</th>
-            </tr>
-            <?php
-            foreach ($transaction_links as $txn) {
-
-                echo "<tr>";
-                echo "<td>" . Html::a($txn['txn_num'], ['transaction/view', 'id' => $txn['txn_id']], ['class' => 'btn btn-link']) . "</td>";
-                echo "</tr>";
-            }
-            ?>
-        </table>
         <?php
-        if (Yii::$app->user->can('super-user')) {
-            $rfqs = Yii::$app->db->createCommand("SELECT id, rfq_number,pr_rfq.is_cancelled FROM pr_rfq WHERE pr_purchase_request_id = :id")
-                ->bindValue(':id', $model->id)
-                ->queryAll();
-        ?>
+        $user_data = Yii::$app->memem->getUserData();
+        if (strtolower($user_data->office->office_name) === 'ro') : ?>
+            <table class="table">
+                <tr class="warning">
+                    <th>Transaction Links</th>
+                </tr>
+                <?php
+                foreach ($model->getTxnLinks() as $txn) {
+                    echo "<tr>";
+                    echo "<td>" . Html::a($txn['txn_num'], ['transaction/view', 'id' => $txn['txn_id']], ['class' => 'btn btn-link']) . "</td>";
+                    echo "</tr>";
+                }
+                ?>
+            </table>
+        <?php endif; ?>
+        <?php if (Yii::$app->user->can('po_procurement_admin') || Yii::$app->user->can('ro_procurement_admin')) : ?>
             <table id="link_table" class="table table-striped" style="margin-top:3rem">
-
                 <tbody>
                     <tr class="danger">
                         <th colspan="3" style="text-align: center;">RFQ LINKS</th>
                     </tr>
-
                     <?php
-
-                    foreach ($rfqs as $val) {
+                    foreach ($model->getRfqLinks() as $val) {
                         $isCancelled = $val['is_cancelled'] == 1 ? 'Cancelled' : '';
                         echo "<tr>
-                    <td>{$val['rfq_number']}</td>
-                    <td>" . Html::a('RFQ Link ', ['pr-rfq/view', 'id' => $val['id']], ['class' => 'btn btn-warning ', 'style' => 'margin:3px']) . "</td>
-                    <td>$isCancelled</td>
-                    </tr>";
+                                <td>{$val['rfq_number']}</td>
+                                <td>" . Html::a('RFQ Link ', ['pr-rfq/view', 'id' => $val['id']], ['class' => 'btn btn-link ', 'style' => 'margin:3px']) . "</td>
+                                <td>$isCancelled</td>
+                            </tr>";
                     }
                     ?>
                 </tbody>
             </table>
-        <?php } ?>
-
-
+        <?php endif; ?>
     </div>
 
 </div>
@@ -436,7 +410,6 @@ SweetAlertAsset::register($this);
 
 <script>
     $(document).ready(function() {
-
         $('.print').click(function() {
             window.print()
         })

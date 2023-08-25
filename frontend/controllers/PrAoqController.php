@@ -142,12 +142,9 @@ class PrAoqController extends Controller
      */
     public function insertEntries($model_id, $items)
     {
-
-
         try {
             foreach ($items as $i => $itm) {
                 foreach ($itm as $val) {
-
                     if (!empty($val['item_id'])) {
                         $aoq =  PrAoqEntries::findOne($val['item_id']);
                     } else {
@@ -227,13 +224,14 @@ class PrAoqController extends Controller
         $model = $this->findModel($id);
         $oldModel = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post())) {
+        if ($model->load(Yii::$app->request->post()) || Yii::$app->request->post()) {
             try {
                 $transaction  = Yii::$app->db->beginTransaction();
                 if ($model->fk_office_id != $oldModel->fk_office_id) {
                     $model->aoq_number = $this->aoqNumberGenerator($model->rfq->deadline, $model->fk_office_id);
                 }
                 $items  = Yii::$app->request->post('items') ?? [];
+
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }

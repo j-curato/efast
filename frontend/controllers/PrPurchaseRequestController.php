@@ -98,29 +98,7 @@ class PrPurchaseRequestController extends Controller
             ],
         ];
     }
-    private function txnLinks($id)
-    {
-        return Yii::$app->db->createCommand("SELECT 
-        transaction_pr_items.fk_pr_allotment_id,
-        transaction_pr_items.fk_transaction_id as txn_id,
-        `transaction`.tracking_number as txn_num
-        
-        
-        FROM
-        pr_purchase_request_allotments
-        JOIN  transaction_pr_items ON pr_purchase_request_allotments.id = transaction_pr_items.fk_pr_allotment_id
-        JOIN `transaction` ON transaction_pr_items.fk_transaction_id = `transaction`.id 
-        WHERE 
-        pr_purchase_request_allotments.is_deleted = 0
-        AND transaction_pr_items.is_deleted = 0
-        AND pr_purchase_request_allotments.fk_purchase_request_id = :id
-        GROUP BY
-        transaction_pr_items.fk_pr_allotment_id,
-        transaction_pr_items.fk_transaction_id,
-        `transaction`.tracking_number")
-            ->bindValue(':id', $id)
-            ->queryAll();
-    }
+
     private function getPrItems($id)
     {
         return Yii::$app->db->createCommand("CALL GetPrItems(:id)")
@@ -292,7 +270,6 @@ class PrPurchaseRequestController extends Controller
     {
         $searchModel = new PurchaseRequestIndexSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -358,10 +335,9 @@ class PrPurchaseRequestController extends Controller
 
         return $this->render('view', [
             'model' => $model,
-            'items' => $this->getPrItems($id),
-            'allotment_items' => $this->getPrAllotments($id),
+            // 'items' => $this->getPrItems($id),
+            // 'allotment_items' => $this->getPrAllotments($id),
             'office_division_unit_purpose' => $office_division_unit_purpose,
-            'transaction_links' => $this->txnLinks($id),
 
 
         ]);
@@ -660,12 +636,12 @@ class PrPurchaseRequestController extends Controller
     private function checkRfq($model_id)
     {
         return  YIi::$app->db->createCommand("SELECT 
-     GROUP_CONCAT(pr_rfq.rfq_number) as rfq_nums
-     FROM pr_rfq
-     WHERE  pr_rfq.is_cancelled = 0
-     AND  pr_rfq.pr_purchase_request_id = :id
-     GROUP BY 
-     pr_rfq.pr_purchase_request_id")
+                GROUP_CONCAT(pr_rfq.rfq_number) as rfq_nums
+                FROM pr_rfq
+                WHERE  pr_rfq.is_cancelled = 0
+                AND  pr_rfq.pr_purchase_request_id = :id
+                GROUP BY 
+                pr_rfq.pr_purchase_request_id")
             ->bindValue(':id', $model_id)
             ->queryAll();
     }
@@ -696,7 +672,6 @@ class PrPurchaseRequestController extends Controller
                 if (intval($oldModel->fk_office_id) !== intval($model->fk_office_id) || intval($oldModel->fk_division_id) !== intval($model->fk_division_id)) {
                     $model->pr_number = $this->getPrNumber($model->date, $model->fk_office_id, $model->fk_division_id);
                 }
-
                 $check_rfqs = $this->checkRfq($model->id);
                 if (!empty($check_rfqs)) {
                     throw new ErrorException('Unable to Update PR No. has RFQ"s.');

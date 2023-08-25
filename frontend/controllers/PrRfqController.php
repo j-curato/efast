@@ -337,12 +337,12 @@ class PrRfqController extends Controller
                 $model->cancelled_at = date('Y-m-d H:i:s');
                 if ($model->is_cancelled === 1) {
                     $qry = Yii::$app->db->createCommand("SELECT 
-                    GROUP_CONCAT(pr_aoq.aoq_number) as pr_nums
-                    FROM pr_aoq
-                    WHERE  pr_aoq.is_cancelled = 0
-                    AND pr_aoq.pr_rfq_id = :id
-                    GROUP BY 
-                    pr_aoq.pr_rfq_id")
+                        GROUP_CONCAT(pr_aoq.aoq_number) as pr_nums
+                        FROM pr_aoq
+                        WHERE  pr_aoq.is_cancelled = 0
+                        AND pr_aoq.pr_rfq_id = :id
+                        GROUP BY 
+                        pr_aoq.pr_rfq_id")
                         ->bindValue(':id', $model->id)
                         ->queryScalar();
 

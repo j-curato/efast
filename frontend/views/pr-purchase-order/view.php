@@ -57,15 +57,9 @@ if (!empty($model->date_completed)) {
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
             <?php
-
             if (Yii::$app->user->can('super-user')) {
                 $btn_color = $model->is_cancelled ? 'btn btn-success' : 'btn btn-danger';
                 $cncl_txt = $model->is_cancelled ? 'UnCancel' : 'Cancel';
-                // echo  Html::a($cncl_txt, ['cancel', 'id' => $model->id], [
-                //     'class' => $btn_color,
-                //     'id' => 'cancel'
-
-                // ]);
                 if (!$model->is_cancelled) {
                     echo  Html::a($cncl_txt, ['cancel', 'id' => $model->id], [
                         'class' => $btn_color,
@@ -74,15 +68,14 @@ if (!empty($model->date_completed)) {
                     ]);
                 }
             }
-            echo   Html::a('AOQ Link ', ['pr-aoq/view', 'id' => $model->fk_pr_aoq_id], ['class' => 'btn btn-warning ', 'style' => 'margin:3px'])
+            echo   Html::a('AOQ Link ', ['pr-aoq/view', 'id' => $model->fk_pr_aoq_id], ['class' => 'btn btn-link ', 'style' => 'margin:3px'])
             ?>
         </p>
         <?php
         $row_number = 0;
 
-        foreach ($po_items as $index => $val) {
+        foreach ($model->getItems() as $index => $val) {
         ?>
-
             <?php
             $po_number = $index;
             $payee =  $val[0]['payee'];
@@ -161,15 +154,10 @@ if (!empty($model->date_completed)) {
                     </thead>
                     <tbody>
                         <tr>
-
                             <td colspan="4" class="no-border">
-
-
                                 <div class="greeting">
                                     <div style="font-weight: bold;"><?php echo $description ?></div>
                                     <?php
-
-
                                     foreach ($val as $val2) {
                                         $total_amount = intval($val2['quantity']) * floatval($val2['unit_cost']);
                                         // $total_amount = 0;
@@ -185,19 +173,14 @@ if (!empty($model->date_completed)) {
                                         </div>";
                                         }
                                     }
-
                                     ?>
-
                                 </div>
-
                             </td>
                         </tr>
                         <tr>
                             <td class="no-border" style="border-bottom: 1px solid black;"></td>
                             <td colspan="3" class="no-border" style="border-bottom: 1px solid black; font-weight:bold;"><?php echo $purpose ?></td>
-
                         </tr>
-
                         <tr>
                             <td class="no-border">
                                 Estimated Cost
@@ -206,7 +189,6 @@ if (!empty($model->date_completed)) {
                                 <div class="greeting">
                                     <div style="padding: 0;">
                                         :<?php echo number_format($total_amount, 2) ?>
-
                                     </div>
                                 </div>
                             </td>
@@ -277,44 +259,44 @@ if (!empty($model->date_completed)) {
                         <tr>
                             <td class=" signatories center no-border" style="min-width: 200px;">
                                 <span class="personel" style="text-decoration: underline;font-size:12px">
-                                    <?php echo $requested_by ?>
+                                    <?= $requested_by ?>
                                 </span>
                                 <br>
                                 <span>
-                                    <?php echo $requested_by_position ?>
+                                    <?= $requested_by_position ?>
                                 </span>
                             </td>
                             <td class=" signatories center no-border" style="min-width: 200px;">
                                 <span class="personel" style="text-decoration: underline;font-size:12px">
-                                    <?php echo $auth_personel ?>
+                                    <?= $auth_personel ?>
 
                                 </span>
                                 <br>
                                 <span>
-                                    <?php echo $auth_personel_position ?>
+                                    <?= $auth_personel_position ?>
 
-
-                                </span>
-                            </td>
-                            <td class=" signatories center no-border" style="min-width: 200px;">
-                                <span class="personel" style="text-decoration: underline;font-size:12px">
-                                    <?php echo $inspected_by ?>
-
-                                </span>
-                                <br>
-                                <span>
-                                    <?php echo $inspected_by_position ?>
 
                                 </span>
                             </td>
                             <td class=" signatories center no-border" style="min-width: 200px;">
                                 <span class="personel" style="text-decoration: underline;font-size:12px">
-                                    <?php echo $accountant ?>
+                                    <?= $inspected_by ?>
 
                                 </span>
                                 <br>
                                 <span>
-                                    <?php echo $accountant_position ?>
+                                    <?= $inspected_by_position ?>
+
+                                </span>
+                            </td>
+                            <td class=" signatories center no-border" style="min-width: 200px;">
+                                <span class="personel" style="text-decoration: underline;font-size:12px">
+                                    <?= $accountant ?>
+
+                                </span>
+                                <br>
+                                <span>
+                                    <?= $accountant_position ?>
 
                                 </span>
                             </td>
@@ -501,9 +483,10 @@ if (!empty($model->date_completed)) {
                                 <br>
                                 <br>
                                 <br>
-                                <span style="text-decoration:underline; font-weight:bold;"> <?php
-                                                                                            echo strtoupper($model->accountingUnit->f_name . ' ' . $model->accountingUnit->m_name[0] . '. ' . $model->accountingUnit->l_name)
-                                                                                            ?></span>
+                                <span style="text-decoration:underline; font-weight:bold;">
+                                    <?php
+                                    echo strtoupper($model->accountingUnit->f_name . ' ' . $model->accountingUnit->m_name[0] . '. ' . $model->accountingUnit->l_name)
+                                    ?></span>
                                 <br>
                                 <span style="margin-left:auto;width:100%">Signature over Printed Name of Chief Accountant/Head of </span>
                                 <br>
@@ -526,16 +509,10 @@ if (!empty($model->date_completed)) {
             <?php } ?>
             <p style='page-break-after:always;'></p>
         <?php } ?>
-
-
-
-
         <table id="rfi_links">
             <thead>
                 <tr class="bg-danger">
-                    <th colspan="5">
-                        RFI LINKS
-                    </th>
+                    <th colspan="5">RFI LINKS</th>
                 </tr>
                 <th>PO#</th>
                 <th>Stock Name</th>
@@ -544,10 +521,8 @@ if (!empty($model->date_completed)) {
                 <th>Link</th>
             </thead>
             <tbody>
-
                 <?php
-
-                foreach ($rfi_links as $rfi) {
+                foreach ($model->getRfiLinks() as $rfi) {
                     $stock_title = $rfi['stock_title'];
                     $quantity = $rfi['quantity'];
                     $id = $rfi['fk_request_for_inspection_id'];
@@ -563,8 +538,6 @@ if (!empty($model->date_completed)) {
                     echo    HTMl::a('Link', ['request-for-inspection/view', 'id' => $id], ['class' => 'btn btn-link']);
                     echo "</td></tr>";
                 }
-
-
                 ?>
             </tbody>
         </table>

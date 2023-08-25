@@ -243,7 +243,6 @@ if (!empty($model->pr_purchase_request_id)) {
                     <th>Total Unit Cost</th>
                 </thead>
                 <tbody>
-
                 </tbody>
             </table>
             <div class="row">
@@ -340,12 +339,9 @@ $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [
                 if (itms.length > 0) {
 
                     for (var i = 0; i < itms.length; i++) {
-
+                        console.log(itms[i]['id'])
                         item_id = itms[i]['id']
-
                         $(`input[data-value='${item_id}']`).attr('checked', true)
-
-
                     }
                 }
 

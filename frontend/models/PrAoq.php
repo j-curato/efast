@@ -41,6 +41,12 @@ class PrAoq extends \yii\db\ActiveRecord
         ];
     }
 
+    public function getPoLinks()
+    {
+        return Yii::$app->db->createCommand("SELECT id,po_number,pr_purchase_order.is_cancelled FROM pr_purchase_order WHERE fk_pr_aoq_id= :id")
+            ->bindValue(':id', $this->id)
+            ->queryAll();
+    }
     /**
      * {@inheritdoc}
      */

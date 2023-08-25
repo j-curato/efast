@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 
             <?php
-            if (Yii::$app->user->can('super-user')) {
+            if (Yii::$app->user->can('po_procurement_admin') || Yii::$app->user->can('ro_procurement_admin')) {
                 $btn_color = $model->is_cancelled ? 'btn btn-success' : 'btn btn-danger';
                 $cncl_txt = $model->is_cancelled ? 'UnCancel' : 'Cancel';
                 if (!$model->is_cancelled) {
@@ -33,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     ]);
                 }
             }
-            echo   Html::a('RFQ Link ', ['pr-rfq/view', 'id' => $model->pr_rfq_id], ['class' => 'btn btn-warning ', 'style' => 'margin:3px'])
+            echo   Html::a('RFQ Link ', ['pr-rfq/view', 'id' => $model->pr_rfq_id], ['class' => 'btn btn-link ', 'style' => 'margin:3px'])
             ?>
         </p>
         <?php
@@ -198,22 +198,16 @@ $this->params['breadcrumbs'][] = $this->title;
             </tfoot>
         </table>
         <table class="links_table table table-stripe">
-
             <tbody>
-
                 <tr class="danger">
                     <th colspan="3" style="text-align: center;">PO Links</th>
                 </tr>
-
                 <?php
-                $po = YIi::$app->db->createCommand("SELECT id,po_number,pr_purchase_order.is_cancelled FROM pr_purchase_order WHERE fk_pr_aoq_id= :id")
-                    ->bindValue(':id', $model->id)
-                    ->queryAll();
-                foreach ($po as $val) {
+                foreach ($model->getPoLinks() as $val) {
                     $isCancelled = $val['is_cancelled'] ? 'Cancelled' : '';
                     echo "<tr>
                         <td>{$val['po_number']}</td>
-                        <td>" . Html::a('PO Link ', ['pr-purchase-order/view', 'id' => $val['id']], ['class' => 'btn btn-warning ', 'style' => 'margin:3px']) . "</td>
+                        <td>" . Html::a('PO Link ', ['pr-purchase-order/view', 'id' => $val['id']], ['class' => 'btn btn-link ', 'style' => 'margin:3px']) . "</td>
                         <td>$isCancelled</td>
                    </tr>";
                 }
