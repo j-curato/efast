@@ -261,39 +261,40 @@ SweetAlertAsset::register($this);
 
             </tbody>
         </table>
-        <table class="table table-stripe allotment" style="margin-top: 3rem;">
-            <thead>
-                <tr class="info">
-                    <th colspan="4" class="center">
-                        <h4>
-                            Allotment
-                    </th>
-                    </h4>
-                </tr>
-                <tr>
-                    <th>MFO/PAP Code</th>
-                    <th> Fund Source</th>
-                    <th> General Ledger</th>
-                    <th> Amount</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                foreach ($model->getPrAllotments() as $item) {
-                    echo "<tr>
+        <?php
+        $user_data = Yii::$app->memem->getUserData();
+        if (strtolower($user_data->office->office_name) === 'ro') : ?>
+            <table class="table table-stripe allotment" style="margin-top: 3rem;">
+                <thead>
+                    <tr class="info">
+                        <th colspan="4" class="center">
+                            <h4>
+                                Allotment
+                        </th>
+                        </h4>
+                    </tr>
+                    <tr>
+                        <th>MFO/PAP Code</th>
+                        <th> Fund Source</th>
+                        <th> General Ledger</th>
+                        <th> Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    foreach ($model->getPrAllotments() as $item) {
+                        echo "<tr>
                     <td>{$item['mfo_name']}</td>
                     <td>{$item['fund_source_name']}</td>
                     <td>{$item['account_title']}</td>
                     <td>" . number_format($item['gross_amount'], 2) . "</td>
                     </tr>";
-                }
-                ?>
-            </tbody>
-        </table>
+                    }
+                    ?>
+                </tbody>
+            </table>
 
-        <?php
-        $user_data = Yii::$app->memem->getUserData();
-        if (strtolower($user_data->office->office_name) === 'ro') : ?>
+
             <table class="table">
                 <tr class="warning">
                     <th>Transaction Links</th>
