@@ -1,5 +1,6 @@
 <?php
 
+use frontend\assets\AdminLtePluginAsset;
 use yii\helpers\Html;
 use yii\bootstrap\Modal;
 use yii\web\JqueryAsset;
@@ -27,7 +28,8 @@ if (Yii::$app->user->isGuest) {
     }
 
     dmstr\web\AdminLteAsset::register($this);
-    dmstr\web\AdminLtePluginAsset::register($this);
+    // dmstr\web\AdminLtePluginAsset::register($this);
+    AdminLtePluginAsset::register($this);
     $directoryAsset = Yii::$app->assetManager->getPublishedUrl('@vendor/almasaeed2010/adminlte/dist');
     // $this->registerJsFile("@web/js/vue.js", ['position' => $this::POS_HEAD]);
     $this->registerJsFile("@web/js/axios.min.js", ['position' => $this::POS_HEAD]);
@@ -48,7 +50,7 @@ if (Yii::$app->user->isGuest) {
         <!-- <script src='<?php echo yii::$app->request->baseUrl ?>/js/maskMoney.js'></script>
         <script src='<?php echo yii::$app->request->baseUrl ?>/js/select2.min.js'></script> -->
         <!-- <link href="<?php echo yii::$app->request->baseUrl ?>/js/select2.min.js" /> -->
-        <!-- <link href="<?php echo yii::$app->request->baseUrl ?>/css/select2.min.css" rel="stylesheet" /> -->
+        <link href="<?php echo yii::$app->request->baseUrl ?>/css/select2.min.css" rel="stylesheet" />
         <!--
         <link href='<?php echo yii::$app->request->baseUrl ?>/js/fullcalendar/main.css' rel='stylesheet' />
         <script src='<?php echo yii::$app->request->baseUrl ?>/js/fullcalendar/main.js'></script>
