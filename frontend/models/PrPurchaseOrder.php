@@ -106,7 +106,8 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
     {
         $query = Yii::$app->db->createCommand("SELECT 
             pr_purchase_order_item.serial_number,
-            payee.account_name as payee,
+            payee.registered_name as payee,
+            payee.account_name,
             IFNULL(payee.tin_number,'')as tin_number, 
             IFNULL(payee.registered_address,'')as `address`, 
             pr_aoq_entries.amount as unit_cost,
