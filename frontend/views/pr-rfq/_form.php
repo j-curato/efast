@@ -278,7 +278,7 @@ $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [
             var myStr = val.specification
             var row = `<tr>
                             <td>
-                                <input type='checkbox' class='form-check-input' value='${val.item_id}' name='items[${key}][pr_id]' >
+                                <input type='checkbox' class='form-check-input' value='${val.item_id}' name='items[${key}][pr_id]'  data-value='${val.item_id}'>
                             </td>
                             <td>
                                 ${val.bac_code}
@@ -341,7 +341,7 @@ $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [
                     for (var i = 0; i < itms.length; i++) {
                         console.log(itms[i]['id'])
                         item_id = itms[i]['id']
-                        $(`input[data-value='${item_id}']`).attr('checked', true)
+                        $(`input[data-value='${item_id}']`).prop('checked', true)
                     }
                 }
 
