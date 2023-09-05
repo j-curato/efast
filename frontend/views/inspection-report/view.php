@@ -19,8 +19,8 @@ $project_title = '';
 $inspect_date = '';
 $property_unit = '';
 if (!empty($signatories)) {
-    $chairperson = strtoupper($signatories['chairperson']) ?? '';
-    $inspector = strtoupper($signatories['inspector']) ?? '';
+    $chairperson =  !empty($signatories['chairperson']) ? strtoupper($signatories['chairperson']) : '';
+    $inspector =  !empty($signatories['inspector']) ? strtoupper($signatories['inspector']) : '';
     $requested_by = strtoupper($signatories['requested_by']) ?? '';
     $payee = $signatories['payee'] ?? '';
     $project_title = $signatories['project_title'] ?? '';
@@ -31,8 +31,8 @@ if (!empty($signatories)) {
         $inspect_date = $signatories['from_date'];
     }
 } else {
-    $chairperson = strtoupper($no_po_signatories['chairperson']) ?? '';
-    $inspector = strtoupper($no_po_signatories['inspector']) ?? "";
+    $chairperson =  !empty($signatories['chairperson']) ? strtoupper($signatories['chairperson']) : '';
+    $inspector =  !empty($signatories['inspector']) ? strtoupper($signatories['inspector']) : '';
     $requested_by = strtoupper($no_po_signatories['requested_by']) ?? '';
     $payee = $no_po_signatories['payee'] ?? '';
     $project_title = $no_po_signatories['project_title'];
