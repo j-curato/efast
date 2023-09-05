@@ -206,8 +206,8 @@ $blnk = "                <tr>
                                 <br>
                                 <br>
 
-                                <u><b>BRENDA B. CORVERA, CESO V </b></u><br>
-                                <span>Assistant Regional Director </span>
+                                <u><b>GAY A. TIDALGO, CESO IV </b></u><br>
+                                <span>Regional Director </span>
                             </div>
                         </div>
                     </td>

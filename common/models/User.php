@@ -229,4 +229,20 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasOne(Divisions::class, ['id' => 'fk_division_id']);
     }
+    public static function getUserData()
+    {
+
+        // return  User::find()
+        //     ->joinWith('employee')
+        //     ->join('LEFT JOIN', 'office', 'employee.fk_office_id = office.id')
+        //     ->join('LEFT JOIN', 'divisions', 'employee.fk_division_id = divisions.id')
+        //     ->where('user.id = :id', ['id' => Yii::$app->user->identity->id])
+        //     ->one();
+        return  User::find()
+            ->joinWith('divisionName')
+            ->joinWith('office')
+            ->joinWith('employee')
+            ->where('user.id = :id', ['id' => Yii::$app->user->identity->id])
+            ->one();
+    }
 }

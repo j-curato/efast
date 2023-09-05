@@ -1,6 +1,7 @@
 <?php
 
 use aryelds\sweetalert\SweetAlertAsset;
+use common\models\User;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -151,6 +152,8 @@ SweetAlertAsset::register($this);
                         <br>
                         <br>
                         <span style="text-decoration: underline;">
+
+
                             <?= Select2::widget([
                                 'data' => ArrayHelper::map($rbac, 'pos', 'employee_name'),
                                 'name' => 'rbac',
@@ -165,7 +168,7 @@ SweetAlertAsset::register($this);
                         </span>
                         <br>
                         <span>
-                            RBAC
+                            <?= strtolower(User::getUserData()->office->office_name)  !== 'ro' ? 'BAC' : 'RBAC' ?>
                         </span>
                         <span id="rbac_position">
 
