@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use common\models\User;
 use Yii;
 
 /**
@@ -34,7 +35,7 @@ class RequestForInspection extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['date', 'fk_requested_by', 'transaction_type', 'fk_office_id', 'fk_division_id'], 'required'],
+            [['date', 'fk_requested_by', 'transaction_type', 'fk_office_id', 'fk_division_id', 'fk_property_unit', 'fk_chairperson'], 'required'],
             [[
                 'id', 'fk_chairperson', 'fk_inspector', 'fk_property_unit', 'fk_pr_office_id', 'is_final', 'fk_requested_by', 'fk_office_id',
                 'fk_division_id',
@@ -77,29 +78,29 @@ class RequestForInspection extends \yii\db\ActiveRecord
     {
 
         return Yii::$app->db->createCommand("SELECT  
-        rfi_without_po_items.id,
-        rfi_without_po_items.project_name,
-       IFNULL(pr_stock.stock_title,'') as stock_title,
-       pr_stock.id as stock_id,
-       rfi_without_po_items.specification,
-       REPLACE(rfi_without_po_items.specification,'[n]','\n') as specification_view,
-       unit_of_measure.unit_of_measure,
-       unit_of_measure.id as unit_of_measure_id,
-       payee.account_name as payee_name,
-       payee.id as payee_id,
-       rfi_without_po_items.unit_cost,
-       rfi_without_po_items.quantity,
-       rfi_without_po_items.from_date,
-       rfi_without_po_items.to_date
-       
-       FROM request_for_inspection
-       LEFT JOIN rfi_without_po_items ON request_for_inspection.id = rfi_without_po_items.fk_request_for_inspection_id
-       LEFT JOIN pr_stock ON rfi_without_po_items.fk_stock_id = pr_stock.id
-       LEFT JOIN payee ON rfi_without_po_items.fk_payee_id = payee.id
-       LEFT JOIN unit_of_measure ON rfi_without_po_items.fk_unit_of_measure_id = unit_of_measure.id
-       WHERE 
-       request_for_inspection.id = :id
-       AND rfi_without_po_items.is_deleted !=1")
+                rfi_without_po_items.id,
+                rfi_without_po_items.project_name,
+            IFNULL(pr_stock.stock_title,'') as stock_title,
+            pr_stock.id as stock_id,
+            rfi_without_po_items.specification,
+            REPLACE(rfi_without_po_items.specification,'[n]','\n') as specification_view,
+            unit_of_measure.unit_of_measure,
+            unit_of_measure.id as unit_of_measure_id,
+            payee.account_name as payee_name,
+            payee.id as payee_id,
+            rfi_without_po_items.unit_cost,
+            rfi_without_po_items.quantity,
+            rfi_without_po_items.from_date,
+            rfi_without_po_items.to_date
+            
+            FROM request_for_inspection
+            LEFT JOIN rfi_without_po_items ON request_for_inspection.id = rfi_without_po_items.fk_request_for_inspection_id
+            LEFT JOIN pr_stock ON rfi_without_po_items.fk_stock_id = pr_stock.id
+            LEFT JOIN payee ON rfi_without_po_items.fk_payee_id = payee.id
+            LEFT JOIN unit_of_measure ON rfi_without_po_items.fk_unit_of_measure_id = unit_of_measure.id
+            WHERE 
+            request_for_inspection.id = :id
+            AND rfi_without_po_items.is_deleted !=1")
             ->bindValue(':id', $this->id)
 
             ->queryAll();
@@ -149,17 +150,65 @@ class RequestForInspection extends \yii\db\ActiveRecord
             ->bindValue(':id', $this->id)
             ->queryAll();
     }
+    public function getInspectionReportLinks()
+    {
+        return  Yii::$app->db->createCommand("SELECT 
+            inspection_report.id,
+            inspection_report.ir_number,
+            iar.iar_number,
+            iar.id as iar_id
+            FROM request_for_inspection
+            INNER JOIN request_for_inspection_items ON request_for_inspection.id = request_for_inspection_items.fk_request_for_inspection_id
+            INNER JOIN inspection_report_items ON request_for_inspection_items.id = inspection_report_items.fk_request_for_inspection_item_id
+            INNER JOIN inspection_report ON inspection_report_items.fk_inspection_report_id = inspection_report.id
+            LEFT JOIN iar ON inspection_report.id = iar.fk_ir_id
+            WHERE 
+            request_for_inspection.id = :id
+            GROUP BY 
+            inspection_report.id,
+            inspection_report.ir_number,
+            iar.iar_number,
+            iar.id 
+            UNION
+            SELECT 
+            inspection_report.id,
+            inspection_report.ir_number,
+            iar.iar_number,
+            iar.id as iar_id
+            FROM request_for_inspection
+            INNER JOIN rfi_without_po_items ON request_for_inspection.id = rfi_without_po_items.fk_request_for_inspection_id
+            INNER JOIN inspection_report_no_po_items ON rfi_without_po_items.id = inspection_report_no_po_items.fk_rfi_without_po_item_id
+            INNER JOIN inspection_report ON inspection_report_no_po_items.fk_inspection_report_id = inspection_report.id
+            LEFT JOIN iar ON inspection_report.id = iar.fk_ir_id
+            WHERE 
+            request_for_inspection.id = :id
+            GROUP BY 
+            inspection_report.id,
+            inspection_report.ir_number,
+            iar.iar_number,
+            iar.id ")
+            ->bindValue(':id', $this->id)
+            ->queryAll();
+    }
 
     /**
      * {@inheritdoc}
      */
     public function attributeLabels()
     {
+        $userData = User::getUserData();
+        $empOffice  = $userData->employee->office->office_name ?? '';
+        $userOffice = Yii::$app->user->identity->office->office_name ?? '';
+        $chairPersonLbl  = 'Inpection Officer';
+
+        if (strtolower($empOffice)  === 'ro' || strtolower($userOffice) === 'ro') {
+            $chairPersonLbl  = 'Chairperon';
+        }
         return [
             'id' => 'ID',
             'rfi_number' => 'RFI No.',
             'date' => 'Date',
-            'fk_chairperson' => 'Chairperson',
+            'fk_chairperson' => $chairPersonLbl,
             'fk_inspector' => 'Inspector',
             'fk_property_unit' => 'Property Unit',
             'fk_pr_office_id' => 'Requested By Division',
@@ -197,6 +246,10 @@ class RequestForInspection extends \yii\db\ActiveRecord
     public function getPropertyUnit()
     {
         return $this->hasOne(Employee::class, ['employee_id' => 'fk_property_unit']);
+    }
+    public function getRequestedBy()
+    {
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_requested_by']);
     }
     public function getOffice()
     {

@@ -36,6 +36,10 @@ class Iar extends \yii\db\ActiveRecord
         ];
     }
 
+    public function getIarDetails()
+    {
+        return Yii::$app->db->createCommand("SELECT * FROM iar_index WHERE id =:id")->bindValue(':id', $this->id)->queryOne();
+    }
     public function beforeSave($insert)
     {
         if (parent::beforeSave($insert)) {

@@ -4,6 +4,7 @@ use app\models\Divisions;
 use app\models\Office;
 use aryelds\sweetalert\SweetAlert;
 use aryelds\sweetalert\SweetAlertAsset;
+use common\models\User;
 use kartik\form\ActiveForm;
 use kartik\grid\GridView;
 use kartik\icons\Icon;
@@ -15,6 +16,7 @@ use yii\helpers\Html;
 use yii\web\JsExpression;
 
 $this->registerJsFile("@web/js/vue.js", ['position' => $this::POS_HEAD]);
+$userData = User::getUserData();
 /* @var $this yii\web\View */
 /* @var $model app\models\RequestForInspection */
 /* @var $form yii\widgets\ActiveForm */
@@ -81,6 +83,7 @@ if (!empty($model->transaction_type)) {
         $no_po_display = '';
     }
 }
+
 
 ?>
 
@@ -160,7 +163,7 @@ if (!empty($model->transaction_type)) {
 
                 </div>
             <?php } ?>
-            <div class="col-sm-3">
+            <div class="col-sm-2">
                 <?= $form->field($model, 'transaction_type')->widget(Select2::class, [
                     'data' => $transaction_type,
                     'name' => 'transaction_type',
@@ -171,8 +174,7 @@ if (!empty($model->transaction_type)) {
                 ]) ?>
 
             </div>
-        </div>
-        <div class="row">
+
             <div class="col-sm-3">
                 <?= $form->field($model, 'fk_requested_by')->widget(Select2::class, [
                     'data' => $requested_by,
@@ -222,31 +224,38 @@ if (!empty($model->transaction_type)) {
                 ]) ?>
 
             </div>
-            <div class="col-sm-3">
+            <?php
+            $empOffice  = $userData->employee->office->office_name ?? '';
+            $userOffice = Yii::$app->user->identity->office->office_name ?? '';
 
-                <?= $form->field($model, 'fk_inspector')->widget(Select2::class, [
-                    'data' => $inspector,
-                    'options' => ['placeholder' => 'Search for a Employee ...'],
-                    'pluginOptions' => [
-                        'allowClear' => false,
-                        'minimumInputLength' => 1,
-                        'language' => [
-                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                        ],
-                        'ajax' => [
-                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
-                            'dataType' => 'json',
-                            'delay' => 250,
-                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                            'cache' => true
-                        ],
-                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                    ],
+            if (strtolower($empOffice)  === 'ro' || strtolower($userOffice) === 'ro') :
+            ?>
+                <div class="col-sm-3">
 
-                ]) ?>
-            </div>
+                    <?= $form->field($model, 'fk_inspector')->widget(Select2::class, [
+                        'data' => $inspector,
+                        'options' => ['placeholder' => 'Search for a Employee ...'],
+                        'pluginOptions' => [
+                            'allowClear' => false,
+                            'minimumInputLength' => 1,
+                            'language' => [
+                                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                            ],
+                            'ajax' => [
+                                'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                                'dataType' => 'json',
+                                'delay' => 250,
+                                'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                                'cache' => true
+                            ],
+                            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                        ],
+
+                    ]) ?>
+                </div>
+            <?php endif; ?>
             <div class="col-sm-3">
                 <?= $form->field($model, 'fk_property_unit')->widget(Select2::class, [
                     'data' => $property_unit,

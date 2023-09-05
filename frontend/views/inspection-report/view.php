@@ -45,7 +45,7 @@ if (!empty($signatories)) {
 }
 $end_user = '';
 if (!empty($model->fk_end_user)) {
-    $end_user = YIi::$app->db->createCommand("SELECT employee_name FROM employee_search_view WHERE employee_id = :id")->bindValue(':id', $model->fk_end_user)->queryScalar();
+    $end_user = Yii::$app->db->createCommand("SELECT employee_name FROM employee_search_view WHERE employee_id = :id")->bindValue(':id', $model->fk_end_user)->queryScalar();
 }
 ?>
 <div class="inspection-report-view">

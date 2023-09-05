@@ -834,4 +834,21 @@ class ChartOfAccountsController extends Controller
             return json_encode($qry);
         }
     }
+
+    // Chart of Accounts Only
+    public function actionSearchChartOfAccounts2($page = null, $q = null, $id = null)
+    {
+
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = ['results' => ['id' => '', 'text' => '']];
+        // if ($id > 0) {
+        //     $out['results'] = ['id' => $id, 'text' => Payee::findOne($id)->account_name];
+        // } else 
+        if (!is_null($q)) {
+            $data = ChartOfAccounts::searchChartOfAccounts($q, $page);
+            $out['results'] = array_values($data);
+            $out['pagination'] = ['more' => !empty($data) ? true : false];
+        }
+        return $out;
+    }
 }

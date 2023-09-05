@@ -88,7 +88,7 @@ class MyHelper extends BaseObject
     }
     public  static function getUuid()
     {
-        return YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+        return YIi::$app->db->createCommand("SELECT UUID_SHORT() % 9223372036854775807")->queryScalar();
     }
     public  static function getParNumber($office_id)
     {
@@ -232,5 +232,16 @@ class MyHelper extends BaseObject
             ->bindValue(':office_id', $user_data->office->id)
             ->bindValue(':id', $rbac_id)
             ->queryAll();
+    }
+    public function snowflakeId()
+    {
+        $timestamp = time();
+        $machineId = Yii::$app->user->identity->id; // Replace with your machine ID
+        $sequence = mt_rand(0, 4095);
+
+        // Combine and format the components to create a Snowflake ID
+        $snowflakeId = ($timestamp << 22) | ($machineId << 12) | $sequence;
+
+        return $snowflakeId;
     }
 }

@@ -164,7 +164,7 @@ class RequestForInspectionController extends Controller
         return $this->render('view', [
             'model' => $model,
             // 'purchase_orders' => $po_details,
-            'ir_links' => $this->irLinks($id)
+            // 'ir_links' => $this->irLinks($id)
         ]);
     }
     private function poDetails($id)
@@ -526,13 +526,14 @@ class RequestForInspectionController extends Controller
         $model = new RequestForInspection();
         $searchModel = new PurchaseOrdersForRfiSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $model->fk_property_unit = 100099198938013553;
-        $model->fk_chairperson = 99684622555676844;
+
+
         $user_data = Yii::$app->memem->getUserData();
         $model->fk_office_id = $user_data->office->id;
         $model->fk_division_id = $user_data->divisionName->id ?? '';
         $model->fk_created_by =  Yii::$app->user->identity->id;
-
+        $model->fk_property_unit = strtolower($user_data->office->office_name) === 'ro' ? 100099198938013553 : '';
+        $model->fk_chairperson = strtolower($user_data->office->office_name) === 'ro' ? 99684622555676844 : '';
         if (!Yii::$app->user->can('super-user')) {
             $user_division = strtolower(Yii::$app->user->identity->division ?? '');
             $division_id = Yii::$app->db->createCommand("SELECT id FROM responsibility_center WHERE responsibility_center.name=:division")

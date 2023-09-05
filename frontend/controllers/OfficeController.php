@@ -182,4 +182,42 @@ class OfficeController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
+    // public function actionCreate()
+    // {
+    //     $offices = Office::find()->all();
+
+
+    //     if (Yii::$app->request->isPost) {
+    //         // return json_encode($_POST);
+    //         if (Office::loadMultiple($offices, Yii::$app->request->post()) && Office::validateMultiple($offices)) {
+
+    //             // $data = json_decode(Yii::$app->request->rawBody, true);
+    //             // return json_encode(Yii::$app->request->rawBody);
+    //             return json_encode(Yii::$app->request->post('Office'));
+
+    //             foreach (Yii::$app->request->post('Office') ?? [] as $officeData) {
+    //                 if (empty($officeData['id'])) {
+
+    //                     $office = new Office();
+    //                     $office->attributes = $officeData;
+    //                     $offices[] = $office;
+    //                 }
+    //             }
+    //             // $o = [];
+    //             // foreach (Yii::$app->request->post('Office') as $officeData) {
+    //             //     return json_encode($officeData->isNewR);
+    //             //     $office = new Office();
+    //             //     $office->attributes = $officeData;
+    //             //     $o[] = $office;
+    //             // }
+    //             foreach ($offices as $order) {
+    //                 $order->save(false); // Save each order without re-validating
+    //             }
+    //             Yii::$app->session->setFlash('success', 'Orders updated successfully.');
+    //             return $this->refresh();
+    //         }
+    //     }
+
+    //     return $this->render('sample_form', ['items' => $offices]);
+    // }
 }

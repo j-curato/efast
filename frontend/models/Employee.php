@@ -59,7 +59,32 @@ class Employee extends \yii\db\ActiveRecord
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
+    public function getEmployeeDetails()
+    {
 
+        return Employee::find()
+            ->select([
+                "CONCAT(f_name,' ',
+            (CASE
+            WHEN m_name !='' THEN CONCAT(LEFT(m_name,1),'. ')
+            ELSE ''
+            END),
+            l_name,
+            (CASE
+            WHEN employee.suffix !='' THEN CONCAT(', ',employee.suffix)
+            ELSE ''
+            END)
+            ) as `fullName`",
+                "employee.position",
+                "employee.property_custodian",
+                "office.office_name",
+                "divisions.division"
+            ])
+            ->joinWith('office')
+            ->joinWith('empDivision')
+            ->where('employee.employee_id = :id', ['id' => $this->employee_id])
+            ->createCommand()->queryOne();
+    }
     /**
      * {@inheritdoc}
      */
@@ -83,5 +108,9 @@ class Employee extends \yii\db\ActiveRecord
     public function getOffice()
     {
         return $this->hasOne(Office::class, ['id' => 'fk_office_id']);
+    }
+    public function getEmpDivision()
+    {
+        return $this->hasOne(Divisions::class, ['id' => 'fk_division_id']);
     }
 }

@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\db\Query;
 
 /**
  * This is the model class for table "chart_of_accounts".
@@ -65,6 +66,25 @@ class ChartOfAccounts extends \yii\db\ActiveRecord
         ];
     }
 
+    public static function searchChartOfAccounts($q, $page)
+    {
+
+        $limit = 5;
+        $offset = ($page - 1) * $limit;
+        $query = new Query();
+        $query->select(["id as id, CONCAT (uacs ,'-',general_ledger) as text"])
+            ->from('chart_of_accounts')
+            ->where(['like', 'general_ledger', $q])
+            ->orWhere(['like', 'uacs', $q])
+            ->andWhere('is_active = 1');
+        if (!empty($page)) {
+            $query->offset($offset)
+                ->limit($limit);
+        }
+        $command = $query->createCommand();
+        $data = $command->queryAll();
+        return $data;
+    }
     /**
      * {@inheritdoc}
      */

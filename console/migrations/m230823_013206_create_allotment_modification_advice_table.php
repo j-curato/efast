@@ -23,11 +23,10 @@ class m230823_013206_create_allotment_modification_advice_table extends Migratio
     {
         $this->createTable('{{%allotment_modification_advice}}', [
             'id' => $this->primaryKey(),
+            'serial_num' => $this->string()->notNull()->unique(),
             'date' => $this->date()->notNull(),
             'particulars' => $this->text(),
             'reporting_period' => $this->string()->notNull(),
-            'fk_office_id' => $this->integer()->notNull(),
-            'fk_division_id' => $this->bigInteger()->notNull(),
             'fk_book_id' => $this->integer()->notNull(),
             'fk_allotment_type_id' => $this->integer()->notNull(),
             'fk_mfo_pap_id' => $this->integer()->notNull(),
@@ -37,40 +36,6 @@ class m230823_013206_create_allotment_modification_advice_table extends Migratio
             'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')
         ]);
         $this->alterColumn('allotment_modification_advice', 'id', $this->bigInteger());
-
-        // creates index for column `fk_office_id`
-        $this->createIndex(
-            '{{%idx-allotment_modification_advice-fk_office_id}}',
-            '{{%allotment_modification_advice}}',
-            'fk_office_id'
-        );
-
-        // add foreign key for table `{{%office}}`
-        $this->addForeignKey(
-            '{{%fk-allotment_modification_advice-fk_office_id}}',
-            '{{%allotment_modification_advice}}',
-            'fk_office_id',
-            '{{%office}}',
-            'id',
-            'RESTRICT'
-        );
-
-        // creates index for column `fk_division_id`
-        $this->createIndex(
-            '{{%idx-allotment_modification_advice-fk_division_id}}',
-            '{{%allotment_modification_advice}}',
-            'fk_division_id'
-        );
-
-        // add foreign key for table `{{%divisions}}`
-        $this->addForeignKey(
-            '{{%fk-allotment_modification_advice-fk_division_id}}',
-            '{{%allotment_modification_advice}}',
-            'fk_division_id',
-            '{{%divisions}}',
-            'id',
-            'RESTRICT'
-        );
 
         // creates index for column `fk_book_id`
         $this->createIndex(
@@ -163,29 +128,7 @@ class m230823_013206_create_allotment_modification_advice_table extends Migratio
      */
     public function safeDown()
     {
-        // drops foreign key for table `{{%office}}`
-        $this->dropForeignKey(
-            '{{%fk-allotment_modification_advice-fk_office_id}}',
-            '{{%allotment_modification_advice}}'
-        );
 
-        // drops index for column `fk_office_id`
-        $this->dropIndex(
-            '{{%idx-allotment_modification_advice-fk_office_id}}',
-            '{{%allotment_modification_advice}}'
-        );
-
-        // drops foreign key for table `{{%divisions}}`
-        $this->dropForeignKey(
-            '{{%fk-allotment_modification_advice-fk_division_id}}',
-            '{{%allotment_modification_advice}}'
-        );
-
-        // drops index for column `fk_division_id`
-        $this->dropIndex(
-            '{{%idx-allotment_modification_advice-fk_division_id}}',
-            '{{%allotment_modification_advice}}'
-        );
 
         // drops foreign key for table `{{%book}}`
         $this->dropForeignKey(
