@@ -96,10 +96,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 $adv_ttl = 0;
                 $wtl_ttl = 0;
                 foreach ($items['fur'] as $itm) {
-                    $bgn_bal_ttl = floatval($itm['begining_balance']);
-                    $adv_ttl = floatval($itm['total_advances']);
-                    $wtl_ttl = floatval($itm['total_withdrawals']);
-                    $fur_ending_balance = floatval($bgn_bal_ttl) + floatval($adv_ttl) - floatval($wtl_ttl);
+                    $bgn_bal_ttl += floatval($itm['begining_balance']);
+                    $adv_ttl += floatval($itm['total_advances']);
+                    $wtl_ttl += floatval($itm['total_withdrawals']);
+                    $fur_ending_balance = floatval($itm['begining_balance']) + floatval($itm['total_advances']) - floatval($itm['total_advances']);
 
                     echo   "<tr>
 
