@@ -116,17 +116,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
                 ?>
             </tbody>
-            <tfoot>
-                <tr>
-                    <td>Total</td>
-                    <td class='amount'><?= number_format($bgn_bal_ttl, 2) ?></td>
-                    <td class='amount'><?= number_format($adv_ttl, 2) ?></td>
-                    <td class='amount'><?= number_format($wtl_ttl, 2) ?></td>
-                    <td class='amount'> <?= number_format(($bgn_bal_ttl + $adv_ttl) - $wtl_ttl, 2) ?></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            </tfoot>
+            <tr>
+                <td>Total</td>
+                <td class='amount'><?= number_format($bgn_bal_ttl, 2) ?></td>
+                <td class='amount'><?= number_format($adv_ttl, 2) ?></td>
+                <td class='amount'><?= number_format($wtl_ttl, 2) ?></td>
+                <td class='amount'> <?= number_format(($bgn_bal_ttl + $adv_ttl) - $wtl_ttl, 2) ?></td>
+                <td></td>
+                <td></td>
+            </tr>
         </table>
     </div>
     <!-- </div> -->
