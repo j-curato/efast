@@ -1,5 +1,6 @@
 <?php
 
+use common\models\User;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -15,6 +16,7 @@ $end_user = '';
 if (!empty($model->inspectionReport->fk_end_user)) {
     $end_user = YIi::$app->db->createCommand("SELECT employee_name FROM employee_search_view WHERE employee_id = :id")->bindValue(':id', $model->inspectionReport->fk_end_user)->queryScalar();
 }
+
 
 function details($sig)
 {
@@ -78,6 +80,7 @@ $po_number = !empty($GLOBALS['po_number']) ? $GLOBALS['po_number'] : '';
 $date_generated = !empty($GLOBALS['date_generated']) ? $GLOBALS['date_generated'] : '';
 $date_inspected = !empty($GLOBALS['date_inspected']) ? $GLOBALS['date_inspected'] : '';
 
+$iarDetails = $model->getIarDetails();
 
 ?>
 <div class="iar-view">
@@ -174,27 +177,36 @@ $date_inspected = !empty($GLOBALS['date_inspected']) ? $GLOBALS['date_inspected'
                     <td colspan="2" style="border-bottom: none;"><br>Date Inspected : <span class="udl_txt"><?= $date_inspected ?></span></td>
                     <td colspan="2" style="border-bottom: none;"><br>Date Received : _____________________</td>
                 </tr>
+
+                <?php
+
+                $isProvincialOffice = strtolower($iarDetails['office_name'])  === 'ro' ? false : true;
+                ?>
                 <tr>
                     <td colspan="2" class="center" style="padding-top:5rem;border-top:none;border-bottom: none;">
-
                         <span class="bold bdr-btm udl_txt"><?= strtoupper($chairperson) ?></span><br>
-                        <span>Inspection Committee, Chairperson</span>
+                        <span> <?= $isProvincialOffice === false ? 'Inspection Committee, Chairperson' : 'Inspection Officer' ?></span>
                     </td>
                     <td colspan="2" class="center  " style="padding-top:5rem;border-top:none;border-bottom: none;">
-
                         <span class="bold bdr-btm udl_txt upper-case"><?= strtoupper($property_unit) ?></span><br>
                         <span>Supply and/or Property Custodian</span>
                     </td>
                 </tr>
-                <tr>
-                    <td colspan="2" class="center  " style="padding-top:5rem;border-top:none;border-bottom: none;">
+                <?php
+                if ($isProvincialOffice === false) :
+                ?>
+                    <tr>
+                        <td colspan="2" class="center  " style="padding-top:5rem;border-top:none;border-bottom: none;">
 
-                        <span class="bold bdr-btm udl_txt upper-case"><?= strtoupper($inspector) ?></span><br>
-                        <span>Inspection Committee, Member</span>
-                    </td>
-                    <td colspan="2" style="padding-top:5rem;border-top:none;border-bottom: none;">
-                    </td>
-                </tr>
+                            <span class="bold bdr-btm udl_txt upper-case"><?= strtoupper($inspector) ?></span><br>
+                            <span>Inspection Committee, Member</span>
+                        </td>
+                        <td colspan="2" style="padding-top:5rem;border-top:none;border-bottom: none;">
+                        </td>
+                    </tr>
+                <?php
+                endif;
+                ?>
                 <tr>
                     <td colspan="2" class="center upper-case " style="padding-top:5rem;border-top:none">
 
