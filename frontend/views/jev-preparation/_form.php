@@ -396,6 +396,8 @@ SweetAlertAsset::register($this);
         payeeSelect.append(option).trigger('change');
         $('#jevpreparation-explaination').val(data.particular)
         $('#jevpreparation-reporting_period').val(data.reporting_period)
+        $('#jevpreparation-check_ada_number').val(data.check_number)
+
         // if (data.mode_of_payment.toLowerCase() == 'ada') {
         //     $("#jevpreparation-check_ada").val('ADA').trigger('change')
         //     $("#jevpreparation-ada_number").val(data.ada_number).trigger('change')

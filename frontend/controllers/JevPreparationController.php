@@ -2855,53 +2855,27 @@ class JevPreparationController extends Controller
                 $account_title = $x['account_title'];
                 $object_code = $x['object_code'];
 
-                $sheet->setCellValueByColumnAndRow(
-                    7,
-                    $row,
-                    $object_code
-                );
+                $sheet->setCellValue([7, $row], $object_code);
                 //ENTRY ACCOUNT TITLE
-                $sheet->setCellValueByColumnAndRow(
-                    8,
-                    $row,
-                    $account_title
-                );
-                $sheet->setCellValueByColumnAndRow(
-                    11,
-                    $row,
-                    'Beginning Balance'
-                );
-
-                $sheet->setCellValueByColumnAndRow(
-                    12,
-                    $row,
-                    !empty($x['debit']) ? $x['debit'] : ''
-                );
+                $sheet->setCellValue([8, $row], $account_title);
+                $sheet->setCellValue([11, $row], 'Beginning Balance');
+                $sheet->setCellValue([12, $row], !empty($x['debit']) ? $x['debit'] : '');
                 //CREDIT
-                $sheet->setCellValueByColumnAndRow(
-                    13,
-                    $row,
-                    !empty($x['credit']) ? $x['credit'] : ''
-                );
-                $sheet->setCellValueByColumnAndRow(
-                    15,
-                    $row,
-                    !empty($x['book_name']) ? $x['book_name'] : ''
-                );
+                $sheet->setCellValue([13, $row], !empty($x['credit']) ? $x['credit'] : '');
+                $sheet->setCellValue([15, $row], !empty($x['book_name']) ? $x['book_name'] : '');
                 $row++;
             }
             foreach ($query  as  $val) {
 
                 // jev_number
-                $sheet->setCellValueByColumnAndRow(1, $row,  !empty($val->jevPreparation->jev_number) ? $val->jevPreparation->jev_number : '');
+                $sheet->setCellValue([1, $row],  !empty($val->jevPreparation->jev_number) ? $val->jevPreparation->jev_number : '');
                 // dv number
-                $sheet->setCellValueByColumnAndRow(2, $row,  !empty($val->jevPreparation->dv_number) ? $val->jevPreparation->dv_number : '');
+                $sheet->setCellValue([2, $row],  !empty($val->jevPreparation->dv_number) ? $val->jevPreparation->dv_number : '');
                 // check ada number
-                $sheet->setCellValueByColumnAndRow(3, $row,  !empty($val->jevPreparation->check_ada_number) ? $val->jevPreparation->check_ada_number : '');
+                $sheet->setCellValue([3, $row],  !empty($val->jevPreparation->check_ada_number) ? $val->jevPreparation->check_ada_number : '');
                 //payee
-                $sheet->setCellValueByColumnAndRow(
-                    4,
-                    $row,
+                $sheet->setCellValue(
+                    [4, $row],
                     !empty($val->jevPreparation->payee_id) ? $val->jevPreparation->payee->account_name : ''
                 );
 
@@ -3345,16 +3319,28 @@ class JevPreparationController extends Controller
         if (Yii::$app->request->post()) {
             $id  = Yii::$app->request->post('id');
             $dv_details = Yii::$app->db->createCommand("SELECT 
-            dv_aucs.reporting_period,
-            payee.id as payee_id,
-            payee.account_name as payee_name,
-            dv_aucs.book_id,
-            dv_aucs.particular
-            FROM 
-            dv_aucs
-            LEFT JOIN payee ON dv_aucs.payee_id = payee.id
-            WHERE dv_aucs.id = :id
-            ")
+                        dv_aucs.id,
+                        dv_aucs.reporting_period,
+                        payee.id as payee_id,
+                        payee.account_name as payee_name,
+                        dv_aucs.book_id,
+                        dv_aucs.particular,
+                       (SELECT
+                      `cash_disbursement`.`check_or_ada_no`
+            
+                        FROM `cash_disbursement` 
+                        JOIN `cash_disbursement_items` ON cash_disbursement.id = cash_disbursement_items.fk_cash_disbursement_id
+                        WHERE `cash_disbursement`.`is_cancelled`=0
+                        AND `cash_disbursement_items`.`is_deleted`=0
+                        AND NOT EXISTS (SELECT `c`.`parent_disbursement` 
+                        FROM `cash_disbursement` `c` 
+                        WHERE `c`.`is_cancelled`=1 AND `c`.`parent_disbursement`=cash_disbursement.id)
+                        AND cash_disbursement_items.fk_dv_aucs_id = dv_aucs.id
+                        ) as check_number
+                        FROM 
+                        dv_aucs
+                        LEFT JOIN payee ON dv_aucs.payee_id = payee.id
+                        WHERE dv_aucs.id = :id")
                 ->bindValue(':id', $id)
                 ->queryOne();
             $dv_entries = Yii::$app->db->createCommand("SELECT 
