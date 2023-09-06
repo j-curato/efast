@@ -129,7 +129,7 @@ Select2Asset::register($this);
                 <tr>
                     <td>
                         <?php
-                        // echo ($model->responsibilityCenter) ? $model->responsibilityCenter->name : '';
+                        echo ($model->responsibilityCenter) ? $model->responsibilityCenter->name : '';
                         ?>
                     </td>
                     <td style="word-wrap:break-word;width:400px"><?php echo $model->explaination ?></td>
