@@ -5,18 +5,17 @@ use yii\helpers\Html;
 use kartik\grid\GridView;
 
 /* @var $this yii\web\View */
-/* @var $searchModel app\models\DocumentRecieveSearch */
+/* @var $searchModel app\models\DocumentReceiveSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Document Recieves';
+$this->title = 'Document Receives';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="document-recieve-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Document Recieve', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
+        <?= Html::a('Create Document Receive', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
@@ -27,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
-            'heading' => 'List of Areas',
+            'heading' => 'List of Document Receives',
         ],
         'floatHeaderOptions' => [
             'top' => 50,

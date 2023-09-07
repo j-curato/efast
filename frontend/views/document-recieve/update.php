@@ -3,10 +3,10 @@
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\DocumentRecieve */
+/* @var $model app\models\DocumentReceive */
 
-$this->title = 'Update Document Recieve: ' . $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Document Recieves', 'url' => ['index']];
+$this->title = 'Update Document Receive: ' . $model->name;
+$this->params['breadcrumbs'][] = ['label' => 'Document Receives', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Update';
 ?>

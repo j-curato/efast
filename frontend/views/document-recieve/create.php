@@ -3,10 +3,10 @@
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\DocumentRecieve */
+/* @var $model app\models\DocumentReceive */
 
-$this->title = 'Create Document Recieve';
-$this->params['breadcrumbs'][] = ['label' => 'Document Recieves', 'url' => ['index']];
+$this->title = 'Create Document Receive';
+$this->params['breadcrumbs'][] = ['label' => 'Document Receives', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="document-recieve-create">
