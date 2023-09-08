@@ -38,7 +38,7 @@ class BudgetReportsController extends \yii\web\Controller
         ];
     }
 
-    function actionStatusOfFundsPerMfo()
+    public function actionSofPerMfo()
     {
         if (Yii::$app->request->post()) {
             $to_period  = Yii::$app->request->post('reporting_period');
@@ -50,5 +50,19 @@ class BudgetReportsController extends \yii\web\Controller
             return json_encode($result);
         }
         return $this->render('budget_status_of_funds_per_mfo');
+    }
+    // STATUS OF FUNDS PER OFFICE/DIVISIONS
+    public function actionSofPerOffice()
+    {
+        if (Yii::$app->request->post()) {
+            $to_period  = Yii::$app->request->post('reporting_period');
+            $from_period = DateTime::createFromFormat('Y-m', $to_period)->format('Y');
+            $qry = RecordAllotmentDetailed::getStatusOfFundsPerOffice($from_period . '-01', $to_period);
+            $result = ArrayHelper::index($qry, 'document_recieve', [function ($element) {
+                return $element['allotment_class'];
+            }, 'office_name', 'division']);
+            return json_encode($result);
+        }
+        return $this->render('sof_per_office');
     }
 }

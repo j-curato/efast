@@ -334,6 +334,7 @@ https://cdn.jsdelivr.net/npm/vue-spinner@1.0.4/dist/vue-spinner.min.js
 
                                 // });
                                 this.personelServicesLists = this.formatReturnedData(personnelServicesData)
+                                
                                 console.log(this.personelServicesLists)
                             }
                             if (capitalOutlayData) {
