@@ -118,7 +118,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <th class="amt">{{formatAmount(grandTotals('grossAmt'))}}</th>
             <th class="amt">{{formatAmount(grandTotals('ors'))}}</th>
             <th class="amt">{{formatAmount(grandTotals('balance'))}}</th>
-            <th class="amt">{{calculateUtilization(grandTotals('ors'),grandTotals('grossAmt'))}}%</th>
+            <th class="amt">{{calculateUtilization(grandTotals('ors'),grandTotals('grossAmt'))}}</th>
         </tr>
     </table>
     <div class=" center-container" v-show='loading'>
