@@ -90,11 +90,10 @@ $irDetails = $model->getIrDetails();
                     if (!empty($itemDetails)) {
 
                         foreach ($itemDetails as $val) {
-
                             echo "<span class='bold'>{$val['stock_title']}</span>
-                        <br>
-                        <span class='italic' >{$val['specification']}</span>
-                        <br>
+                                <br>
+                                <span class='italic' >{$val['specification']}</span>
+                                <br>
                         ";
                         }
                     } else {
