@@ -60,13 +60,24 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th>REMARKS</th>
             </tr>
         </thead>
-        <tr class="info">
-            <th colspan="11" style="background-color: #27c3f2;">PERSONNEL SERVICES</th>
+        <tr class="info" style="background-color: #bef1fa;">
+            <th class="">PERSONNEL SERVICES</th>
+            <th class="amt">{{formatAmount(calculateMfoTtl(personelServicesLists,'garo'))}}</th>
+            <th class="amt">{{formatAmount(calculateMfoTtl(personelServicesLists,'flr'))}}</th>
+            <th class="amt">{{formatAmount(calculateMfoTtl(personelServicesLists,'sub-aro'))}}</th>
+            <th class="amt">{{formatAmount(calculateMfoTtl(personelServicesLists,'other-docs'))}}</th>
+            <th class="amt">{{formatAmount(calculateMfoTtl(personelServicesLists,'adjustments'))}}</th>
+            <th class="amt">{{formatAmount(calculateMfoTtl(personelServicesLists,'grossAmt'))}}</th>
+            <th class="amt">{{formatAmount(calculateMfoTtl(personelServicesLists,'ors'))}}</th>
+            <th class="amt">{{formatAmount(calculateMfoTtl(personelServicesLists,'balance'))}}</th>
+            <th class="amt">{{calculateUtilization(calculateMfoTtl(personelServicesLists,'ors'),calculateMfoTtl(personelServicesLists,'grossAmt'))}}</th>
+            <td></td>
+
         </tr>
         <tr v-for="(item,index) in personelServicesLists">
-            <td class='amt'>{{item.mfo_name}}</td>
+            <td class='ctr'>{{item.mfo_name}}</td>
             <td class='amt'>{{formatAmount(item.ttlGaroAllotment)}}</td>
-            <td></td>
+            <td class='amt'>{{formatAmount(item.ttlFlr)}}</td>
             <td class='amt'>{{formatAmount(item.ttlSubAroAllotment)}}</td>
             <td class='amt'>{{formatAmount(item.ttlOtherDocs)}}</td>
             <td class='amt'>{{formatAmount(item.ttlAdjustment)}}</td>
@@ -76,13 +87,23 @@ $this->params['breadcrumbs'][] = $this->title;
             <td class='amt'>{{item.utilizationRate}}%</td>
             <td></td>
         </tr>
-        <tr class="success">
-            <th colspan="11" style="background-color: #0fd467;">MOOE</th>
+        <tr class="success" style="background-color: #befac6;">
+            <th>MOOE</th>
+            <th class="amt">{{formatAmount(calculateMfoTtl(mooeList,'garo'))}}</th>
+            <th class="amt">{{formatAmount(calculateMfoTtl(mooeList,'flr'))}}</th>
+            <th class="amt">{{formatAmount(calculateMfoTtl(mooeList,'sub-aro'))}}</th>
+            <th class="amt">{{formatAmount(calculateMfoTtl(mooeList,'other-docs'))}}</th>
+            <th class="amt">{{formatAmount(calculateMfoTtl(mooeList,'adjustments'))}}</th>
+            <th class="amt">{{formatAmount(calculateMfoTtl(mooeList,'grossAmt'))}}</th>
+            <th class="amt">{{formatAmount(calculateMfoTtl(mooeList,'ors'))}}</th>
+            <th class="amt">{{formatAmount(calculateMfoTtl(mooeList,'balance'))}}</th>
+            <th class="amt">{{calculateUtilization(calculateMfoTtl(mooeList,'ors'),calculateMfoTtl(mooeList,'grossAmt'))}}</th>
+            <td></td>
         </tr>
         <tr v-for="(item,index) in mooeList">
-            <td class='amt'>{{item.mfo_name}}</td>
+            <td class='ctr'>{{item.mfo_name}}</td>
             <td class='amt'>{{formatAmount(item.ttlGaroAllotment)}}</td>
-            <td></td>
+            <td class='amt'>{{formatAmount(item.ttlFlr)}}</td>
             <td class='amt'>{{formatAmount(item.ttlSubAroAllotment)}}</td>
             <td class='amt'>{{formatAmount(item.ttlOtherDocs)}}</td>
             <td class='amt'>{{formatAmount(item.ttlAdjustment)}}</td>
@@ -92,13 +113,23 @@ $this->params['breadcrumbs'][] = $this->title;
             <td class='amt'>{{item.utilizationRate}}%</td>
             <td></td>
         </tr>
-        <tr class="warning">
-            <th colspan="11" style="background-color:#d6e810;">CAPITAL OUTLAY</th>
+        <tr class="warning" style="background-color:#f8fabe;">
+            <th>CAPITAL OUTLAY</th>
+            <th class="amt">{{formatAmount(calculateMfoTtl(capitalOutlayList,'garo'))}}</th>
+            <th class="amt">{{formatAmount(calculateMfoTtl(capitalOutlayList,'flr'))}}</th>
+            <th class="amt">{{formatAmount(calculateMfoTtl(capitalOutlayList,'sub-aro'))}}</th>
+            <th class="amt">{{formatAmount(calculateMfoTtl(capitalOutlayList,'other-docs'))}}</th>
+            <th class="amt">{{formatAmount(calculateMfoTtl(capitalOutlayList,'adjustments'))}}</th>
+            <th class="amt">{{formatAmount(calculateMfoTtl(capitalOutlayList,'grossAmt'))}}</th>
+            <th class="amt">{{formatAmount(calculateMfoTtl(capitalOutlayList,'ors'))}}</th>
+            <th class="amt">{{formatAmount(calculateMfoTtl(capitalOutlayList,'balance'))}}</th>
+            <th class="amt">{{calculateUtilization(calculateMfoTtl(capitalOutlayList,'ors'),calculateMfoTtl(capitalOutlayList,'grossAmt'))}}</th>
+            <td></td>
         </tr>
         <tr v-for="(item,index) in capitalOutlayList">
-            <td class='amt'>{{item.mfo_name}}</td>
+            <td class='ctr'>{{item.mfo_name}}</td>
             <td class='amt'>{{formatAmount(item.ttlGaroAllotment)}}</td>
-            <td></td>
+            <td class='amt'>{{formatAmount(item.ttlFlr)}}</td>
             <td class='amt'>{{formatAmount(item.ttlSubAroAllotment)}}</td>
             <td class='amt'>{{formatAmount(item.ttlOtherDocs)}}</td>
             <td class='amt'>{{formatAmount(item.ttlAdjustment)}}</td>
@@ -108,10 +139,10 @@ $this->params['breadcrumbs'][] = $this->title;
             <td class='amt'>{{item.utilizationRate}}%</td>
             <td></td>
         </tr>
-        <tr>
+        <tr style="background-color:#22cbf5;">
             <th class="ctr">Total</th>
             <th class="amt">{{formatAmount(grandTotals('garo'))}}</th>
-            <th></th>
+            <th class="amt">{{formatAmount(grandTotals('flr'))}}</th>
             <th class="amt">{{formatAmount(grandTotals('sub-aro'))}}</th>
             <th class="amt">{{formatAmount(grandTotals('other-docs'))}}</th>
             <th class="amt">{{formatAmount(grandTotals('adjustments'))}}</th>
@@ -119,6 +150,20 @@ $this->params['breadcrumbs'][] = $this->title;
             <th class="amt">{{formatAmount(grandTotals('ors'))}}</th>
             <th class="amt">{{formatAmount(grandTotals('balance'))}}</th>
             <th class="amt">{{calculateUtilization(grandTotals('ors'),grandTotals('grossAmt'))}}</th>
+            <td></td>
+        </tr>
+        <tr style="background-color:#9ff536;">
+            <th class="ctr">MOOE + CO Total</th>
+            <th class="amt">{{formatAmount(coPlusMooeTtl('garo'))}}</th>
+            <th class="amt">{{formatAmount(coPlusMooeTtl('flr'))}}</th>
+            <th class="amt">{{formatAmount(coPlusMooeTtl('sub-aro'))}}</th>
+            <th class="amt">{{formatAmount(coPlusMooeTtl('other-docs'))}}</th>
+            <th class="amt">{{formatAmount(coPlusMooeTtl('adjustments'))}}</th>
+            <th class="amt">{{formatAmount(coPlusMooeTtl('grossAmt'))}}</th>
+            <th class="amt">{{formatAmount(coPlusMooeTtl('ors'))}}</th>
+            <th class="amt">{{formatAmount(coPlusMooeTtl('balance'))}}</th>
+            <th class="amt">{{calculateUtilization(coPlusMooeTtl('ors'),coPlusMooeTtl('grossAmt'))}}</th>
+            <td></td>
         </tr>
     </table>
     <div class=" center-container" v-show='loading'>
@@ -134,6 +179,10 @@ $this->params['breadcrumbs'][] = $this->title;
         /* Vertically center */
         height: 70vh;
         /* 100% of the viewport height */
+    }
+
+    .ctr {
+        text-align: center;
     }
 
 
@@ -207,9 +256,9 @@ https://cdn.jsdelivr.net/npm/vue-spinner@1.0.4/dist/vue-spinner.min.js
                 mooeList: [],
                 capitalOutlayList: [],
                 loading: false,
-                // color: '#03befc',
+                color: '#03befc',
                 size: '20px',
-                showTable: false,
+                showTable: true,
             },
             methods: {
                 formatReturnedData(obj) {
@@ -217,10 +266,11 @@ https://cdn.jsdelivr.net/npm/vue-spinner@1.0.4/dist/vue-spinner.min.js
                         const val = obj[key]
                         const ttlGaroAllotment = parseFloat(this.getItemData(val, 'GARO'))
                         const ttlSubAroAllotment = parseFloat(this.getItemData(val, 'SAA/Sub-ARO'))
+                        const ttlFlr = parseFloat(this.getItemData(val, 'For Later Release'))
                         const ttlAdjustment = parseFloat(this.getItemTtls(val, 'adjustment'))
                         const ttlOrs = parseFloat(this.getItemTtls(val, 'ors'))
                         const ttlOtherDocs = parseFloat(this.getItemOtherDocsTtl(val))
-                        const grossAmt = ttlGaroAllotment + ttlSubAroAllotment + ttlOtherDocs + ttlAdjustment
+                        const grossAmt = ttlGaroAllotment + ttlFlr + ttlSubAroAllotment + ttlOtherDocs + ttlAdjustment
                         const balance = grossAmt - ttlOrs
                         const utilizationRate = (ttlOrs / grossAmt) * 100
                         return {
@@ -234,6 +284,8 @@ https://cdn.jsdelivr.net/npm/vue-spinner@1.0.4/dist/vue-spinner.min.js
                             grossAmt: grossAmt.toFixed(2),
                             balance: balance.toFixed(2),
                             utilizationRate: utilizationRate.toFixed(2),
+                            ttlFlr: ttlFlr.toFixed(2),
+
                         }
 
 
@@ -282,6 +334,7 @@ https://cdn.jsdelivr.net/npm/vue-spinner@1.0.4/dist/vue-spinner.min.js
 
                                 // });
                                 this.personelServicesLists = this.formatReturnedData(personnelServicesData)
+                                console.log(this.personelServicesLists)
                             }
                             if (capitalOutlayData) {
                                 this.capitalOutlayList = this.formatReturnedData(capitalOutlayData)
@@ -364,7 +417,8 @@ https://cdn.jsdelivr.net/npm/vue-spinner@1.0.4/dist/vue-spinner.min.js
                     return total.toFixed(2);
                 },
                 calculateUtilization(numerator, denominator) {
-                    return ((numerator / denominator) * 100).toFixed(2) + '%'
+                    const ttl = ((numerator / denominator) * 100)
+                    return !isNaN(ttl) ? ttl.toFixed(2) + '%' : 0
                 },
                 calculateMfoTtl(arr, amtName) {
                     return arr.reduce((total, item) => {
@@ -382,8 +436,13 @@ https://cdn.jsdelivr.net/npm/vue-spinner@1.0.4/dist/vue-spinner.min.js
                             return total + parseFloat(item.ttlOrs)
                         } else if (amtName == 'balance') {
                             return total + parseFloat(item.balance)
+                        } else if (amtName == 'flr') {
+                            return total + parseFloat(item.ttlFlr)
                         }
                     }, 0)
+                },
+                calculate() {
+
                 },
                 grandTotals(amtName) {
                     let psTotal = 0
@@ -398,9 +457,19 @@ https://cdn.jsdelivr.net/npm/vue-spinner@1.0.4/dist/vue-spinner.min.js
                     if (this.capitalOutlayList.length > 0) {
                         coTotal = this.calculateMfoTtl(this.capitalOutlayList, amtName)
                     }
-
                     return (parseFloat(psTotal) + parseFloat(mooeTotal) + parseFloat(coTotal)).toFixed(2)
                 },
+                coPlusMooeTtl(amtName) {
+                    let mooeTotal = 0
+                    let coTotal = 0
+                    if (this.mooeList.length > 0) {
+                        mooeTotal = this.calculateMfoTtl(this.mooeList, amtName)
+                    }
+                    if (this.capitalOutlayList.length > 0) {
+                        coTotal = this.calculateMfoTtl(this.capitalOutlayList, amtName)
+                    }
+                    return (parseFloat(mooeTotal) + parseFloat(coTotal)).toFixed(2)
+                }
 
             },
             computed: {
