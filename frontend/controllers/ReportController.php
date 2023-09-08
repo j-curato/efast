@@ -37,6 +37,7 @@ use app\models\TransactionArchiveSearch;
 use app\models\AdvancesLiquidationSearch;
 use app\models\TransactionTrackingSearch;
 use app\models\PoTransmittalsPendingSearch;
+use app\models\RecordAllotmentDetailed;
 use yii\symfonymailer\MessageWrapperInterface;
 use app\models\WithholdingAndRemittanceSummarySearch;
 use frontend\models\SignupForm;
@@ -5952,6 +5953,18 @@ class ReportController extends \yii\web\Controller
             return $e->getMessage();
         }
     }
+    // function actionBudgetStatusOfFundsPerMfo()
+    // {
+    //     if (Yii::$app->request->post()) {
+    //         $year  = Yii::$app->request->post('year');
+    //         $qry = RecordAllotmentDetailed::getStatusOfFundsPerMfo($year);
+    //         $result = ArrayHelper::index($qry, 'mfo_name', function ($element) {
+    //             return $element['allotment_class'];
+    //         });
+    //         return json_encode($result);
+    //     }
+    //     return $this->render('budget_status_of_funds_per_mfo');
+    // }
 }
 
 // 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

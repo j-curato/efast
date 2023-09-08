@@ -1,5 +1,6 @@
 <?php
 
+use app\models\RequestForInspection;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -11,32 +12,35 @@ $this->params['breadcrumbs'][] = ['label' => 'Inspection Reports', 'url' => ['in
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 
-$chairperson = '';
-$inspector = '';
-$requested_by = '';
+$rfi = RequestForInspection::findOne($model->getRfiId());
+$irDetails = $model->getIrDetails();
+
+$chairpersonDtls = !empty($rfi->fk_chairperson) ? $rfi->chairperson->getEmployeeDetails() : [];
+$inspectorDtls = !empty($rfi->fk_inspector) ? $rfi->inspector->getEmployeeDetails() : [];
+$property_unitDtls = !empty($rfi->fk_property_unit) ? $rfi->propertyUnit->getEmployeeDetails() : [];
+$requested_byDtls = !empty($rfi->fk_requested_by) ? $rfi->requestedBy->getEmployeeDetails() : [];
+
+
+
+
+$chairperson = !empty($chairpersonDtls['fullName']) ? $chairpersonDtls['fullName'] : '';
+$inspector = !empty($inspectorDtls['fullName']) ? $inspectorDtls['fullName'] : '';;
+$requested_by = !empty($requested_byDtls['fullName']) ? $requested_byDtls['fullName'] : '';;
+$property_unit = !empty($property_unitDtls['fullName']) ? $property_unitDtls['fullName'] : '';;
 $payee = '';
 $project_title = '';
 $inspect_date = '';
-$property_unit = '';
 if (!empty($signatories)) {
-    $chairperson =  !empty($signatories['chairperson']) ? strtoupper($signatories['chairperson']) : '';
-    $inspector =  !empty($signatories['inspector']) ? strtoupper($signatories['inspector']) : '';
-    $requested_by = strtoupper($signatories['requested_by']) ?? '';
     $payee = $signatories['payee'] ?? '';
     $project_title = $signatories['project_title'] ?? '';
-    $property_unit = $signatories['property_unit'] ?? '';
     if ($signatories['from_date'] != $signatories['to_date']) {
         $inspect_date = $signatories['from_date'] . ' to ' . $signatories['to_date'];
     } else {
         $inspect_date = $signatories['from_date'];
     }
 } else {
-    $chairperson =  !empty($signatories['chairperson']) ? strtoupper($signatories['chairperson']) : '';
-    $inspector =  !empty($signatories['inspector']) ? strtoupper($signatories['inspector']) : '';
-    $requested_by = strtoupper($no_po_signatories['requested_by']) ?? '';
     $payee = $no_po_signatories['payee'] ?? '';
     $project_title = $no_po_signatories['project_title'];
-    $property_unit = $no_po_signatories['property_unit'];
     if ($no_po_signatories['from_date'] != $no_po_signatories['to_date']) {
         $inspect_date = $no_po_signatories['from_date'] . ' to ' . $no_po_signatories['to_date'];
     } else {
@@ -45,22 +49,21 @@ if (!empty($signatories)) {
 }
 $end_user = '';
 if (!empty($model->fk_end_user)) {
-    $end_user = Yii::$app->db->createCommand("SELECT employee_name FROM employee_search_view WHERE employee_id = :id")->bindValue(':id', $model->fk_end_user)->queryScalar();
+    $endUserDtls = $model->employee->getEmployeeDetails();
+    $end_user = $endUserDtls['fullName'];
 }
+
+$irDetails = $model->getIrDetails();
 ?>
 <div class="inspection-report-view">
 
     <div class="container">
-        <?php
-        if (!empty($rfi_id)) {
-            echo Html::a('RFI Link', ['request-for-inspection/view', 'id' => $rfi_id], ['class' => 'btn btn-primary']);
-        }
-        if (!empty($iar_id)) {
-            echo ' ' . Html::a('IAR Link', ['iar/view', 'id' => $iar_id], ['class' => 'btn btn-link']);
-        }
-        echo ' ' . Html::a('Add End-User', ['update', 'id' => $model->id], ['class' => 'btn btn-success', 'title' => 'Update']);
+        <p>
+            <?= !empty($rfi_id) ? Html::a('RFI Link', ['request-for-inspection/view', 'id' => $rfi_id], ['class' => 'btn btn-primary']) : ''; ?>
+            <?= !empty($iar_id) ? ' ' . Html::a('IAR Link', ['iar/view', 'id' => $iar_id], ['class' => 'btn btn-link']) : ''; ?>
+            <?= ' ' . Html::a('Add End-User', ['update', 'id' => $model->id], ['class' => 'btn btn-success', 'title' => 'Update']); ?>
+        </p>
 
-        ?>
         <table>
             <tr>
                 <th colspan="2" class="center">
@@ -160,16 +163,25 @@ if (!empty($model->fk_end_user)) {
                 </td>
             </tr>
             <tr>
+                <?php $isProvincialOffice = strtolower($irDetails['office_name'])  === 'ro' ? false : true;
+
+                if ($isProvincialOffice) {
+                    $inspector = $chairperson;
+                    $chairperson = '';
+                }
+                ?>
                 <td class="center">
                     <span class="bold underlined upper-case"><?= $inspector ?></span>
                     <br>
-                    <span>Inspector</span>
+                    <span></span>
+                    <?= $isProvincialOffice ? 'Inspection Officer' : 'Inspector' ?>
                 </td>
                 <td class="center">
                     <span class="bold underlined upper-case"><?= $chairperson ?></span>
                     <br>
-                    <span>Chairperson, Inspection Commitee</span>
+                    <span><?= $isProvincialOffice ? '&emsp;&emsp;&emsp;' : 'Chairperson, Inspection Commitee' ?></span>
                 </td>
+
             </tr>
             <tr>
                 <td class="center" style="padding-top: 6rem;">

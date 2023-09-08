@@ -115,8 +115,7 @@ class RecordAllotmentsController extends Controller
         FROM record_allotment_entries 
         LEFT JOIN chart_of_accounts ON record_allotment_entries.chart_of_account_id = chart_of_accounts.id
         WHERE record_allotment_entries.record_allotment_id = :id
-        AND record_allotment_entries.is_deleted  = 0
-        ")
+        AND record_allotment_entries.is_deleted  = 0")
             ->bindValue(':id', $id)
             ->queryAll();
         return $query;
@@ -128,6 +127,7 @@ class RecordAllotmentsController extends Controller
     public function actionIndex()
     {
         $searchModel = new RecordAllotmentDetailedSearch();
+        $searchModel->isMaf = 0;
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams, 'all', '');
 
         return $this->render('index', [
@@ -144,8 +144,10 @@ class RecordAllotmentsController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
+        $model = $this->findModel($id);
+        $view = $model->isMaf ? 'maf_view' : 'view';
+        return $this->render($view, [
+            'model' => $model,
             'items' => $this->getItems($id)
         ]);
     }
@@ -724,4 +726,91 @@ class RecordAllotmentsController extends Controller
             return ob_get_clean();
         }
     }
+    // private function checkItemTotal($adjustmentItems, $mafItems)
+    // {
+    //     $adjustmentItemsTtl = floatval(abs(array_sum(array_column($adjustmentItems, 'amount'))));
+    //     $mafItemsTtl = floatval(array_sum(array_column($mafItems, 'amount')));
+    //     return $mafItemsTtl !== $adjustmentItemsTtl ? 'Not Equal' : true;
+    // }
+    // public function actionCreateMaf()
+    // {
+    //     $model = new RecordAllotments();
+    //     $model->isMaf = true;
+
+    //     if ($model->load(Yii::$app->request->post()) || Yii::$app->request->post()) {
+
+    //         try {
+    //             $txn = Yii::$app->db->beginTransaction();
+    //             $mafItems = Yii::$app->request->post('mafItems') ?? [];
+    //             $adjustmentItems = Yii::$app->request->post('adjustmentItems') ?? [];
+
+    //             $res =  $this->checkItemTotal($adjustmentItems, $mafItems);
+    //             if ($res !== true) {
+    //                 throw new ErrorException($res);
+    //             }
+    //             if (!$model->validate()) {
+    //                 throw new ErrorException(json_encode($model->errors));
+    //             }
+    //             if (!$model->save(false)) {
+    //                 throw new ErrorException('Model Save Failed');
+    //             }
+    //             $insMafItems = $model->insertMafItems($mafItems);
+    //             if ($insMafItems !== true) {
+    //                 throw new ErrorException($insMafItems);
+    //             }
+    //             $insAdjstItms = $model->insertAdjsutmentItems($adjustmentItems);
+    //             if ($insAdjstItms !== true) {
+    //                 throw new ErrorException($insAdjstItms);
+    //             }
+    //             $txn->commit();
+    //             return $this->redirect(['view', 'id' => $model->id]);
+    //         } catch (ErrorException $e) {
+    //             $txn->rollback();
+    //             return $e->getMessage();
+    //         }
+    //     }
+
+    //     return $this->render('maf_create', [
+    //         'model' => $model,
+    //     ]);
+    // }
+    // public function actionUpdateMaf($id)
+    // {
+    //     $model = $this->findModel($id);
+
+    //     if ($model->load(Yii::$app->request->post()) || Yii::$app->request->post()) {
+
+    //         try {
+    //             $txn = Yii::$app->db->beginTransaction();
+    //             $mafItems = Yii::$app->request->post('mafItems') ?? [];
+    //             $adjustmentItems = Yii::$app->request->post('adjustmentItems') ?? [];
+    //             $res =  $this->checkItemTotal($adjustmentItems, $mafItems);
+    //             if ($res !== true) {
+    //                 throw new ErrorException($res);
+    //             }
+    //             if (!$model->validate()) {
+    //                 throw new ErrorException(json_encode($model->errors));
+    //             }
+    //             if (!$model->save(false)) {
+    //                 throw new ErrorException('Model Save Failed');
+    //             }
+    //             $insMafItems = $model->insertMafItems($mafItems);
+    //             if ($insMafItems !== true) {
+    //                 throw new ErrorException($insMafItems);
+    //             }
+    //             $insAdjstItms = $model->insertAdjsutmentItems($adjustmentItems);
+    //             if ($insAdjstItms !== true) {
+    //                 throw new ErrorException($insAdjstItms);
+    //             }
+    //             $txn->commit();
+    //             return $this->redirect(['view', 'id' => $model->id]);
+    //         } catch (ErrorException $e) {
+    //             $txn->rollback();
+    //             return $e->getMessage();
+    //         }
+    //     }
+    //     return $this->render('maf_update', [
+    //         'model' => $model,
+    //     ]);
+    // }
 }

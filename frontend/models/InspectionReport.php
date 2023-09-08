@@ -37,6 +37,11 @@ class InspectionReport extends \yii\db\ActiveRecord
             [['id'], 'unique'],
         ];
     }
+
+    public function getIrDetails()
+    {
+        return Yii::$app->db->createCommand("SELECT * FROM inspection_report_index WHERE id = :id")->bindValue(':id', $this->id)->queryOne();
+    }
     public function beforeSave($insert)
     {
 
@@ -67,6 +72,26 @@ class InspectionReport extends \yii\db\ActiveRecord
         $nxtNum = !empty($query) ? intval($query) + 1 : 1;
         return strtoupper($this->office_name) . '-' . date('Y') . '-' . str_pad($nxtNum, 4, '0', STR_PAD_LEFT);
     }
+    public function getRfiId()
+    {
+        return Yii::$app->db->createCommand("SELECT 
+            request_for_inspection_items.fk_request_for_inspection_id
+            FROM 
+            inspection_report_items
+            JOIN request_for_inspection_items ON inspection_report_items.fk_request_for_inspection_item_id = request_for_inspection_items.id
+            WHERE 
+            fk_inspection_report_id = :id
+            UNION 
+            SELECT 
+            rfi_without_po_items.fk_request_for_inspection_id
+            FROM 
+            inspection_report_no_po_items
+            JOIN rfi_without_po_items ON inspection_report_no_po_items.fk_rfi_without_po_item_id = rfi_without_po_items.id
+            WHERE 
+            fk_inspection_report_id = :id")
+            ->bindValue(':id', $this->id)
+            ->queryScalar();
+    }
 
     /**
      * {@inheritdoc}
@@ -83,5 +108,9 @@ class InspectionReport extends \yii\db\ActiveRecord
     public function getInspectionReportItems()
     {
         return $this->hasMany(InspectionReportItems::class, ['fk_inspection_report_id' => 'id']);
+    }
+    public function getEmployee()
+    {
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_end_user']);
     }
 }

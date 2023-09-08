@@ -465,7 +465,7 @@ $user_data = Yii::$app->memem->getUserData();
                                     'url' => '#',
                                     'items' => [
                                         ['label' => 'Responsibility Center', 'icon' => 'circle-o', 'url' => ['/responsibility-center'],],
-                                        ['label' => 'Documet Recieve', 'icon' => 'circle-o', 'url' => ['/document-recieve'],],
+                                        ['label' => 'Documet Receive', 'icon' => 'circle-o', 'url' => ['/document-recieve'],],
                                         ['label' => 'Fund Cluster Code', 'icon' => 'circle-o', 'url' => ['/fund-cluster-code'],],
                                         ['label' => 'Financing Source Code', 'icon' => 'circle-o', 'url' => ['/financing-source-code'],],
                                         ['label' => 'Authorization Code', 'icon' => 'circle-o', 'url' => ['/authorization-code'],],
@@ -484,6 +484,7 @@ $user_data = Yii::$app->memem->getUserData();
                                         ['label' => 'Record Allotments', 'icon' => 'circle-o', 'url' => ['/record-allotments'],],
                                         ['label' => 'Process Ors', 'icon' => 'circle-o', 'url' => ['/process-ors'],],
                                         ['label' => 'Process BURS', 'icon' => 'circle-o', 'url' => ['/process-ors/burs-index'],],
+                                        ['label' => 'MAF', 'icon' => 'circle-o', 'url' => ['/maf'],],
 
                                     ],
                                 ],
@@ -496,6 +497,7 @@ $user_data = Yii::$app->memem->getUserData();
                                         Yii::$app->user->can('super-user') ?     ['label' => 'FUR', 'icon' => 'circle-o', 'url' => ['/ro-fur'],] : [],
                                         Yii::$app->user->can('super-user') ?     ['label' => 'RAO', 'icon' => 'circle-o', 'url' => ['/report/rao'],] : [],
                                         Yii::$app->user->can('super-user') ?     ['label' => 'FUR per MFO/PAP', 'icon' => 'circle-o', 'url' => ['/report/fur-mfo'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'SOF per MFO/PAP', 'icon' => 'circle-o', 'url' => ['/budget-reports/status-of-funds-per-mfo'],] : [],
 
 
                                     ],

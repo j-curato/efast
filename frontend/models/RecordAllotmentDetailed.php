@@ -68,7 +68,29 @@ class RecordAllotmentDetailed extends \yii\db\ActiveRecord
             [['nca_nta'], 'string', 'max' => 3],
         ];
     }
+    public static function getStatusOfFundsPerMfo($from_period, $to_period)
+    {
 
+
+        return Yii::$app->db->createCommand("SELECT 
+                record_allotment_detailed.allotment_class,
+                record_allotment_detailed.mfo_name,
+                record_allotment_detailed.document_recieve,
+                SUM(record_allotment_detailed.amount) as ttlAllotment,
+                SUM(record_allotment_detailed.ttlOrsAmt) as ttlOrs,
+                SUM(record_allotment_detailed.ttlAdjustment) as ttlAdjustment,
+                SUM(record_allotment_detailed.balAfterObligation) as ttlBalance
+                FROM record_allotment_detailed
+                WHERE record_allotment_detailed.reporting_period >= :from_period
+                AND record_allotment_detailed.reporting_period <= :to_period
+                GROUP BY record_allotment_detailed.allotment_class,
+                record_allotment_detailed.mfo_name,
+                record_allotment_detailed.document_recieve
+                ORDER BY record_allotment_detailed.allotment_class DESC")
+            ->bindValue(':from_period', $from_period)
+            ->bindValue(':to_period', $to_period)
+            ->queryAll();
+    }
     /**
      * {@inheritdoc}
      */

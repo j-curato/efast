@@ -836,7 +836,7 @@ class ChartOfAccountsController extends Controller
     }
 
     // Chart of Accounts Only
-    public function actionSearchChartOfAccounts2($page = null, $q = null, $id = null)
+    public function actionSearchChartOfAccounts2($page = null, $q = null, $id = null, $majorAccId = null)
     {
 
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -845,7 +845,7 @@ class ChartOfAccountsController extends Controller
         //     $out['results'] = ['id' => $id, 'text' => Payee::findOne($id)->account_name];
         // } else 
         if (!is_null($q)) {
-            $data = ChartOfAccounts::searchChartOfAccounts($q, $page);
+            $data = ChartOfAccounts::searchChartOfAccounts($q, $page, $majorAccId);
             $out['results'] = array_values($data);
             $out['pagination'] = ['more' => !empty($data) ? true : false];
         }

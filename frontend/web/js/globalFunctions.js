@@ -41,6 +41,29 @@ function accountingCodesSelect() {
     },
   });
 }
+// CHART OF ACCOUNTS SELECT FOR MAF ONLY
+function MafChartOfAccountSearchSelect() {
+  $(".chart-of-accounts").select2({
+    ajax: {
+      url: base_url + "?r=maf/search-chart-of-accounts",
+      dataType: "json",
+      data: function (params) {
+        return {
+          q: params.term,
+          page: params.page || 1,
+          majorAccId: $(".major-account").val(),
+        };
+      },
+      processResults: function (data) {
+        // Transforms the top-level key of the response object from 'items' to 'results'
+        return {
+          results: data.results,
+          pagination: data.pagination,
+        };
+      },
+    },
+  });
+}
 //
 function ChartOfAccountsSelect() {
   $(".chart-of-accounts").select2({

@@ -6,6 +6,7 @@
 use aryelds\sweetalert\SweetAlertAsset;
 use dosamigos\chartjs\ChartJsAsset;
 use kartik\date\DatePicker;
+use yii\helpers\Html;
 use yii\helpers\Url;
 
 $this->title = 'Dashboard';
@@ -14,16 +15,18 @@ $this->title = 'Dashboard';
 <div class="site-index panel panel-default">
     <div class="body-content container-fluid">
 
-        <div class="row gap-0">
+        <div class="row">
 
-            <?php
-            // if (Yii::$app->user->can('super-user')) {
-            //     echo "  <div class='col-sm-1' style='padding-left:0'><button class='btn btn-success' id='update_payee'>Update Cloud</button></div>";
-            //     echo "  <div class='col-sm-1' style='padding-left:0'><button class='btn btn-warning' id='update_lan'>Update LAN</button></div>";
-            // }
-            // echo "  <div class='col-sm-1'><button class='btn btn-success' id='update_cloud' style='margin-bottom:12px'>Update Cloud</button> </div>";
-            ?>
 
+            <div class="col-sm-3">
+                <?php
+                if (Yii::$app->user->can('super-user')) {
+                    echo Html::a('NAS Link', Url::to('http://192.168.1.190:5000', true), ['target' => '_blank', 'class' => 'btn btn-warning']);
+                }
+                // echo "  <div class='col-sm-1'><button class='btn btn-success' id='update_cloud' style='margin-bottom:12px'>Update Cloud</button> </div>";
+                ?>
+
+            </div>
         </div>
         <div class="row">
             <div class="col-sm-5">
@@ -79,6 +82,10 @@ $this->title = 'Dashboard';
 
         height: 343px !important;
 
+    }
+
+    .site-index {
+        padding: 2rem;
     }
 
     .panel {
@@ -780,7 +787,6 @@ $script = <<<JS
      const csrfToken = $('meta[name="csrf-token"]').attr("content");
     async function BarChart(year =''){
         const data = await getData(year)
-     
         document.getElementById("chartContainer").innerHTML = '&nbsp;';
         document.getElementById("chartContainer").innerHTML = '<canvas id="myChart"></canvas>';
         const ctx = document.getElementById('myChart').getContext('2d');
@@ -821,8 +827,7 @@ $script = <<<JS
                         const activePoints = myChart.getElementsAtEvent(e)[0];
                  
                        if (activePoints !=undefined){
-                        console.log(myChart.data)
-                        console.log(myChart.data.labels[activePoints._index])
+               
                         const reporting_period = myChart.data.labels[activePoints._index]
                         window.location.href = '$url' + reporting_period
                        }
@@ -840,7 +845,6 @@ $script = <<<JS
         }
         ctx.onClick = clickHandler;
         ctx.onclick = function(evt){
-            console.log('qwe')
             var activePoints = myLineChart.getElementsAtEvent(evt);
             // => activePoints is an array of points on the canvas that are at the same position as the click event.
         };
@@ -904,7 +908,6 @@ $script = <<<JS
     })
         $(document).on('click','.fc-daygrid-day-number',function(){
             var date = $(this).closest('td').attr('data-date');
-            //   console.log( $(this).closest('.fc-day'))
               var url = window.location.pathname + '?r=event/create&date='+date
             $('#genericModal').modal('show').find('#modalContent').load(url);
         })

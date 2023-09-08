@@ -48,7 +48,8 @@ class RecordAllotmentDetailedSearch extends RecordAllotmentDetailed
                 'budget_year',
                 'bookFilter',
                 'module',
-                'uacs'
+                'uacs',
+                'isMaf'
 
             ], 'safe'],
         ];
@@ -99,7 +100,9 @@ class RecordAllotmentDetailedSearch extends RecordAllotmentDetailed
             return $dataProvider;
         }
         // grid filtering conditions
-        $query->andFilterWhere([]);
+        $query->andFilterWhere([
+            'isMaf' => $this->isMaf
+        ]);
 
 
         $query

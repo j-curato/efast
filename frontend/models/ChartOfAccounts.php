@@ -66,7 +66,7 @@ class ChartOfAccounts extends \yii\db\ActiveRecord
         ];
     }
 
-    public static function searchChartOfAccounts($q, $page)
+    public static function searchChartOfAccounts($q, $page, $majorAccId)
     {
 
         $limit = 5;
@@ -77,6 +77,9 @@ class ChartOfAccounts extends \yii\db\ActiveRecord
             ->where(['like', 'general_ledger', $q])
             ->orWhere(['like', 'uacs', $q])
             ->andWhere('is_active = 1');
+        if (!empty($majorAccId)) {
+            $query->andWhere(['major_account_id' => $majorAccId]);
+        }
         if (!empty($page)) {
             $query->offset($offset)
                 ->limit($limit);

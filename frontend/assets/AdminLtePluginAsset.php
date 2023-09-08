@@ -10,7 +10,7 @@ class AdminLtePluginAsset extends AssetBundle
     public $css = [
         // 'chart.js/Chart.css',
         // more plugin CSS here
-        'Ionicons/css/ionicons.min.css',
+        // 'Ionicons/css/ionicons.min.css',
         'fullcalendar/dist/fullcalendar.min.css',
         // 'fullcalendar/dist/fullcalendar.print.min.css'
 
@@ -18,7 +18,7 @@ class AdminLtePluginAsset extends AssetBundle
     public $js = [
         // 'chart.js/Chart.js',
         // 'fullcalendar/dist/fullcalendar.min.js',
-        'moment/moment.js'
+        // 'moment/moment.js'
         // more plugin Js here
     ];
     public $depends = [
