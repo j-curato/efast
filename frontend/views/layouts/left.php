@@ -498,7 +498,6 @@ $user_data = Yii::$app->memem->getUserData();
                                         Yii::$app->user->can('super-user') ?     ['label' => 'RAO', 'icon' => 'circle-o', 'url' => ['/report/rao'],] : [],
                                         Yii::$app->user->can('super-user') ?     ['label' => 'FUR per MFO/PAP', 'icon' => 'circle-o', 'url' => ['/report/fur-mfo'],] : [],
 
-
                                     ],
                                 ],
                                 [
@@ -506,7 +505,8 @@ $user_data = Yii::$app->memem->getUserData();
                                     'icon' => 'circle-o',
                                     'url' => '#',
                                     'items' => [
-                                        Yii::$app->user->can('super-user') ?     ['label' => 'per MFO/PAP', 'icon' => 'circle-o', 'url' => ['/budget-reports/status-of-funds-per-mfo'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'per MFO/PAP', 'icon' => 'circle-o', 'url' => ['/budget-reports/sof-per-mfo'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'per Office/Division', 'icon' => 'circle-o', 'url' => ['/budget-reports/sof-per-office'],] : [],
                                     ],
                                 ],
                             ],

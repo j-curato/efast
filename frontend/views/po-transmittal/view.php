@@ -28,8 +28,8 @@ $user_data = Yii::$app->memem->getUserData();
                 if (!empty($model->file_link)) {
                     echo Html::a('DV Scanned Copy Link ', $model->file_link, ['class' => 'btn btn-link', 'target' => '_blank']);
                 }
-                if (!empty($model->poTransmittalToCoa->id) && YIi::$app->user->can('super-user')) {
-                    echo  Html::a('Transmittal to Coa Link', ['/po-transmittal-to-coa/view', 'id' => $model->poTransmittalToCoa->id], ['class' => 'btn btn-link']);
+                if (!empty($model->poTransmittalToCoa->fk_po_transmittal_to_coa_id) && YIi::$app->user->can('super-user')) {
+                    echo  Html::a('Transmittal to Coa Link', ['/po-transmittal-to-coa/view', 'id' => $model->poTransmittalToCoa->fk_po_transmittal_to_coa_id], ['class' => 'btn btn-link']);
                 }
                 ?>
                 <?php

@@ -258,7 +258,7 @@ https://cdn.jsdelivr.net/npm/vue-spinner@1.0.4/dist/vue-spinner.min.js
                 loading: false,
                 color: '#03befc',
                 size: '20px',
-                showTable: true,
+                showTable: false,
             },
             methods: {
                 formatReturnedData(obj) {
