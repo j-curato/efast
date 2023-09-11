@@ -247,18 +247,16 @@ class PrPurchaseRequestController extends Controller
     // CALCULATE PR ITEMS VS PR ALLOTMENTS TOTAL
     private function calculateItemsTotal($pr_items, $pr_allotments_amt)
     {
+
         $pr_grnd_ttl = 0;
         $pr_allotment_grnd_ttl = floatval(array_sum($pr_allotments_amt));
         foreach ($pr_items as $item) {
             $ttl = intval($item['quantity']) * floatval($item['unit_cost']);
             $pr_grnd_ttl = $pr_grnd_ttl + floatval($ttl);
         }
-
-
-        if (floatval(number_format($pr_allotment_grnd_ttl, 2)) !== floatval(number_format($pr_grnd_ttl, 2))) {
+        if (number_format($pr_allotment_grnd_ttl, 2) != number_format($pr_grnd_ttl, 2)) {
             return false;
         }
-
         return true;
     }
 
