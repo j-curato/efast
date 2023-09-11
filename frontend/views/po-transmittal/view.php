@@ -200,7 +200,7 @@ $user_data = Yii::$app->memem->getUserData();
                         <td>{$itm['check_date']}</td>
                         <td>{$itm['payee']}</td>
                         <td>{$itm['particular']}</td>
-                        <td style='text-align:right'>" . number_format($itm['total_withdrawal'], 2) . "</td>
+                        <td style='text-align:right'>" . number_format($itm['total_withdrawal'] ?? 0, 2) . "</td>
                     ";
                     if (Yii::$app->user->can('super-user')) {
 
