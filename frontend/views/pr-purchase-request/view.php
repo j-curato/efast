@@ -27,19 +27,19 @@ SweetAlertAsset::register($this);
             ?>
             <button type="button" class="print btn btn-warning">Print</button>
             <?php
-            if (Yii::$app->user->can('ro_procurement_admin') || Yii::$app->user->can('po_procurement_admin')) {
-                $btn_color = $model->is_cancelled ? 'btn btn-success' : 'btn btn-danger';
-                $cncl_txt = $model->is_cancelled ? 'UnCancel' : 'Cancel';
-                if (!$model->is_cancelled) {
-                    echo Html::a($cncl_txt, ['cancel', 'id' => $model->id], [
-                        'class' => $btn_color,
-                        'id' => 'cancel'
+            // if (Yii::$app->user->can('ro_procurement_admin') || Yii::$app->user->can('po_procurement_admin')) {
+            $btn_color = $model->is_cancelled ? 'btn btn-success' : 'btn btn-danger';
+            $cncl_txt = $model->is_cancelled ? 'UnCancel' : 'Cancel';
+            if (!$model->is_cancelled) {
+                echo Html::a($cncl_txt, ['cancel', 'id' => $model->id], [
+                    'class' => $btn_color,
+                    'id' => 'cancel'
 
-                    ]);
-                } else {
-                    echo "<h5 style='color:red;'>This PR is Cancelled.</h5>";
-                }
+                ]);
+            } else {
+                echo "<h5 style='color:red;'>This PR is Cancelled.</h5>";
             }
+            // }
             ?>
         </p>
 

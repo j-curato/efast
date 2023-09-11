@@ -27,17 +27,17 @@ SweetAlertAsset::register($this);
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
             <?php
-            if (Yii::$app->user->can('po_procurement_admin') || Yii::$app->user->can('ro_procurement_admin')) {
-                $btn_color = $model->is_cancelled ? 'btn btn-success' : 'btn btn-danger';
-                $cncl_txt = $model->is_cancelled ? 'UnCancel' : 'Cancel';
-                if (!$model->is_cancelled) {
-                    echo  Html::a($cncl_txt, ['cancel', 'id' => $model->id], [
-                        'class' => $btn_color,
-                        'id' => 'cancel'
+            // if (Yii::$app->user->can('po_procurement_admin') || Yii::$app->user->can('ro_procurement_admin')) {
+            $btn_color = $model->is_cancelled ? 'btn btn-success' : 'btn btn-danger';
+            $cncl_txt = $model->is_cancelled ? 'UnCancel' : 'Cancel';
+            if (!$model->is_cancelled) {
+                echo  Html::a($cncl_txt, ['cancel', 'id' => $model->id], [
+                    'class' => $btn_color,
+                    'id' => 'cancel'
 
-                    ]);
-                }
+                ]);
             }
+            // }
             echo   Html::a('Purchase Request Link ', ['pr-purchase-request/view', 'id' => $model->pr_purchase_request_id], ['class' => 'btn btn-link ', 'style' => 'margin:3px'])
             ?>
         </p>
