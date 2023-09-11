@@ -11,6 +11,7 @@ use app\models\PrPurchaseRequestItem;
 use app\models\PrPurchaseRequestSearch;
 use app\models\PurchaseRequestIndex;
 use app\models\PurchaseRequestIndexSearch;
+use app\models\SupplementalPpmpCse;
 use DateTime;
 use ErrorException;
 use yii\db\Query;
@@ -127,63 +128,61 @@ class PrPurchaseRequestController extends Controller
             $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['!=', 'pr_purchase_request_item.id', $item_id], $params);
         }
         if ($cse_type === 'cse') {
-            $query = Yii::$app->db->createCommand("SELECT 
-            (IFNULL(supplemental_ppmp_cse.jan_qty,0)+
-            IFNULL(supplemental_ppmp_cse.feb_qty,0)+
-            IFNULL(supplemental_ppmp_cse.mar_qty,0)+
-            IFNULL(supplemental_ppmp_cse.apr_qty,0)+
-            IFNULL(supplemental_ppmp_cse.may_qty,0)+
-            IFNULL(supplemental_ppmp_cse.jun_qty,0)+
-            IFNULL(supplemental_ppmp_cse.jul_qty,0)+
-            IFNULL(supplemental_ppmp_cse.aug_qty,0)+
-            IFNULL(supplemental_ppmp_cse.sep_qty,0)+
-            IFNULL(supplemental_ppmp_cse.oct_qty,0)+
-            IFNULL(supplemental_ppmp_cse.nov_qty,0)+
-            IFNULL(supplemental_ppmp_cse.dec_qty,0)) - IFNULL(ttlInPr.ttlPrQty,0) as bal_qty,
-            
-            (IFNULL(supplemental_ppmp_cse.jan_qty,0)+
-                IFNULL(supplemental_ppmp_cse.feb_qty,0)+
-              IFNULL(supplemental_ppmp_cse.mar_qty,0)+
-              IFNULL(supplemental_ppmp_cse.apr_qty,0)+
-              IFNULL(supplemental_ppmp_cse.may_qty,0)+
-              IFNULL(supplemental_ppmp_cse.jun_qty,0)+
-              IFNULL(supplemental_ppmp_cse.jul_qty,0)+
-              IFNULL(supplemental_ppmp_cse.aug_qty,0)+
-              IFNULL(supplemental_ppmp_cse.sep_qty,0)+
-              IFNULL(supplemental_ppmp_cse.oct_qty,0)+
-              IFNULL(supplemental_ppmp_cse.nov_qty,0)+
-              IFNULL(supplemental_ppmp_cse.dec_qty,0)
-            )* IFNULL(supplemental_ppmp_cse.amount,0) - IFNULL(ttlInPr.ttlPr,0) as bal_amt  
-            
-            
-            
-            FROM 
-            supplemental_ppmp_cse
-            LEFT JOIN 
-             (SELECT 
-            pr_purchase_request_item.fk_ppmp_cse_item_id,
-            SUM(pr_purchase_request_item.quantity *pr_purchase_request_item.unit_cost) as ttlPr,
-            SUM(pr_purchase_request_item.quantity) as ttlPrQty
-            FROM pr_purchase_request_item
-            JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id  = pr_purchase_request.id
-            WHERE pr_purchase_request_item.is_deleted = 0
-            AND pr_purchase_request.is_cancelled = 0
-            $sql
-            GROUP BY pr_purchase_request_item.fk_ppmp_cse_item_id
-            ) as ttlInPr ON supplemental_ppmp_cse.id = ttlInPr.fk_ppmp_cse_item_id
-            WHERE
-            supplemental_ppmp_cse.id  = :cse_or_non_cse_id", $params)
-                ->bindValue(':cse_or_non_cse_id', $ppmp_item_id)
-                ->queryOne();
-            $bal_amt = floatval($query['bal_amt']);
-            $bal_qty = intval($query['bal_qty']);
-            $bal = $bal_amt - ($amount * $qty);
-            $qty = $bal_qty - $qty;
-            if ($bal < 0) {
-                return  "Amount Cannot be more than " . number_format($bal_amt, 2);
+            // $query = Yii::$app->db->createCommand("SELECT 
+            // (IFNULL(supplemental_ppmp_cse.jan_qty,0)+
+            // IFNULL(supplemental_ppmp_cse.feb_qty,0)+
+            // IFNULL(supplemental_ppmp_cse.mar_qty,0)+
+            // IFNULL(supplemental_ppmp_cse.apr_qty,0)+
+            // IFNULL(supplemental_ppmp_cse.may_qty,0)+
+            // IFNULL(supplemental_ppmp_cse.jun_qty,0)+
+            // IFNULL(supplemental_ppmp_cse.jul_qty,0)+
+            // IFNULL(supplemental_ppmp_cse.aug_qty,0)+
+            // IFNULL(supplemental_ppmp_cse.sep_qty,0)+
+            // IFNULL(supplemental_ppmp_cse.oct_qty,0)+
+            // IFNULL(supplemental_ppmp_cse.nov_qty,0)+
+            // IFNULL(supplemental_ppmp_cse.dec_qty,0)) - IFNULL(ttlInPr.ttlPrQty,0) as bal_qty,
+
+            // (IFNULL(supplemental_ppmp_cse.jan_qty,0)+
+            //     IFNULL(supplemental_ppmp_cse.feb_qty,0)+
+            //   IFNULL(supplemental_ppmp_cse.mar_qty,0)+
+            //   IFNULL(supplemental_ppmp_cse.apr_qty,0)+
+            //   IFNULL(supplemental_ppmp_cse.may_qty,0)+
+            //   IFNULL(supplemental_ppmp_cse.jun_qty,0)+
+            //   IFNULL(supplemental_ppmp_cse.jul_qty,0)+
+            //   IFNULL(supplemental_ppmp_cse.aug_qty,0)+
+            //   IFNULL(supplemental_ppmp_cse.sep_qty,0)+
+            //   IFNULL(supplemental_ppmp_cse.oct_qty,0)+
+            //   IFNULL(supplemental_ppmp_cse.nov_qty,0)+
+            //   IFNULL(supplemental_ppmp_cse.dec_qty,0)
+            // ) * IFNULL(supplemental_ppmp_cse.amount,0) - IFNULL(ttlInPr.ttlPr,0) as bal_amt  
+
+
+
+            // FROM 
+            // supplemental_ppmp_cse
+            // LEFT JOIN 
+            //  (SELECT 
+            // pr_purchase_request_item.fk_ppmp_cse_item_id,
+            // SUM(pr_purchase_request_item.quantity *pr_purchase_request_item.unit_cost) as ttlPr,
+            // SUM(pr_purchase_request_item.quantity) as ttlPrQty
+            // FROM pr_purchase_request_item
+            // JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id  = pr_purchase_request.id
+            // WHERE pr_purchase_request_item.is_deleted = 0
+            // AND pr_purchase_request.is_cancelled = 0
+            // $sql
+            // GROUP BY pr_purchase_request_item.fk_ppmp_cse_item_id
+            // ) as ttlInPr ON supplemental_ppmp_cse.id = ttlInPr.fk_ppmp_cse_item_id
+            // WHERE
+            // supplemental_ppmp_cse.id  = :cse_or_non_cse_id", $params)
+            //     ->bindValue(':cse_or_non_cse_id', $ppmp_item_id)
+            //     ->queryOne();
+
+            $qry = SupplementalPpmpCse::findOne($ppmp_item_id)->calculateBalance($item_id, ($amount * $qty), $qty);
+            if (floatval($qry['newAmtBal']) < 0) {
+                return  "Amount Cannot be more than " . number_format($qry['amtBal'], 2);
             }
-            if ($qty < 0) {
-                return  "Quantity Cannot be more than $bal_qty";
+            if (intval($qry['newQtyBal']) < 0) {
+                return  "Quantity Cannot be more than " . $qry['qtyBal'];
             }
         } else if ($cse_type === 'non_cse' || $cse_type === 'fixed_expenses') {
             try {

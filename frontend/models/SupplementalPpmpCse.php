@@ -51,7 +51,17 @@ class SupplementalPpmpCse extends \yii\db\ActiveRecord
             [['fk_supplemental_ppmp_id'], 'exist', 'skipOnError' => true, 'targetClass' => SupplementalPpmp::class, 'targetAttribute' => ['fk_supplemental_ppmp_id' => 'id']],
         ];
     }
+    public function calculateBalance($prItemId = '', $amount = 0, $qty = 0)
+    {
 
+
+        return Yii::$app->db->createCommand("CALL CalculatePpmpNonCseBalance(:prItemId,:id,:amount,:qty)")
+            ->bindValue(':prItemId', $prItemId)
+            ->bindValue(':id', $this->id)
+            ->bindValue(':amount', $amount)
+            ->bindValue(':qty', $qty)
+            ->queryOne();
+    }
     /**
      * {@inheritdoc}
      */
