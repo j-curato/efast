@@ -358,6 +358,11 @@ class IarController extends Controller
                 ->from('iar_index')
                 ->where(['like', 'iar_index.iar_number', $q]);
 
+            $user_data = Yii::$app->memem->getUserData();
+            if (!Yii::$app->user->can('ro_accounting_admin')) {
+                $query->andWhere('division = :division', ['division' => $user_data->divisionName->division]);
+            }
+
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
