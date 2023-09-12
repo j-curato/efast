@@ -219,7 +219,7 @@ class MyHelper extends BaseObject
     {
         $user_data = Yii::$app->memem->getUserData();
         return Yii::$app->db->createCommand("SELECT 
-        employee_search_view.employee_name,
+        UPPER(employee_search_view.employee_name) as employee_name,
         CONCAT(bac_position.position,'_', employee_search_view.employee_name) as pos,
         LOWER(bac_position.position)as position
         FROM bac_composition
