@@ -507,6 +507,7 @@ $user_data = Yii::$app->memem->getUserData();
                                     'items' => [
                                         Yii::$app->user->can('super-user') ?     ['label' => 'per MFO/PAP', 'icon' => 'circle-o', 'url' => ['/budget-reports/sof-per-mfo'],] : [],
                                         Yii::$app->user->can('super-user') ?     ['label' => 'per Office/Division', 'icon' => 'circle-o', 'url' => ['/budget-reports/sof-per-office'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'per MFO & Office', 'icon' => 'circle-o', 'url' => ['/budget-reports/sof-per-mfo-office'],] : [],
                                     ],
                                 ],
                             ],
