@@ -8,7 +8,7 @@ use kartik\date\DatePicker;
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = "Status of Funds per MFO/PAP";
+$this->title = "Status of Funds per MFO/PAP & Office";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index " style="background-color: white;padding:20px" id="main">
@@ -42,12 +42,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
     </form>
 
-
-
     <table v-show='showTable' class="hover-highlight">
         <thead>
             <tr>
-                <th colspan="2" class="ctr">PARTICULARS</th>
+                <th colspan="3" class="ctr">PARTICULARS</th>
                 <th class="ctr">APPROPRIATIONS(GARO)</th>
                 <th class="ctr">FOR LATER RELEASE</th>
                 <th class="ctr">SUB-ALLOTMENT(SAA/Sub-ARO)</th>
@@ -61,7 +59,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </tr>
         </thead>
         <tr class="info" style="background-color: #bef1fa;">
-            <th class="" colspan="2">PERSONNEL SERVICES</th>
+            <th class="" colspan="3">PERSONNEL SERVICES</th>
             <th class="amt">{{formatAmount(calculateAllotmentClassTotal(personelServicesLists,'garo'))}}</th>
             <th class="amt">{{formatAmount(calculateAllotmentClassTotal(personelServicesLists,'flr'))}}</th>
             <th class="amt">{{formatAmount(calculateAllotmentClassTotal(personelServicesLists,'sub-aro'))}}</th>
@@ -74,41 +72,59 @@ $this->params['breadcrumbs'][] = $this->title;
             <td></td>
 
         </tr>
-        <tbody v-for="(psItem, psIndex) in personelServicesLists">
+
+        <template v-for="(psItem, psIndex) in personelServicesLists" style="width: 100%;">
             <tr class="officeTtl">
-                <th class='ctr'>{{ psItem.office_name }}</th>
-                <th></th>
-
-                <th class='amt'>{{ formatAmount(calculateTotalPerOffice(psItem,'garo')) }}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(psItem,'flr'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(psItem,'sub-aro'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(psItem,'other-docs'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(psItem,'adjustments'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(psItem,'grossAmt'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(psItem,'ors'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(psItem,'balance'))}}</th>
-                <th class="amt">{{calculateUtilization(calculateTotalPerOffice(psItem,'ors'),calculateTotalPerOffice(psItem,'grossAmt'))}}</th>
+                <th class='ctr '>{{ psItem.mfo_name }}</th>
+                <td></td>
+                <td></td>
+                <th class="amt">{{formatAmount(calculateTotalPerMfo(psItem,'garo'))}}</th>
+                <th class="amt">{{formatAmount(calculateTotalPerMfo(psItem,'flr'))}}</th>
+                <th class="amt">{{formatAmount(calculateTotalPerMfo(psItem,'sub-aro'))}}</th>
+                <th class="amt">{{formatAmount(calculateTotalPerMfo(psItem,'other-docs'))}}</th>
+                <th class="amt">{{formatAmount(calculateTotalPerMfo(psItem,'adjustments'))}}</th>
+                <th class="amt">{{formatAmount(calculateTotalPerMfo(psItem,'grossAmt'))}}</th>
+                <th class="amt">{{formatAmount(calculateTotalPerMfo(psItem,'ors'))}}</th>
+                <th class="amt">{{formatAmount(calculateTotalPerMfo(psItem,'balance'))}}</th>
+                <th class="amt">{{calculateUtilization(calculateTotalPerMfo(psItem,'ors'),calculateTotalPerMfo(psItem,'grossAmt'))}}</th>
                 <td></td>
             </tr>
-            <tr v-for="(officeItem, officeIndex) in psItem.value">
-                <td></td>
-                <th class='ctr'>{{ officeItem.division_name}}</th>
-                <td class='amt'>{{formatAmount(officeItem.ttlGaroAllotment)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlFlr)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlSubAroAllotment)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlOtherDocs)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlAdjustment)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.grossAmt)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlOrs)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.balance)}}</td>
-                <td class='amt'>{{officeItem.utilizationRate}}%</td>
-                <td></td>
-            </tr>
-        </tbody>
-
+            <template v-for="(officeItem, officeIndex) in psItem.value">
+                <tr>
+                    <td></td>
+                    <th class='ctr'>{{ officeItem.office_name}}</th>
+                    <th></th>
+                    <th class='amt'>{{ formatAmount(calculateTotalPerOffice(officeItem,'garo')) }}</th>
+                    <th class="amt">{{formatAmount(calculateTotalPerOffice(officeItem,'flr'))}}</th>
+                    <th class="amt">{{formatAmount(calculateTotalPerOffice(officeItem,'sub-aro'))}}</th>
+                    <th class="amt">{{formatAmount(calculateTotalPerOffice(officeItem,'other-docs'))}}</th>
+                    <th class="amt">{{formatAmount(calculateTotalPerOffice(officeItem,'adjustments'))}}</th>
+                    <th class="amt">{{formatAmount(calculateTotalPerOffice(officeItem,'grossAmt'))}}</th>
+                    <th class="amt">{{formatAmount(calculateTotalPerOffice(officeItem,'ors'))}}</th>
+                    <th class="amt">{{formatAmount(calculateTotalPerOffice(officeItem,'balance'))}}</th>
+                    <th class="amt">{{calculateUtilization(calculateTotalPerOffice(officeItem,'ors'),calculateTotalPerOffice(officeItem,'grossAmt'))}}</th>
+                    <td></td>
+                </tr>
+                <tr v-for="divisionItem in officeItem.value">
+                    <td></td>
+                    <td></td>
+                    <td class="amt">{{divisionItem.division_name}}</td>
+                    <td class="amt">{{formatAmount(divisionItem.ttlGaroAllotment)}}</td>
+                    <td class="amt">{{formatAmount(divisionItem.ttlFlr)}}</td>
+                    <td class="amt">{{formatAmount(divisionItem.ttlSubAroAllotment)}}</td>
+                    <td class="amt">{{formatAmount(divisionItem.ttlOtherDocs)}}</td>
+                    <td class="amt">{{formatAmount(divisionItem.ttlAdjustment)}}</td>
+                    <td class="amt">{{formatAmount(divisionItem.grossAmt)}}</td>
+                    <td class="amt">{{formatAmount(divisionItem.ttlOrs)}}</td>
+                    <td class="amt">{{formatAmount(divisionItem.balance)}}</td>
+                    <td class="amt">{{divisionItem.utilizationRate}}%</td>
+                    <td></td>
+                </tr>
+            </template>
+        </template>
 
         <tr class="success" style="background-color: #befac6;">
-            <th colspan="2" class="ctr">MOOE</th>
+            <th colspan="3" class="ctr">MOOE</th>
             <th class="amt">{{formatAmount(calculateAllotmentClassTotal(mooeList,'garo'))}}</th>
             <th class="amt">{{formatAmount(calculateAllotmentClassTotal(mooeList,'flr'))}}</th>
             <th class="amt">{{formatAmount(calculateAllotmentClassTotal(mooeList,'sub-aro'))}}</th>
@@ -120,39 +136,60 @@ $this->params['breadcrumbs'][] = $this->title;
             <th class="amt">{{calculateUtilization(calculateAllotmentClassTotal(mooeList,'ors'),calculateAllotmentClassTotal(mooeList,'grossAmt'))}}</th>
             <td></td>
         </tr>
-        <tbody v-for="(mooeItem, mooeIndex) in mooeList">
+
+        <template v-for="(mooeItem, mooeIndex) in mooeList" style="width: 100%;">
             <tr class="officeTtl">
-                <th class='ctr '>{{ mooeItem.office_name }}</th>
-                <th></th>
-                <th class='amt'>{{ formatAmount(calculateTotalPerOffice(mooeItem,'garo')) }}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(mooeItem,'flr'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(mooeItem,'sub-aro'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(mooeItem,'other-docs'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(mooeItem,'adjustments'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(mooeItem,'grossAmt'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(mooeItem,'ors'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(mooeItem,'balance'))}}</th>
-                <th class="amt">{{calculateUtilization(calculateTotalPerOffice(mooeItem,'ors'),calculateTotalPerOffice(mooeItem,'grossAmt'))}}</th>
+                <th class='ctr '>{{ mooeItem.mfo_name }}</th>
+                <td></td>
+                <td></td>
+                <th class="amt">{{formatAmount(calculateTotalPerMfo(mooeItem,'garo'))}}</th>
+                <th class="amt">{{formatAmount(calculateTotalPerMfo(mooeItem,'flr'))}}</th>
+                <th class="amt">{{formatAmount(calculateTotalPerMfo(mooeItem,'sub-aro'))}}</th>
+                <th class="amt">{{formatAmount(calculateTotalPerMfo(mooeItem,'other-docs'))}}</th>
+                <th class="amt">{{formatAmount(calculateTotalPerMfo(mooeItem,'adjustments'))}}</th>
+                <th class="amt">{{formatAmount(calculateTotalPerMfo(mooeItem,'grossAmt'))}}</th>
+                <th class="amt">{{formatAmount(calculateTotalPerMfo(mooeItem,'ors'))}}</th>
+                <th class="amt">{{formatAmount(calculateTotalPerMfo(mooeItem,'balance'))}}</th>
+                <th class="amt">{{calculateUtilization(calculateTotalPerMfo(mooeItem,'ors'),calculateTotalPerMfo(mooeItem,'grossAmt'))}}</th>
                 <td></td>
             </tr>
-            <tr v-for="(officeItem, officeIndex) in mooeItem.value">
-                <td></td>
-                <th class='ctr'>{{ officeItem.division_name}}</th>
-                <td class='amt'>{{formatAmount(officeItem.ttlGaroAllotment)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlFlr)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlSubAroAllotment)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlOtherDocs)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlAdjustment)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.grossAmt)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlOrs)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.balance)}}</td>
-                <td class='amt'>{{officeItem.utilizationRate}}%</td>
-                <td></td>
-            </tr>
-        </tbody>
+            <template v-for="(officeItem, officeIndex) in mooeItem.value">
+                <tr>
+                    <td></td>
+                    <th class='ctr'>{{ officeItem.office_name}}</th>
+                    <th></th>
+                    <th class='amt'>{{ formatAmount(calculateTotalPerOffice(officeItem,'garo')) }}</th>
+                    <th class="amt">{{formatAmount(calculateTotalPerOffice(officeItem,'flr'))}}</th>
+                    <th class="amt">{{formatAmount(calculateTotalPerOffice(officeItem,'sub-aro'))}}</th>
+                    <th class="amt">{{formatAmount(calculateTotalPerOffice(officeItem,'other-docs'))}}</th>
+                    <th class="amt">{{formatAmount(calculateTotalPerOffice(officeItem,'adjustments'))}}</th>
+                    <th class="amt">{{formatAmount(calculateTotalPerOffice(officeItem,'grossAmt'))}}</th>
+                    <th class="amt">{{formatAmount(calculateTotalPerOffice(officeItem,'ors'))}}</th>
+                    <th class="amt">{{formatAmount(calculateTotalPerOffice(officeItem,'balance'))}}</th>
+                    <th class="amt">{{calculateUtilization(calculateTotalPerOffice(officeItem,'ors'),calculateTotalPerOffice(officeItem,'grossAmt'))}}</th>
+                    <td></td>
+                </tr>
+                <tr v-for="divisionItem in officeItem.value">
+                    <td></td>
+                    <td></td>
+                    <td class="amt">{{divisionItem.division_name}}</td>
+                    <td class="amt">{{formatAmount(divisionItem.ttlGaroAllotment)}}</td>
+                    <td class="amt">{{formatAmount(divisionItem.ttlFlr)}}</td>
+                    <td class="amt">{{formatAmount(divisionItem.ttlSubAroAllotment)}}</td>
+                    <td class="amt">{{formatAmount(divisionItem.ttlOtherDocs)}}</td>
+                    <td class="amt">{{formatAmount(divisionItem.ttlAdjustment)}}</td>
+                    <td class="amt">{{formatAmount(divisionItem.grossAmt)}}</td>
+                    <td class="amt">{{formatAmount(divisionItem.ttlOrs)}}</td>
+                    <td class="amt">{{formatAmount(divisionItem.balance)}}</td>
+                    <td class="amt">{{divisionItem.utilizationRate}}%</td>
+                    <td></td>
+                </tr>
+            </template>
+        </template>
+
 
         <tr class="warning" style="background-color:#f8fabe;">
-            <th colspan="2" class="ctr">CAPITAL OUTLAY</th>
+            <th colspan="3" class="ctr">CAPITAL OUTLAY</th>
             <th class="amt">{{formatAmount(calculateAllotmentClassTotal(capitalOutlayList,'garo'))}}</th>
             <th class="amt">{{formatAmount(calculateAllotmentClassTotal(capitalOutlayList,'flr'))}}</th>
             <th class="amt">{{formatAmount(calculateAllotmentClassTotal(capitalOutlayList,'sub-aro'))}}</th>
@@ -165,38 +202,59 @@ $this->params['breadcrumbs'][] = $this->title;
             <td></td>
         </tr>
 
-        <tbody v-for="(coItem, coIndex) in capitalOutlayList">
+
+
+        <template v-for="(coItem, coIndex) in capitalOutlayList" style="width: 100%;">
             <tr class="officeTtl">
-                <th class='ctr '>{{ coItem.office_name }}</th>
-                <th></th>
-                <th class='amt'>{{ formatAmount(calculateTotalPerOffice(coItem,'garo')) }}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(coItem,'flr'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(coItem,'sub-aro'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(coItem,'other-docs'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(coItem,'adjustments'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(coItem,'grossAmt'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(coItem,'ors'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(coItem,'balance'))}}</th>
-                <th class="amt">{{calculateUtilization(calculateTotalPerOffice(coItem,'ors'),calculateTotalPerOffice(coItem,'grossAmt'))}}</th>
+                <th class='ctr '>{{ coItem.mfo_name }}</th>
+                <td></td>
+                <td></td>
+                <th class="amt">{{formatAmount(calculateTotalPerMfo(coItem,'garo'))}}</th>
+                <th class="amt">{{formatAmount(calculateTotalPerMfo(coItem,'flr'))}}</th>
+                <th class="amt">{{formatAmount(calculateTotalPerMfo(coItem,'sub-aro'))}}</th>
+                <th class="amt">{{formatAmount(calculateTotalPerMfo(coItem,'other-docs'))}}</th>
+                <th class="amt">{{formatAmount(calculateTotalPerMfo(coItem,'adjustments'))}}</th>
+                <th class="amt">{{formatAmount(calculateTotalPerMfo(coItem,'grossAmt'))}}</th>
+                <th class="amt">{{formatAmount(calculateTotalPerMfo(coItem,'ors'))}}</th>
+                <th class="amt">{{formatAmount(calculateTotalPerMfo(coItem,'balance'))}}</th>
+                <th class="amt">{{calculateUtilization(calculateTotalPerMfo(coItem,'ors'),calculateTotalPerMfo(coItem,'grossAmt'))}}</th>
                 <td></td>
             </tr>
-            <tr v-for="(officeItem, officeIndex) in coItem.value">
-                <td></td>
-                <th class='ctr'>{{ officeItem.division_name}}</th>
-                <td class='amt'>{{formatAmount(officeItem.ttlGaroAllotment)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlFlr)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlSubAroAllotment)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlOtherDocs)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlAdjustment)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.grossAmt)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlOrs)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.balance)}}</td>
-                <td class='amt'>{{officeItem.utilizationRate}}%</td>
-                <td></td>
-            </tr>
-        </tbody>
+            <template v-for="(officeItem, officeIndex) in coItem.value">
+                <tr>
+                    <td></td>
+                    <th class='ctr'>{{ officeItem.office_name}}</th>
+                    <th></th>
+                    <th class='amt'>{{ formatAmount(calculateTotalPerOffice(officeItem,'garo')) }}</th>
+                    <th class="amt">{{formatAmount(calculateTotalPerOffice(officeItem,'flr'))}}</th>
+                    <th class="amt">{{formatAmount(calculateTotalPerOffice(officeItem,'sub-aro'))}}</th>
+                    <th class="amt">{{formatAmount(calculateTotalPerOffice(officeItem,'other-docs'))}}</th>
+                    <th class="amt">{{formatAmount(calculateTotalPerOffice(officeItem,'adjustments'))}}</th>
+                    <th class="amt">{{formatAmount(calculateTotalPerOffice(officeItem,'grossAmt'))}}</th>
+                    <th class="amt">{{formatAmount(calculateTotalPerOffice(officeItem,'ors'))}}</th>
+                    <th class="amt">{{formatAmount(calculateTotalPerOffice(officeItem,'balance'))}}</th>
+                    <th class="amt">{{calculateUtilization(calculateTotalPerOffice(officeItem,'ors'),calculateTotalPerOffice(officeItem,'grossAmt'))}}</th>
+                    <td></td>
+                </tr>
+                <tr v-for="divisionItem in officeItem.value">
+                    <td></td>
+                    <td></td>
+                    <td class="amt">{{divisionItem.division_name}}</td>
+                    <td class="amt">{{formatAmount(divisionItem.ttlGaroAllotment)}}</td>
+                    <td class="amt">{{formatAmount(divisionItem.ttlFlr)}}</td>
+                    <td class="amt">{{formatAmount(divisionItem.ttlSubAroAllotment)}}</td>
+                    <td class="amt">{{formatAmount(divisionItem.ttlOtherDocs)}}</td>
+                    <td class="amt">{{formatAmount(divisionItem.ttlAdjustment)}}</td>
+                    <td class="amt">{{formatAmount(divisionItem.grossAmt)}}</td>
+                    <td class="amt">{{formatAmount(divisionItem.ttlOrs)}}</td>
+                    <td class="amt">{{formatAmount(divisionItem.balance)}}</td>
+                    <td class="amt">{{divisionItem.utilizationRate}}%</td>
+                    <td></td>
+                </tr>
+            </template>
+        </template>
         <tr style="background-color:#22cbf5;">
-            <th class="ctr" colspan="2">Total</th>
+            <th class="ctr" colspan="3">Grand Total</th>
             <th class="amt">{{formatAmount(grandTotals('garo'))}}</th>
             <th class="amt">{{formatAmount(grandTotals('flr'))}}</th>
             <th class="amt">{{formatAmount(grandTotals('sub-aro'))}}</th>
@@ -209,7 +267,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <td></td>
         </tr>
         <tr style="background-color:#9ff536;">
-            <th class="ctr" colspan="2">MOOE + CO Total</th>
+            <th class="ctr" colspan="3">MOOE + CO Total</th>
             <th class="amt">{{formatAmount(coPlusMooeTtl('garo'))}}</th>
             <th class="amt">{{formatAmount(coPlusMooeTtl('flr'))}}</th>
             <th class="amt">{{formatAmount(coPlusMooeTtl('sub-aro'))}}</th>
@@ -227,13 +285,25 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 </div>
 <style>
-    .officeTtl {
-        background-color: #e3e6e4;
-    }
-
     table.hover-highlight tbody tr:hover {
         background-color: #ffff66;
         /* Highlight background color on hover */
+    }
+
+
+
+    ul {
+        list-style: none;
+    }
+
+    .q {
+        display: inline-block;
+        margin-right: 10px;
+        /* add spacing between items */
+    }
+
+    .officeTtl {
+        background-color: #e3e6e4;
     }
 
     .center-container {
@@ -268,6 +338,42 @@ $this->params['breadcrumbs'][] = $this->title;
 
     .amt {
         text-align: right;
+    }
+
+    /* Style for the table-like structure */
+    .table-like {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #ccc;
+        border-collapse: collapse;
+        width: 100%;
+        /* Adjust the width as needed */
+    }
+
+    /* Style for table header row */
+    .table-header {
+        display: flex;
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+
+    /* Style for table rows */
+    .table-row {
+        display: flex;
+        border-top: 1px solid #ccc;
+    }
+
+    /* Style for table cells (list items) */
+    .table-cell {
+        flex: 1;
+        padding: 8px;
+        border-right: 1px solid #ccc;
+        text-align: center;
+    }
+
+    /* Remove right border for the last cell in each row */
+    .table-row:last-child .table-cell {
+        border-right: none;
     }
 
     @media print {
@@ -327,40 +433,51 @@ https://cdn.jsdelivr.net/npm/vue-spinner@1.0.4/dist/vue-spinner.min.js
             },
             methods: {
                 formatReturnedData(data) {
-                    return Object.keys(data).map((officeKey) => {
-                        const obj = data[officeKey]
-                        const divisionDts = Object.keys(obj).map((divisionKey) => {
-                            const val = obj[divisionKey]
-                            const ttlGaroAllotment = parseFloat(this.getItemData(val, 'GARO'))
-                            const ttlSubAroAllotment = parseFloat(this.getItemData(val, 'SAA/Sub-ARO'))
-                            const ttlFlr = parseFloat(this.getItemData(val, 'For Later Release'))
-                            const ttlAdjustment = parseFloat(this.getItemTtls(val, 'adjustment'))
-                            const ttlOrs = parseFloat(this.getItemTtls(val, 'ors'))
-                            const ttlOtherDocs = parseFloat(this.getItemOtherDocsTtl(val))
-                            const grossAmt = ttlGaroAllotment + ttlFlr + ttlSubAroAllotment + ttlOtherDocs + ttlAdjustment
-                            const balance = grossAmt - ttlOrs
-                            const utilizationRate = (ttlOrs / grossAmt) * 100
 
+
+                    return Object.keys(data).map((mfoKey) => {
+                        let mfoData = data[mfoKey]
+                        let d = Object.keys(mfoData).map((officeKey) => {
+                            const obj = data[mfoKey][officeKey]
+                            const divisionDts = Object.keys(obj).map((divisionKey) => {
+                                const val = obj[divisionKey]
+                                const ttlGaroAllotment = parseFloat(this.getItemData(val, 'GARO'))
+                                const ttlSubAroAllotment = parseFloat(this.getItemData(val, 'SAA/Sub-ARO'))
+                                const ttlFlr = parseFloat(this.getItemData(val, 'For Later Release'))
+                                const ttlAdjustment = parseFloat(this.getItemTtls(val, 'adjustment'))
+                                const ttlOrs = parseFloat(this.getItemTtls(val, 'ors'))
+                                const ttlOtherDocs = parseFloat(this.getItemOtherDocsTtl(val))
+                                const grossAmt = ttlGaroAllotment + ttlFlr + ttlSubAroAllotment + ttlOtherDocs + ttlAdjustment
+                                const balance = grossAmt - ttlOrs
+                                const utilizationRate = (ttlOrs / grossAmt) * 100
+
+                                return {
+                                    division_name: divisionKey,
+                                    value: val,
+                                    ttlGaroAllotment: ttlGaroAllotment,
+                                    ttlSubAroAllotment: ttlSubAroAllotment,
+                                    ttlAdjustment: ttlAdjustment,
+                                    ttlOrs: ttlOrs,
+                                    ttlOtherDocs: ttlOtherDocs,
+                                    grossAmt: grossAmt.toFixed(2),
+                                    balance: balance.toFixed(2),
+                                    utilizationRate: utilizationRate.toFixed(2),
+                                    ttlFlr: ttlFlr.toFixed(2),
+
+                                }
+                            })
                             return {
-                                division_name: divisionKey,
-                                value: val,
-                                ttlGaroAllotment: ttlGaroAllotment,
-                                ttlSubAroAllotment: ttlSubAroAllotment,
-                                ttlAdjustment: ttlAdjustment,
-                                ttlOrs: ttlOrs,
-                                ttlOtherDocs: ttlOtherDocs,
-                                grossAmt: grossAmt.toFixed(2),
-                                balance: balance.toFixed(2),
-                                utilizationRate: utilizationRate.toFixed(2),
-                                ttlFlr: ttlFlr.toFixed(2),
-
+                                office_name: officeKey,
+                                value: divisionDts,
                             }
                         })
+
                         return {
-                            office_name: officeKey,
-                            value: divisionDts,
+                            mfo_name: mfoKey,
+                            value: d,
                         }
-                    });
+                    })
+
 
                 },
                 // Rearrange the display objects make `RO` first in object
@@ -412,8 +529,8 @@ https://cdn.jsdelivr.net/npm/vue-spinner@1.0.4/dist/vue-spinner.min.js
                                 this.capitalOutlayList = this.formatReturnedData(capitalOutlayData)
                             }
                             if (mooeData) {
-                                this.mooeList = this.reArrangeObjects(this.formatReturnedData(mooeData))
-
+                                // this.mooeList = this.reArrangeObjects(this.formatReturnedData(mooeData))
+                                this.mooeList = this.formatReturnedData(mooeData)
                             }
                             setTimeout(() => {
                                 this.loading = false
@@ -494,7 +611,6 @@ https://cdn.jsdelivr.net/npm/vue-spinner@1.0.4/dist/vue-spinner.min.js
                     return !isNaN(ttl) ? ttl.toFixed(2) + '%' : 0
                 },
                 getObectTtls(arr, amtName) {
-
                     return Object.keys(arr).reduce((ttl, key) => {
 
                         if (amtName == 'garo') {
@@ -517,9 +633,19 @@ https://cdn.jsdelivr.net/npm/vue-spinner@1.0.4/dist/vue-spinner.min.js
                     }, 0)
                 },
                 calculateAllotmentClassTotal(arr, amtName) {
-                    return arr.reduce((total, item) => {
-                        return total + this.getObectTtls(item.value, amtName)
-                    }, 0)
+                    if (arr.length > 0) {
+
+                        return arr.reduce((total, item) => {
+                            return total + item.value.reduce((ttl, it) => {
+                                return ttl + this.getObectTtls(it.value, amtName)
+                            }, 0)
+
+                        }, 0)
+
+                    }
+                    // return arr.reduce((total, item) => {
+                    //     return total + this.getObectTtls(item.value, amtName)
+                    // }, 0)
                 },
                 calculate() {
 
@@ -553,6 +679,13 @@ https://cdn.jsdelivr.net/npm/vue-spinner@1.0.4/dist/vue-spinner.min.js
 
                 calculateTotalPerOffice(data, amtName) {
                     return this.getObectTtls(data.value, amtName)
+                },
+                calculateTotalPerMfo(data, amtName) {
+                    let total = 0
+                    Object.keys(data.value).map((key) => {
+                        total += this.getObectTtls(data.value[key].value, amtName)
+                    })
+                    return total
                 }
 
             },

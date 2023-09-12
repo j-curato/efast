@@ -44,7 +44,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 
-    <table v-show='showTable'>
+    <table v-show='showTable' class="hover-highlight">
         <thead>
             <tr>
                 <th>PARTICULARS</th>
@@ -171,6 +171,11 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 </div>
 <style>
+    table.hover-highlight tbody tr:hover {
+        background-color: #ffff66;
+        /* Highlight background color on hover */
+    }
+
     .center-container {
         display: flex;
         justify-content: center;
@@ -334,7 +339,7 @@ https://cdn.jsdelivr.net/npm/vue-spinner@1.0.4/dist/vue-spinner.min.js
 
                                 // });
                                 this.personelServicesLists = this.formatReturnedData(personnelServicesData)
-                                
+
                                 console.log(this.personelServicesLists)
                             }
                             if (capitalOutlayData) {

@@ -161,9 +161,7 @@ SweetAlertAsset::register($this);
                                 'pluginOptions' => [
                                     'placeholder' => 'Select RBAC '
                                 ]
-
                             ]);
-
                             ?>
                         </span>
                         <br>
