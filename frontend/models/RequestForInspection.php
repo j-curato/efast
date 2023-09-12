@@ -113,7 +113,7 @@ class RequestForInspection extends \yii\db\ActiveRecord
                     pr_purchase_order_item.serial_number as po_number,
                     payee.account_name as payee,
                     pr_stock.stock_title,
-                    REPLACE(REPLACE(pr_purchase_request_item.specification,'[n][n]','\n'),'[n]','\n') as specification,
+                    REPLACE(pr_purchase_request_item.specification,'<br />','\n') as specification,
                     pr_purchase_request.purpose,
                     request_for_inspection_items.quantity,
                     request_for_inspection_items.from as date_from,
