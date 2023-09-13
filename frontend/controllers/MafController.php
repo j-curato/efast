@@ -15,9 +15,47 @@ use app\models\DocumentRecieve;
 use app\models\RecordAllotments;
 use yii\web\NotFoundHttpException;
 use app\models\RecordAllotmentDetailedSearch;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
 
 class MafController extends \yii\web\Controller
 {
+    public function behaviors()
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'update',
+                    'view',
+                    'create',
+                    'search-chart-of-accounts',
+                    'get-allotments'
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'update',
+                            'view',
+                            'create',
+                            'search-chart-of-accounts',
+                            'get-allotments'
+                        ],
+                        'allow' => true,
+                        'roles' => ['super-user']
+                    ]
+                ]
+            ],
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+        ];
+    }
     public function actionIndex()
     {
         $searchModel = new RecordAllotmentDetailedSearch();
