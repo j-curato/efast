@@ -141,4 +141,37 @@ class MafController extends \yii\web\Controller
         }
         return $out;
     }
+    public  function actionGetAllotments()
+    {
+
+        if (Yii::$app->request->post()) {
+            // return json_encode('qwe');
+            $allotmentTypeId = Yii::$app->request->post('allotmentTypeId');
+            $bookId = Yii::$app->request->post('bookId');
+            $documentReceiveId = Yii::$app->request->post('documentReceiveId');
+            $mfoPapId = Yii::$app->request->post('mfoPapId');
+            $reportingPeriod = Yii::$app->request->post('reportingPeriod');
+            $fundSourceId = Yii::$app->request->post('fundSourceId');
+            $majorAccountId = Yii::$app->request->post('majorAccountId');
+            if (
+                !empty($allotmentTypeId) &&
+                !empty($bookId) &&
+                !empty($documentReceiveId) &&
+                !empty($mfoPapId) &&
+                !empty($fundSourceId) &&
+                !empty($majorAccountId) &&
+                !empty($reportingPeriod)
+            ) {
+                $documentReceive = DocumentRecieve::findOne($documentReceiveId);
+                $fundSource = FundSource::findOne($fundSourceId);
+                $allotmentType = AllotmentType::findOne($allotmentTypeId);
+                $mfoPap = MfoPapCode::findOne($mfoPapId);
+                $book = Books::findOne($bookId);
+                $majorAccount = MajorAccounts::findOne($majorAccountId);
+                $d = DateTime::createFromFormat('Y-m', $reportingPeriod);
+                $qry = $this->getAllotmentDetailsQry($fundSource->name, $documentReceive->name, $allotmentType->type, $mfoPap->code, $book->name, $d->format('Y'), $majorAccount->name);
+                return  json_encode($qry);
+            }
+        }
+    }
 }
