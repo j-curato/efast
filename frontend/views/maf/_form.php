@@ -367,7 +367,7 @@ $this->registerJsFile("https://cdn.jsdelivr.net/npm/vue-select@latest/dist/vue-s
                             majorAccountId: this.majorAccountSelect,
                             _csrf: '<?= $csrfToken ?>'
                         }
-                        const apiUrl = window.location.pathname + '?r=allotment-modification-advice/get-allotments';
+                        const apiUrl = window.location.pathname + '?r=maf/get-allotments';
                         axios.post(apiUrl, data)
                             .then(response => {
                                 this.allotmentAdjustmentItems = JSON.parse(JSON.stringify(response.data))
