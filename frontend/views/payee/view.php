@@ -14,7 +14,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 <div class="payee-view" id="payee-view">
-    {{msg}}
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']) ?>
     </p>
