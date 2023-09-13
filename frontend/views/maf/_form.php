@@ -345,7 +345,6 @@ $this->registerJsFile("https://cdn.jsdelivr.net/npm/vue-select@latest/dist/vue-s
                 },
                 getAllotments() {
                     this.reportingPeriod = $('#recordallotments-reporting_period').val()
-                    console.log('qwe')
                     if (
                         this.documentReceiveSelect !== '' &&
                         this.fundSourceSelect !== '' &&
