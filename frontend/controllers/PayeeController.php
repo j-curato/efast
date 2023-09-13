@@ -2,17 +2,20 @@
 
 namespace frontend\controllers;
 
+use app\components\SnowflakeIdGenerator;
 use Yii;
 use app\models\Payee;
 use app\models\PayeeSearch;
 use ErrorException;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PHPUnit\Util\Log\JSON;
 use yii\db\conditions\LikeCondition;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\Json as HelpersJson;
 
 /**
  * PayeeController implements the CRUD actions for Payee model.
@@ -45,12 +48,11 @@ class PayeeController extends Controller
                             'create',
                             'delete',
                             'update',
-
                             'import',
                             'search-payee',
                         ],
                         'allow' => true,
-                        'roles' => ['accounting', 'super-user',]
+                        'roles' => ['accounting', 'super-user', 'payee']
                     ],
                     [
 
@@ -112,11 +114,18 @@ class PayeeController extends Controller
         $model = new Payee();
         $model->fk_office_id = Yii::$app->user->identity->fk_office_id ?? '';
         if ($model->load(Yii::$app->request->post())) {
-            // $model->id = Yii::$app->db->createCommand('SELECT UUID_SHORT() % 9223372036854775807')->queryScalar();
-            if (!$model->save(false)) {
-                throw new ErrorException('Model Save FAiled');
+
+            try {
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save FAiled');
+                }
+                return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                return $e->getMessage();
             }
-            return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->renderAjax('create', [

@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Yii::$app->user->can('super-user') ? Html::a('Create Payee', ['create'], ['class' => 'btn btn-success modalButtonCreate']) : null ?>
+        <?= Yii::$app->user->can('payee') ? Html::a('Create Payee', ['create'], ['class' => 'btn btn-success modalButtonCreate']) : null ?>
         <!-- <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal"> Import</button> -->
     </p>
     <?php // echo $this->render('_search', ['model' => $searchModel]); 

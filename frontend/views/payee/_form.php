@@ -2,6 +2,7 @@
 
 use app\models\Banks;
 use app\models\Office;
+use aryelds\sweetalert\SweetAlertAsset;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -17,7 +18,9 @@ $banks = YIi::$app->db->createCommand("SELECT UPPER(banks.name) as bank_name,ban
 
 <div class="payee-form">
 
-    <?php $form = ActiveForm::begin();
+    <?php $form = ActiveForm::begin([
+        'id' => $model->formName()
+    ]);
 
     if (Yii::$app->user->can('super-user')) {
 
@@ -70,3 +73,29 @@ $banks = YIi::$app->db->createCommand("SELECT UPPER(banks.name) as bank_name,ban
     <?php ActiveForm::end(); ?>
 
 </div>
+<?php
+SweetAlertAsset::register($this);
+$js = <<< JS
+
+    $('#Payee').on('beforeSubmit',function(e){
+        e.preventDefault()
+        const form  =$(this)
+        $.ajax({
+            url:form.attr('action'),
+            type:form.attr('method'),
+            data:form.serialize(),
+            success:function(data){
+                swal({
+                    icon:'error',
+                    title:data,
+                    timer: 3000,
+                    closeOnConfirm: false,
+                    closeOnCancel: false
+                })
+            }
+        })
+        return false;
+    })
+JS;
+$this->registerJs($js);
+?>

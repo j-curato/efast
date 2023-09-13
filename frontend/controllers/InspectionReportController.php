@@ -99,18 +99,17 @@ class InspectionReportController extends Controller
     public function itemDetails($id)
     {
         $query = Yii::$app->db->createCommand("SELECT 
-    pr_stock.stock_title,
-    IFNULL(REPLACE(pr_purchase_request_item.specification,'[n]','<br>'),'') as specification
-    FROM inspection_report
-    INNER  JOIN inspection_report_items ON inspection_report.id = inspection_report_items.fk_inspection_report_id
-    INNER JOIN request_for_inspection_items ON inspection_report_items.fk_request_for_inspection_item_id = request_for_inspection_items.id
-    INNER JOIN pr_purchase_order_items_aoq_items ON request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id = pr_purchase_order_items_aoq_items.id
-    INNER JOIN pr_aoq_entries ON pr_purchase_order_items_aoq_items.fk_aoq_entries_id =pr_aoq_entries.id
-    INNER JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id =pr_rfq_item.id
-    INNER JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
-    INNER JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
-    WHERE inspection_report.id = :id
-    ")
+                    pr_stock.stock_title,
+                    IFNULL(REPLACE(pr_purchase_request_item.specification,'[n]','<br>'),'') as specification
+                    FROM inspection_report
+                    INNER  JOIN inspection_report_items ON inspection_report.id = inspection_report_items.fk_inspection_report_id
+                    INNER JOIN request_for_inspection_items ON inspection_report_items.fk_request_for_inspection_item_id = request_for_inspection_items.id
+                    INNER JOIN pr_purchase_order_items_aoq_items ON request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id = pr_purchase_order_items_aoq_items.id
+                    INNER JOIN pr_aoq_entries ON pr_purchase_order_items_aoq_items.fk_aoq_entries_id =pr_aoq_entries.id
+                    INNER JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id =pr_rfq_item.id
+                    INNER JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
+                    INNER JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
+                    WHERE inspection_report.id = :id")
             ->bindValue(':id', $id)
             ->queryAll();
         return $query;

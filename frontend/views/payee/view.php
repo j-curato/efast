@@ -11,9 +11,10 @@ $this->params['breadcrumbs'][] = ['label' => 'Payees', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="payee-view">
 
 
+<div class="payee-view" id="payee-view">
+    {{msg}}
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']) ?>
     </p>
@@ -33,6 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
     ]) ?>
 
 </div>
+
 <?php
 
 $this->registerJsFile(

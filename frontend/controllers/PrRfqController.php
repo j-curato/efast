@@ -310,8 +310,6 @@ class PrRfqController extends Controller
     public function actionSearchRfq($q = null, $id = null, $province = null)
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-
-
         $out = ['results' => ['id' => '', 'text' => '']];
         if (!is_null($q)) {
             $query = new Query();
@@ -327,7 +325,6 @@ class PrRfqController extends Controller
             $data = $command->queryAll();
             $out['results'] = array_values($data);
         }
-
         return $out;
     }
     public function actionCancel($id)

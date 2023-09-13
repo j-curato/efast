@@ -45,7 +45,7 @@ class Payee extends \yii\db\ActiveRecord
             [['contact'], 'string', 'max' => 20],
             [['tin_number'], 'string', 'max' => 30],
             [['account_num'], 'string', 'max' => 255],
-            [['isEnable',   'fk_bank_id', 'fk_office_id'], 'integer',],
+            [['isEnable',   'fk_bank_id', 'fk_office_id', 'id'], 'integer',],
             [[
                 'account_name',
                 'registered_name',
@@ -59,7 +59,33 @@ class Payee extends \yii\db\ActiveRecord
 
         ];
     }
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            if ($this->isNewRecord) {
+                if (empty($this->id)) {
+                    $this->id = Yii::$app->snowflake->generateId();
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+    public function beforeValidate()
+    {
+        $qry = Yii::$app->db->createCommand("SELECT EXISTS (SELECT   * FROM `payee`
+        WHERE 
+        payee.fk_office_id = :office_id
+        AND payee.registered_name LIKE :name)")
+            ->bindValue(':office_id', $this->fk_office_id)
+            ->bindValue(':name', '%' . $this->registered_name . '%')
+            ->queryScalar();
+        if ($qry == 1) {
+            $this->addError('registered_name', 'Registered Name Already Exists');
+        }
 
+        return true;
+    }
     /**
      * {@inheritdoc}
      */

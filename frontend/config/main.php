@@ -103,7 +103,17 @@ return [
         'memem' => [
             'class' => 'frontend\components\MyComponent',
         ],
-
+        'snowflake' => [
+            'class' => 'app\components\SnowflakeIdGenerator',
+            'machineId' => 1, // Change this to your machine ID
+        ],
+        //     'view' => [
+        //         'theme' => [
+        //             'pathMap' => [
+        //                '@app/views' => '@vendor/dmstr/yii2-adminlte-asset/example-views/yiisoft/yii2-app'
+        //             ],
+        //         ],
+        //    ],
 
     ],
     // 'as beforeRequest' => [
