@@ -2,12 +2,19 @@
 
 namespace frontend\controllers;
 
-use app\models\ChartOfAccounts;
-use app\models\RecordAllotmentDetailedSearch;
-use app\models\RecordAllotments;
-use ErrorException;
 use Yii;
+use DateTime;
+use ErrorException;
+use app\models\Books;
+use app\models\FundSource;
+use app\models\MfoPapCode;
+use app\models\AllotmentType;
+use app\models\MajorAccounts;
+use app\models\ChartOfAccounts;
+use app\models\DocumentRecieve;
+use app\models\RecordAllotments;
 use yii\web\NotFoundHttpException;
+use app\models\RecordAllotmentDetailedSearch;
 
 class MafController extends \yii\web\Controller
 {
@@ -140,6 +147,42 @@ class MafController extends \yii\web\Controller
             $out['pagination'] = ['more' => !empty($data) ? true : false];
         }
         return $out;
+    }
+    private function getAllotmentDetailsQry($fundSourceName, $documentReceiveName, $allotmentType, $mfoPapCode, $bookName, $year, $majorAccountName)
+    {
+        return Yii::$app->db->createCommand(
+            "SELECT 
+                    record_allotment_detailed.allotment_entry_id,
+                    record_allotment_detailed.balAfterObligation,
+                    record_allotment_detailed.account_title,
+                    record_allotment_detailed.uacs,
+                    record_allotment_detailed.office_name,
+                    record_allotment_detailed.division,
+                    record_allotment_detailed.book_name,
+                    record_allotment_detailed.fund_source_name,
+                    record_allotment_detailed.document_recieve,
+                     0 as amount
+                FROM record_allotment_detailed
+                WHERE 
+                document_recieve = :documentReceiveName
+                 AND fund_source_name = :fundSourceName
+                AND
+                 mfo_code = :mfoPapCode
+                AND book_name = :bookName
+                AND allotment_type = :allotmentTypeName
+                AND budget_year = :yr
+                AND allotment_class = :allotment_class
+                AND record_allotment_detailed.balAfterObligation > 0"
+
+        )
+            ->bindValue(':fundSourceName', $fundSourceName)
+            ->bindValue(':documentReceiveName', $documentReceiveName)
+            ->bindValue(':allotmentTypeName', $allotmentType)
+            ->bindValue(':mfoPapCode', $mfoPapCode)
+            ->bindValue(':bookName', $bookName)
+            ->bindValue(':yr', $year)
+            ->bindValue(':allotment_class', $majorAccountName)
+            ->queryAll();
     }
     public  function actionGetAllotments()
     {
