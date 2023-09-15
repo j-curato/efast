@@ -18,7 +18,7 @@ class m230118_072258_create_transaction_pr_items_table extends Migration
     {
         $this->createTable('{{%transaction_pr_items}}', [
             'id' => $this->primaryKey(),
-            'fk_transaction_id' => $this->integer(),
+            'fk_transaction_id' => $this->bigInteger(),
             'fk_pr_purchase_request_id' => $this->bigInteger(),
             'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')
         ]);

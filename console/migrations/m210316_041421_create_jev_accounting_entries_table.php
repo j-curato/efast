@@ -24,14 +24,14 @@ class m210316_041421_create_jev_accounting_entries_table extends Migration
             'cashflow_id' => $this->integer(),
             'net_asset_equity_id' => $this->integer(),
             'chart_of_account_id' => $this->integer(),
-            'debit' => $this->decimal(10,2),
-            'credit' => $this->decimal(10,2),
-            'closing_nonclosing'=>$this->string(50),
-            'current_noncurrent'=>$this->string(),
-            'lvl'=>$this->integer(),
-            'object_code'=>$this->string(255)
-            
-            
+            'debit' => $this->decimal(15, 2),
+            'credit' => $this->decimal(15, 2),
+            'closing_nonclosing' => $this->string(50),
+            'current_noncurrent' => $this->string(),
+            'lvl' => $this->integer(),
+            'object_code' => $this->string(255)
+
+
         ]);
 
         // creates index for column `jev_preparation_id`
