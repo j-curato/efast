@@ -33,7 +33,7 @@ class m230125_021246_create_temp_liquidation_table extends Migration
         ORDER BY `q`  DESC) as l
         WHERE l.q >1)
         )")->execute();
-        $this->createIndex('idx-dv_number', 'liquidation', 'dv_number', true);
+        // $this->createIndex('idx-dv_number', 'liquidation', 'dv_number', true);
     }
 
     /**
@@ -42,6 +42,6 @@ class m230125_021246_create_temp_liquidation_table extends Migration
     public function safeDown()
     {
         $this->dropTable('{{%temp_liquidation}}');
-        $this->dropIndex('idx-dv_number', 'liquidation');
+        // $this->dropIndex('idx-dv_number', 'liquidation');
     }
 }

@@ -20,7 +20,7 @@ class m230116_090135_add_fk_constraints_in_dv_aucs_table extends Migration
         // fk_remittance_id
         // fk_ro_alphalist_id
         Yii::$app->db->createCommand("SET FOREIGN_KEY_CHECKS=0")->execute();
-        $this->createIndex('idx-dv_number', 'dv_aucs', 'dv_number', true);
+        // $this->createIndex('idx-dv_number', 'dv_aucs', 'dv_number', true);
         $this->createIndex('idx-payee_id', 'dv_aucs', 'payee_id');
         $this->createIndex('idx-book_id', 'dv_aucs', 'book_id');
         $this->createIndex('idx-payroll_id', 'dv_aucs', 'payroll_id');
@@ -97,7 +97,7 @@ class m230116_090135_add_fk_constraints_in_dv_aucs_table extends Migration
             'fk-fk_ro_alphalist_id',
             'dv_aucs'
         );
-        $this->dropIndex('idx-dv_number', 'dv_aucs');
+        // $this->dropIndex('idx-dv_number', 'dv_aucs');
         $this->dropIndex('idx-payee_id', 'dv_aucs');
         $this->dropIndex('idx-book_id', 'dv_aucs');
         $this->dropIndex('idx-payroll_id', 'dv_aucs');

@@ -12,7 +12,7 @@ class m230130_090416_add_fk_pr_allotment_id_in_transction_pr_items_table extends
      */
     public function safeUp()
     {
-        $this->addColumn('transaction_pr_items', 'fk_pr_allotment_id', $this->integer());
+        $this->addColumn('transaction_pr_items', 'fk_pr_allotment_id', $this->bigInteger());
     }
 
     /**
