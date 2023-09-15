@@ -271,7 +271,7 @@ class PayeeController extends Controller
             $out['results'] = ['id' => $id, 'text' => Payee::findOne($id)->account_name];
         } else if (!is_null($q)) {
             $query = new Query();
-            $query->select('payee.id, payee.registered_name AS text')
+            $query->select('CAST(payee.id AS CHAR(50)) as id, payee.registered_name AS text')
                 ->from('payee')
                 ->where(['like', 'payee.registered_name', $q])
                 ->andWhere('payee.isEnable = 1');
