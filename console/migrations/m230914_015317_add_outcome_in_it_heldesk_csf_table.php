@@ -3,17 +3,16 @@
 use yii\db\Migration;
 
 /**
- * Class m220322_033900_add_id_and_fk_property_id_in_par_table
+ * Class m230914_015317_add_outcome_in_it_heldesk_csf_table
  */
-class m220322_033900_add_id_and_fk_property_id_in_par_table extends Migration
+class m230914_015317_add_outcome_in_it_heldesk_csf_table extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-        // $this->addColumn('par', 'id', $this->bigInteger()->after('par_number'));
-
+        $this->addColumn('it_helpdesk_csf', 'outcome', $this->integer());
     }
 
     /**
@@ -21,7 +20,7 @@ class m220322_033900_add_id_and_fk_property_id_in_par_table extends Migration
      */
     public function safeDown()
     {
-        // $this->dropColumn('par', 'id');
+        $this->dropColumn('it_helpdesk_csf', 'outcome');
     }
 
     /*
@@ -33,7 +32,7 @@ class m220322_033900_add_id_and_fk_property_id_in_par_table extends Migration
 
     public function down()
     {
-        echo "m220322_033900_add_id_and_fk_property_id_in_par_table cannot be reverted.\n";
+        echo "m230914_015317_add_outcome_in_it_heldesk_csf_table cannot be reverted.\n";
 
         return false;
     }

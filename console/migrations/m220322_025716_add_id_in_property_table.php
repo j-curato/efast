@@ -14,9 +14,9 @@ class m220322_025716_add_id_in_property_table extends Migration
     {
         // $this->addPrimaryKey('pk-property_number', 'property', 'property_number');
         $this->addColumn('{{%property}}', 'id', $this->bigInteger()->after('property_number'));
-        // $this->dropPrimaryKey('PRIMARY', '{{%property}}');
-        // $this->addPrimaryKey('pk-id', 'property', 'id');
-        // $this->alterColumn('{{%property}}', 'id', $this->bigInteger(8) . ' NOT NULL AUTO_INCREMENT');
+        $this->dropPrimaryKey('PRIMARY', '{{%property}}');
+        $this->addPrimaryKey('pk-id', 'property', 'id');
+        $this->alterColumn('{{%property}}', 'id', $this->bigInteger(8) . ' NOT NULL AUTO_INCREMENT');
     }
 
     /**
@@ -24,8 +24,8 @@ class m220322_025716_add_id_in_property_table extends Migration
      */
     public function safeDown()
     {
-        // $this->dropPrimaryKey('PRIMARY', '{{%property}}');
-        // $this->addPrimaryKey('pk-id', 'property', 'property_number');
+        $this->dropPrimaryKey('PRIMARY', '{{%property}}');
+        $this->addPrimaryKey('pk-id', 'property', 'property_number');
         $this->dropColumn('property', 'id');
     }
 

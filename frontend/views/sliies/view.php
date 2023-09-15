@@ -236,8 +236,8 @@ $blnk = "                <tr>
                 </tr>
                 <tr>
                     <td colspan="3" class="ctr no-bdr">
-                        <u><b>REGINE MAE O. BITCO, CPA </b></u><br>
-                        <span> Accountant II </span>
+                        <u><b>CHARLIE C. DECHOS, CPA </b></u><br>
+                        <span> Accountant III </span>
                     </td>
                     <td colspan="3" class="ctr no-bdr">
                         <span>_____________________________</span>
