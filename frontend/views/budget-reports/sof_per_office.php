@@ -8,7 +8,7 @@ use kartik\date\DatePicker;
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = "Status of Funds per MFO/PAP";
+$this->title = "Status of Funds per Office/Division";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index " style="background-color: white;padding:20px" id="main">
