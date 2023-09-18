@@ -47,192 +47,139 @@ $this->params['breadcrumbs'][] = $this->title;
     <table v-show='showTable' class="hover-highlight">
         <thead>
             <tr>
-                <th colspan="2" class="ctr">PARTICULARS</th>
-                <th class="ctr">APPROPRIATIONS(GARO)</th>
-                <th class="ctr">FOR LATER RELEASE</th>
-                <th class="ctr">SUB-ALLOTMENT(SAA/Sub-ARO)</th>
-                <th class="ctr">OTHER DOCUMENTS</th>
-                <th class="ctr">ADJUSTMENT</th>
-                <th class="ctr">NET Program</th>
-                <th class="ctr">OBLIGATIONS</th>
-                <th class="ctr">BALANCE</th>
-                <th class="ctr">% UTILIZATION</th>
-                <th class="ctr">REMARKS</th>
+                <th>Book</th>
+                <th colspan="3" class="ctr">PARTICULARS</th>
+                <th>APPROPRIATIONS(GARO)</th>
+                <th>FOR LATER RELEASE</th>
+                <th>SUB-ALLOTMENT(SAA/Sub-ARO)</th>
+                <th>OTHER DOCUMENTS</th>
+                <th>ADJUSTMENT</th>
+                <th>NET Program</th>
+                <th>OBLIGATIONS</th>
+                <th>BALANCE</th>
+                <th>% UTILIZATION</th>
+                <th>REMARKS</th>
             </tr>
         </thead>
-        <tr class="info" style="background-color: #bef1fa;">
-            <th class="" colspan="2">PERSONNEL SERVICES</th>
-            <th class="amt">{{formatAmount(calculateAllotmentClassTotal(personelServicesLists,'garo'))}}</th>
-            <th class="amt">{{formatAmount(calculateAllotmentClassTotal(personelServicesLists,'flr'))}}</th>
-            <th class="amt">{{formatAmount(calculateAllotmentClassTotal(personelServicesLists,'sub-aro'))}}</th>
-            <th class="amt">{{formatAmount(calculateAllotmentClassTotal(personelServicesLists,'other-docs'))}}</th>
-            <th class="amt">{{formatAmount(calculateAllotmentClassTotal(personelServicesLists,'adjustments'))}}</th>
-            <th class="amt">{{formatAmount(calculateAllotmentClassTotal(personelServicesLists,'grossAmt'))}}</th>
-            <th class="amt">{{formatAmount(calculateAllotmentClassTotal(personelServicesLists,'ors'))}}</th>
-            <th class="amt">{{formatAmount(calculateAllotmentClassTotal(personelServicesLists,'balance'))}}</th>
-            <th class="amt">{{calculateUtilization(calculateAllotmentClassTotal(personelServicesLists,'ors'),calculateAllotmentClassTotal(personelServicesLists,'grossAmt'))}}</th>
-            <td></td>
+        <tbody>
 
-        </tr>
-        <tbody v-for="(psItem, psIndex) in personelServicesLists">
-            <tr class="officeTtl">
-                <th class='ctr'>{{ psItem.office_name }}</th>
+            <template v-for="bookData in finalData">
+                <tr style="background-color: #f9fac8;">
+                    <th>{{bookData.bookName}}</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th class='amt'> {{formatAmount(bookData.bookGaroTtl)}}</th>
+                    <th class='amt'> {{formatAmount(bookData.bookFlrTtl)}}</th>
+                    <th class='amt'> {{formatAmount(bookData.bookSaaTtl)}}</th>
+                    <th class='amt'> {{formatAmount(bookData.bookOtherDocsTtl)}}</th>
+                    <th class='amt'> {{formatAmount(bookData.bookAdjustmentTtl)}}</th>
+                    <th class='amt'> {{formatAmount(bookData.bookGrossAmt)}}</th>
+                    <th class='amt'> {{formatAmount(bookData.bookOrsTtl)}}</th>
+                    <th class='amt'> {{formatAmount(bookData.bookBalanceTtl)}}</th>
+                    <th class='amt'> {{bookData.bookUtilization}}%</th>
+                    <th></th>
+                </tr>
+                <template v-for="allotmentData in bookData.value">
+
+                    <tr style="background-color: #bef1fa;">
+                        <td></td>
+                        <th> {{allotmentData.allotmentClassName}}</th>
+                        <th></th>
+                        <th></th>
+                        <th class='amt'> {{formatAmount(allotmentData.allotmentClassGaroTtl)}}</th>
+                        <th class='amt'> {{formatAmount(allotmentData.allotmentClassFlrTtl)}}</th>
+                        <th class='amt'> {{formatAmount(allotmentData.allotmentClassSaaTtl)}}</th>
+                        <th class='amt'> {{formatAmount(allotmentData.allotmentClassOtherDocsTtl)}}</th>
+                        <th class='amt'> {{formatAmount(allotmentData.allotmentClassAdjustmentTtl)}}</th>
+                        <th class='amt'> {{formatAmount(allotmentData.allotmentClassGrossAmt)}}</th>
+                        <th class='amt'> {{formatAmount(allotmentData.allotmentClassOrsTtl)}}</th>
+                        <th class='amt'> {{formatAmount(allotmentData.allotmentClassBalanceTtl)}}</th>
+                        <th class='amt'> {{allotmentData.allotmentClassUtilization}}%</th>
+                        <th></th>
+                    </tr>
+
+                    <template v-for="officeData in allotmentData.value">
+                        <tr style="background-color: #ffe1d1;">
+                            <th></th>
+                            <th></th>
+                            <th>{{officeData.officeName}}</th>
+                            <th></th>
+                            <th class='amt'> {{formatAmount(officeData.officeGaroTtl)}}</th>
+                            <th class='amt'> {{formatAmount(officeData.officeFlrTtl)}}</th>
+                            <th class='amt'> {{formatAmount(officeData.officeSaaTtl)}}</th>
+                            <th class='amt'> {{formatAmount(officeData.officeOtherDocsTtl)}}</th>
+                            <th class='amt'> {{formatAmount(officeData.officeAdjustmentTtl)}}</th>
+                            <th class='amt'> {{formatAmount(officeData.officeGrossAmt)}}</th>
+                            <th class='amt'> {{formatAmount(officeData.officeOrsTtl)}}</th>
+                            <th class='amt'> {{formatAmount(officeData.officeBalanceTtl)}}</th>
+                            <th class='amt'> {{officeData.officeUtilization}}%</th>
+                            <th></th>
+                        </tr>
+
+                        <tr v-for="divisionsData in officeData.value">
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <th>{{divisionsData.mfo_name}}</th>
+                            <td class='amt'>{{formatAmount(divisionsData.ttlGaroAllotment)}}</td>
+                            <td class='amt'>{{formatAmount(divisionsData.ttlFlr)}}</td>
+                            <td class='amt'>{{formatAmount(divisionsData.ttlSubAroAllotment)}}</td>
+                            <td class='amt'>{{formatAmount(divisionsData.ttlOtherDocs)}}</td>
+                            <td class='amt'>{{formatAmount(divisionsData.ttlAdjustment)}}</td>
+                            <td class='amt'>{{formatAmount(divisionsData.grossAmt)}}</td>
+                            <td class='amt'>{{formatAmount(divisionsData.ttlOrs)}}</td>
+                            <td class='amt'>{{formatAmount(divisionsData.balance)}}</td>
+                            <td class='amt'>{{divisionsData.utilizationRate}}%</td>
+                            <td></td>
+                        </tr>
+
+
+                    </template>
+
+
+
+                </template>
+            </template>
+            <tr style="background-color: #fcdc9d;">
+
+                <th colspan="4" class="ctr">MOOE + CO </th>
+                <th class='amt'> {{formatAmount(mooeCoTotal.mooeCoGaroTtl)}}</th>
+                <th class='amt'> {{formatAmount(mooeCoTotal.mooeCoFlrTtl)}}</th>
+                <th class='amt'> {{formatAmount(mooeCoTotal.mooeCoSaaTtl)}}</th>
+                <th class='amt'> {{formatAmount(mooeCoTotal.mooeCoOtherDocsTtl)}}</th>
+                <th class='amt'> {{formatAmount(mooeCoTotal.mooeCoAdjustmentTtl)}}</th>
+                <th class='amt'> {{formatAmount(mooeCoTotal.mooeCoGrossAmt)}}</th>
+                <th class='amt'> {{formatAmount(mooeCoTotal.mooeCoOrsTtl)}}</th>
+                <th class='amt'> {{formatAmount(mooeCoTotal.mooeCoBalanceTtl)}}</th>
+                <th class='amt'> {{mooeCoTotal.mooeCoUtilization}}%</th>
                 <th></th>
-
-                <th class='amt'>{{ formatAmount(calculateTotalPerOffice(psItem,'garo')) }}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(psItem,'flr'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(psItem,'sub-aro'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(psItem,'other-docs'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(psItem,'adjustments'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(psItem,'grossAmt'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(psItem,'ors'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(psItem,'balance'))}}</th>
-                <th class="amt">{{calculateUtilization(calculateTotalPerOffice(psItem,'ors'),calculateTotalPerOffice(psItem,'grossAmt'))}}</th>
-                <td></td>
             </tr>
-            <tr v-for="(officeItem, officeIndex) in psItem.value">
-                <td></td>
-                <th class='ctr'>{{ officeItem.division_name}}</th>
-                <td class='amt'>{{formatAmount(officeItem.ttlGaroAllotment)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlFlr)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlSubAroAllotment)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlOtherDocs)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlAdjustment)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.grossAmt)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlOrs)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.balance)}}</td>
-                <td class='amt'>{{officeItem.utilizationRate}}%</td>
-                <td></td>
+            <tr style="background-color: #9dfcb6;">
+
+                <th colspan="4" class="ctr">GRAND TOTAL </th>
+                <th class='amt'> {{formatAmount(grandTotals.grandTotalGaroTtl)}}</th>
+                <th class='amt'> {{formatAmount(grandTotals.grandTotalFlrTtl)}}</th>
+                <th class='amt'> {{formatAmount(grandTotals.grandTotalSaaTtl)}}</th>
+                <th class='amt'> {{formatAmount(grandTotals.grandTotalOtherDocsTtl)}}</th>
+                <th class='amt'> {{formatAmount(grandTotals.grandTotalAdjustmentTtl)}}</th>
+                <th class='amt'> {{formatAmount(grandTotals.grandTotalGrossAmt)}}</th>
+                <th class='amt'> {{formatAmount(grandTotals.grandTotalOrsTtl)}}</th>
+                <th class='amt'> {{formatAmount(grandTotals.grandTotalBalanceTtl)}}</th>
+                <th class='amt'> {{grandTotals.grandTotalUtilization}}%</th>
+                <th></th>
             </tr>
         </tbody>
 
 
-        <tr class="success" style="background-color: #befac6;">
-            <th colspan="2" class="ctr">MOOE</th>
-            <th class="amt">{{formatAmount(calculateAllotmentClassTotal(mooeList,'garo'))}}</th>
-            <th class="amt">{{formatAmount(calculateAllotmentClassTotal(mooeList,'flr'))}}</th>
-            <th class="amt">{{formatAmount(calculateAllotmentClassTotal(mooeList,'sub-aro'))}}</th>
-            <th class="amt">{{formatAmount(calculateAllotmentClassTotal(mooeList,'other-docs'))}}</th>
-            <th class="amt">{{formatAmount(calculateAllotmentClassTotal(mooeList,'adjustments'))}}</th>
-            <th class="amt">{{formatAmount(calculateAllotmentClassTotal(mooeList,'grossAmt'))}}</th>
-            <th class="amt">{{formatAmount(calculateAllotmentClassTotal(mooeList,'ors'))}}</th>
-            <th class="amt">{{formatAmount(calculateAllotmentClassTotal(mooeList,'balance'))}}</th>
-            <th class="amt">{{calculateUtilization(calculateAllotmentClassTotal(mooeList,'ors'),calculateAllotmentClassTotal(mooeList,'grossAmt'))}}</th>
-            <td></td>
-        </tr>
-        <tbody v-for="(mooeItem, mooeIndex) in mooeList">
-            <tr class="officeTtl">
-                <th class='ctr '>{{ mooeItem.office_name }}</th>
-                <th></th>
-                <th class='amt'>{{ formatAmount(calculateTotalPerOffice(mooeItem,'garo')) }}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(mooeItem,'flr'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(mooeItem,'sub-aro'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(mooeItem,'other-docs'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(mooeItem,'adjustments'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(mooeItem,'grossAmt'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(mooeItem,'ors'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(mooeItem,'balance'))}}</th>
-                <th class="amt">{{calculateUtilization(calculateTotalPerOffice(mooeItem,'ors'),calculateTotalPerOffice(mooeItem,'grossAmt'))}}</th>
-                <td></td>
-            </tr>
-            <tr v-for="(officeItem, officeIndex) in mooeItem.value">
-                <td></td>
-                <th class='ctr'>{{ officeItem.division_name}}</th>
-                <td class='amt'>{{formatAmount(officeItem.ttlGaroAllotment)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlFlr)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlSubAroAllotment)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlOtherDocs)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlAdjustment)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.grossAmt)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlOrs)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.balance)}}</td>
-                <td class='amt'>{{officeItem.utilizationRate}}%</td>
-                <td></td>
-            </tr>
-        </tbody>
-
-        <tr class="warning" style="background-color:#f8fabe;">
-            <th colspan="2" class="ctr">CAPITAL OUTLAY</th>
-            <th class="amt">{{formatAmount(calculateAllotmentClassTotal(capitalOutlayList,'garo'))}}</th>
-            <th class="amt">{{formatAmount(calculateAllotmentClassTotal(capitalOutlayList,'flr'))}}</th>
-            <th class="amt">{{formatAmount(calculateAllotmentClassTotal(capitalOutlayList,'sub-aro'))}}</th>
-            <th class="amt">{{formatAmount(calculateAllotmentClassTotal(capitalOutlayList,'other-docs'))}}</th>
-            <th class="amt">{{formatAmount(calculateAllotmentClassTotal(capitalOutlayList,'adjustments'))}}</th>
-            <th class="amt">{{formatAmount(calculateAllotmentClassTotal(capitalOutlayList,'grossAmt'))}}</th>
-            <th class="amt">{{formatAmount(calculateAllotmentClassTotal(capitalOutlayList,'ors'))}}</th>
-            <th class="amt">{{formatAmount(calculateAllotmentClassTotal(capitalOutlayList,'balance'))}}</th>
-            <th class="amt">{{calculateUtilization(calculateAllotmentClassTotal(capitalOutlayList,'ors'),calculateAllotmentClassTotal(capitalOutlayList,'grossAmt'))}}</th>
-            <td></td>
-        </tr>
-
-        <tbody v-for="(coItem, coIndex) in capitalOutlayList">
-            <tr class="officeTtl">
-                <th class='ctr '>{{ coItem.office_name }}</th>
-                <th></th>
-                <th class='amt'>{{ formatAmount(calculateTotalPerOffice(coItem,'garo')) }}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(coItem,'flr'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(coItem,'sub-aro'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(coItem,'other-docs'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(coItem,'adjustments'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(coItem,'grossAmt'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(coItem,'ors'))}}</th>
-                <th class="amt">{{formatAmount(calculateTotalPerOffice(coItem,'balance'))}}</th>
-                <th class="amt">{{calculateUtilization(calculateTotalPerOffice(coItem,'ors'),calculateTotalPerOffice(coItem,'grossAmt'))}}</th>
-                <td></td>
-            </tr>
-            <tr v-for="(officeItem, officeIndex) in coItem.value">
-                <td></td>
-                <th class='ctr'>{{ officeItem.division_name}}</th>
-                <td class='amt'>{{formatAmount(officeItem.ttlGaroAllotment)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlFlr)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlSubAroAllotment)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlOtherDocs)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlAdjustment)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.grossAmt)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.ttlOrs)}}</td>
-                <td class='amt'>{{formatAmount(officeItem.balance)}}</td>
-                <td class='amt'>{{officeItem.utilizationRate}}%</td>
-                <td></td>
-            </tr>
-        </tbody>
-        <tr style="background-color:#22cbf5;">
-            <th class="ctr" colspan="2">Total</th>
-            <th class="amt">{{formatAmount(grandTotals('garo'))}}</th>
-            <th class="amt">{{formatAmount(grandTotals('flr'))}}</th>
-            <th class="amt">{{formatAmount(grandTotals('sub-aro'))}}</th>
-            <th class="amt">{{formatAmount(grandTotals('other-docs'))}}</th>
-            <th class="amt">{{formatAmount(grandTotals('adjustments'))}}</th>
-            <th class="amt">{{formatAmount(grandTotals('grossAmt'))}}</th>
-            <th class="amt">{{formatAmount(grandTotals('ors'))}}</th>
-            <th class="amt">{{formatAmount(grandTotals('balance'))}}</th>
-            <th class="amt">{{calculateUtilization(grandTotals('ors'),grandTotals('grossAmt'))}}</th>
-            <td></td>
-        </tr>
-        <tr style="background-color:#9ff536;">
-            <th class="ctr" colspan="2">MOOE + CO Total</th>
-            <th class="amt">{{formatAmount(coPlusMooeTtl('garo'))}}</th>
-            <th class="amt">{{formatAmount(coPlusMooeTtl('flr'))}}</th>
-            <th class="amt">{{formatAmount(coPlusMooeTtl('sub-aro'))}}</th>
-            <th class="amt">{{formatAmount(coPlusMooeTtl('other-docs'))}}</th>
-            <th class="amt">{{formatAmount(coPlusMooeTtl('adjustments'))}}</th>
-            <th class="amt">{{formatAmount(coPlusMooeTtl('grossAmt'))}}</th>
-            <th class="amt">{{formatAmount(coPlusMooeTtl('ors'))}}</th>
-            <th class="amt">{{formatAmount(coPlusMooeTtl('balance'))}}</th>
-            <th class="amt">{{calculateUtilization(coPlusMooeTtl('ors'),coPlusMooeTtl('grossAmt'))}}</th>
-            <td></td>
-        </tr>
     </table>
     <div class=" center-container" v-show='loading'>
         <pulse-loader :loading="loading" :color="color" :size="size"></pulse-loader>
     </div>
 </div>
 <style>
-    .officeTtl {
-        background-color: #e3e6e4;
-    }
-
     table.hover-highlight tbody tr:hover {
-        background-color: #ffff66;
+        background-color: #edebeb;
         /* Highlight background color on hover */
     }
 
@@ -299,16 +246,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <?php
 $csrf = YIi::$app->request->csrfToken;
-
+$this->registerJsFile('@web/js/vue-spinner.min.js', ['position' => $this::POS_HEAD]);
 ?>
-<script src="
-https://cdn.jsdelivr.net/npm/vue-spinner@1.0.4/dist/vue-spinner.min.js
-"></script>
 <script>
     var PulseLoader = VueSpinner.PulseLoader
     var RingLoader = VueSpinner.RingLoader
     $(document).ready(function() {
-        // var PulseLoader = '/q/node_modules/vue-spinner/src/PulseLoader.vue';
         new Vue({
             el: '#main',
             components: {
@@ -316,6 +259,7 @@ https://cdn.jsdelivr.net/npm/vue-spinner@1.0.4/dist/vue-spinner.min.js
                 'RingLoader': RingLoader,
             },
             data: {
+                finalData: [],
                 year: '',
                 personelServicesLists: [],
                 mooeList: [],
@@ -323,73 +267,46 @@ https://cdn.jsdelivr.net/npm/vue-spinner@1.0.4/dist/vue-spinner.min.js
                 loading: false,
                 color: '#03befc',
                 size: '20px',
-                showTable: true,
+                showTable: false,
+                grandTotals: [],
+                mooeCoTotal: [],
+
+
             },
+            computed: {},
             methods: {
-                formatReturnedData(data) {
-                    return Object.keys(data).map((officeKey) => {
-                        const obj = data[officeKey]
-                        const divisionDts = Object.keys(obj).map((divisionKey) => {
-                            const val = obj[divisionKey]
-                            const ttlGaroAllotment = parseFloat(this.getItemData(val, 'GARO'))
-                            const ttlSubAroAllotment = parseFloat(this.getItemData(val, 'SAA/Sub-ARO'))
-                            const ttlFlr = parseFloat(this.getItemData(val, 'For Later Release'))
-                            const ttlAdjustment = parseFloat(this.getItemTtls(val, 'adjustment'))
-                            const ttlOrs = parseFloat(this.getItemTtls(val, 'ors'))
-                            const ttlOtherDocs = parseFloat(this.getItemOtherDocsTtl(val))
-                            const grossAmt = ttlGaroAllotment + ttlFlr + ttlSubAroAllotment + ttlOtherDocs + ttlAdjustment
-                            const balance = grossAmt - ttlOrs
-                            const utilizationRate = (ttlOrs / grossAmt) * 100
-
-                            return {
-                                division_name: divisionKey,
-                                value: val,
-                                ttlGaroAllotment: ttlGaroAllotment,
-                                ttlSubAroAllotment: ttlSubAroAllotment,
-                                ttlAdjustment: ttlAdjustment,
-                                ttlOrs: ttlOrs,
-                                ttlOtherDocs: ttlOtherDocs,
-                                grossAmt: grossAmt.toFixed(2),
-                                balance: balance.toFixed(2),
-                                utilizationRate: utilizationRate.toFixed(2),
-                                ttlFlr: ttlFlr.toFixed(2),
-
-                            }
-                        })
+                formatReturnedData(obj) {
+                    return Object.keys(obj).map((key) => {
+                        const val = obj[key]
+                        const ttlGaroAllotment = parseFloat(this.getItemData(val, 'GARO'))
+                        const ttlSubAroAllotment = parseFloat(this.getItemData(val, 'SAA/Sub-ARO'))
+                        const ttlFlr = parseFloat(this.getItemData(val, 'For Later Release'))
+                        const ttlAdjustment = parseFloat(this.getItemTtls(val, 'adjustment'))
+                        const ttlOrs = parseFloat(this.getItemTtls(val, 'ors'))
+                        const ttlOtherDocs = parseFloat(this.getItemOtherDocsTtl(val))
+                        const grossAmt = ttlGaroAllotment + ttlFlr + ttlSubAroAllotment + ttlOtherDocs + ttlAdjustment
+                        const balance = grossAmt - ttlOrs
+                        const utilizationRate = (ttlOrs / grossAmt) * 100
                         return {
-                            office_name: officeKey,
-                            value: divisionDts,
+                            mfo_name: key,
+                            value: val,
+                            ttlGaroAllotment: ttlGaroAllotment,
+                            ttlSubAroAllotment: ttlSubAroAllotment,
+                            ttlAdjustment: ttlAdjustment,
+                            ttlOrs: ttlOrs,
+                            ttlOtherDocs: ttlOtherDocs,
+                            grossAmt: grossAmt.toFixed(2),
+                            balance: balance.toFixed(2),
+                            utilizationRate: !isNaN(utilizationRate) ? utilizationRate.toFixed(2) : 0,
+                            ttlFlr: ttlFlr.toFixed(2),
+
                         }
+
+
+
                     });
 
                 },
-                // Rearrange the display objects make `RO` first in object
-                reArrangeObjects(originalObject) {
-                    if (originalObject) {
-
-                        let roOfficeKey = '';
-                        let objs = {}
-                        for (let [index, data] of originalObject.entries()) {
-                            if (data.office_name.toLowerCase() == 'ro') {
-                                roOfficeKey = index
-                            } else {
-                                let key = Object.keys(objs).length
-                                objs[key] = data
-                            }
-                        }
-                        const rearrangedObject = [];
-                        rearrangedObject[0] = originalObject[roOfficeKey];
-                        Object.keys(objs).map((index) => {
-                            let key = Object.keys(rearrangedObject).length
-                            rearrangedObject[key] = objs[index]
-                        })
-
-                        return rearrangedObject
-                    }
-                    return [];
-
-                },
-                // get data from database
                 filterForm() {
                     this.loading = true
                     this.showTable = false
@@ -400,21 +317,50 @@ https://cdn.jsdelivr.net/npm/vue-spinner@1.0.4/dist/vue-spinner.min.js
                     }
                     const response = axios.post(url, data)
                         .then((response) => {
+                            Object.keys(response.data).map((bookName) => {
+                                let arr = []
+                                let perAllotmentclassValue = Object.keys(response.data[bookName]).map((allotmentClassName) => {
 
-                            const mooeData = response.data["Maintenance and Other Operating Expenses"];
-                            const capitalOutlayData = response.data["Capital Outlays"]
-                            const personnelServicesData = response.data["Personnel Services"]
-                            if (personnelServicesData) {
 
-                                this.personelServicesLists = this.formatReturnedData(personnelServicesData)
-                            }
-                            if (capitalOutlayData) {
-                                this.capitalOutlayList = this.formatReturnedData(capitalOutlayData)
-                            }
-                            if (mooeData) {
-                                this.mooeList = this.reArrangeObjects(this.formatReturnedData(mooeData))
+                                    let perofficeValue = Object.keys(response.data[bookName][allotmentClassName]).map((officeName) => {
 
-                            }
+                                        let newOfficeObj = {
+                                            officeName: officeName,
+                                            value: this.formatReturnedData(response.data[bookName][allotmentClassName][officeName]),
+                                        }
+                                        return {
+                                            ...newOfficeObj,
+                                            ...this.calculateOfficeTotals(response.data[bookName][allotmentClassName][officeName])
+                                        }
+                                    })
+                                    let newAllotmentObj = {
+                                        allotmentClassName: allotmentClassName,
+                                        value: perofficeValue,
+                                    }
+                                    return {
+                                        ...newAllotmentObj,
+                                        ...this.calculateTotalPerAllotmentClass(perofficeValue)
+                                    }
+
+                                })
+
+                                let bookObj = {
+                                    bookName: bookName,
+                                    value: perAllotmentclassValue
+
+                                }
+
+                                this.finalData.push({
+
+                                        ...bookObj,
+                                        ...this.calculateTotalPerBook(perAllotmentclassValue)
+                                    }
+
+                                )
+                            })
+                            // console.log(this.finalData)
+                            this.grandTotals = this.calculateGrandTotal()
+                            this.mooeCoTotal = this.calculateSumOfCoAndMooe()
                             setTimeout(() => {
                                 this.loading = false
 
@@ -453,7 +399,7 @@ https://cdn.jsdelivr.net/npm/vue-spinner@1.0.4/dist/vue-spinner.min.js
                 getItemOtherDocsTtl(data) {
                     let total = 0
                     Object.keys(data).map(key => {
-                        if (key !== 'GARO' && key !== 'SAA/Sub-ARO') {
+                        if (key.toLowerCase() !== 'garo' && key.toLowerCase() !== 'saa/sub-aro') {
                             total += parseFloat(data[key].ttlAllotment)
                         }
                     })
@@ -467,100 +413,195 @@ https://cdn.jsdelivr.net/npm/vue-spinner@1.0.4/dist/vue-spinner.min.js
                     }
                     return 0;
                 },
-                calculteItemGrossAllot(item) {
-                    let total = 0;
 
-                    total =
-                        (item.ttlGaroAllotment +
-                            item.ttlSubAroAllotment +
-                            item.ttlOtherDocs +
-                            item.ttlAdjustment)
 
-                    return total.toFixed(2);
-                },
-                calculteItemBalance(item) {
-                    let total = 0;
 
-                    total =
-                        (item.ttlGaroAllotment +
-                            item.ttlSubAroAllotment +
-                            item.ttlOtherDocs +
-                            item.ttlAdjustment) - item.ttlOrs
+                calculateOfficeTotals(obj) {
+                    let garoTtl = 0
+                    let saaTtl = 0
+                    let flrTtl = 0
+                    let otherDocsTtl = 0
+                    let adjustmentTtl = 0
+                    let orsTtl = 0
+                    let balanceTtl = 0
+                    Object.keys(obj).map((key) => {
 
-                    return total.toFixed(2);
-                },
-                calculateUtilization(numerator, denominator) {
-                    const ttl = ((numerator / denominator) * 100)
-                    return !isNaN(ttl) ? ttl.toFixed(2) + '%' : 0
-                },
-                getObectTtls(arr, amtName) {
+                        Object.keys(obj[key]).map((key2) => {
+                            if (obj[key][key2].document_recieve.toLowerCase() === 'garo') {
+                                garoTtl += parseFloat(obj[key][key2].ttlAllotment)
+                            } else if (obj[key][key2].document_recieve.toLowerCase() === "saa/sub-aro") {
+                                saaTtl += parseFloat(obj[key][key2].ttlAllotment)
+                            } else if (obj[key][key2].document_recieve.toLowerCase() === "for later release") {
+                                flrTtl += parseFloat(obj[key][key2].ttlAllotment)
+                            } else {
+                                otherDocsTtl += parseFloat(obj[key][key2].ttlAllotment)
+                            }
+                            adjustmentTtl += parseFloat(obj[key][key2].ttlAdjustment)
+                            orsTtl += parseFloat(obj[key][key2].ttlOrs)
+                            balanceTtl += parseFloat(obj[key][key2].ttlBalance)
+                        })
 
-                    return Object.keys(arr).reduce((ttl, key) => {
+                    })
+                    let gross =
+                        garoTtl +
+                        saaTtl +
+                        flrTtl +
+                        otherDocsTtl +
+                        adjustmentTtl
+                    let utilization = (orsTtl / gross) * 100
+                    return {
+                        officeGaroTtl: garoTtl.toFixed(2),
+                        officeSaaTtl: saaTtl.toFixed(2),
+                        officeOtherDocsTtl: otherDocsTtl.toFixed(2),
+                        officeFlrTtl: flrTtl.toFixed(2),
+                        officeAdjustmentTtl: adjustmentTtl.toFixed(2),
+                        officeOrsTtl: orsTtl.toFixed(2),
+                        officeBalanceTtl: balanceTtl.toFixed(2),
+                        officeGrossAmt: gross.toFixed(2),
+                        officeUtilization: !isNaN(utilization) ? utilization.toFixed(2) : 0
 
-                        if (amtName == 'garo') {
-                            return ttl + parseFloat(arr[key].ttlGaroAllotment)
-                        } else if (amtName == 'sub-aro') {
-                            return ttl + parseFloat(arr[key].ttlSubAroAllotment)
-                        } else if (amtName == 'other-docs') {
-                            return ttl + parseFloat(arr[key].ttlOtherDocs)
-                        } else if (amtName == 'adjustments') {
-                            return ttl + parseFloat(arr[key].ttlAdjustment)
-                        } else if (amtName == 'grossAmt') {
-                            return ttl + parseFloat(arr[key].grossAmt)
-                        } else if (amtName == 'ors') {
-                            return ttl + parseFloat(arr[key].ttlOrs)
-                        } else if (amtName == 'balance') {
-                            return ttl + parseFloat(arr[key].balance)
-                        } else if (amtName == 'flr') {
-                            return ttl + parseFloat(arr[key].ttlFlr)
-                        }
-                    }, 0)
-                },
-                calculateAllotmentClassTotal(arr, amtName) {
-                    return arr.reduce((total, item) => {
-                        return total + this.getObectTtls(item.value, amtName)
-                    }, 0)
-                },
-                calculate() {
-
-                },
-                grandTotals(amtName) {
-                    let psTotal = 0
-                    let mooeTotal = 0
-                    let coTotal = 0
-                    if (this.personelServicesLists.length > 0) {
-                        psTotal = this.calculateAllotmentClassTotal(this.personelServicesLists, amtName)
                     }
-                    if (this.mooeList.length > 0) {
-                        mooeTotal = this.calculateAllotmentClassTotal(this.mooeList, amtName)
-                    }
-                    if (this.capitalOutlayList.length > 0) {
-                        coTotal = this.calculateAllotmentClassTotal(this.capitalOutlayList, amtName)
-                    }
-                    return (parseFloat(psTotal) + parseFloat(mooeTotal) + parseFloat(coTotal)).toFixed(2)
                 },
-                coPlusMooeTtl(amtName) {
-                    let mooeTotal = 0
-                    let coTotal = 0
-                    if (this.mooeList.length > 0) {
-                        mooeTotal = this.calculateAllotmentClassTotal(this.mooeList, amtName)
+                calculateTotalPerAllotmentClass(data) {
+                    let allotmentClassAdjustmentTtl = 0
+                    let allotmentClassBalanceTtl = 0
+                    let allotmentClassFlrTtl = 0
+                    let allotmentClassGaroTtl = 0
+                    let allotmentClassGrossAmt = 0
+                    let allotmentClassOrsTtl = 0
+                    let allotmentClassOtherDocsTtl = 0
+                    let allotmentClassSaaTtl = 0
+                    data.map((item) => {
+                        allotmentClassAdjustmentTtl += parseFloat(item.officeAdjustmentTtl)
+                        allotmentClassBalanceTtl += parseFloat(item.officeBalanceTtl)
+                        allotmentClassFlrTtl += parseFloat(item.officeFlrTtl)
+                        allotmentClassGaroTtl += parseFloat(item.officeGaroTtl)
+                        allotmentClassGrossAmt += parseFloat(item.officeGrossAmt)
+                        allotmentClassOrsTtl += parseFloat(item.officeOrsTtl)
+                        allotmentClassOtherDocsTtl += parseFloat(item.officeOtherDocsTtl)
+                        allotmentClassSaaTtl += parseFloat(item.officeSaaTtl)
+                    })
+                    let utilization = (allotmentClassOrsTtl / allotmentClassGrossAmt) * 100
+                    return {
+                        allotmentClassAdjustmentTtl: allotmentClassAdjustmentTtl.toFixed(2),
+                        allotmentClassBalanceTtl: allotmentClassBalanceTtl.toFixed(2),
+                        allotmentClassFlrTtl: allotmentClassFlrTtl.toFixed(2),
+                        allotmentClassGaroTtl: allotmentClassGaroTtl.toFixed(2),
+                        allotmentClassGrossAmt: allotmentClassGrossAmt.toFixed(2),
+                        allotmentClassOrsTtl: allotmentClassOrsTtl.toFixed(2),
+                        allotmentClassOtherDocsTtl: allotmentClassOtherDocsTtl.toFixed(2),
+                        allotmentClassSaaTtl: allotmentClassSaaTtl.toFixed(2),
+                        allotmentClassUtilization: !isNaN(utilization) ? utilization.toFixed(2) : 0
                     }
-                    if (this.capitalOutlayList.length > 0) {
-                        coTotal = this.calculateAllotmentClassTotal(this.capitalOutlayList, amtName)
-                    }
-                    return (parseFloat(mooeTotal) + parseFloat(coTotal)).toFixed(2)
                 },
+                calculateTotalPerBook(data) {
+                    let bookAdjustmentTtl = 0
+                    let bookBalanceTtl = 0
+                    let bookFlrTtl = 0
+                    let bookGaroTtl = 0
+                    let bookGrossAmt = 0
+                    let bookOrsTtl = 0
+                    let bookOtherDocsTtl = 0
+                    let bookSaaTtl = 0
+                    data.map((item) => {
+                        bookAdjustmentTtl += parseFloat(item.allotmentClassAdjustmentTtl)
+                        bookBalanceTtl += parseFloat(item.allotmentClassBalanceTtl)
+                        bookFlrTtl += parseFloat(item.allotmentClassFlrTtl)
+                        bookGaroTtl += parseFloat(item.allotmentClassGaroTtl)
+                        bookGrossAmt += parseFloat(item.allotmentClassGrossAmt)
+                        bookOrsTtl += parseFloat(item.allotmentClassOrsTtl)
+                        bookOtherDocsTtl += parseFloat(item.allotmentClassOtherDocsTtl)
+                        bookSaaTtl += parseFloat(item.allotmentClassSaaTtl)
+                    })
+                    let utilization = (bookOrsTtl / bookGrossAmt) * 100
+                    return {
+                        bookAdjustmentTtl: bookAdjustmentTtl.toFixed(2),
+                        bookBalanceTtl: bookBalanceTtl.toFixed(2),
+                        bookFlrTtl: bookFlrTtl.toFixed(2),
+                        bookGaroTtl: bookGaroTtl.toFixed(2),
+                        bookGrossAmt: bookGrossAmt.toFixed(2),
+                        bookOrsTtl: bookOrsTtl.toFixed(2),
+                        bookOtherDocsTtl: bookOtherDocsTtl.toFixed(2),
+                        bookSaaTtl: bookSaaTtl.toFixed(2),
+                        bookUtilization: !isNaN(utilization) ? utilization.toFixed(2) : 0
+                    }
+                },
+                calculateGrandTotal(amtName) {
 
-                calculateTotalPerOffice(data, amtName) {
-                    return this.getObectTtls(data.value, amtName)
+                    let grandTotalAdjustmentTtl = 0
+                    let grandTotalBalanceTtl = 0
+                    let grandTotalFlrTtl = 0
+                    let grandTotalGaroTtl = 0
+                    let grandTotalGrossAmt = 0
+                    let grandTotalName = 0
+                    let grandTotalOrsTtl = 0
+                    let grandTotalOtherDocsTtl = 0
+                    let grandTotalSaaTtl = 0
+                    this.finalData.map((item) => {
+                        grandTotalAdjustmentTtl += parseFloat(item.bookAdjustmentTtl)
+                        grandTotalBalanceTtl += parseFloat(item.bookBalanceTtl)
+                        grandTotalFlrTtl += parseFloat(item.bookFlrTtl)
+                        grandTotalGaroTtl += parseFloat(item.bookGaroTtl)
+                        grandTotalGrossAmt += parseFloat(item.bookGrossAmt)
+                        grandTotalName += parseFloat(item.bookName)
+                        grandTotalOrsTtl += parseFloat(item.bookOrsTtl)
+                        grandTotalOtherDocsTtl += parseFloat(item.bookOtherDocsTtl)
+                        grandTotalSaaTtl += parseFloat(item.bookSaaTtl)
+                    })
+                    let utilization = (grandTotalOrsTtl / grandTotalGrossAmt) * 100
+                    return {
+                        grandTotalAdjustmentTtl: grandTotalAdjustmentTtl,
+                        grandTotalBalanceTtl: grandTotalBalanceTtl,
+                        grandTotalFlrTtl: grandTotalFlrTtl,
+                        grandTotalGaroTtl: grandTotalGaroTtl,
+                        grandTotalGrossAmt: grandTotalGrossAmt,
+                        grandTotalName: grandTotalName,
+                        grandTotalOrsTtl: grandTotalOrsTtl,
+                        grandTotalOtherDocsTtl: grandTotalOtherDocsTtl,
+                        grandTotalSaaTtl: grandTotalSaaTtl,
+                        grandTotalUtilization: !isNaN(utilization) ? utilization.toFixed(2) : 0,
+                    }
+                },
+                calculateSumOfCoAndMooe() {
+                    let mooeCoAdjustmentTtl = 0
+                    let mooeCoBalanceTtl = 0
+                    let mooeCoFlrTtl = 0
+                    let mooeCoGaroTtl = 0
+                    let mooeCoGrossAmt = 0
+                    let mooeCoOrsTtl = 0
+                    let mooeCoOtherDocsTtl = 0
+                    let mooeCoSaaTtl = 0
+                    this.finalData.map((bookItem) => {
+                        bookItem.value.map((allotmentClassItem) => {
+
+                            if (allotmentClassItem.allotmentClassName.toLowerCase() === "maintenance and other operating expenses" || allotmentClassItem.allotmentClassName.toLowerCase() === "capital outlays") {
+                                mooeCoAdjustmentTtl += parseFloat(allotmentClassItem.allotmentClassAdjustmentTtl)
+                                mooeCoBalanceTtl += parseFloat(allotmentClassItem.allotmentClassBalanceTtl)
+                                mooeCoFlrTtl += parseFloat(allotmentClassItem.allotmentClassFlrTtl)
+                                mooeCoGaroTtl += parseFloat(allotmentClassItem.allotmentClassGaroTtl)
+                                mooeCoGrossAmt += parseFloat(allotmentClassItem.allotmentClassGrossAmt)
+                                mooeCoOrsTtl += parseFloat(allotmentClassItem.allotmentClassOrsTtl)
+                                mooeCoOtherDocsTtl += parseFloat(allotmentClassItem.allotmentClassOtherDocsTtl)
+                                mooeCoSaaTtl += parseFloat(allotmentClassItem.allotmentClassSaaTtl)
+                            }
+                        })
+                    })
+                    let utilization = (mooeCoOrsTtl / mooeCoGrossAmt) * 100
+                    return {
+                        mooeCoAdjustmentTtl: mooeCoAdjustmentTtl,
+                        mooeCoBalanceTtl: mooeCoBalanceTtl,
+                        mooeCoFlrTtl: mooeCoFlrTtl,
+                        mooeCoGaroTtl: mooeCoGaroTtl,
+                        mooeCoGrossAmt: mooeCoGrossAmt,
+                        mooeCoOrsTtl: mooeCoOrsTtl,
+                        mooeCoOtherDocsTtl: mooeCoOtherDocsTtl,
+                        mooeCoSaaTtl: mooeCoSaaTtl,
+                        mooeCoUtilization: !isNaN(utilization) ? utilization.toFixed(2) : 0,
+                    }
                 }
 
             },
-            computed: {
 
-
-
-            }
         })
     })
 </script>
