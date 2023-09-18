@@ -73,8 +73,8 @@ class BudgetReportsController extends \yii\web\Controller
             $from_period = DateTime::createFromFormat('Y-m', $to_period)->format('Y');
             $qry = RecordAllotmentDetailed::getStatusOfFundsPerMfoOffice($from_period . '-01', $to_period);
             $result = ArrayHelper::index($qry, 'document_recieve', [function ($element) {
-                return $element['allotment_class'];
-            }, 'mfo_name', 'office_name', 'division']);
+                return $element['book_name'];
+            }, 'allotment_class', 'mfo_name', 'office_name', 'division']);
             return json_encode($result);
         }
         return $this->render('sof_per_mfo_office');

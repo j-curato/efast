@@ -121,6 +121,7 @@ class RecordAllotmentDetailed extends \yii\db\ActiveRecord
     public static function getStatusOfFundsPerMfoOffice($from_period, $to_period)
     {
         return Yii::$app->db->createCommand("SELECT 
+        record_allotment_detailed.book_name,
         record_allotment_detailed.allotment_class,
         record_allotment_detailed.mfo_name,
         record_allotment_detailed.office_name,
@@ -133,7 +134,9 @@ class RecordAllotmentDetailed extends \yii\db\ActiveRecord
         FROM record_allotment_detailed
         WHERE  record_allotment_detailed.reporting_period >= :from_period
         AND record_allotment_detailed.reporting_period <= :to_period
-        GROUP BY record_allotment_detailed.allotment_class,
+        GROUP BY 
+        record_allotment_detailed.book_name,
+        record_allotment_detailed.allotment_class,
         record_allotment_detailed.mfo_name,
         record_allotment_detailed.office_name,
         record_allotment_detailed.division,
