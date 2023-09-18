@@ -220,7 +220,6 @@ class PrPurchaseOrderController extends Controller
         $model->delivery_term = 'FOB Destination';
         $model->fk_office_id = YIi::$app->user->identity->fk_office_id;
         if ($model->load(Yii::$app->request->post())) {
-
             try {
                 $txn = MyHelper::beginTxn();
                 $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()   % 9223372036854775807")->queryScalar();
@@ -231,9 +230,9 @@ class PrPurchaseOrderController extends Controller
                 if (!$model->save()) {
                     throw new ErrorException('Model Save Failed');
                 }
-                if (!empty(array_unique($_POST['aoq_id']))) {
-                    $this->newLowest(array_unique($_POST['aoq_id']), $model->fk_pr_aoq_id);
-                }
+                // if (!empty(array_unique($_POST['aoq_id']))) {
+                //     $this->newLowest(array_unique($_POST['aoq_id']), $model->fk_pr_aoq_id);
+                // }
                 $insItems =  $this->insertItems($model->id, $model->po_number, $model->fk_pr_aoq_id);
                 if ($insItems !== true) {
                     throw new ErrorException($insItems);
