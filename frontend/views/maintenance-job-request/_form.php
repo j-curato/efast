@@ -6,7 +6,8 @@ use kartik\widgets\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\JsExpression;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\MaintenanceJobRequest */
@@ -26,71 +27,87 @@ if (!empty($model->id)) {
 
     <?php $form = ActiveForm::begin(); ?>
 
+    <div class="row">
+        <div class="col">
 
-    <?= $form->field($model, 'fk_responsibility_center_id')->widget(Select2::class, [
-        'data' => ArrayHelper::map(ResponsibilityCenter::find()->asArray()->all(), 'id', 'name'),
-        'pluginOptions' => [
-            'placeholder' => 'Select Responsibility Center'
-        ]
-    ]) ?>
-
-    <?= $form->field($model, 'fk_employee_id')->widget(Select2::class, [
-        'data' => $requested_by,
-        'options' => ['placeholder' => 'Search for a Employee ...'],
-        'pluginOptions' => [
-            'allowClear' => true,
-            'minimumInputLength' => 1,
-            'language' => [
-                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-            ],
-            'ajax' => [
-                'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
-                'dataType' => 'json',
-                'delay' => 250,
-                'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                'cache' => true
-            ],
-            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-        ],
+            <?= $form->field($model, 'date_requested')->widget(DatePicker::class, [
+                'options' => [
+                    'readonly' => true,
+                    'style' => 'background-color:white'
+                ],
+                'pluginOptions' => [
+                    'format' => 'yyyy-mm-dd',
+                    'autoclose' => true
+                ]
+            ]) ?>
+        </div>
+        <div class="col">
+            <?= $form->field($model, 'fk_responsibility_center_id')->widget(Select2::class, [
+                'data' => ArrayHelper::map(ResponsibilityCenter::find()->asArray()->all(), 'id', 'name'),
+                'pluginOptions' => [
+                    'placeholder' => 'Select Responsibility Center'
+                ]
+            ]) ?>
 
 
-    ]) ?>
-    <?= $form->field($model, 'fk_approved_by')->widget(Select2::class, [
-        'data' => $requested_by,
-        'options' => ['placeholder' => 'Search for a Employee ...'],
-        'pluginOptions' => [
-            'allowClear' => true,
-            'minimumInputLength' => 1,
-            'language' => [
-                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-            ],
-            'ajax' => [
-                'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
-                'dataType' => 'json',
-                'delay' => 250,
-                'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                'cache' => true
-            ],
-            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-        ],
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+
+            <?= $form->field($model, 'fk_employee_id')->widget(Select2::class, [
+                'data' => $requested_by,
+                'options' => ['placeholder' => 'Search for a Employee ...'],
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'minimumInputLength' => 1,
+                    'language' => [
+                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                    ],
+                    'ajax' => [
+                        'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                        'dataType' => 'json',
+                        'delay' => 250,
+                        'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                        'cache' => true
+                    ],
+                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                ],
 
 
-    ]) ?>
+            ]) ?>
+        </div>
+        <div class="col">
+            <?= $form->field($model, 'fk_approved_by')->widget(Select2::class, [
+                'data' => $requested_by,
+                'options' => ['placeholder' => 'Search for a Employee ...'],
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'minimumInputLength' => 1,
+                    'language' => [
+                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                    ],
+                    'ajax' => [
+                        'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                        'dataType' => 'json',
+                        'delay' => 250,
+                        'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                        'cache' => true
+                    ],
+                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                ],
 
-    <?= $form->field($model, 'date_requested')->widget(DatePicker::class, [
-        'options' => [
-            'readonly' => true,
-            'style' => 'background-color:white'
-        ],
-        'pluginOptions' => [
-            'format' => 'yyyy-mm-dd',
-            'autoclose' => true
-        ]
-    ]) ?>
+
+            ]) ?>
+        </div>
+    </div>
+
+
+
 
     <?= $form->field($model, 'problem_description')->textarea(['rows' => 4]) ?>
 
@@ -99,9 +116,12 @@ if (!empty($model->id)) {
     <?= $form->field($model, 'action_taken')->textarea(['rows' => 4]) ?>
 
 
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+    <div class="row justify-content-center">
+        <div class="form-group">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        </div>
     </div>
+
 
     <?php ActiveForm::end(); ?>
 

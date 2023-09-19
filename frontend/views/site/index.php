@@ -21,7 +21,7 @@ $this->title = 'Dashboard';
             <div class="col-sm-3">
                 <?php
                 if (Yii::$app->user->can('super-user')) {
-                    echo Html::a('NAS Link', Url::to('http://192.168.1.190:5000', true), ['target' => '_blank', 'class' => 'btn btn-warning']);
+                    echo Html::a('NAS Link', Url::to('http://192.168.1.190:8021', true), ['target' => '_blank', 'class' => 'btn btn-warning']);
                 }
                 // echo "  <div class='col-sm-1'><button class='btn btn-success' id='update_cloud' style='margin-bottom:12px'>Update Cloud</button> </div>";
                 ?>

@@ -5,7 +5,8 @@ use kartik\date\DatePicker;
 use kartik\grid\GridView;
 use kartik\icons\Icon;
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\AcicInBank */

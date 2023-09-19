@@ -16,7 +16,8 @@ use kartik\select2\Select2;
 use kartik\widgets\DatePicker;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\RecordAllotments */
@@ -229,7 +230,7 @@ $fund_categories = ArrayHelper::map(FundCategoryAndClassificationCode::find()->a
                     </td>
                     <td style='max-width: 5rem; text-align:left'>
                         <button type='button' class='add-entry btn btn-success btn-xs'>
-                            <i class='fa fa-pencil-alt'></i>
+                            <i class='fa fa-plus'></i>
                         </button>
                         <button type='button' class='remove btn btn-danger btn-xs' style=' text-align: center; ' onClick='removeItem(this)'>
                             <i class=' fa fa-times'></i>
@@ -254,7 +255,7 @@ $fund_categories = ArrayHelper::map(FundCategoryAndClassificationCode::find()->a
                         </td>
                         <td style="max-width: 2rem; text-align:left">
                             <button type="button" class='add-entry btn btn-success btn-xs'>
-                                <i class="fa fa-pencil-alt"></i>
+                                <i class="fa fa-plus"></i>
                             </button>
                             <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; " onClick="removeItem(this)">
                                 <i class="fa fa-times"></i>
@@ -267,11 +268,9 @@ $fund_categories = ArrayHelper::map(FundCategoryAndClassificationCode::find()->a
 
         </table>
     </div>
-    <div class="row">
-        <div class="col-sm-3 col-sm-offset-5">
-            <div class="form-group">
-                <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:20rem']) ?>
-            </div>
+    <div class="row justify-content-center">
+        <div class="form-group col-sm-2">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
         </div>
     </div>
 
@@ -335,7 +334,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
             </td>
             <td style="max-width: 1rem; text-align:left"> 
                    <button type="button" class='add-entry btn btn-success btn-xs' >
-                    <i class="fa fa-pencil-alt"></i>
+                    <i class="fa fa-plus"></i>
                 </button>
                 <button type="button" class='remove btn btn-danger btn-xs' onClick="removeItem(this)"">
                     <i class="fa fa-times"></i>

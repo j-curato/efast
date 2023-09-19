@@ -18,7 +18,7 @@ $user_data = Yii::$app->memem->getUserData();
 
 
 
-    <div class="container">
+    <div class="container card">
         <div class="row as">
             <p>
                 <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>

@@ -14,14 +14,15 @@ use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\AllotmentModificationAdvice */
 /* @var $form yii\widgets\ActiveForm */
 
 ?>
-<div class="allotment-modification-advice-form" id="main">
+<div class="allotment-modification-advice-form card" id="main">
     <?php $form = ActiveForm::begin([
         'id' => $model->formName()
     ]); ?>
@@ -197,8 +198,8 @@ use yii\widgets\ActiveForm;
             </table>
 
         </div>
-        <div class="row">
-            <div class="form-group col-sm-1 col-sm-offset-5 ">
+        <div class="row justify-content-center">
+            <div class="form-group col-sm-2 ">
                 <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%;']) ?>
             </div>
         </div>
@@ -223,6 +224,9 @@ use yii\widgets\ActiveForm;
         /* Vertically center the buttons */
         gap: 4px;
         /* Add some spacing between the buttons */
+    }
+    .allotment-modification-advice-form{
+        padding: 1rem;
     }
 </style>
 

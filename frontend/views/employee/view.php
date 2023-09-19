@@ -14,17 +14,9 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="employee-view">
 
-    <h3><?= Html::encode($this->title) ?></h3>
 
     <p>
         <?= Html::button('<i class="fa fa-pencil-alt"></i> Update', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=employee/update&id=' . $model->employee_id), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->employee_id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
     </p>
 
     <?= DetailView::widget([

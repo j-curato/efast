@@ -279,46 +279,48 @@ $this->params['breadcrumbs'][] = $this->title;
         'toolbar' => [
             [
 
-                'content' => "<h4  style='margin-top:35px' >Export By Reporting Period</h4><form  id='export_filter'><div class='row'>
-                    <div class='col-sm-2'>" . DatePicker::widget([
-                    'name' => 'from_reporting_period',
-                    'id' => 'from_reporting_period',
+                'content' => "<form  id='export_filter'>
+                <div class='row'>
+                    <div class='col'>" .
+                    DatePicker::widget([
+                        'name' => 'from_reporting_period',
+                        'id' => 'from_reporting_period',
 
-                    'pluginOptions' => [
-                        'format' => 'yyyy-mm',
-                        'minViewMode' => 'months',
-                        'autoclose' => true
-                    ],
-                    'options' => [
-                        'placeholder' => 'From',
-                        'readOnly' => true,
-                        'style' => 'background-color:white;width:120px',
-                        'class' => 'col-sm-3',
-                        'style' => 'width:100px'
-                    ],
-                ]) . "</div>
-                <div class='col-sm-2'>" . DatePicker::widget([
-                    'name' => 'to_reporting_period',
-                    'id' => 'to_reporting_period',
-                    'options' => [
-                        'style' => 'width:100px'
-                    ],
-                    'pluginOptions' => [
-                        'format' => 'yyyy-mm',
-                        'minViewMode' => 'months',
-                        'autoclose' => true
-                    ],
-                    'options' => [
-                        'placeholder' => 'To',
-                        'readOnly' => true,
-                        'style' => 'background-color:white;width:120px'
+                        'pluginOptions' => [
+                            'format' => 'yyyy-mm',
+                            'minViewMode' => 'months',
+                            'autoclose' => true
+                        ],
+                        'options' => [
+                            'placeholder' => 'From',
+                            'readOnly' => true,
+                            'style' => 'background-color:white'
 
-                    ],
-                ]) . "</div><div class='col-sm-3'>  <button class='btn btn-primary' type='submit'>Export</button></div>
+                        ],
+                    ])
+                    . "</div>
+                    <div class='col'>" .
+                    DatePicker::widget([
+                        'name' => 'to_reporting_period',
+                        'id' => 'to_reporting_period',
+
+                        'pluginOptions' => [
+                            'format' => 'yyyy-mm',
+                            'minViewMode' => 'months',
+                            'autoclose' => true
+                        ],
+                        'options' => [
+                            'placeholder' => 'To',
+                            'readOnly' => true,
+                            'style' => 'background-color:white'
+
+                        ],
+                    ])
+                    . "</div>
+                    <div class='col'><button class='btn btn-primary' type='submit'>Export</button></div>
                 </div>
               
-                </form>
-                ",
+                </form>",
                 'options' => [
                     'class' => 'btn-group mr-2', 'style' => 'margin-right:20px'
                 ]

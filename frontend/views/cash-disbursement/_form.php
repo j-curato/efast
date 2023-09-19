@@ -16,7 +16,8 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\JsExpression;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\CashDisbursement */
@@ -197,11 +198,9 @@ if (!empty($model->dv_aucs_id)) {
             </tbody>
         </table>
 
-        <div class="row" style="margin-top: 5rem;">
-            <div class="col-sm-3 col-sm-offset-5">
-                <div class="form-group " style="width:10rem">
-                    <?= Html::submitButton('Save', ['class' => 'btn btn-success submit_cash', 'style' => 'width:30rem']) ?>
-                </div>
+        <div class="row justify-content-center" style="margin-top: 5rem;">
+            <div class="form-group  col-sm-2">
+                <?= Html::submitButton('Save', ['class' => 'btn btn-success submit_cash', 'style' => 'width:100%']) ?>
             </div>
         </div>
 

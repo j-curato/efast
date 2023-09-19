@@ -9,7 +9,8 @@ use kartik\icons\Icon;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Radai */
@@ -82,9 +83,9 @@ $itemRow = 0;
             } ?>
         </tbody>
     </table>
-    <div class="row">
+    <div class="row justify-content-center">
 
-        <div class="form-group col-sm-2 col-sm-offset-5">
+        <div class="form-group col-sm-2">
             <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
         </div>
     </div>
@@ -133,6 +134,8 @@ $itemRow = 0;
             'issuance_date',
             'mode_of_payment_name',
         ],
+        'export' => false,
+        'toggleData' => false
     ]); ?>
 
 

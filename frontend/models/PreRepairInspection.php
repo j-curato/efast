@@ -32,7 +32,7 @@ class PreRepairInspection extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'serial_number'], 'required'],
+            [['id', 'serial_number', 'date', 'fk_requested_by','findings'], 'required'],
             [['id', 'fk_requested_by', 'fk_accountable_person'], 'integer'],
             [['date', 'created_at'], 'safe'],
             [['findings', 'recommendation'], 'string'],
@@ -40,15 +40,8 @@ class PreRepairInspection extends \yii\db\ActiveRecord
             [['serial_number'], 'unique'],
             [['id'], 'unique'],
             [[
-                'id',
-                'serial_number',
-                'date',
                 'findings',
                 'recommendation',
-                'fk_requested_by',
-                'fk_accountable_person',
-                'equipment_type',
-                'created_at',
 
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
@@ -66,7 +59,7 @@ class PreRepairInspection extends \yii\db\ActiveRecord
             'findings' => 'Findings',
             'recommendation' => 'Recommendation',
             'fk_requested_by' => ' Requested By',
-            'fk_accountable_person' => ' Accountabler Person',
+            'fk_accountable_person' => ' Accountable Person',
             'created_at' => 'Created At',
         ];
     }

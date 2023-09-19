@@ -12,7 +12,6 @@ $this->params['breadcrumbs'][] = 'Update';
 ?>
 <div class="ro-alphalist-update">
 
-    <h3><?= Html::encode($this->title) ?></h3>
 
     <?= $this->render('_form', [
         'model' => $model,

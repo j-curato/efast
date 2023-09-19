@@ -12,7 +12,8 @@ use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
 use kartik\grid\GridView;
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Transmittal */
@@ -21,7 +22,7 @@ use yii\widgets\ActiveForm;
 $itemRow = 0;
 ?>
 
-<div class="transmittal-form card">
+<div class="transmittal-form card" style="padding: 1rem;">
     <?php
     $viewSearchModel = new VwNotInCoaTransmittalSearch();
     $viewDataProvider = $viewSearchModel->search(Yii::$app->request->queryParams);
@@ -100,9 +101,9 @@ $itemRow = 0;
         </tbody>
     </table>
 
-    <div class="row">
+    <div class="row justify-content-center">
 
-        <div class="form-group col-sm-1 col-sm-offset-5">
+        <div class="form-group col-sm-2">
             <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
         </div>
     </div>

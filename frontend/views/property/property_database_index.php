@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'content' => "
                     <div class='row'>
-                        <div class='col-sm-3'>
+                        <div class='col-sm-8'>
                         <label for='reporting_period'> Reporting Period</label>
                         " .
                     DatePicker::widget([
@@ -39,8 +39,8 @@ $this->params['breadcrumbs'][] = $this->title;
                         ]
                     ])
                     . "</div>
-                        <div class='col-sm-3'>   
-                            <button id='export' type='button' class='btn btn-success' style='margin:1rem;margin-top:25px'><i class='glyphicon glyphicon-export'></i>Export</button>
+                        <div class='col'>   
+                            <button id='export' type='button' class='btn btn-success' style='margin:1rem;margin-top:30px'><i class='glyphicon glyphicon-export'></i>Export</button>
                         </div>
                 </div>",
                 'options' => [

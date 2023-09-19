@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use yii\helpers\Url;
@@ -13,17 +14,14 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="authorization-code-index">
 
-    <h3><?= Html::encode($this->title) ?></h3>
-
-    <!-- <p>
-        <?= Html::a('Create Authorization Code', ['create'], ['class' => 'btn btn-success']) ?>
-    </p> -->
 
     <p>
-        <?= Html::button('<i class="fa fa-pencil-alt"></i> Add New', ['value'=>Url::to(yii::$app->request->baseUrl . '/index.php?r=authorization-code/create'), 'id'=>'modalButtoncreate', 'class' =>'btn btn-success', 'data-placement'=>'left', 'data-toggle'=>'tooltip', 'title'=>'Add Sector']); ?>
+        <?= Html::a('Create Authorization Code', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -31,11 +29,11 @@ $this->params['breadcrumbs'][] = $this->title;
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
             'heading' => 'List of Areas',
-      ],
-       'floatHeaderOptions'=>[
-           'top'=>50,
-           'position'=>'absolute',
-         ],
+        ],
+        'floatHeaderOptions' => [
+            'top' => 50,
+            'position' => 'absolute',
+        ],
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
@@ -43,35 +41,15 @@ $this->params['breadcrumbs'][] = $this->title;
             'name',
             'description',
 
-            // ['class' => 'yii\grid\ActionColumn'],
             [
-                'label'=>'Actions', 
-                'format'=>'raw',
-                'value'=>function($model){
-                    $t = yii::$app->request->baseUrl . '/index.php?r=authorization-code/update&id='.$model->id;
-            
-                    return ' ' . Html::button('<span class="fa fa-pencil-square-o"></span>', ['value'=>Url::to($t), 'class' =>'btn btn-primary btn-xs modalButtonedit']);
-                   
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->id);
                 }
-            ]
+            ],
         ],
     ]); ?>
 
 
 </div>
-
-
-<?php
-
-$js = "
-        $('#modalButtoncreate').click(function(){
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-        });
-        $('.modalButtonedit').click(function(){
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-        });
-
-
-";
-$this->registerJs($js, $this::POS_END);
-?>

@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 
@@ -40,13 +41,10 @@ $this->params['breadcrumbs'][] = $this->title;
             'purpose',
 
             [
-                'label' => 'Action',
+                'label' => 'Actions',
                 'format' => 'raw',
-
                 'value' => function ($model) {
-                    $btns = Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id], []);
-                    $btns .= ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id], []);
-                    return  $btns;
+                    return MyHelper::gridDefaultAction($model->id, 'none');
                 }
             ],
 

@@ -74,7 +74,7 @@ class ItMaintenanceRequestController extends Controller
             $num .= str_repeat(0, 5 - strlen($qry));
         }
         $num .= $qry;
-        return strtoupper($type) . '-' . $dte->format('Y-m') . '-' . $num;
+        return strtoupper($type) . '-' . $dte->format('Y') . '-' . $num;
     }
     /**
      * Lists all ItMaintenanceRequest models.
@@ -194,5 +194,38 @@ class ItMaintenanceRequestController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+    public function actionBlank()
+    {
+
+        for ($i = 0; $i < 100; $i++) {
+            $model = new ItMaintenanceRequest();
+            $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+            $model->serial_number = $this->getSerialNum('ta', '2023-09-01');
+            if (!$model->validate()) {
+                throw new ErrorException(json_encode($model->errors));
+            }
+            if (!$model->save(false)) {
+                throw new ErrorException('Model Save Failed');
+            }
+        }
+
+        // return $this->redirect(['view', 'id' => $model->id]);
+    }
+    public function actionPrintBlank()
+    {
+        $items = Yii::$app->db->createCommand("SELECT 
+            it_maintenance_request.serial_number,
+            employee_search_view.employee_name,
+            employee_search_view.position
+            FROM `it_maintenance_request`
+            LEFT JOIN employee_search_view ON it_maintenance_request.fk_worked_by = employee_search_view.employee_id 
+             WHERE 
+            it_maintenance_request.date_accomplished IS NULL")
+            ->queryAll();
+
+        return $this->render('print', [
+            'items' => $items
+        ]);
     }
 }

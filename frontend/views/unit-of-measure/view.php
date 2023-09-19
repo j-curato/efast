@@ -14,26 +14,20 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="unit-of-measure-view">
 
-    <h3><?= Html::encode($this->title) ?></h3>
 
-    <p>
-        <?= Html::button('<i class="fa fa-pencil-alt"></i> Update', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=unit-of-measure/update&id='.$model->id), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
+    <div class="container card" style="padding: 1rem;">
+        <p>
+            <?= Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']); ?>
 
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
+        </p>
+
+        <?= DetailView::widget([
+            'model' => $model,
+            'attributes' => [
+                'id',
+                'unit_of_measure',
             ],
         ]) ?>
-    </p>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'id',
-            'unit_of_measure',
-        ],
-    ]) ?>
-
+    </div>
 </div>

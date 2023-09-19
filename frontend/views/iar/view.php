@@ -84,7 +84,7 @@ $iarDetails = $model->getIarDetails();
 
 ?>
 <div class="iar-view">
-    <div class="container">
+    <div class="container card" style="padding: 1rem;">
         <p>
             <?= Html::a('IR Link', ['inspection-report/view', 'id' => $model->fk_ir_id], ['class' => 'btn btn-link', 'style' => 'margin-bottom:2rem']) ?>
             <!-- <?= Html::a('Add End-User', ['update', 'id' => $model->id], ['class' => 'btn btn-primary', 'title' => 'Update', 'style' => 'margin-bottom:2rem']); ?> -->
@@ -223,7 +223,7 @@ $iarDetails = $model->getIarDetails();
     </div>
 
     <?php if (Yii::$app->user->can('super-user')) { ?>
-        <div class="container document_trace">
+        <div class="container document_trace card">
             <table id="tracking">
                 <thead>
                     <tr>

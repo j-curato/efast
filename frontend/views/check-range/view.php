@@ -15,19 +15,21 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="check-range-view">
 
 
-    <p>
-        <?= Html::button('<i class="glyphicon glyphicon-pencil"></i> Update', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=check-range/update&id=' . $model->id), 'id' => 'modalButtoncreate', 'class' => 'btn btn-primary', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
-    </p>
+    <div class="container card" style="padding: 1rem;">
+        <p>
+            <?= Html::a('<i class="glyphicon glyphicon-pencil"></i> Update', ['update', 'id' =>  $model->id], ['class' => 'modalButtonUpdate btn btn-primary']); ?>
+        </p>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'from',
-            'to',
-            'reporting_period',
-            'begin_balance',
-            'bankAccount.account_number'
-        ],
-    ]) ?>
+        <?= DetailView::widget([
+            'model' => $model,
+            'attributes' => [
+                'from',
+                'to',
+                'reporting_period',
+                'begin_balance',
+                'bankAccount.account_number'
+            ],
+        ]) ?>
 
+    </div>
 </div>

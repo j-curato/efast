@@ -28,8 +28,6 @@ $this->params['breadcrumbs'][] = $this->title;
         ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); 
-    ?>
     <!-- ANG MODEL ANI KAY SA PROCESS ORS ENTRIES -->
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -40,12 +38,12 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'toolbar' =>  [
             [
-                'content' => "<form id='ors'>" .
+                'content' =>
+                "<form id='ors'>
+                    <div class='row'>
+                        <div class='col-sm-8'>" .
                     DatePicker::widget([
                         'name' => 'year',
-                        'options' => [
-                            'style' => 'width:100px'
-                        ],
                         'pluginOptions' => [
                             'format' => 'yyyy',
                             'startView' => 'years',
@@ -53,9 +51,12 @@ $this->params['breadcrumbs'][] = $this->title;
                             'autoclose' => true
                         ]
                     ])
-                    . '' .
-                    Html::button('Export', ['type' => 'submit', 'class' => 'btn btn-success']) .
-                    "</form>",
+                    . "</div>
+                        <div class='col-sm-2'>" .
+                    Html::button('Export', ['type' => 'submit', 'class' => 'btn btn-success'])
+                    . "</div>
+                    </div>
+                </form>",
                 'options' => ['class' => 'btn-group', 'style' => 'margin-right:20px;display:flex']
             ],
 

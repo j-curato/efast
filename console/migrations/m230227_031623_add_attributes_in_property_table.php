@@ -13,7 +13,7 @@ class m230227_031623_add_attributes_in_property_table extends Migration
     public function safeUp()
     {
         Yii::$app->db->createCommand("SET FOREIGN_KEY_CHECKS=0")->query();
-        $this->addColumn('property', 'fk_ssf_sp_num_id', $this->bigInteger()->notNull());
+        $this->addColumn('property', 'fk_ssf_sp_num_id', $this->bigInteger());
         $this->addColumn('property', 'fk_office_id', $this->integer()->notNull());
         $this->addColumn('property', 'is_ssf', $this->integer()->defaultValue(0)->notNull());
         $this->createIndex('idx-fk_ssf_sp_num_id', 'property', 'fk_ssf_sp_num_id');

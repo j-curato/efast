@@ -23,13 +23,7 @@ $requested_by = Yii::$app->db->createCommand("SELECT employee_name,position FROM
     <div class="container">
         <p>
 
-            <?= Html::button(
-                'Update',
-                [
-                    'value' => Url::to(Yii::$app->request->baseUrl . '?r=pre-repair-inspection/update&id=' . $model->id),
-                    'class' => 'btn btn-primary modalButtoncreate'
-                ]
-            ); ?>
+            <?= Html::a('Update', ['update', 'id' =>  $model->id,], ['class' => 'btn btn-primary lrgModal']); ?>
 
         </p>
         <table>

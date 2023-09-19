@@ -36,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'raw',
                 'value' => function ($model) {
                     $btns = Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id], []);
-                    $btns .= ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id], []);
+                    $btns .= ' ' . Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], []);
                     return  $btns;
                 }
             ],

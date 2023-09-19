@@ -5,7 +5,8 @@ use kartik\date\DatePicker;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\JevBeginningBalance */
@@ -142,8 +143,11 @@ use yii\widgets\ActiveForm;
             </tbody>
         </table>
 
-        <div class="form-group">
-            <button class="btn btn-success" type="button" id="save">Save</button>
+        <div class="row justify-content-center">
+
+            <div class="form-group col-sm-2">
+                <button class="btn btn-success" type="button" id="save" style="width: 100%;">Save</button>
+            </div>
         </div>
 
 

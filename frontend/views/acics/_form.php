@@ -9,11 +9,11 @@ use kartik\date\DatePicker;
 use kartik\grid\GridView;
 use kartik\icons\Icon;
 use kartik\select2\Select2;
-use yii\bootstrap\Collapse;
+use yii\bootstrap4\Accordion;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\JqueryAsset;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Acics */
@@ -60,7 +60,7 @@ $cancelItmRowNum = 0;
     <table class="table table-stripe" id="cash_itms_tbl">
 
         <thead>
-            <tr class="info">
+            <tr class="table-info">
                 <th colspan="9" class="ctr">
                     Cash Disbursements
                 </th>
@@ -113,7 +113,7 @@ $cancelItmRowNum = 0;
     <table class="table " id="cancelled_cash_items">
 
         <thead>
-            <tr class="danger">
+            <tr class="table-danger">
                 <th colspan="10" class=" ctr">
                     Cancel Cash Disbursements
                 </th>
@@ -167,7 +167,7 @@ $cancelItmRowNum = 0;
     <table class="table" id="cash_rcv_itms_tbl">
 
         <thead>
-            <tr class="success">
+            <tr class="table-success">
                 <th colspan="13" class="ctr">Cash Rceives</th>
             </tr>
             <tr>
@@ -221,16 +221,16 @@ $cancelItmRowNum = 0;
         </tbody>
         <tfoot>
             <tr style="background-color: #e9eff2;">
-                <th colspan="11" class="ctr">Total</th>
+                <th colspan="12" class="ctr">Total</th>
                 <th class="cashReceiveTtl" colspan="2"><?= number_format($cashRcvTtl, 2) ?></th>
             </tr>
         </tfoot>
     </table>
 
 
-    <div class="row">
-        <div class="form-group col-sm-1 col-sm-offset-5">
-            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+    <div class="row justify-content-center">
+        <div class="form-group col-sm-2">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%;']) ?>
         </div>
     </div>
 
@@ -397,50 +397,56 @@ $cancelItmRowNum = 0;
 
     ?>
 
-    <?= Collapse::widget([
+    <?= Accordion::widget([
         'items' => [
             [
-                'label' => 'List of Cash Disbursements',
+                'label' => '<span class="text-info" >List of Cash Disbursements</span>',
                 'content' => GridView::widget([
                     'dataProvider' => $checksDataProvider,
                     'filterModel' => $checksSearchModel,
-
-
+                    'panel' => [
+                        'type' => 'info',
+                        'heading' => 'List of Cash Disbursements'
+                    ],
                     'columns' => $checksCols,
                     'pjax' => true,
                     'export' => false,
                 ]),
+                'encode' => false,
                 'contentOptions' => ['class' => 'out'],
-                'options' => ['class' => 'panel-info'],
+                'options' => ['class' => 'panel-info', 'id' => 'cashDisbursements'],
             ],
         ],
     ])
     ?>
     <?=
-    Collapse::widget([
+    Accordion::widget([
         'items' => [
             [
-                'label' => 'List of Cash Receives',
+                'label' => '<span class="text-success" >List of Cash Receives</span>',
                 'content' => GridView::widget([
                     'dataProvider' => $cshRcvDataProvider,
                     'filterModel' => $cshRcvSearchModel,
-
-
                     'columns' => $cshRcvCols,
                     'pjax' => true,
                     'export' => false,
+                    'panel' => [
+                        'type' => 'success',
+                        'heading' => 'List of Cash Receives'
+                    ],
                 ]),
+                'encode' => false,
                 'contentOptions' => ['class' => 'out'],
-                'options' => ['class' => 'panel-success'],
+                'options' => ['class' => 'panel-success', 'id' => 'cashReceive'],
             ],
         ],
     ])
     ?>
     <?=
-    Collapse::widget([
+    Accordion::widget([
         'items' => [
             [
-                'label' => 'List of Cash Disbursements With ACIC in Bank',
+                'label' => '<span class="text-danger" >List of Cash Disbursements With ACIC in Bank</span>',
                 'content' => GridView::widget([
                     'dataProvider' => $cshInBankDataProvider,
                     'filterModel' => $cashInBankSearchModel,
@@ -449,9 +455,14 @@ $cancelItmRowNum = 0;
                     'columns' => $cshInBankCols,
                     'pjax' => true,
                     'export' => false,
+                    'panel' => [
+                        'type' => 'danger',
+                        'heading' => 'List of Cash Disbursements With ACIC in Bank'
+                    ],
                 ]),
+                'encode' => false,
                 'contentOptions' => ['class' => 'out'],
-                'options' => ['class' => 'panel-danger'],
+                'options' => ['class' => 'panel-success', 'id' => 'cashInAcic'],
             ],
         ],
     ])
@@ -460,6 +471,24 @@ $cancelItmRowNum = 0;
 
 </div>
 <style>
+    #cashInAcic>.card-header {
+        color: #a94442;
+        background-color: #f2dede;
+        border-color: #ebccd1;
+    }
+
+    #cashReceive>.card-header {
+        color: #3c763d;
+        background-color: #dff0d8;
+        border-color: #d6e9c6;
+    }
+
+    #cashDisbursements>.card-header {
+        color: #31708f;
+        background-color: #d9edf7;
+        border-color: #bce8f1;
+    }
+
     .accics-form {
         padding: 3rem;
     }
@@ -468,11 +497,7 @@ $cancelItmRowNum = 0;
         text-align: center;
     }
 
-    .grid-view td {
-        white-space: normal;
-        width: 5rem;
-        padding: 0;
-    }
+ 
 
     .notes>li {
         color: red;
@@ -682,5 +707,15 @@ $("#Acics").on("beforeSubmit", function (event) {
     return false;
 });
 JS;
+$this->registerJs($js);
+?>
+<?php
+$js = <<<JS
+$(document).ready(function() {
+    // Collapse all accordion items by default
+    $('.collapse').collapse('hide');
+});
+JS;
+
 $this->registerJs($js);
 ?>

@@ -11,7 +11,8 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\JqueryAsset;
 use yii\web\JsExpression;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Rlsddp */
@@ -20,7 +21,7 @@ use yii\widgets\ActiveForm;
 $itemRow = 0;
 ?>
 
-<div class="rlsddp-form panel  panel-default">
+<div class="rlsddp-form card" style="padding: 1rem;">
 
     <?php $form = ActiveForm::begin([
         'id' => $model->formName()
@@ -180,11 +181,9 @@ $itemRow = 0;
         </tbody>
     </table>
 
-    <div class="row" style="padding-top: 2rem;">
-        <div class="col-sm-3 col-sm-offset-5">
-            <div class="form-group">
-                <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:60%']) ?>
-            </div>
+    <div class="row justify-content-center" style="padding-top: 2rem;">
+        <div class="form-group col-sm-2">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
         </div>
     </div>
 

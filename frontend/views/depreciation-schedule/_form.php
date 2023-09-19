@@ -7,7 +7,8 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\JqueryAsset;
 use yii\web\YiiAsset;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\DepreciationSchedule */
@@ -16,7 +17,7 @@ use yii\widgets\ActiveForm;
 $this->registerCssFile("@web/frontend/views/depreciation-schedule/styles.css", ['depends' => YiiAsset::class]);
 ?>
 
-<div class="depreciation-schedule-form panel">
+<div class="depreciation-schedule-form card" style="padding: 1rem;">
 
     <?php $form = ActiveForm::begin(); ?>
 

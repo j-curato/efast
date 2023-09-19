@@ -7,7 +7,8 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\JqueryAsset;
 use yii\web\JsExpression;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\PrAoq */
@@ -136,9 +137,13 @@ $row = 1;
                             <textarea row='2' name='items[$rfq_item_id][$r][remarks]' class='remark'>{$itm['remark']}</textarea>
                         </td>
                         <td>
-                            <span> <input class='checkbox ' type='checkbox'  name='items[$rfq_item_id][$r][lowest]'   $checked> </span>
-                            <div class='pull-right' style='float:left'>
-                                <a class='remove_this_row btn btn-danger btn-xs ' title='Delete Row'><i class='fa fa-times fa-fw' ></i> </a>
+                            <div class='row'>
+                                <div class='col-sm-1'>
+                                    <span> <input class='checkbox form-control' type='checkbox'  name='items[$rfq_item_id][$r][lowest]'   $checked> </span>
+                                </div>
+                                <div class='col-sm-1'>
+                                    <a class='remove_this_row btn btn-danger btn-xs ' title='Delete Row'><i class='fa fa-times fa-fw' ></i> </a>
+                                </div>
                             </div>
                         </td>
                     </tr>";
@@ -149,9 +154,9 @@ $row = 1;
             </tbody>
 
         </table>
-        <div class="row">
+        <div class="row justify-content-center">
 
-            <div class="form-group col-sm-2 col-sm-offset-5">
+            <div class="form-group col-sm-2">
                 <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
             </div>
         </div>
@@ -215,9 +220,14 @@ $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [
                                     <textarea row='2' name='items[${rfq_item_id}][${row_num}][remarks]' class='remark'></textarea>
                                 </td>
                                 <td>
-                                    <span> <input class='checkbox ' type='checkbox'  name='items[${rfq_item_id}][${row_num}][lowest]'> </span>
-                                    <div class='pull-right' style='float:left'>
-                                        <a class='remove_this_row btn btn-danger btn-xs ' title='Delete Row'><i class='fa fa-times fa-fw' ></i> </a>
+                            
+                                    <div class='row'>
+                                        <div class='col-sm-1'>
+                                            <input class='checkbox ' type='checkbox'  name='items[${rfq_item_id}][${row_num}][lowest]'>
+                                        </div>
+                                        <div class='col-sm-1'>
+                                            <a class='remove_this_row btn btn-danger btn-xs ' title='Delete Row'><i class='fa fa-times fa-fw' ></i> </a>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>`

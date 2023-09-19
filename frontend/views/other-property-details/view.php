@@ -16,7 +16,7 @@ $useful_life_in_mnths = $model->useful_life;
 
 $first_month =  $propertyDetails['date'];
 ?>
-<div class="other-property-details-view card">
+<div class="other-property-details-view card" style="padding:1rem">
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
     </p>

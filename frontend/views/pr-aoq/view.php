@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="pr-aoq-view">
 
-    <div class="" style="background-color: white;padding:1rem">
+    <div class="card" style="background-color: white;padding:1rem">
 
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>

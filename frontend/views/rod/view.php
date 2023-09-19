@@ -13,7 +13,7 @@ use yii\web\JsExpression;
 $this->title = "ROD";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="rod-view" style="background-color: white;padding:10px;display:none">
+<div class="rod-view" >
 
     <?php
     $provinces  = [
@@ -30,7 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <!-- <div id="con"> -->
 
-    <div id='con'>
+    <div id='con' class="card" style="padding: 1rem;">
         <button id="print_btn" type='button' class='btn btn-succes  fa fa-print print_btn'></button>
         <table class="" id="rod_table" style="margin-top: 30px;">
 

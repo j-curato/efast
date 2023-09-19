@@ -21,13 +21,11 @@ $this->params['breadcrumbs'][] = $this->title;
     $books = Yii::$app->db->createCommand("SELECT books.id,books.name FROM books")->queryAll();
 
     ?>
-
     <div class="container card">
-        <div class="row " style="bottom: 20px;">
-            <?php $form = ActiveForm::begin(); ?>
+        <?php $form = ActiveForm::begin(); ?>
+        <div class="row">
             <div class="col-sm-3">
-                <?php
-                echo $form->field($model, 'reporting_period')->widget(DatePicker::class, [
+                <?= $form->field($model, 'reporting_period')->widget(DatePicker::class, [
                     'id' => 'reporting_period',
                     'name' => 'reporting_period',
                     'type' => DatePicker::TYPE_INPUT,
@@ -73,12 +71,13 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-sm-1">
                 <button class=" btn btn-warning" style="margin-top: 25px;" type='button' id="generate">Generate</button>
             </div>
-            <div class="form-group col-sm-1" style="margin-top: 25px;">
+            <div class="form-group col-sm" style="margin-top: 25px;">
                 <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
             </div>
 
-            <?php ActiveForm::end(); ?>
         </div>
+
+        <?php ActiveForm::end(); ?>
 
 
 

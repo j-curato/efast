@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 
@@ -12,10 +13,9 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="allotment-type-index">
 
-    <h3><?= Html::encode($this->title) ?></h3>
 
     <p>
-        <?= Html::a('Create Allotment Type', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Allotment Type', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
@@ -30,8 +30,13 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
 
             'type:ntext',
-
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->id);
+                }
+            ],
         ],
     ]); ?>
 

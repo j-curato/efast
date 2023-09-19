@@ -7,6 +7,7 @@ use app\models\ItHelpdeskCsf;
 use app\models\ItHelpdeskCsfSearch;
 use DateTime;
 use ErrorException;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -22,36 +23,38 @@ class ItHelpdeskCsfController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'index',
+                    'view',
+                    'create',
+                    'update',
+                    'delete',
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'create',
+                            'update',
+                            'delete',
+                        ],
+                        'allow' => true,
+                        'roles' => ['super-user']
+                    ]
+                ]
+            ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
             ],
         ];
     }
-    private function getSerialNum($period)
-    {
-        $dte = DateTime::createFromFormat('Y-m-d', $period);
-        $yr = $dte->format('Y');
-        $qry  = Yii::$app->db->createCommand("SELECT 
-            CAST(SUBSTRING_INDEX(it_helpdesk_csf.serial_number,'-',-1)AS UNSIGNED) +1 as ser_num
-            FROM it_helpdesk_csf  
-            WHERE 
-            it_helpdesk_csf.serial_number LIKE :yr
-            ORDER BY ser_num DESC LIMIT 1")
-            ->bindValue(':yr',  $yr . '%')
-            ->queryScalar();
-        if (empty($qry)) {
-            $qry = 1;
-        }
-        $num = '';
-        if (strlen($qry) < 3) {
-            $num .= str_repeat(0, 3 - strlen($qry));
-        }
-        $num .= $qry;
-        return  $dte->format('Y-m') . '-' . $num;
-    }
+
     /**
      * Lists all ItHelpdeskCsf models.
      * @return mixed
@@ -85,26 +88,25 @@ class ItHelpdeskCsfController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCreate($fk_it_maintenance_request_id = '')
     {
         $model = new ItHelpdeskCsf();
-
+        $model->fk_it_maintenance_request = $fk_it_maintenance_request_id ?? null;
         if ($model->load(Yii::$app->request->post())) {
             try {
-                $model->serial_number = $this->getSerialNum($model->date);
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
                 if (!$model->save()) {
                     throw new ErrorException('Model Save Failed');
                 }
+                return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
-                return $e->getMessage();
+                return json_encode(['isSuccess' => false, 'error_message' => json_decode($e->getMessage())]);
             }
-            return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->render('create', [
+        return $this->renderAjax('create', [
             'model' => $model,
         ]);
     }
@@ -124,7 +126,7 @@ class ItHelpdeskCsfController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->render('update', [
+        return $this->renderAjax('update', [
             'model' => $model,
         ]);
     }
@@ -136,12 +138,12 @@ class ItHelpdeskCsfController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
+    // public function actionDelete($id)
+    // {
+    //     $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
-    }
+    //     return $this->redirect(['index']);
+    // }
 
     /**
      * Finds the ItHelpdeskCsf model based on its primary key value.

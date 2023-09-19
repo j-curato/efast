@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 
@@ -26,7 +27,13 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             'reporting_period',
             'book_type',
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->id, 'none');
+                }
+            ],
         ],
     ]); ?>
 

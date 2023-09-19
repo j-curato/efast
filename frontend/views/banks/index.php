@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use yii\web\JqueryAsset;
@@ -30,20 +31,12 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             'name',
             [
-                'label' => 'Action',
+                'label' => 'Actions',
                 'format' => 'raw',
                 'value' => function ($model) {
-
-                    return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id])
-                        . ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate'])
-                        .  Html::a(' <i class="fa fa-trash"></i>', ['delete', 'id' => $model->id], [
-                            'data' => [
-                                'confirm' => 'Are you sure you want to delete this item?',
-                                'method' => 'post',
-                            ],
-                        ]);
+                    return MyHelper::gridDefaultAction($model->id);
                 }
-            ]
+            ],
         ],
     ]); ?>
 

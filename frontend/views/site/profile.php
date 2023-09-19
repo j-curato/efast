@@ -24,7 +24,7 @@ $fieldOptions2 = [
 
 
 ?>
-<div class="card">
+<div class="panel panel-default">
 
     <div class="  ">
 
@@ -41,6 +41,7 @@ $fieldOptions2 = [
             ],
         ]) ?>
     </div>
+
     <!-- <div class=" panel ">
 
         <?= Collapse::widget([
@@ -62,3 +63,10 @@ $fieldOptions2 = [
 <style>
 
 </style>
+<?php
+
+$this->registerJsFile(
+    '@web/frontend/web/js/globalFunctions.js',
+    ['depends' => [\yii\web\JqueryAsset::class]]
+)
+?>

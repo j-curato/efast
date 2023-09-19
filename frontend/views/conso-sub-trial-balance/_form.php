@@ -23,9 +23,10 @@ $this->params['breadcrumbs'][] = $this->title;
     ?>
 
     <div class="container card">
-        <div class="actions " style="bottom: 20px;">
+        <?php $form = ActiveForm::begin(); ?>
 
-            <?php $form = ActiveForm::begin(); ?>
+        <div class="actions row" style="bottom: 20px;">
+
 
             <div class="col-sm-5">
                 <?php

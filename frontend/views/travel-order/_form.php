@@ -5,7 +5,8 @@ use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\JsExpression;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 use kartik\icons\Icon;
 
 /* @var $this yii\web\View */

@@ -121,7 +121,7 @@ $this->params['breadcrumbs'][] = $this->title;
     .grid-view td {
         white-space: normal;
         max-width: 100rem;
-        padding: 0;
+        padding: 10px;
     }
 </style>
 <?php

@@ -12,7 +12,8 @@ use kartik\icons\Icon;
 use kartik\money\MaskMoney;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 use kartik\select2\Select2;
 use yii\helpers\Url;
 use yii\web\JsExpression;

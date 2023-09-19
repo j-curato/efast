@@ -11,7 +11,8 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\JqueryAsset;
 use yii\web\JsExpression;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Par */
@@ -272,16 +273,13 @@ $property_custodians = ArrayHelper::map(MyHelper::getPropertyCustodians(), 'empl
 
 
 
-    <div class="row">
+    <div class="row justify-content-center">
 
-        <div class="col-sm-5"></div>
-        <div class="col-sm-2" style="padding: 2rem;">
-            <div class="form-group">
-                <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
-            </div>
 
+        <div class="form-group col-sm-2">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
         </div>
-        <div class="col-sm-5"></div>
+
     </div>
 
     <?php ActiveForm::end(); ?>

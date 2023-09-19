@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use kartik\grid\GridView;
 use yii\helpers\Html;
 
@@ -7,33 +8,38 @@ use yii\helpers\Html;
 /* @var $searchModel app\models\MfoPapCodeSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Mfo Pap Codes';
+$this->title = 'MFO/PAP Codes';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="mfo-pap-code-index">
 
-    <h3><?= Html::encode($this->title) ?></h3>
 
     <p>
-        <?= Html::a('Create Mfo Pap Code', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Mfo Pap Code', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+        'panel' => [
+            'type' => 'primary',
+            'heading' => 'List of MFO/PAP Codes'
+        ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
             'code',
             'name',
             'description',
             'division',
             [
-                'class' => '\kartik\grid\ActionColumn',
-                'deleteOptions' => ['style' => 'display:none']
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->id);
+                }
             ],
         ],
     ]); ?>

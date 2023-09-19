@@ -104,7 +104,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'label' => 'Action',
             'format' => 'raw',
             'value' => function ($model) {
-                return MyHelper::gridDefaultAction($model->id,'lrgModal');
+                return MyHelper::gridDefaultAction($model->id, 'lrgModal');
             }
         ]
     ],

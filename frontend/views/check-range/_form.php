@@ -6,7 +6,8 @@ use kartik\select2\Select2;
 use yii\db\Query;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\CheckRange */
@@ -37,9 +38,12 @@ use yii\widgets\ActiveForm;
 
 
 
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
-    </div> -->
+    <div class="row justify-content-center">
+        <div class="form-group">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        </div>
+    </div>
+ -->
     <?php
     $from = '';
     $to = '';
@@ -138,11 +142,14 @@ use yii\widgets\ActiveForm;
             ]);
             ?>
         </div>
-        <div class="form-group">
-            <button class="btn btn-success" type="submit">Save</button>
+        <div class="row justify-content-center">
+
+            <div class="form-group ">
+                <button class="btn btn-success" type="submit">Save</button>
+            </div>
+
+
         </div>
-
-
     </form>
     <!-- <?php ActiveForm::end(); ?> -->
 

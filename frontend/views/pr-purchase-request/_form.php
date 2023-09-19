@@ -480,9 +480,9 @@ $user_data = Yii::$app->memem->getUserData();
                 </tfoot>
             </table>
         <?php } ?>
-        <div class="row">
+        <div class="row justify-content-center">
 
-            <div class="form-group col-sm-2 col-sm-offset-5">
+            <div class="form-group col-sm-2">
                 <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
             </div>
         </div>

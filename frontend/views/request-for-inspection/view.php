@@ -21,7 +21,7 @@ $officeName = $model->office->office_name;
 $isProvincialOffice = strtolower($officeName)  === 'ro' ? false : true;
 ?>
 <div class="request-for-inspection-view" id='app'>
-    <div class="container">
+    <div class="container card">
         <h5 class='note'>
             *Note:
             <br>
@@ -254,6 +254,9 @@ $isProvincialOffice = strtolower($officeName)  === 'ro' ? false : true;
         </template>
 
 
+
+    </div>
+    <div class="container card">
         <table class="link table table-striped" style="margin-top: 5rem;">
 
             <thead>
@@ -270,9 +273,9 @@ $isProvincialOffice = strtolower($officeName)  === 'ro' ? false : true;
                 <?php
                 foreach ($model->getInspectionReportLinks() as $val) {
                     echo "<tr>
-                            <td style='text-align:center'>{$val['ir_number']}</td>
-                           <td > " . HTML::a('Link', ['inspection-report/view', 'id' => $val['id']], ['class' => 'btn btn-link']) . "</td>
-                        </tr>";
+                <td style='text-align:center'>{$val['ir_number']}</td>
+               <td > " . HTML::a('Link', ['inspection-report/view', 'id' => $val['id']], ['class' => 'btn btn-link']) . "</td>
+            </tr>";
                 }
 
                 ?>
@@ -286,6 +289,9 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['dep
 <style>
     .container {
         background-color: white;
+    }
+    .card{
+        padding: 1rem;
     }
 
     .note {

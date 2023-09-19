@@ -11,13 +11,14 @@ $this->title = $model->serial_number;
 $this->params['breadcrumbs'][] = ['label' => 'It Helpdesk Csfs', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
-$client = MyHelper::getEmployee($model->fk_client_id, 'one');
+$client = MyHelper::getEmployee($model->maintenanceRequest->fk_requested_by, 'one');
 ?>
 <div class="it-helpdesk-csf-view">
 
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary lrgModal']) ?>
+        <?= Html::a('TA/IR', ['it-maintenance-request/view', 'id' => $model->fk_it_maintenance_request], ['class' => 'btn btn-link']) ?>
 
     </p>
 
@@ -79,19 +80,19 @@ $client = MyHelper::getEmployee($model->fk_client_id, 'one');
             <td colspan="5">
 
                 <span>ADDRESS:</span>
-                <u><b>&emsp; <?= $model->address ?? '' ?>&emsp;</b></u>
+                <u><b></b></u>
             </td>
         </tr>
         <tr>
             <td colspan="3">
 
                 <span> CONTACT NUMBER:</span>
-                <u><b>&emsp; <?= $model->contact_num ?? '' ?>&emsp;</b></u>
+                <u><b></b></u>
 
             </td>
             <td colspan="2">
                 <span>E-MAIL ADDRESS:</span>
-                <u><b>&emsp; <?= $model->email ?? '' ?>&emsp;</b></u>
+                <u><b></b></u>
 
             </td>
 
@@ -109,26 +110,41 @@ $client = MyHelper::getEmployee($model->fk_client_id, 'one');
             <td class="no-bdr">
                 <b>SEX</b><br>
                 <span class="chk_box">
-                    <?= $model->sex === 'm' ? "<span>&#10003;</span>" : "<span class='q'>...</span>" ?>
+                    <?php
+                    //  $model->sex === 'm' ? "<span>&#10003;</span>" :
+                    echo "<span class='q'>...</span>"
+                    ?>
                 </span> <span>&nbsp; Male</span>
                 <br>
                 <span class="chk_box">
-                    <?= $model->sex === 'f' ? "<span>&#10003;</span>" : "<span class='q'>...</span>" ?>
+                    <?php
+                    //  $model->sex === 'f' ? "<span>&#10003;</span>" : 
+                    echo "<span class='q'>...</span>"
+                    ?>
                 </span><span>&nbsp; Female</span><br>
                 <br><br>
             </td>
             <td class="no-bdr" style="min-width: 100px;">
                 <b>AGE</b><br>
                 <span class="chk_box">
-                    <?= ($model->age_group === '21-35') ? "<span>&#10003;</span>" : "<span class='q'>...</span>" ?>
+                    <?php
+                    //  ($model->age_group === '21-35') ? "<span>&#10003;</span>" : 
+                    echo "<span class='q'>...</span>"
+                    ?>
                 </span> <span>&nbsp; 21 - 35 years old and below</span>
                 <br>
                 <span class="chk_box">
-                    <?= $model->age_group === '35-59' ? "<span>&#10003;</span>" : "<span class='q'>...</span>" ?>
+                    <?php
+                    //  $model->age_group === '35-59' ? "<span>&#10003;</span>" : 
+                    echo "<span class='q'>...</span>"
+                    ?>
                 </span> <span>&nbsp; Above 35 - below 60 years old</span>
                 <br>
                 <span class="chk_box">
-                    <?= $model->age_group === '60' ? "<span>&#10003;</span>" : "<span class='q'>...</span>" ?>
+                    <?php
+                    //  $model->age_group === '60' ? "<span>&#10003;</span>" :
+                    echo  "<span class='q'>...</span>"
+                    ?>
                 </span> <span>&nbsp; 60 years old & above</span>
                 <br>
                 <br>
@@ -637,3 +653,9 @@ $client = MyHelper::getEmployee($model->fk_client_id, 'one');
         }
     }
 </style>
+<?php
+$this->registerJsFile(
+    '@web/frontend/web/js/globalFunctions.js',
+    ['depends' => [\yii\web\JqueryAsset::class]]
+)
+?>

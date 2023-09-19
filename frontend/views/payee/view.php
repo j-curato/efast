@@ -14,26 +14,27 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 <div class="payee-view" id="payee-view">
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary lrgModal']) ?>
-    </p>
+    <div class="container card" style="padding: 1rem;">
+        <p>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary lrgModal']) ?>
+        </p>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'account_name',
-            'account_num',
-            'registered_name',
-            'contact_person',
-            'registered_address',
-            'contact',
-            'remark',
-            'tin_number',
-        ],
-    ]) ?>
+        <?= DetailView::widget([
+            'model' => $model,
+            'attributes' => [
+                'account_name',
+                'account_num',
+                'registered_name',
+                'contact_person',
+                'registered_address',
+                'contact',
+                'remark',
+                'tin_number',
+            ],
+        ]) ?>
 
+    </div>
 </div>
-
 <?php
 
 $this->registerJsFile(

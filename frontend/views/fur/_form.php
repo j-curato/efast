@@ -33,7 +33,7 @@ if (!empty($model->id)) {
     $fur_id = $model->id;
 }
 ?>
-<div class="jev-preparation-index " style="background-color: white;padding:20px">
+<div class="jev-preparation-index card" style="padding:1rem">
 
     <form id="filter">
         <input type="hidden" name="id" value="<?= $fur_id ?>">
@@ -88,7 +88,7 @@ if (!empty($model->id)) {
 
                 ?>
             </div>
-            <div class="col-sm-3" style="margin-top: 2.5rem;">
+            <div class="col-sm-3" style="margin-top: 2.05rem;">
                 <button class="btn btn-primary" id="generate">Generate</button>
 
                 <?php

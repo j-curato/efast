@@ -9,7 +9,8 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\JqueryAsset;
 use yii\web\JsExpression;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\PrRfq */
@@ -58,7 +59,7 @@ if (!empty($model->pr_purchase_request_id)) {
 
 <div class="pr-rfq-form">
 
-    <div class="panel panel-primary">
+    <div class="card" style="padding: 1rem;">
 
         <ul>
             <li>Note</li>
@@ -249,7 +250,7 @@ if (!empty($model->pr_purchase_request_id)) {
                             $grossAmt = floatval($itm['unit_cost']) * intval($itm['quantity']);
                             $specs =   preg_replace('#\[n\]#', "<br>", $itm['specification']);
                             echo "<tr>
-                                <td>
+                                <td style='text-align:center;'>
                                     <input type='checkbox' class='form-check-input' value='{$itm['prItemId']}' name='items[][pr_id]' checked >
                                 </td>
                                 <td>
@@ -280,7 +281,7 @@ if (!empty($model->pr_purchase_request_id)) {
                             $grossAmt = floatval($itm['unit_cost']) * intval($itm['quantity']);
                             $specs =   preg_replace('#\[n\]#', "<br>", $itm['specification']);
                             echo "<tr>
-                                    <td>
+                                    <td style='text-align:center;'>
                                         <input type='checkbox' class='form-check-input' value='{$itm['item_id']}' name='items[][pr_id]'  >
                                     </td>
                                     <td>
@@ -311,8 +312,8 @@ if (!empty($model->pr_purchase_request_id)) {
                     ?>
                 </tbody>
             </table>
-            <div class="row">
-                <div class="form-group col-sm-2 col-sm-offset-5">
+            <div class="row justify-content-center">
+                <div class="form-group col-sm-2">
                     <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
                 </div>
             </div>
@@ -342,7 +343,7 @@ $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [
         $.each(data, (key, val) => {
             var myStr = val.specification
             var row = `<tr>
-                            <td>
+                            <td style='text-align:center;'>
                                 <input type='checkbox' class='form-check-input' value='${val.item_id}' name='items[${key}][pr_id]'  data-value='${val.item_id}'>
                             </td>
                             <td>

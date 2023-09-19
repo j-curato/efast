@@ -34,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             </div>
 
-            <div class="col-sm-2" style="margin-top: 2.5rem;">
+            <div class="col-sm-2" style="margin-top: 2.05rem;">
                 <button class="btn btn-success" type="submit">Generate</button>
             </div>
 
@@ -44,7 +44,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 
-    <table v-show='showTable' class="hover-highlight">
+    <table v-show='showTable' class="hover-highlight" style="display: none;">
         <thead>
             <tr>
                 <th>Book</th>

@@ -14,27 +14,29 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="cash-recieved-view">
 
-    <h3><?= Html::encode($this->title) ?></h3>
 
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']) ?>
-    </p>
+    <div class="container card" style="padding: 1rem;">
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'document_recieved_id',
-            'book_id',
-            'mfo_pap_code_id',
-            'date',
-            'reporting_period',
-            'nca_no',
-            'nta_no',
-            'nft_no',
-            'purpose',
-            'amount',
-        ],
-    ]) ?>
+        <p>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary lrgModal']) ?>
+        </p>
+
+        <?= DetailView::widget([
+            'model' => $model,
+            'attributes' => [
+                'document_recieved_id',
+                'book_id',
+                'mfo_pap_code_id',
+                'date',
+                'reporting_period',
+                'nca_no',
+                'nta_no',
+                'nft_no',
+                'purpose',
+                'amount',
+            ],
+        ]) ?>
+    </div>
 
 </div>
 

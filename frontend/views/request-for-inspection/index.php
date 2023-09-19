@@ -75,7 +75,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
             'created_at',
-            
+
             [
                 'label' => 'Action',
                 'format' => 'raw',
@@ -83,7 +83,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function ($model) {
                     $btns = Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id], []);
                     if (!$model->is_final) {
-                        $btns .= ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id], []);
+                        $btns .= ' ' . Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], []);
                     }
                     return  $btns;
                 }

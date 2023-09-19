@@ -6,7 +6,8 @@ use kartik\select2\Select2;
 use Mpdf\Tag\Select;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\BacComposition */
@@ -17,7 +18,7 @@ $row_number = 0;
 
 <div class="bac-composition-form">
 
-    <div class="container panel panel-primary">
+    <div class="container card">
 
         <?php $form = ActiveForm::begin(); ?>
 
@@ -129,9 +130,9 @@ $row_number = 0;
 
             </tbody>
         </table>
-        <div class="row">
+        <div class="row justify-content-center">
 
-            <div class="form-group col-sm-2 col-sm-offset-5">
+            <div class="form-group ">
                 <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
             </div>
         </div>

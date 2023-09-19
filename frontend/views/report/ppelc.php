@@ -21,7 +21,7 @@ use yii\web\JsExpression;
 $this->title = "Report";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="ppelc-index">
+<div class="ppelc-index card">
 
 
     <form id='filter'>

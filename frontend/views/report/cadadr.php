@@ -70,7 +70,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
 
 
-            <div class="col-sm-2" style="margin-top: 2.5rem;">
+            <div class="col-sm-2" style="margin-top: 2.05rem;">
                 <button class="btn btn-success" id="generate">Generate</button>
             </div>
 

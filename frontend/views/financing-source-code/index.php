@@ -13,25 +13,24 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="financing-source-code-index">
 
-    <h3><?= Html::encode($this->title) ?></h3>
 
     <p>
-        <?= Html::button('<i class="fa fa-pencil-alt"></i> Add New', ['value'=>Url::to(yii::$app->request->baseUrl . '/index.php?r=financing-source-code/create'), 'id'=>'modalButtoncreate', 'class' =>'btn btn-success', 'data-placement'=>'left', 'data-toggle'=>'tooltip', 'title'=>'Add Sector']); ?>
+        <?= Html::button('<i class="fa fa-pencil-alt"></i> Add New', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=financing-source-code/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
-            'heading' => 'List of Areas',
-      ],
-       'floatHeaderOptions'=>[
-           'top'=>50,
-           'position'=>'absolute',
-         ],
+            'heading' => 'List of Financing Source Codes',
+        ],
+        'floatHeaderOptions' => [
+            'top' => 50,
+            'position' => 'absolute',
+        ],
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
@@ -40,17 +39,15 @@ $this->params['breadcrumbs'][] = $this->title;
             'description',
 
             [
-                'label'=>'Actions', 
-                'format'=>'raw',
-                'value'=>function($model){
-                    $t = yii::$app->request->baseUrl . '/index.php?r=financing-source-code/update&id='.$model->id;
-            
-                    return ' ' . Html::button('<span class="fa fa-pencil-square-o"></span>', ['value'=>Url::to($t), 'class' =>'btn btn-primary btn-xs modalButtonedit']);
-                   
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    $t = yii::$app->request->baseUrl . '/index.php?r=financing-source-code/update&id=' . $model->id;
+
+                    return ' ' . Html::button('<span class="fa fa-pencil-square-o"></span>', ['value' => Url::to($t), 'class' => 'btn btn-primary btn-xs modalButtonedit']);
                 }
             ]
 
-            // ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
 

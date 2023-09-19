@@ -4,7 +4,8 @@ use app\models\Office;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Citymun */
@@ -24,13 +25,12 @@ use yii\widgets\ActiveForm;
     ]) ?>
 
 
-    <div class="row">
-        <div class="col-sm-3 col-sm-offset-5">
-            <div class="form-group">
-                <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
-            </div>
+        <div class="row justify-content-center">
+        <div class="form-group">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
         </div>
     </div>
+
 
 
     <?php ActiveForm::end(); ?>

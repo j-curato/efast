@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use yii\helpers\Url;
@@ -13,10 +14,9 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="pr-mode-of-procurement-index">
 
-    <h3><?= Html::encode($this->title) ?></h3>
 
     <p>
-        <?= Html::button('<i class="fa fa-pencil-alt"></i> Create', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=pr-mode-of-procurement/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
+        <?= Html::a('<i class="fa fa-pencil-alt"></i> Create', ['create'], ['class' => 'btn btn-success modalButtonCreate']); ?>
 
     </p>
 
@@ -35,7 +35,13 @@ $this->params['breadcrumbs'][] = $this->title;
             'mode_name',
             'description',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->id);
+                }
+            ],
         ],
     ]); ?>
 

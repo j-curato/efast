@@ -3,14 +3,15 @@
 use kartik\date\DatePicker;
 use kartik\grid\GridView;
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\PurchaseOrderTransmittal */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-<div class="purchase-order-transmittal-form">
+<div class="purchase-order-transmittal-form card" style="padding: 1rem;">
 
     <?php
 
@@ -116,7 +117,12 @@ use yii\widgets\ActiveForm;
         </tbody>
 
     </table>
-    <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%;margin:3rem 0 4rem 0']); ?>
+    <div class="row justify-content-center">
+        <div class="form-group col-sm-2">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%;margin:3rem 0 4rem 0']); ?>
+
+        </div>
+    </div>
     <?= Html::endForm(); ?>
 
 </div>

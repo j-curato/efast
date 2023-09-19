@@ -8,7 +8,8 @@ use kartik\money\MaskMoney;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\CashReceived */
@@ -74,33 +75,46 @@ use yii\widgets\ActiveForm;
         </div>
     </div>
 
+    <div class="row">
+        <div class="col">
+
+            <?= $form->field($model, 'document_recieved_id')->widget(Select2::class, [
+                'data' => ArrayHelper::map(DocumentRecieve::find()->asArray()->all(), 'id', 'name'),
+
+                'pluginOptions' => [
+                    'placeholder' => "Select Document Recieve"
+                ]
+            ]) ?>
+
+        </div>
+        <div class="col">
+            <?= $form->field($model, 'book_id')->widget(Select2::class, [
+                'name' => 'book_id',
+                'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
+                'pluginOptions' => [
+                    'placeholder' => "Select Book"
+                ]
+            ]) ?>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <?= $form->field($model, 'mfo_pap_code_id')->widget(Select2::class, [
+                'data' => ArrayHelper::map(MfoPapCode::find()->asArray()->all(), 'id', 'name'),
+                'pluginOptions' => [
+                    'placeholder' => "Select MFO/PAP Code"
+                ]
+            ]) ?>
+        </div>
+        <div class="col">
+            <?= $form->field($model, 'nca_no')->textInput(['maxlength' => true, 'value' => $val]) ?>
+        </div>
+    </div>
 
 
-    <?= $form->field($model, 'document_recieved_id')->widget(Select2::class, [
 
-        'data' => ArrayHelper::map(DocumentRecieve::find()->asArray()->all(), 'id', 'name'),
 
-        'pluginOptions' => [
-            'placeholder' => "Select Document Recieve"
-        ]
-    ]) ?>
-
-    <?= $form->field($model, 'book_id')->widget(Select2::class, [
-        'name' => 'book_id',
-        'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
-        'pluginOptions' => [
-            'placeholder' => "Select Book"
-        ]
-    ]) ?>
-
-    <?= $form->field($model, 'mfo_pap_code_id')->widget(Select2::class, [
-        'data' => ArrayHelper::map(MfoPapCode::find()->asArray()->all(), 'id', 'name'),
-        'pluginOptions' => [
-            'placeholder' => "Select MFO/PAP Code"
-        ]
-    ]) ?>
-
-    <?= $form->field($model, 'nca_no')->textInput(['maxlength' => true, 'value' => $val]) ?>
     <!-- <?= $form->field($model, 'account_number')->textInput(['maxlength' => true]) ?> -->
 
     <!-- <?= $form->field($model, 'nta_no')->textInput(['maxlength' => true]) ?>
@@ -122,9 +136,12 @@ use yii\widgets\ActiveForm;
         ]
     ]) ?>
 
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+    <div class="row justify-content-center">
+        <div class="form-group">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        </div>
     </div>
+
 
     <?php ActiveForm::end(); ?>
 

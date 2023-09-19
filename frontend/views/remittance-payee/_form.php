@@ -4,7 +4,8 @@ use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\JsExpression;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\RemittancePayee */
@@ -21,7 +22,6 @@ if (!empty($model->id)) {
         ->bindValue(':object_code', $model->object_code)
         ->queryAll();
     $object_code = ArrayHelper::map($object_code_query, 'object_code', 'account');
-
 }
 ?>
 
@@ -75,8 +75,10 @@ if (!empty($model->id)) {
 
     ]) ?>
 
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+    <div class="row justify-content-center">
+        <div class="form-group">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
+        </div>
     </div>
 
     <?php ActiveForm::end(); ?>

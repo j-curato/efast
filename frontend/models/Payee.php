@@ -73,18 +73,32 @@ class Payee extends \yii\db\ActiveRecord
     }
     public function beforeValidate()
     {
-        $qry = Yii::$app->db->createCommand("SELECT EXISTS (SELECT   * FROM `payee`
-        WHERE 
-        payee.fk_office_id = :office_id
-        AND payee.registered_name LIKE :name)")
-            ->bindValue(':office_id', $this->fk_office_id)
-            ->bindValue(':name', '%' . $this->registered_name . '%')
-            ->queryScalar();
-        if ($qry == 1) {
-            $this->addError('registered_name', 'Registered Name Already Exists');
-        }
 
-        return true;
+
+
+        if (parent::beforeValidate()) {
+            if (!empty($this->fk_office_id) && !empty($this->registered_name)) {
+                $sql = '';
+                $params = [];
+                if (!empty($this->id)) {
+                    $sql = ' AND ';
+                    $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['!=', 'id', $this->id], $params);
+                }
+                $qry = Yii::$app->db->createCommand("SELECT EXISTS (SELECT   * FROM `payee`
+                        WHERE 
+                        payee.fk_office_id = :office_id
+                        AND payee.registered_name LIKE :_name
+                        $sql)", $params)
+                    ->bindValue(':office_id', $this->fk_office_id)
+                    ->bindValue(':_name', '%' . trim($this->registered_name) . '%')
+                    ->queryScalar();
+                if ($qry == 1) {
+                    $this->addError('registered_name', 'Registered Name Already Exists');
+                }
+            }
+            return true;
+        }
+        return false;
     }
     /**
      * {@inheritdoc}

@@ -5,7 +5,8 @@ use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\JsExpression;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\TripTicket */
@@ -27,7 +28,7 @@ if (!empty($model->authorized_by)) {
 $row_number = 1;
 ?>
 
-<div class="trip-ticket-form">
+<div class="trip-ticket-form card" style='padding:1rem'>
 
     <?php $form = ActiveForm::begin(); ?>
     <div class="row">
@@ -217,9 +218,12 @@ $row_number = 1;
             </tr>
         <?php } ?>
     </table>
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+    <div class="row justify-content-center">
+        <div class="form-group">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        </div>
     </div>
+
 
     <?php ActiveForm::end(); ?>
 

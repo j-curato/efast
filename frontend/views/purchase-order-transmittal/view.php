@@ -18,17 +18,15 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="purchase-order-transmittal-view">
 
-    <h3><?= Html::encode($this->title) ?></h3>
-
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-
-    </p>
-    <div class="container">
-        <div class="row as">
 
 
-        </div>
+    <div class="container card" style="padding: 1rem;">
+        <h4><?= Html::encode($this->title) ?></h4>
+
+        <p>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+
+        </p>
 
         <div class="row" style="float:right">
             <?= Html::img(Yii::$app->request->baseUrl . '/frontend/web/dti3.png', ['alt' => 'some', 'class' => 'pull-left img-responsive', 'style' => 'width: 100px;height:100px;margin-left:auto']); ?>

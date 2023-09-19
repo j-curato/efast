@@ -144,9 +144,20 @@ class PayeeController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post())) {
+            try {
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save FAiled');
+                }
+                return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                return $e->getMessage();
+            }
         }
+
 
         return $this->renderAjax('update', [
             'model' => $model,

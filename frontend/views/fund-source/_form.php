@@ -2,7 +2,8 @@
 
 use kartik\datetime\DateTimePicker;
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\FundSource */
@@ -18,8 +19,8 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'description')->textarea(['maxlength' => true]) ?>
     <?= $form->field($model, 'note')->textarea(['maxlength' => true]) ?>
 
-    <div class="row">
-        <div class="form-group col-sm-2 col-sm-offset-5">
+    <div class="row justify-content-center">
+        <div class="form-group">
             <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
         </div>
     </div>
@@ -43,7 +44,7 @@ use yii\widgets\ActiveForm;
 
 </div>
 <style>
-    textarea{
+    textarea {
         max-width: 100%;
     }
 </style>

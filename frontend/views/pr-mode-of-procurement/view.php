@@ -14,19 +14,21 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="pr-mode-of-procurement-view">
 
-    <h3><?= Html::encode($this->title) ?></h3>
 
-    <p>
-        <?= Html::button('<i class="fa fa-pencil-alt"></i> Create', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=pr-mode-of-procurement/update&id=' . $model->id), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
+    <div class="container card" style="padding: 1rem;">
 
-    </p>
+        <p>
+            <?= Html::a('<i class="fa fa-pencil-alt"></i> Create', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']); ?>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'mode_name',
-            'description',
-        ],
-    ]) ?>
+        </p>
+
+        <?= DetailView::widget([
+            'model' => $model,
+            'attributes' => [
+                'mode_name',
+                'description',
+            ],
+        ]) ?>
+    </div>
 
 </div>

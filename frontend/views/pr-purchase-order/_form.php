@@ -10,7 +10,8 @@ use kartik\widgets\DatePicker as WidgetsDatePicker;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\JsExpression;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\PrPurchaseOrder */
@@ -361,12 +362,10 @@ if (!empty($model->id)) {
             </table>
         </div>
 
-        <div class="row">
-            <div class="col-sm-5"></div>
+        <div class="row justify-content-center">
             <div class="form-group col-sm-2">
                 <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
             </div>
-            <div class="col-sm-5"></div>
         </div>
 
 

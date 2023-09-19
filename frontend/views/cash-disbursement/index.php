@@ -133,8 +133,9 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'panel' => [
             'type' => Gridview::TYPE_PRIMARY,
+            'heading'=>'List of Cash Disbursements'
         ],
-        'pjax'=>true,
+        'pjax' => true,
         'toolbar' =>  [
             [
                 'content' =>
@@ -158,11 +159,5 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => $gridColumn
     ]); ?>
 
-    <style>
-        .grid-view td {
-            white-space: normal;
-            width: 10rem;
-            padding: 0;
-        }
-    </style>
+
 </div>

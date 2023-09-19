@@ -26,17 +26,11 @@ if (!empty($model->fk_approved_by)) {
 <div class="maintenance-job-request-view">
 
 
-    <p>
-        <?= Html::button(
-            'Update',
-            [
-                'value' => Url::to(Yii::$app->request->baseUrl . '?r=maintenance-job-request/update&id=' . $model->id),
-                'class' => 'btn btn-primary modalButtoncreate'
-            ]
-        ); ?>
 
-    </p>
-    <div class="container">
+    <div class="container card">
+        <p>
+            <?= Html::a('Update', ['update', 'id' => $model->id,], ['class' => 'btn btn-primary lrgModal']); ?>
+        </p>
         <table>
 
             <tbody>

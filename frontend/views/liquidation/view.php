@@ -79,7 +79,7 @@ $total_ewt = 0;
 
 
 
-    <div class="">
+    <div class=" card" style="padding: 1rem;">
 
         <?php if (\Yii::$app->user->can('po_accounting_admin')) { ?>
             <p>

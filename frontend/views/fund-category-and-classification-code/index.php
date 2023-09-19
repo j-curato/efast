@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 
@@ -12,35 +13,39 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="fund-category-and-classification-code-index">
 
-    <h3><?= Html::encode($this->title) ?></h3>
 
     <p>
-        <?= Html::a('Create Fund Category And Classification Code', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('<i class="fa fa-pencil-alt"></i> Create ', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
-            'heading' => 'List of Areas',
-      ],
-       'floatHeaderOptions'=>[
-           'top'=>50,
-           'position'=>'absolute',
-         ],
+            'heading' => 'List of Fund Category And Classification Codes',
+        ],
+        'floatHeaderOptions' => [
+            'top' => 50,
+            'position' => 'absolute',
+        ],
         'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
             'name',
             'description',
             'from',
             'to',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->id);
+                }
+            ],
         ],
     ]); ?>
 

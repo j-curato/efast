@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Html::a('Create Cash Received', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
+        <?= Html::a('Create Cash Received', ['create'], ['class' => 'btn btn-success lrgModal']) ?>
 
     </p>
 
@@ -61,7 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Actions',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return MyHelper::gridDefaultAction($model->id);
+                    return MyHelper::gridDefaultAction($model->id,'lrgModal');
                 }
             ],
         ],

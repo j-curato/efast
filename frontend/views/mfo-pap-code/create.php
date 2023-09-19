@@ -11,8 +11,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="mfo-pap-code-create">
 
-    <h3><?= Html::encode($this->title) ?></h3>
-
     <?= $this->render('_form', [
         'model' => $model,
     ]) ?>

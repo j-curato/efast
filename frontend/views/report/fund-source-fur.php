@@ -24,7 +24,7 @@ use yii\web\JsExpression;
 $this->title = "FUR";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="jev-preparation-index " style="background-color: white;padding:20px">
+<div class="jev-preparation-index card " style="padding:1rem">
 
 
 

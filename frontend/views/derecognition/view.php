@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 ?>
-<div class="derecognition-view panel">
+<div class="derecognition-view card" style="padding: 1rem;">
     <p>
     <div class="row">
         <div class="col-sm-1">

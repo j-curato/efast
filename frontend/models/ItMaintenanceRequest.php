@@ -100,4 +100,8 @@ class ItMaintenanceRequest extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Employee::class, ['employee_id' => 'fk_worked_by']);
     }
+    public function getHelpdeskCsf()
+    {
+        return $this->hasOne(ItHelpdeskCsf::class, ['fk_it_maintenance_request' => 'id']);
+    }
 }

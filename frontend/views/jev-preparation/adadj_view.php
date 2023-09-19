@@ -12,7 +12,8 @@ use kartik\select2\Select2;
 use Mpdf\Tag\Em;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\JevPreparationSearch */

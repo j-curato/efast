@@ -19,10 +19,18 @@ $actnd_by = MyHelper::getEmployee($model->fk_worked_by, 'one');
 
     <p>
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary lrgModal']) ?>
+        <?php
+
+
+        if (!empty($model->helpdeskCsf->id)) {
+            echo Html::a('Update CSF', ['it-helpdesk-csf/update', 'id' => $model->helpdeskCsf->id], ['class' => 'btn btn-info lrgModal']);
+        } else {
+            echo Html::a('Add CSF', ['it-helpdesk-csf/create', 'fk_it_maintenance_request_id' => $model->id], ['class' => 'btn btn-info lrgModal']);
+        }
+
+        ?>
 
     </p>
-
-
 
     <table>
 
@@ -49,16 +57,16 @@ $actnd_by = MyHelper::getEmployee($model->fk_worked_by, 'one');
             </tr>
             <tr>
                 <th>Office:</th>
-                <td><?= strtoupper($model->divisions->division) ?></td>
+                <td><?= !empty($model->divisions->division) ? strtoupper($model->divisions->division) : '' ?></td>
                 <th>Serial No.:</th>
                 <td><?= $model->serial_number ?></td>
             </tr>
             <tr>
 
                 <th>Date Requested:</th>
-                <td><?= DateTime::createFromFormat('Y-m-d', $model->date_requested)->format('F d, Y') ?></td>
+                <td><?= !empty($model->date_requested) ? DateTime::createFromFormat('Y-m-d', $model->date_requested)->format('F d, Y') : '' ?></td>
                 <th>Date Accomplish:</th>
-                <td><?= DateTime::createFromFormat('Y-m-d', $model->date_accomplished)->format('F d, Y') ?? '' ?></td>
+                <td><?= !empty($model->date_accomplished) ? DateTime::createFromFormat('Y-m-d', $model->date_accomplished)->format('F d, Y') : '' ?></td>
             </tr>
 
             <tr>
@@ -80,7 +88,7 @@ $actnd_by = MyHelper::getEmployee($model->fk_worked_by, 'one');
             <tr>
                 <td colspan="2" class="ctr" style="border-top:0 ; border-right:0;">
                     <br>
-                    <b><u><?= strtoupper($rqstd_by['employee_name']) ?? '' ?></u></b>
+                    <b><u><?= !empty($rqstd_by['employee_name']) ? strtoupper($rqstd_by['employee_name']) : '' ?></u></b>
                     <br>
                     <span><?= $rqstd_by['position'] ?? '' ?></span>
                     <br>

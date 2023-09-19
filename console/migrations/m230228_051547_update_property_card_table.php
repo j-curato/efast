@@ -19,6 +19,7 @@ class m230228_051547_update_property_card_table extends Migration
         $this->dropColumn('property_card', 'ptr_number');
         $this->createIndex('idx-fk_par_id', 'property_card', 'fk_par_id');
         $this->addForeignKey('fk-pc-fk_par_id', 'property_card', 'fk_par_id', 'par', 'id', 'RESTRICT', 'CASCADE');
+        $this->addColumn('property_card', 'created_at', $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'));
     }
 
     /**
@@ -31,6 +32,8 @@ class m230228_051547_update_property_card_table extends Migration
         $this->renameColumn('property_card', 'serial_number', 'pc_number');
         $this->addColumn('property_card', 'par_number', $this->string());
         $this->addColumn('property_card', 'ptr_number', $this->string());
+
+        $this->dropColumn('property_card', 'created_at');
     }
 
     /*

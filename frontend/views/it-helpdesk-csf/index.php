@@ -1,7 +1,10 @@
 <?php
 
 use yii\helpers\Html;
+use yii\web\JqueryAsset;
 use kartik\grid\GridView;
+use app\components\helpers\MyHelper;
+use PhpOffice\PhpSpreadsheet\Calculation\Information\Value;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\ItHelpdeskCsfSearch */
@@ -13,9 +16,6 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="it-helpdesk-csf-index">
 
 
-    <p>
-        <?= Html::a('Create It Helpdesk Csf', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
     ?>
@@ -29,10 +29,8 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'columns' => [
 
-            'id',
             'serial_number',
             'fk_it_maintenance_request',
-            'fk_client_id',
             'contact_num',
             //'address:ntext',
             //'email:ntext',
@@ -48,9 +46,21 @@ $this->params['breadcrumbs'][] = $this->title;
             //'vd_reason:ntext',
             //'created_at',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->id);
+                }
+            ],
         ],
     ]); ?>
 
 
 </div>
+<?php
+$this->registerJsFile(
+    '@web/frontend/web/js/globalFunctions.js',
+    ['depends' => [JqueryAsset::class]]
+)
+?>

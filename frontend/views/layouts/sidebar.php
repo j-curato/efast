@@ -71,7 +71,7 @@
                 Yii::$app->user->can('ro_liq_rpt') ? ['label' => 'Liquidation Report', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/ro-liquidation-report/index'],] : null,
             ];
             $accountingReports = [
-                Yii::$app->user->can('super-user') ?   ['label' => 'DV w/o File Link', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/dv-aucs/no-file-link-dvs'],] : null,
+                // Yii::$app->user->can('super-user') ?   ['label' => 'DV w/o File Link', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/dv-aucs/no-file-link-dvs'],] : null,
                 Yii::$app->user->can('ro_gen_led') ?   ['label' => 'General Ledger', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/general-ledger/index'],] : null,
                 Yii::$app->user->can('ro_gen_jour') ?   ['label' => 'General Journal', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/general-journal/index'],] : null,
                 Yii::$app->user->can('ro_adadj') ?   ['label' => 'ADADJ', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/jev-preparation/adadj'],] : null,
@@ -114,15 +114,12 @@
                 Yii::$app->user->can('super-user') ?     ['iconStyle' => 'far', 'label' => 'SAOB', 'icon' => 'dot-circle', 'url' => ['/saob/index'],] : null,
                 Yii::$app->user->can('super-user') ?     ['iconStyle' => 'far', 'label' => 'FUR', 'icon' => 'dot-circle', 'url' => ['/ro-fur/index'],] : null,
                 Yii::$app->user->can('super-user') ?     ['iconStyle' => 'far', 'label' => 'RAO', 'icon' => 'dot-circle', 'url' => ['/report/rao'],] : null,
-                Yii::$app->user->can('super-user') ?     ['label' => 'per MFO/PAP', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/budget-reports/sof-per-mfo'],] : null,
-                Yii::$app->user->can('sof_per_office') ?     ['label' => 'per Office/Division', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/budget-reports/sof-per-office'],] : [],
-                Yii::$app->user->can('sof_per_mfo_office') ?     ['label' => 'per MFO & Office', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/budget-reports/sof-per-mfo-office'],] : [],
 
             ];
             $budgetStatusOfFunds = [
                 Yii::$app->user->can('super-user') ?     ['iconStyle' => 'far', 'label' => 'per MFO/PAP', 'icon' => 'dot-circle', 'url' => ['/budget-reports/sof-per-mfo'],] : null,
-                Yii::$app->user->can('super-user') ?     ['iconStyle' => 'far', 'label' => 'per Office/Division', 'icon' => 'dot-circle', 'url' => ['/budget-reports/sof-per-office'],] : null,
-                Yii::$app->user->can('super-user') ?     ['iconStyle' => 'far', 'label' => 'per MFO & Office', 'icon' => 'dot-circle', 'url' => ['/budget-reports/sof-per-mfo-office'],] : null,
+                Yii::$app->user->can('sof_per_office') ?     ['iconStyle' => 'far', 'label' => 'per Office/Division', 'icon' => 'dot-circle', 'url' => ['/budget-reports/sof-per-office'],] : null,
+                Yii::$app->user->can('sof_per_mfo_office') ?     ['iconStyle' => 'far', 'label' => 'per MFO & Office', 'icon' => 'dot-circle', 'url' => ['/budget-reports/sof-per-mfo-office'],] : null,
             ];
             $cashMasterRecords = [
                 Yii::$app->user->can('super-user') ?     ['label' => 'Check Ranges', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/ro-check-ranges/index'],] : null,

@@ -87,8 +87,8 @@ if (!empty($model->transaction_type)) {
 
 ?>
 
-<div class="request-for-inspection-form" id="app">
-    <div class="cons">
+<div id="app">
+    <div class=" card" style="padding:1rem">
         <?php
         // Html::beginForm([$action, 'id' => $model->id], 'post', ['id' => 'rfi_form']);
         ?>
@@ -450,8 +450,8 @@ if (!empty($model->transaction_type)) {
                 </tbody>
             </table>
         </div>
-        <div class="row">
-            <div class="col-sm-3 col-md-offset-4">
+        <div class="row justify-content-center">
+            <div class="col-sm-2">
                 <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%;margin:3rem 0 4rem 0']); ?>
             </div>
         </div>

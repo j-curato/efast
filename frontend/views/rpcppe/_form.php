@@ -12,7 +12,8 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\JqueryAsset;
 use yii\web\JsExpression;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Rpcppe */
@@ -132,6 +133,7 @@ if (!empty($model->fk_chart_of_account_id)) {
             <button id="generate" class="btn btn-primary" type="button">Generate</button>
             <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
         </div>
+
 
     </div>
 

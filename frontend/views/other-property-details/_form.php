@@ -5,7 +5,8 @@ use yii\web\JqueryAsset;
 use yii\web\JsExpression;
 use kartik\date\DatePicker;
 use kartik\select2\Select2;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 use yii\helpers\ArrayHelper;
 use kartik\date\DatePickerAsset;
 use aryelds\sweetalert\SweetAlertAsset;
@@ -174,13 +175,10 @@ if (!empty($model->fk_property_id)) {
     </div>
 
 
-    <div class="row">
-        <div class="col-sm-3 col-sm-offset-5">
-            <div class="form-group">
-                <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
-                <button class="btn btn-warning" id="calculate">Calculate</button>
-
-            </div>
+    <div class="row justify-content-center">
+        <div class="form-group col-sm-2">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+            <button class="btn btn-warning" id="calculate">Calculate</button>
         </div>
     </div>
 
@@ -232,37 +230,8 @@ if (!empty($model->fk_property_id)) {
 
 </div>
 <style>
-    th,
-    td {
-        text-align: center;
-    }
-
-    .cal-container {
-        width: 60%;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .panel {
-        padding: 3rem;
-    }
-
-    .book {
-        width: 100%;
-    }
-
     .card {
-        width: 190px;
-        height: 254px;
-        background: white;
-        border-radius: 10px;
-        transition: border-radius 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    .shadow {
-        box-shadow: inset 0 -3em 3em rgba(0, 0, 0, 0.1),
-            0 0 0 2px rgb(190, 190, 190),
-            0.3em 0.3em 1em rgba(0, 0, 0, 0.3);
+        padding: 1rem;
     }
 </style>
 <?php

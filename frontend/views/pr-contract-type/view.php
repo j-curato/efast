@@ -14,19 +14,21 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="pr-contract-type-view">
 
-    <h3><?= Html::encode($this->title) ?></h3>
+    <div class="container card" style="padding: 1rem;">
 
-    <p>
-        <?= Html::button('<i class="fa fa-pencil-alt"></i> Create', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=pr-contract-type/update&id=' . $model->id), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
 
-    </p>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'id',
-            'contract_name',
-        ],
-    ]) ?>
+        <p>
+
+            <?= Html::a('<i class="fa fa-pencil-alt"></i> Create', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
+        </p>
+        <?= DetailView::widget([
+            'model' => $model,
+            'attributes' => [
+                'id',
+                'contract_name',
+            ],
+        ]) ?>
+    </div>
 
 </div>

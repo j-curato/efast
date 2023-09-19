@@ -85,7 +85,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     $update = yii::$app->request->baseUrl . "/index.php?r=dv-aucs/update-routing&id=$model->id";
                     $view = yii::$app->request->baseUrl . "/index.php?r=dv-aucs/tracking-view&id=$model->id";
                     return ' ' . Html::a('', $view, ['class' => 'btn-xs btn-primary fa fa-eye'])
-                        . ' ' . Html::a('', $update, ['class' => 'btn-xs btn-success fa fa-pencil-square-o']);
+                        . ' ' . Html::a('', $update, ['class' => 'btn-xs btn-success fa fa-pencil-alt']);
                 },
                 'hiddenFromExport' => true
             ],
@@ -93,11 +93,5 @@ $this->params['breadcrumbs'][] = $this->title;
     ]); ?>
 
 
-    <style>
-        .grid-view td {
-            white-space: normal;
-            width: 5rem;
-            padding: 0;
-        }
-    </style>
+
 </div>

@@ -23,7 +23,7 @@ $this->title = "FUR";
 $this->params['breadcrumbs'][] = ['label' => 'Furs', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="fur-view " style="background-color: white;padding:20px ">
+<div class="fur-view card " style="padding:1rem ">
     <?php
     echo "<input type='hidden' id='model_id' value='$model->id'/>"
     ?>

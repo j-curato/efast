@@ -63,13 +63,12 @@ use yii\helpers\ArrayHelper;
     ]) ?>
     <?= $form->field($model, 'check_number')->textInput() ?>
 
-    <div class="row">
-        <div class="col-sm-3 col-sm-offset-5">
-            <div class="form-group">
-                <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
-            </div>
+        <div class="row justify-content-center">
+        <div class="form-group">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
         </div>
     </div>
+
 
     <?php ActiveForm::end(); ?>
 </div>

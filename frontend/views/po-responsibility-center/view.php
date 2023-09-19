@@ -14,29 +14,22 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="po-responsibility-center-view">
 
-    <h3><?= Html::encode($this->title) ?></h3>
 
-    <p>
-        <?= Html::button(' Update', ['value' => Url::to(yii::$app->request->baseUrl .
-            '/index.php?r=po-responsibility-center/update&id=' . $model->id), 'id' => 'modalButtoncreate', 'class' => 'btn btn-primary', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
-    </p>
+    <div class="container card" style="padding: 1rem;">
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'province',
-            'name',
-            'description:ntext',
-        ],
-    ]) ?>
+        <p>
+            <?= Html::a(' Update', ['update', 'id' =>  $model->id], ['class' => 'btn btn-primary modalButtonUpdate']); ?>
+        </p>
+
+        <?= DetailView::widget([
+            'model' => $model,
+            'attributes' => [
+                'province',
+                'name',
+                'description:ntext',
+            ],
+        ]) ?>
+    </div>
 
 </div>
 
-<?php
-$script = <<<JS
-        $('#modalButtoncreate').click(function(){
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-        });
-JS;
-$this->registerJs($script)
-?>

@@ -7,7 +7,8 @@ use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\JsExpression;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\ItMaintenanceRequest */
@@ -123,9 +124,9 @@ use yii\widgets\ActiveForm;
 
 
 
-    <div class="row">
-        <div class="form-group col-sm-1 col-sm-offset-5">
-            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+    <div class="row justify-content-center">
+        <div class="form-group col-sm-2">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success'], ['style' => 'width:100%']) ?>
         </div>
     </div>
 

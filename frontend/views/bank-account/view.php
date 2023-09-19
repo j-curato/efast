@@ -14,20 +14,20 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="bank-account-view">
 
-    <h3><?= Html::encode($this->title) ?></h3>
 
-    <p>
-        <?= Html::button('<i class="fa fa-pencil-alt"></i> update', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=bank-account/update&id=' . $model->id), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
-    </p>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'id',
-            'account_number',
-            'province',
-            'created_at',
-        ],
-    ]) ?>
+    <div class="container card" style="padding: 1rem;">
+        <p>
+            <?= Html::a('<i class="fa fa-pencil-alt"></i> update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']); ?>
+        </p>
 
+        <?= DetailView::widget([
+            'model' => $model,
+            'attributes' => [
+                'account_number',
+                'province',
+                'created_at',
+            ],
+        ]) ?>
+    </div>
 </div>

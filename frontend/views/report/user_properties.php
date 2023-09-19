@@ -14,7 +14,7 @@ use yii\web\JsExpression;
 $this->title = 'User Property Clearance';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="user-properties" style="background-color: white;padding:2rem">
+<div class="user-properties card" style="background-color: white;padding:1rem">
 
 
 
@@ -93,7 +93,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ]) ?>
             </div>
             <div class="col-sm-1">
-                <?= Html::submitButton('Generate', ['class' => 'btn btn-success', 'style' => 'margin-top:2.3rem']) ?>
+                <?= Html::submitButton('Generate', ['class' => 'btn btn-success', 'style' => 'margin-top:2rem']) ?>
 
             </div>
         </div>

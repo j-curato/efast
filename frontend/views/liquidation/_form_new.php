@@ -51,7 +51,7 @@ if (!empty($model->id)) {
 
 
 ?>
-<div class="liquidation-form">
+<div class="liquidation-form card">
     <form id='liquidation_form'>
         <input type="hidden" id="model_id" value='<?= $id ?>' />
 
@@ -163,7 +163,7 @@ if (!empty($model->id)) {
                 </tr>
             </tbody>
         </table>
-        <table class="table table-striped" id="entries_table">
+        <table class="table " id="entries_table">
 
             <thead>
                 <th>Reporting Period</th>
@@ -271,6 +271,7 @@ if (!empty($model->id)) {
                 <tr>
                     <td class="total_row" colspan="4">Grand Total</td>
                     <td class="total_row" id="grand_total"></td>
+                    <td colspan="3"></td>
 
                 </tr>
 

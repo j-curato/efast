@@ -23,7 +23,7 @@ SweetAlertAsset::register($this);
 
 
 
-    <div class="container">
+    <div class="container card">
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
             <?php

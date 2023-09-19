@@ -41,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Actions',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return MyHelper::gridDefaultAction($model->id);
+                    return MyHelper::gridDefaultAction($model->id,'none');
                 }
             ],
         ],
@@ -52,7 +52,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <style>
     .grid-view td {
         white-space: normal;
-        width: 5rem;
-        padding: 0;
+        width: 10rem;
+        padding: 12px;
     }
 </style>

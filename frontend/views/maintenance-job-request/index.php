@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use aryelds\sweetalert\SweetAlertAsset;
 use yii\helpers\Html;
 use kartik\grid\GridView;
@@ -14,10 +15,9 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="maintenance-job-request-index">
 
-    <h3><?= Html::encode($this->title) ?></h3>
 
     <p>
-        <?= Html::button('<i class="fa fa-pencil-alt"></i> Create', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=maintenance-job-request/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
+        <?= Html::a('<i class="fa fa-pencil-alt"></i> Create', ['create'], ['class' => 'btn btn-success lrgModal']); ?>
 
     </p>
 
@@ -28,24 +28,24 @@ $this->params['breadcrumbs'][] = $this->title;
 
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
-        'panel'=>[
-            'type'=>'primary',
+        'panel' => [
+            'type' => 'primary',
 
-            'heading'=>'Maintenace Job Requests'
+            'heading' => 'Maintenace Job Requests'
         ],
         'columns' => [
 
-          
-            [
-                'attribute'=>  'fk_responsibility_center_id',
-                'value'=>'responsibilityCenter.name'
-            ],
-           
-            [
-                'attribute'=> 'fk_employee_id',
-                'value'=>function($model){
 
-                    return $model->employee->f_name .' ' . $model->employee->m_name[0].'. '. $model->employee->l_name;
+            [
+                'attribute' =>  'fk_responsibility_center_id',
+                'value' => 'responsibilityCenter.name'
+            ],
+
+            [
+                'attribute' => 'fk_employee_id',
+                'value' => function ($model) {
+
+                    return $model->employee->f_name . ' ' . $model->employee->m_name[0] . '. ' . $model->employee->l_name;
                 }
             ],
             'date_requested',
@@ -53,8 +53,14 @@ $this->params['breadcrumbs'][] = $this->title;
             'recommendation:ntext',
             'action_taken:ntext',
             //'created_at',
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->id,'lrgModal');
+                }
+            ],
 
-            ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>
 

@@ -34,9 +34,10 @@ $this->params['breadcrumbs'][] = $title;
 
     <!-- FORM 1 -->
     <div class="container card">
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-
-        <button class="btn btn-success" type="button" id="print">Print</button>
+        <p>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+            <button class="btn btn-success" type="button" id="print">Print</button>
+        </p>
 
 
         <?php Pjax::begin(['id' => 'journal', 'clientOptions' => ['method' => 'POST']]) ?>

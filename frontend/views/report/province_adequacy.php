@@ -36,7 +36,7 @@ if (!Yii::$app->user->can('super-user')) {
 ?>
 <div class="jev-preparation-index">
 
-    <div class="container">
+    <div class="container card" style="padding: 1rem;">
 
 
         <form id='filter'>

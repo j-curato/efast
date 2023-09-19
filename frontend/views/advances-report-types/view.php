@@ -14,19 +14,25 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="advances-report-type-view">
 
+    <div class="container card">
 
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']) ?>
+        <p>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']) ?>
 
-    </p>
+        </p>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'name',
-        ],
-    ]) ?>
-
+        <?= DetailView::widget([
+            'model' => $model,
+            'attributes' => [
+                'name',
+            ],
+        ]) ?>
+    </div>
 </div>
+<style>
+    .card {
+        padding: 1rem;
+    }
+</style>
 <?php
 $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [JqueryAsset::class]]) ?>

@@ -24,7 +24,7 @@ if (!empty($model->id)) {
     $bank_account_id = $model->fk_bank_account_id;
 }
 ?>
-<div class="jev-preparation-index" style="background-color: white;">
+<div class="jev-preparation-index card" style="padding:1rem">
     <form id='filter' <?php if (!empty($model->id)) : ?> style="display:none" <?php endif; ?>>
         <div class="row">
             <div class="col-sm-2">

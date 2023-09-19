@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use yii\helpers\Url;
@@ -15,13 +16,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-
-        <?= Html::button('<i class="fa fa-pencil-alt"></i> Create', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=remittance-payee/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
-
+        <?= Html::a('<i class="fa fa-pencil-alt"></i> Create ', ['create'], ['class' => 'btn btn-success modalButtonCreate'])  ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); 
-    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -47,25 +44,15 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
             ],
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->id);
+                }
+            ],
         ],
     ]); ?>
 
 
 </div>
-<?php
-$js = <<<JS
-    $(document).ready(function(){
-        $('#modalButtoncreate').click(function(){
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-        });
-        $('a[title=Update]').click(function(e){
-            e.preventDefault();
-            
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
-        });
-
-    })
-JS;
-$this->registerJs($js);
-?>

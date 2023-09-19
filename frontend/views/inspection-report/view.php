@@ -57,7 +57,7 @@ $irDetails = $model->getIrDetails();
 ?>
 <div class="inspection-report-view">
 
-    <div class="container">
+    <div class="container card" style="padding: 1rem;">
         <p>
             <?= !empty($rfi_id) ? Html::a('RFI Link', ['request-for-inspection/view', 'id' => $rfi_id], ['class' => 'btn btn-primary']) : ''; ?>
             <?= !empty($iar_id) ? ' ' . Html::a('IAR Link', ['iar/view', 'id' => $iar_id], ['class' => 'btn btn-link']) : ''; ?>

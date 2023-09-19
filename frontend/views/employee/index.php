@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use kartik\file\FileInput;
 use kartik\form\ActiveForm;
 use kartik\grid\GridView;
@@ -47,11 +48,17 @@ $this->params['breadcrumbs'][] = $this->title;
             'position',
             [
                 'attribute' => 'fk_office_id',
-                'value' =>'office.office_name'
+                'value' => 'office.office_name'
 
             ],
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->employee_id);
+                }
+            ],
         ],
     ]); ?>
 

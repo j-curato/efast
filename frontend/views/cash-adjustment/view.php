@@ -14,27 +14,29 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="cash-adjustment-view">
 
-    <h3><?= Html::encode($this->title) ?></h3>
 
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']) ?>
+    <div class="container card" style="padding: 1rem;">
 
-    </p>
+        <p>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']) ?>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            [
-                'attribute' => 'book_id',
-                'value' => function ($model) {
-                    return $model->book->name;
-                }
+        </p>
+
+        <?= DetailView::widget([
+            'model' => $model,
+            'attributes' => [
+                [
+                    'attribute' => 'book_id',
+                    'value' => function ($model) {
+                        return $model->book->name;
+                    }
+                ],
+                'particular:ntext',
+                'date',
+                'amount',
             ],
-            'particular:ntext',
-            'date',
-            'amount',
-        ],
-    ]) ?>
+        ]) ?>
+    </div>
 
 </div>
 <?php $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [JqueryAsset::class]]) ?>

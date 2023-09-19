@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
 use kartik\file\FileInput;
@@ -17,7 +18,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="monthly-liquidation-program-index">
 
-    <h3><?= Html::encode($this->title) ?></h3>
 
     <p>
         <?= Html::button('<i class="fa fa-pencil-alt"></i> Create', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=monthly-liquidation-program/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
@@ -32,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <h4 class="modal-title" id="myModalLabel">UPLOAD WFP</h4>
                 </div>
                 <div class='modal-body'>
-                    <center><a href="<?php echo Yii::$app->request->baseUrl?>/frontend/web/import_formats/monthly_liquidation_program.xlsx">Download Template Here to avoid error during Upload.</a></center>
+                    <center><a href="<?php echo Yii::$app->request->baseUrl ?>/frontend/web/import_formats/monthly_liquidation_program.xlsx">Download Template Here to avoid error during Upload.</a></center>
                     <hr>
                     <label for="ledger"> SELECT YEAR</label>
 
@@ -105,7 +105,13 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'fund_source_type',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->id);
+                }
+            ],
         ],
     ]); ?>
 

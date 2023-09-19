@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use DateTime;
 use Yii;
 
 /**
@@ -10,18 +11,13 @@ use Yii;
  * @property int $id
  * @property string $serial_number
  * @property int $fk_it_maintenance_request
- * @property int $fk_client_id
- * @property string|null $contact_num
- * @property string|null $address
- * @property string|null $email
+
  * @property string $date
  * @property int $clarity
  * @property int $skills
  * @property int $professionalism
  * @property int $courtesy
  * @property int $response_time
- * @property string $sex
- * @property string $age_group
  * @property string|null $comment
  * @property string|null $vd_reason
  * @property string $created_at
@@ -45,19 +41,44 @@ class ItHelpdeskCsf extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['serial_number', 'fk_it_maintenance_request', 'fk_client_id', 'date', 'clarity', 'skills', 'professionalism', 'courtesy', 'response_time', 'sex', 'age_group'], 'required'],
-            [['fk_it_maintenance_request', 'fk_client_id', 'clarity', 'skills', 'professionalism', 'courtesy', 'response_time'], 'integer'],
+            [['fk_it_maintenance_request',  'date', 'clarity', 'skills', 'professionalism', 'courtesy', 'response_time', 'outcome'], 'required'],
+            [['fk_it_maintenance_request',  'clarity', 'skills', 'professionalism', 'courtesy', 'response_time', 'outcome'], 'integer'],
             [[
-                'address', 'email', 'comment', 'vd_reason', 'social_group',
-                'other_social_group'
+                'comment', 'vd_reason', 'social_group',
             ], 'string'],
             [['date', 'created_at'], 'safe'],
-            [['serial_number', 'contact_num', 'age_group'], 'string', 'max' => 255],
-            [['sex'], 'string', 'max' => 20],
+            [['serial_number'], 'string', 'max' => 255],
             [['serial_number'], 'unique'],
-            [['fk_client_id'], 'exist', 'skipOnError' => true, 'targetClass' => Employee::class, 'targetAttribute' => ['fk_client_id' => 'employee_id']],
             [['fk_it_maintenance_request'], 'exist', 'skipOnError' => true, 'targetClass' => ItMaintenanceRequest::class, 'targetAttribute' => ['fk_it_maintenance_request' => 'id']],
         ];
+    }
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            if ($this->isNewRecord) {
+                if (empty($this->serial_number)) {
+
+                    $this->serial_number = $this->generateSerialNum();
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+    private function generateSerialNum()
+    {
+        $dte = DateTime::createFromFormat('Y-m-d', $this->date);
+        $yr = $dte->format('Y');
+        $qry  = Yii::$app->db->createCommand("SELECT 
+            CAST(SUBSTRING_INDEX(it_helpdesk_csf.serial_number,'-',-1)AS UNSIGNED) +1 as ser_num
+            FROM it_helpdesk_csf  
+            WHERE 
+            it_helpdesk_csf.serial_number LIKE :yr
+            ORDER BY ser_num DESC LIMIT 1")
+            ->bindValue(':yr',  $yr . '%')
+            ->queryScalar();
+        $num =  !empty($qry) ? intval($qry) : 1;
+        return  $dte->format('Y-m') . '-'  . str_pad($num, 4, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -68,24 +89,19 @@ class ItHelpdeskCsf extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'serial_number' => 'Serial Number',
-            'fk_it_maintenance_request' => 'Fk It Maintenance Request',
-            'fk_client_id' => 'Fk Client ID',
-            'contact_num' => 'Contact Num',
-            'address' => 'Address',
-            'email' => 'Email',
+            'fk_it_maintenance_request' => ' It Maintenance Request',
             'date' => 'Date',
             'clarity' => 'Clarity',
             'skills' => 'Skills',
             'professionalism' => 'Professionalism',
             'courtesy' => 'Courtesy',
             'response_time' => 'Response Time',
-            'sex' => 'Sex',
-            'age_group' => 'Age Group',
             'comment' => 'Comment',
             'vd_reason' => 'Vd Reason',
             'created_at' => 'Created At',
             'social_group' => 'Social Group',
             'other_social_group' => 'Other',
+            'outcome' => 'OUTCOME/Result of Services Requested',
         ];
     }
 
@@ -94,17 +110,14 @@ class ItHelpdeskCsf extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getFkClient()
-    {
-        return $this->hasOne(Employee::class, ['employee_id' => 'fk_client_id']);
-    }
+
 
     /**
      * Gets query for [[FkItMaintenanceRequest]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getFkItMaintenanceRequest()
+    public function getMaintenanceRequest()
     {
         return $this->hasOne(ItMaintenanceRequest::class, ['id' => 'fk_it_maintenance_request']);
     }

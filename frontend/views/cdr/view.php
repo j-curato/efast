@@ -18,7 +18,7 @@ use yii\helpers\ArrayHelper;
 $this->title = "CDR";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="jev-preparation-index" style="background-color: white;">
+<div class="jev-preparation-index card" style="padding:1rem;">
     <div class="row">
 
         <?php

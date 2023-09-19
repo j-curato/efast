@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
-            'heading' => 'List of Areas',
+            'heading' => 'List of Fund CLuster Codes',
         ],
         'floatHeaderOptions' => [
             'top' => 50,

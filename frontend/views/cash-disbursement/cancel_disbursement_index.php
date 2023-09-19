@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 $delete = yii::$app->request->baseUrl . "/index.php?r=cash-disbursement/delete&id=$model->id";
                 return ' ' . Html::a('', $t, ['class' => 'btn btn-primary fa fa-eye',])
                     . ' ' . Html::a('', ['delete', 'id' => $model->id], [
-                        'class' => 'btn btn-danger fa fa-trash',
+                        'class' => 'btn btn-danger fa fa-trash-alt',
                         'data' => [
                             'confirm' => 'Are you sure you want to delete this item?',
                             'method' => 'post',
@@ -86,11 +86,5 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => $gridColumn
     ]); ?>
 
-    <style>
-        .grid-view td {
-            white-space: normal;
-            width: 10rem;
-            padding: 0;
-        }
-    </style>
+
 </div>

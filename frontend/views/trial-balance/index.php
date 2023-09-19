@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 
@@ -12,7 +13,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="trial-balance-index">
 
-    <h3><?= Html::encode($this->title) ?></h3>
 
     <p>
         <?= Html::a('Create Trial Balance', ['create'], ['class' => 'btn btn-success']) ?>
@@ -38,7 +38,13 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'entry_type',
 
-            ['class' => 'yii\grid\ActionColumn'],
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->id, 'none');
+                }
+            ],
         ],
     ]); ?>
 

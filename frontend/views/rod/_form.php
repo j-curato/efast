@@ -14,7 +14,7 @@ use yii\web\JsExpression;
 $this->title = "ROD";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="jev-preparation-index " style="background-color: white;padding:20px">
+<div class="jev-preparation-index card" style="padding:1rem">
 
 
 
@@ -101,7 +101,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             </div>
 
-            <div class="col-sm-2" style="margin-top: 2.5rem;">
+            <div class="col-sm-2" style="margin-top: 2.05rem;">
                 <button class="btn btn-primary" id="generate">Generate</button>
                 <button class="btn btn-success" id="save" type="submit"> Save</button>
             </div>

@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 
@@ -12,7 +13,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="ro-liquidation-report-index">
 
-    <h3><?= Html::encode($this->title) ?></h3>
 
     <p>
         <?= Html::a('Create Liquidation Report', ['create'], ['class' => 'btn btn-success']) ?>
@@ -35,8 +35,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
             [
-                'class' => 'yii\grid\ActionColumn',
-                'template' => '{view} {update}'
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function($model){
+                    return MyHelper::gridDefaultAction($model->id,'none');
+                }
             ],
         ],
     ]); ?>

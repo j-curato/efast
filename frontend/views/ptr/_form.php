@@ -13,7 +13,8 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\JqueryAsset;
 use yii\web\JsExpression;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Ptr */
@@ -288,14 +289,10 @@ if (!empty($model->fk_approved_by)) {
 
 
 
-    <div class="row">
-        <div class="col-sm-3 col-sm-offset-5">
-
-            <div class="form-group">
-                <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:11rem']) ?>
-            </div>
+    <div class="row justify-content-center">
+        <div class="form-group col-sm-2">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
         </div>
-
     </div>
 
     <?php ActiveForm::end(); ?>

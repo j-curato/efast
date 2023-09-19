@@ -17,8 +17,8 @@ class ItHelpdeskCsfSearch extends ItHelpdeskCsf
     public function rules()
     {
         return [
-            [['id', 'fk_it_maintenance_request', 'fk_client_id', 'clarity', 'skills', 'professionalism', 'courtesy', 'response_time'], 'integer'],
-            [['serial_number', 'contact_num', 'address', 'email', 'date', 'sex', 'age_group', 'comment', 'vd_reason', 'created_at'], 'safe'],
+            [['id', 'fk_it_maintenance_request', 'clarity', 'skills', 'professionalism', 'courtesy', 'response_time'], 'integer'],
+            [['serial_number', 'date', 'comment', 'vd_reason', 'created_at'], 'safe'],
         ];
     }
 
@@ -60,7 +60,6 @@ class ItHelpdeskCsfSearch extends ItHelpdeskCsf
         $query->andFilterWhere([
             'id' => $this->id,
             'fk_it_maintenance_request' => $this->fk_it_maintenance_request,
-            'fk_client_id' => $this->fk_client_id,
             'date' => $this->date,
             'clarity' => $this->clarity,
             'skills' => $this->skills,
@@ -71,11 +70,6 @@ class ItHelpdeskCsfSearch extends ItHelpdeskCsf
         ]);
 
         $query->andFilterWhere(['like', 'serial_number', $this->serial_number])
-            ->andFilterWhere(['like', 'contact_num', $this->contact_num])
-            ->andFilterWhere(['like', 'address', $this->address])
-            ->andFilterWhere(['like', 'email', $this->email])
-            ->andFilterWhere(['like', 'sex', $this->sex])
-            ->andFilterWhere(['like', 'age_group', $this->age_group])
             ->andFilterWhere(['like', 'comment', $this->comment])
             ->andFilterWhere(['like', 'vd_reason', $this->vd_reason]);
 

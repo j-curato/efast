@@ -7,7 +7,8 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\web\JsExpression;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\SupplementalPpmp */
@@ -61,7 +62,7 @@ $cse_type_data = [
 // }
 ?>
 
-<div class="supplemental-ppmp-form">
+<div class="supplemental-ppmp-form card" style="padding:1rem">
     <!-- <?= Html::button('<i class="fa fa-pencil-alt"></i> Create', [
                 'value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=supplemental-ppmp/index'),
                 'id' => 'lgModalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
@@ -536,11 +537,9 @@ $cse_type_data = [
 
         </tbody>
     </table>
-    <div class="row">
-        <div class="col-sm-offset-5">
-            <div class="form-group">
-                <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:200px']) ?>
-            </div>
+    <div class="row justify-content-center">
+        <div class="form-group col-sm-2">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
 
         </div>
     </div>

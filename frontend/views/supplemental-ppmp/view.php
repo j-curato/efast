@@ -41,7 +41,7 @@ if (!empty($model->fk_certified_funds_available_by)) {
 ?>
 <div class="supplemental-ppmp-view">
 
-    <div class="" style="background-color: white;padding:10px;">
+    <div class="card" style="background-color: white;padding:1rem;">
 
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>

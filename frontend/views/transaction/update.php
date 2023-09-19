@@ -7,7 +7,7 @@ use yii\helpers\Html;
 
 $this->title = 'Update Transaction: ' . $model->tracking_number;
 $this->params['breadcrumbs'][] = ['label' => 'Transactions', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = ['label' => $model->tracking_number, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Update';
 ?>
 <div class="transaction-update">
