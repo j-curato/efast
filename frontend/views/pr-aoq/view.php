@@ -311,6 +311,10 @@ $this->params['breadcrumbs'][] = $this->title;
         .main-footer {
             display: none;
         }
+
+        @page {
+            size: landscape;
+        }
     }
 </style>
 
