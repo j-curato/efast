@@ -147,7 +147,7 @@ $rowNum = 0;
                     <td>{$itm['particular']}</td>
                     <td>" . number_format($itm['amtDisbursed'], 2) . "</td>
                     <td>" . number_format($itm['taxWitheld'], 2) . "</td>
-                    <td><button id='remove' class='btn btn-danger ' onclick='remove(this)'><i class='glyphicon glyphicon-minus'></i></button></td>
+                    <td><button id='remove' class='btn btn-danger ' onclick='remove(this)'><i class='fa fa-times'></i></button></td>
                 </tr>";
                 $rowNum++;
             } ?>
@@ -174,7 +174,7 @@ $rowNum = 0;
         let clone = source.clone(true)
         clone.find('.add_btn').closest('td').remove()
         clone.find('.dv_id').prop('name', 'items[][dv_id]');
-        let row = `<td><button id='remove' class='btn btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td>`
+        let row = `<td><button id='remove' class='btn btn-danger ' onclick='remove(this)'><i class="fa fa-times"></i></button></td>`
         clone.append(row)
 
         $('#transaction_table tbody').append(clone);
@@ -210,7 +210,7 @@ $rowNum = 0;
                         <td>${payee}</td>
                         <td>${particular}</td>
                         <td>${amount}</td>
-                        <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>
+                        <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="fa fa-times"></i></button></td></tr>
                     </tr>
                         `
             $('#transaction_table tbody').append(row);
@@ -230,7 +230,7 @@ $rowNum = 0;
             $(".checkbox:checked").each(function() {
                 checkedValue = $(this).closest('tr');
                 checkedValue.closest('.checkbox').removeAttr('checked')
-                var row = `<td><button id='remove' class='btn btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td>`
+                var row = `<td><button id='remove' class='btn btn-danger ' onclick='remove(this)'><i class="fa fa-times"></i></button></td>`
                 var clone = checkedValue.clone();
                 clone.children('td').eq(0).find('.checkbox').prop('type', 'text');
                 clone.children('td').eq(0).find('.checkbox').prop('name', 'items[][dv_id]');

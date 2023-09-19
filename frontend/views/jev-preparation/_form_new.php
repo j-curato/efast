@@ -298,8 +298,8 @@ $entry_row = 1;
                             <input type='hidden' name='credit[$entry_row]' class='credit main_amount' placeholder='Credit' value='$credit'>
                         </td>
                         <td style='width: 50px;'>
-                            <button type='button' class='remove btn btn-danger btn-xs' style=' text-align: center; float:right;'><i class='glyphicon glyphicon-minus'></i></button>
-                            <button type='button' class='add btn btn-success btn-xs' style=' text-align: center; float:right;margin-right:5px'><i class='glyphicon glyphicon-plus'></i></button> 
+                            <button type='button' class='remove btn btn-danger btn-xs' style=' text-align: center; float:right;'><i class='fa fa-times'></i></button>
+                            <button type='button' class='add btn btn-success btn-xs' style=' text-align: center; float:right;margin-right:5px'><i class='fa fa-pencil-alt'></i></button> 
                         </td>
                     </tr>";
                     $entry_row++;
@@ -327,8 +327,8 @@ $entry_row = 1;
                         <input type="hidden" name="credit[0]" class="credit main_amount" placeholder="Credit">
                     </td>
                     <td style="width: 50px;">
-                        <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;"><i class="glyphicon glyphicon-minus"></i></button>
-                        <button type="button" class='add btn btn-success btn-xs' style=" text-align: center; float:right;margin-right:5px"><i class="glyphicon glyphicon-plus"></i></button>
+                        <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;"><i class="fa fa-times"></i></button>
+                        <button type="button" class='add btn btn-success btn-xs' style=" text-align: center; float:right;margin-right:5px"><i class="fa fa-pencil-alt"></i></button>
                     </td>
                 </tr>
             <?php } ?>
@@ -470,8 +470,8 @@ SweetAlertAsset::register($this);
                         <input type="hidden" name="credit[${row_number}]" class="credit main_amount" placeholder="Credit" value='${credit}'>
                     </td>
                     <td style="width: 50px;">
-                        <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;"><i class="glyphicon glyphicon-minus"></i></button>
-                        <button type="button" class='add btn btn-success btn-xs' style=" text-align: center; float:right;margin-right:5px"><i class="glyphicon glyphicon-plus"></i></button>
+                        <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;"><i class="fa fa-times"></i></button>
+                        <button type="button" class='add btn btn-success btn-xs' style=" text-align: center; float:right;margin-right:5px"><i class="fa fa-pencil-alt"></i></button>
                     </td>
                 </tr>`
 

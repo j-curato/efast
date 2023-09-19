@@ -17,12 +17,10 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="dv-aucs-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::a('Create Routing Slip', ['create-routing'], ['class' => 'btn btn-success']) ?>
     </p>
-
 
     <?php
 
@@ -33,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
-            'heading' => 'List of DV',
+            'heading' => 'List of Routing Slips',
         ],
         'floatHeaderOptions' => [
             'top' => 50,

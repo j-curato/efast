@@ -16,10 +16,10 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="process-ors-entries-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h3><?= Html::encode($this->title) ?></h3>
 
     <p>
-        <?= Html::a('<i class="glyphicon glyphicon-plus"></i>Create Process Ors', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('<i class="fa fa-pencil-alt"></i>Create Process Ors', ['create'], ['class' => 'btn btn-success']) ?>
         <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
     </p>
     <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -321,7 +321,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'panel' => [
             'heading' => '<h3 class="panel-title"> Process Ors</h3>',
             'type' => 'primary',
-            // 'before' => Html::a('<i class="glyphicon glyphicon-plus"></i>Create Process Ors', ['create'], ['class' => 'btn btn-success']),
+            // 'before' => Html::a('<i class="fa fa-pencil-alt"></i>Create Process Ors', ['create'], ['class' => 'btn btn-success']),
 
         ],
         'showPageSummary' => true,

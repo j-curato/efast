@@ -22,7 +22,7 @@ use yii\widgets\ActiveForm;
 $itemRow = 0;
 ?>
 
-<div class="transmittal-form panel panel-default">
+<div class="transmittal-form card">
     <?php
     $viewSearchModel = new VwNoPoTransmittalLiqsSearch();
     // $viewSearchModel->status = 'at_po';
@@ -167,7 +167,7 @@ $itemRow = 0;
                     <td>{$itm['total_expanded']}</td>
                     <td>{$itm['total_liquidation_damage']}</td>
                     <td>{$itm['gross_payment']}</td>
-                    <td><button id='remove' class='btn-xs btn-danger ' onclick='remove(this)'><i class='glyphicon glyphicon-minus'></i></button></td>
+                    <td><button id='remove' class='btn-xs btn-danger ' onclick='remove(this)'><i class='fa fa-times'></i></button></td>
                 </tr>";
                 $itemRow++;
             }
@@ -197,7 +197,7 @@ $itemRow = 0;
         let clone = source.clone(true)
         clone.find('.add_btn').closest('td').remove()
         clone.find('.dv_id').prop('name', 'items[][dv_id]');
-        let row = `<td><button id='remove' class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td>`
+        let row = `<td><button id='remove' class='btn-xs btn-danger ' onclick='remove(this)'><i class="fa fa-times"></i></button></td>`
         clone.append(row)
         $('#transaction_table tbody').append(clone);
     }

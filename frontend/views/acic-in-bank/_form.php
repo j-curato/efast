@@ -14,7 +14,7 @@ use yii\widgets\ActiveForm;
 $itemRow = 0;
 ?>
 
-<div class="acic-in-bank-form panel panel-default container">
+<div class="acic-in-bank-form card container">
 
     <?php $form = ActiveForm::begin(); ?>
 

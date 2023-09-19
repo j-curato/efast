@@ -178,8 +178,8 @@ use yii\widgets\ActiveForm;
                         <td class='action' align='center'>
                             <div class='link-btn'> 
                             
-                            <button  type='button' class='btn-xs btn-danger link-remove' onClick='removeLink(this)'><i class='glyphicon glyphicon-minus'></i></button>
-                            <button type='button' class='btn-xs btn-success link-add' onClick='addLink()'><i class='glyphicon glyphicon-plus'></i></button>
+                            <button  type='button' class='btn-xs btn-danger link-remove' onClick='removeLink(this)'><i class='fa fa-times'></i></button>
+                            <button type='button' class='btn-xs btn-success link-add' onClick='addLink()'><i class='fa fa-pencil-alt'></i></button>
                             </div>
                         </td>
                     </tr>";
@@ -219,9 +219,9 @@ use yii\widgets\ActiveForm;
                                     <input type='text' class='form-control' value='$data' name='compliance[]'>
                                 </td>
                                 <td  class='action'>
-                                    <button type='button' class='btn-xs btn-danger compliance-remove'  onclick='removeCompliance(this)'><i class='glyphicon glyphicon-minus'></i></button>
+                                    <button type='button' class='btn-xs btn-danger compliance-remove'  onclick='removeCompliance(this)'><i class='fa fa-times'></i></button>
 
-                                    <button type='button' class='btn-xs btn-success compliance-add' onclick='addCompliance()'><i class='glyphicon glyphicon-plus'></i></button>
+                                    <button type='button' class='btn-xs btn-success compliance-add' onclick='addCompliance()'><i class='fa fa-pencil-alt'></i></button>
                                 </td>
                             </tr>";
                     }
@@ -264,8 +264,8 @@ use yii\widgets\ActiveForm;
                     <input type="text" class="form-control" name="link[]">
                 </td>
                 <td  class='action'>
-                    <button type='button' class="btn-xs btn-danger  link-remove" onClick='removeLink(this)'><i class='glyphicon glyphicon-minus'></i></button>
-                    <button type='button' class="btn-xs btn-success link-add" onClick='addLink()'><i class='glyphicon glyphicon-plus'></i></button>
+                    <button type='button' class="btn-xs btn-danger  link-remove" onClick='removeLink(this)'><i class='fa fa-times'></i></button>
+                    <button type='button' class="btn-xs btn-success link-add" onClick='addLink()'><i class='fa fa-pencil-alt'></i></button>
                 </td>
             </tr>
         `
@@ -284,8 +284,8 @@ use yii\widgets\ActiveForm;
                     <input type="text" class="form-control" name="compliance[]">
                 </td>
                 <td  class='action'>
-                    <button class="btn-xs btn-danger remove" onClick='removeCompliance(this)'><i class='glyphicon glyphicon-minus'></i></button>
-                    <button class="btn-xs btn-success compliance-add" onClick='addCompliance()'><i class='glyphicon glyphicon-plus'></i></button>
+                    <button class="btn-xs btn-danger remove" onClick='removeCompliance(this)'><i class='fa fa-times'></i></button>
+                    <button class="btn-xs btn-success compliance-add" onClick='addCompliance()'><i class='fa fa-pencil-alt'></i></button>
                 </td>
             </tr>
         `

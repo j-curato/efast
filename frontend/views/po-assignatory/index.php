@@ -15,7 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Create', [
+        <?= Html::button('<i class="fa fa-pencil-alt"></i> Create', [
             'value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=po-assignatory/create'),
             'id' => 'modalButtoncreate', 'class' => 'btn btn-success',
             'data-placement' => 'left',

@@ -32,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
     $t = yii::$app->request->baseUrl . '/index.php?r=jev-preparation/sample';
     ?>
 
-    <div class="container panel panel-default">
+    <div class="container card">
 
         <div class="row">
             <div class="col-sm-3">

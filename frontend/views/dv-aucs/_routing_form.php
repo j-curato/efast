@@ -235,7 +235,7 @@ if (strtolower($model->transaction_type) === 'remittance' || $dvType === 'remitt
                     //             <td> <input value='{$val['ewt_goods_services']}' type='text' name='ewt_goods_services[$itemRow]' class='ewt'/></td>
                     //             <td> <input value='{$val['compensation']}' type='text' name='compensation[$itemRow]' class='compensation'/></td>
                     //             <td> <input value='{$val['other_trust_liabilities']}' type='text' name='other_trust_liabilities[$itemRow]' class='liabilities'/></td>
-                    //             <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class='glyphicon glyphicon-minus'></i></button></td></tr>
+                    //             <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class='fa fa-times'></i></button></td></tr>
                     //         ";
 
                     $ttl_amount_disbursed += floatval($val['amount_disbursed']);
@@ -274,7 +274,7 @@ if (strtolower($model->transaction_type) === 'remittance' || $dvType === 'remitt
                             </td>
                             <td>
                                 <button  type='button' class='btn-xs btn-danger' onclick='RemoveItem(this)'>
-                                    <i class='glyphicon glyphicon-minus'></i>
+                                    <i class='fa fa-times'></i>
                                 </button>
                             </td>
                         </tr>";
@@ -309,11 +309,9 @@ if (strtolower($model->transaction_type) === 'remittance' || $dvType === 'remitt
 
 
 
-        <div class="row">
-            <div class="col-sm-3 col-sm-offset-5">
-                <div class="form-group">
-                    <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:30rem']) ?>
-                </div>
+        <div class="row justify-content-center">
+            <div class="form-group col-sm-2">
+                <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
             </div>
         </div>
 
@@ -579,7 +577,7 @@ $csrfToken = Yii::$app->request->csrfToken;
                             </td>
                             <td>
                                 <button  type='button' class='btn-xs btn-danger' onclick='RemoveItem(this)'>
-                                    <i class="glyphicon glyphicon-minus"></i>
+                                    <i class="fa fa-times"></i>
                                 </button>
                             </td>
                         </tr>`

@@ -20,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="maf-index">
 
     <p>
-        <?= Html::a('<i class="glyphicon glyphicon-plus"></i> Create MAF', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('<i class="fa fa-pencil-alt"></i> Create MAF', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
     <?php
     $col = [

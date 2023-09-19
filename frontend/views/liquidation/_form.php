@@ -497,7 +497,7 @@ SweetAlertAsset::register($this);
                     </td>
                     <td><button id='copy_${transaction_table_count}' class='btn-xs btn-success ' type='button' onclick='copy(this)'><i class="fa fa-copy "></i></button></td>
                   
-                    <td><button  class='btn-xs btn-danger ' id='remove_${transaction_table_count}'  onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>
+                    <td><button  class='btn-xs btn-danger ' id='remove_${transaction_table_count}'  onclick='remove(this)'><i class="fa fa-times"></i></button></td></tr>
                 `
             $("#transaction_table tbody").append(row)
             $(`#liq_damages-${transaction_table_count}`).maskMoney({

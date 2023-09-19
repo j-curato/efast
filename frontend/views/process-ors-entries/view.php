@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
     $ors  = $model;
     $entries = ProcessOrsNewView::find()->where('id = :id', ['id' => $model->id])->all();
     ?>
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h3><?= Html::encode($this->title) ?></h3>
 
     <div class="container">
         <p>

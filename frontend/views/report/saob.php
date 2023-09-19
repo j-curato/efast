@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <!-- <input type="text" name="" id="sample"> -->
 
 
-    <div class="container panel panel-default">
+    <div class="container card">
 
         <div class="row action">
             <div class="col-sm-3">

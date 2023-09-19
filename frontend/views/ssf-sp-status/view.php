@@ -12,7 +12,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Ssf Sp Statuses', 'url' => ['index
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="ssf-sp-status-view container panel panel-default">
+<div class="ssf-sp-status-view container card">
 
 
     <p>

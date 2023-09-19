@@ -47,7 +47,7 @@ if (!empty($model->dv_aucs_id)) {
 
 <div class="cash-disbursement-form ">
 
-    <div class="panel panel-default " style="padding:2rem;height:100%">
+    <div class="card " style="padding:2rem;height:100%">
         <ul class="notes">
             <li>Notes</li>
             <li>Select Book And Mode of Payment first before selecting Check Range</li>

@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
     ?>
 
 
-    <div class="panel panel-default container" style="background-color: white;">
+    <div class="card container" style="background-color: white;">
         <h4 style=""><?= Html::encode($this->title) ?></h4>
         <p>
             <?= Html::a('Create Process Ors', ['create'], ['class' => 'btn btn-success']) ?>

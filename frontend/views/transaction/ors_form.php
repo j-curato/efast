@@ -33,7 +33,7 @@ $this->params['breadcrumbs'][] = $title;
 
 
     <!-- FORM 1 -->
-    <div class="container panel panel-default">
+    <div class="container card">
         <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 
         <button class="btn btn-success" type="button" id="print">Print</button>
@@ -315,7 +315,7 @@ $this->params['breadcrumbs'][] = $title;
     <!-- FORM 1 END-->
     <p style='page-break-after:always;'></p>
     <!-- FORM 2-->
-    <div class="container panel panel-default">
+    <div class="container card">
         <div style="float:right">
             <h6>
                 <?php
@@ -652,7 +652,7 @@ $this->params['breadcrumbs'][] = $title;
         </table>
 
     </div>
-    <div class="panel panel-default container allotmentTable" style="padding:2rem">
+    <div class="card container allotmentTable" style="padding:2rem">
         <table class="table " id="allotmentTable">
             <thead>
                 <tr class="info">
@@ -705,7 +705,7 @@ $this->params['breadcrumbs'][] = $title;
 
 
     ?>
-        <div class="container panel panel-default links" style="background-color: white;">
+        <div class="container card links" style="background-color: white;">
 
             <table class="table " id='ors_links'>
                 <tr class="info">

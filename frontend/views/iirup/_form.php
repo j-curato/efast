@@ -18,7 +18,7 @@ use yii\widgets\ActiveForm;
 $itemRow = 0;
 ?>
 
-<div class="iirup-form panel panel-default">
+<div class="iirup-form card">
 
     <?php $form = ActiveForm::begin([
         'id' => $model->formName()

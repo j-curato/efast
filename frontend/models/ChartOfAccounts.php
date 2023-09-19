@@ -97,7 +97,7 @@ class ChartOfAccounts extends \yii\db\ActiveRecord
             'id' => 'ID',
             'uacs' => 'Uacs',
             'general_ledger' => 'General Ledger',
-            'major_account_id' => 'Major Account ID',
+            'major_account_id' => 'Major Account ',
             'sub_major_account' => 'Sub Major Account',
             'account_group' => 'Account Group',
             'current_noncurrent' => 'Current Noncurrent',

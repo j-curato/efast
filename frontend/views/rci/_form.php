@@ -20,7 +20,7 @@ use yii\widgets\ActiveForm;
 $itmRow = 0;
 ?>
 
-<div class="rci-form panel panel-default">
+<div class="rci-form card">
 
     <?php $form = ActiveForm::begin(); ?>
 

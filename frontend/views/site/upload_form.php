@@ -4,7 +4,7 @@ use app\models\SubAccounts1;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use yii\helpers\Url;
-use yii\bootstrap\Modal;
+use yii\bootstrap4\Modal;
 use kartik\widgets\ActiveForm;
 use kartik\widgets\FileInput;
 use aryelds\sweetalert\SweetAlertAsset;

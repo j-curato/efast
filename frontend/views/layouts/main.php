@@ -1,141 +1,122 @@
 <?php
 
-use frontend\assets\AdminLtePluginAsset;
-use yii\helpers\Html;
-use yii\bootstrap\Modal;
-use yii\web\JqueryAsset;
-
 /* @var $this \yii\web\View */
 /* @var $content string */
 
-$this->registerJsFile("@web/js/vue.js", ['position' => $this::POS_HEAD]);
+use frontend\assets\AppAsset;
+use frontend\assets\JqueryPluginAssets;
+use yii\helpers\Html;
+use yii\bootstrap4\Modal;
+use yii\web\JqueryAsset;
+use yii\widgets\Pjax;
+
+\hail812\adminlte3\assets\FontAwesomeAsset::register($this);
+\hail812\adminlte3\assets\AdminLteAsset::register($this);
+
+$this->registerCssFile('https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback');
+
+$assetDir = Yii::$app->assetManager->getPublishedUrl('@vendor/almasaeed2010/adminlte/dist');
+
+$publishedRes = Yii::$app->assetManager->publish('@vendor/hail812/yii2-adminlte3/src/web/js');
+$this->registerJsFile($publishedRes[1] . '/control_sidebar.js', ['depends' => '\hail812\adminlte3\assets\AdminLteAsset']);
+
 
 if (Yii::$app->user->isGuest) {
-    /**
-     * Do not use this code in your template. Remove it. 
-     * Instead, use the code  $this->layout = '//main-login'; in your controller.
-     */
-    echo $this->render(
+    return $this->render(
         'main-login',
         ['content' => $content]
     );
-} else {
-
-    if (class_exists('backend\assets\AppAsset')) {
-        backend\assets\AppAsset::register($this);
-    } else {
-        app\assets\AppAsset::register($this);
-    }
-
-    dmstr\web\AdminLteAsset::register($this);
-    // dmstr\web\AdminLtePluginAsset::register($this);
-    AdminLtePluginAsset::register($this);
-    $directoryAsset = Yii::$app->assetManager->getPublishedUrl('@vendor/almasaeed2010/adminlte/dist');
-    // $this->registerJsFile("@web/js/vue.js", ['position' => $this::POS_HEAD]);
-    $this->registerJsFile("@web/js/axios.min.js", ['position' => $this::POS_HEAD]);
-    $this->registerJsFile("@web/js/select2.min.js", ['depends' => [JqueryAsset::class]]);
-    $this->registerCssFile("@web/css/select2.min.css",);
+}
+AppAsset::register($this);
+$this->registerJsFile("@web/js/jquery.min.js", ['position' => $this::POS_HEAD]);
+$this->registerJsFile("@web/js/select2.min.js", ['depends' => [JqueryAsset::class]]);
+$this->registerCssFile("@web/css/select2.min.css",);
+$this->registerJsFile("@web/js/vue.js", ['position' => $this::POS_HEAD]);
 ?>
-    <?php $this->beginPage() ?>
-    <!DOCTYPE html>
-    <html lang="<?= Yii::$app->language ?>">
+<?php $this->beginPage() ?>
+<!DOCTYPE html>
+<html lang="<?= Yii::$app->language ?>">
 
-    <head>
-        <meta charset="<?= Yii::$app->charset ?>" />
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <script src="<?php echo yii::$app->request->baseUrl ?>/js/jquery.min.js" type="text/javascript"></script>
-        <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
-        <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js" ></script>
-         <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" type="text/css" rel="stylesheet" /> -->
-        <!-- <script src='<?php echo yii::$app->request->baseUrl ?>/js/maskMoney.js'></script>
-        <script src='<?php echo yii::$app->request->baseUrl ?>/js/select2.min.js'></script> -->
-        <!-- <link href="<?php echo yii::$app->request->baseUrl ?>/js/select2.min.js" /> -->
-        <link href="<?php echo yii::$app->request->baseUrl ?>/css/select2.min.css" rel="stylesheet" />
-        <!--
-        <link href='<?php echo yii::$app->request->baseUrl ?>/js/fullcalendar/main.css' rel='stylesheet' />
-        <script src='<?php echo yii::$app->request->baseUrl ?>/js/fullcalendar/main.js'></script>
-        <script src='<?php echo yii::$app->request->baseUrl ?>/js/instascan.js'></script> -->
+<head>
+    <meta charset="<?= Yii::$app->charset ?>">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <?php $this->registerCsrfMetaTags() ?>
+    <title><?= Html::encode($this->title) ?></title>
+    <?php
+    Modal::begin(
+        [
+            //'header' => '<h2>Create New Region</h2>',
+            'id' => 'genericModal',
+            'size' => 'modal-md',
+            'clientOptions' => ['backdrop' => 'static', 'keyboard' => TRUE, 'class' => 'modal modal-primary '],
+            'options' => [
+                'tabindex' => false // important for Select2 to work properly
+            ],
+        ]
+    );
+    echo "<div class='box box-success' id='modalContent'></div>";
+    Modal::end();
+    Modal::begin(
+        [
+            //'header' => '<h2>Create New Region</h2>',
+            'id' => 'lrgModal',
+            'size' => 'modal-lg',
+            'clientOptions' => ['backdrop' => 'static', 'keyboard' => TRUE, 'class' => 'modal modal-primary '],
+            'options' => [
+                'tabindex' => false // important for Select2 to work properly
+            ],
+        ]
+    );
+    echo "<div class='box box-success' id='lrgModalContent'></div>";
+    Modal::end();
+    ?>
+    <style>
+        body {
+            overflow-x: hidden;
+        }
 
-        <?= Html::csrfMetaTags() ?>
-        <title><?= Html::encode($this->title) ?></title>
-        <?php $this->head() ?>
+        .select2-container--krajee-bs4 {
+            width: 100% !important;
+        }
+    </style>
+    <?php $this->head() ?>
+</head>
 
-        <style>
-            /* .modal-wide {
-                width: 90%;
-            } */
-        </style>
+<body class="hold-transition sidebar-mini">
 
-        <?php
+    <?php $this->beginBody();
+    ?>
 
-        Modal::begin(
-            [
-                //'header' => '<h2>Create New Region</h2>',
-                'id' => 'genericModal',
-                'size' => 'modal-md',
-                'clientOptions' => ['backdrop' => 'static', 'keyboard' => TRUE, 'class' => 'modal modal-primary '],
-                'options' => [
-                    'tabindex' => false // important for Select2 to work properly
-                ],
-            ]
-        );
-        echo "<div class='box box-success' id='modalContent'></div>";
-        Modal::end();
-        Modal::begin(
-            [
-                //'header' => '<h2>Create New Region</h2>',
-                'id' => 'lrgModal',
-                'size' => 'modal-lg',
-                'clientOptions' => ['backdrop' => 'static', 'keyboard' => TRUE, 'class' => 'modal modal-primary '],
-                'options' => [
-                    'tabindex' => false // important for Select2 to work properly
-                ],
-            ]
-        );
-        echo "<div class='box box-success' id='lrgModalContent'></div>";
-        Modal::end();
-        ?>
-    </head>
 
-    <body class="hold-transition skin-blue sidebar-mini ">
-        <?php $this->beginBody() ?>
+    <div class="wrapper" id='content-container'>
+        <!-- Navbar -->
+        <?= $this->render('navbar', ['assetDir' => $assetDir]) ?>
+        <!-- /.navbar -->
 
-        <div class="wrapper">
+        <!-- Main Sidebar Container -->
+        <?= $this->render('sidebar', ['assetDir' => $assetDir]) ?>
 
-            <?= $this->render(
-                'header.php',
-                ['directoryAsset' => $directoryAsset]
-            ) ?>
+        <!-- Content Wrapper. Contains page content -->
+        <?= $this->render('content', ['content' => $content, 'assetDir' => $assetDir]) ?>
+        <!-- /.content-wrapper -->
 
-            <?= $this->render(
-                'left.php',
-                ['directoryAsset' => $directoryAsset]
-            )
-            ?>
+        <!-- Control Sidebar -->
+        <?= $this->render('control-sidebar') ?>
+        <!-- /.control-sidebar -->
 
-            <?= $this->render(
-                'content.php',
-                ['content' => $content, 'directoryAsset' => $directoryAsset]
-            ) ?>
-
-        </div>
-
-        <?php $this->endBody() ?>
-    </body>
+        <!-- Main Footer -->
+        <?= $this->render('footer') ?>
+    </div>
 
 
 
-    </html>
+    <?php $this->endBody() ?>
 
-    <script>
-        var i = false;
-        $('#modalButtoncreate').click(function() {
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-        });
-        $('.updateModal').click(function(e) {
-            e.preventDefault();
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
-        });
-    </script>
-    <?php $this->endPage() ?>
-<?php }  ?>
+</body>
+
+
+</html>
+
+
+<?php $this->endPage() ?>

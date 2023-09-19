@@ -1,6 +1,8 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
+use yii\web\JqueryAsset;
 use kartik\grid\GridView;
 
 /* @var $this yii\web\View */
@@ -12,27 +14,39 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="office-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Office', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Office', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
-        'panel'=>[
-            'type'=>'primary'
+        'panel' => [
+            'type' => 'primary'
         ],
         'columns' => [
 
             'office_name',
-
-            ['class' => 'kartik\grid\ActionColumn'],
+            [
+                'label' => 'Action',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->id);
+                }
+            ]
         ],
     ]); ?>
 
 
 </div>
+<?php
+
+$this->registerJsFile(
+    '@web/frontend/web/js/globalFunctions.js',
+    ['depends' => [JqueryAsset::class]]
+)
+?>

@@ -12,7 +12,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="con ">
     <div class="grid-container">
 
-        <div class="property-details panel panel-default">
+        <div class="property-details card">
             <div class="row">
                 <div class="col-sm-12">
 

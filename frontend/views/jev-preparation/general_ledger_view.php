@@ -42,7 +42,7 @@ $this->params['breadcrumbs'][] = $this->title;
     ?>
 
 
-    <div class="container panel panel-default">
+    <div class="container card">
 
         <div>
             <?php

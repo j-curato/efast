@@ -48,7 +48,7 @@ $columns = [
 
 
     <p>
-        <?= Html::a('<i class="glyphicon glyphicon-plus"></i>  Create PAR/PC', ['create'], ['class' => 'btn btn-success lrgModal']) ?>
+        <?= Html::a('<i class="fa fa-pencil-alt"></i>  Create PAR/PC', ['create'], ['class' => 'btn btn-success lrgModal']) ?>
 
     </p>
     <?= GridView::widget([

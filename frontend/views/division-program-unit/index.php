@@ -14,11 +14,9 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="division-program-unit-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
     <p>
         <?= Html::a('Create Division/Program/Unit', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
     </p>
-
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,

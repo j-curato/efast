@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use kartik\grid\GridView;
 use yii\helpers\Html;
 
@@ -12,20 +13,20 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="transmittal-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::a('Create Transmittal', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
+    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
-            'heading' => 'List of Areas',
+            'heading' => 'List of Transmittals',
         ],
         'floatHeaderOptions' => [
             'top' => 50,
@@ -37,23 +38,29 @@ $this->params['breadcrumbs'][] = $this->title;
             // 'id',
             'transmittal_number',
             'date',
-            'location', 
+            'location',
             [
 
-                'label'=>'DV Count',
-                'value'=>function($model){
+                'label' => 'DV Count',
+                'value' => function ($model) {
 
-                    $query=(new \yii\db\Query())
-                    ->select('count(id) as count')
-                    ->from('transmittal_entries')
-                    ->where("transmittal_entries.transmittal_id =:transmittal_id",['transmittal_id'=>$model->id])
-                    ->one();
+                    $query = (new \yii\db\Query())
+                        ->select('count(id) as count')
+                        ->from('transmittal_entries')
+                        ->where("transmittal_entries.transmittal_id =:transmittal_id", ['transmittal_id' => $model->id])
+                        ->one();
 
                     return $query['count'];
                 }
             ],
 
-            ['class' => '\kartik\grid\ActionColumn'],
+            [
+                'label' => 'Actions',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return MyHelper::gridDefaultAction($model->id, 'none');
+                }
+            ],
         ],
     ]); ?>
 

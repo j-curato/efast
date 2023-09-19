@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 
-    <div class="container panel panel-default" style="padding: 2rem;">
+    <div class="container card" style="padding: 2rem;">
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonCreate']) ?>
 

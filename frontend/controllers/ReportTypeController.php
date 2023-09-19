@@ -101,7 +101,7 @@ class ReportTypeController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->render('create', [
+        return $this->renderAjax('create', [
             'model' => $model,
         ]);
     }
@@ -121,7 +121,7 @@ class ReportTypeController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->render('update', [
+        return $this->renderAjax('update', [
             'model' => $model,
         ]);
     }
@@ -157,8 +157,8 @@ class ReportTypeController extends Controller
     }
     public function actionGetReportType()
     {
-        
-        $query =Yii::$app->db->createCommand("SELECT report_type.name as id,report_type.name FROM report_type ")->queryAll();
+
+        $query = Yii::$app->db->createCommand("SELECT report_type.name as id,report_type.name FROM report_type ")->queryAll();
         return json_encode($query);
     }
 }

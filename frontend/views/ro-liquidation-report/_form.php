@@ -239,9 +239,9 @@ if (!empty($model->fk_dv_aucs_id)) {
                         'label' => 'Actions',
                         'format' => 'raw',
                         'value' => function ($model) {
-                            return Html::button('<i class="glyphicon glyphicon-plus"></i> Entry', ['class' => 'btn-xs btn-success ', 'data-val' => $model->cash_id, 'onclick' => 'addEntry(this)']) . ' '
-                                . Html::button('<i class="glyphicon glyphicon-plus"></i> Reim', ['class' => 'btn-xs btn-warning add_reim', 'data-val' => $model->cash_id, 'onclick' => "addEntry(this, 'reimbursement')"]) . ' ' .
-                                Html::button('<i class="glyphicon glyphicon-plus"></i> Refund', ['class' => 'btn-xs btn-primary add_refund', 'data-val' => $model->cash_id, 'onclick' => 'addRefund(this)']);
+                            return Html::button('<i class="fa fa-pencil-alt"></i> Entry', ['class' => 'btn-xs btn-success ', 'data-val' => $model->cash_id, 'onclick' => 'addEntry(this)']) . ' '
+                                . Html::button('<i class="fa fa-pencil-alt"></i> Reim', ['class' => 'btn-xs btn-warning add_reim', 'data-val' => $model->cash_id, 'onclick' => "addEntry(this, 'reimbursement')"]) . ' ' .
+                                Html::button('<i class="fa fa-pencil-alt"></i> Refund', ['class' => 'btn-xs btn-primary add_refund', 'data-val' => $model->cash_id, 'onclick' => 'addRefund(this)']);
                         }
 
                     ],
@@ -467,9 +467,9 @@ $csrfToken = Yii::$app->request->csrfToken;
                         <td class='amount'>${thousands_separators(res.liquidated_amount)}</td>
                         <td class='amount'>${thousands_separators(res.balance)}</td>
                         <td id='actions' style='min-width:200px'>
-                        <button type='button' class='btn-xs btn-success'  onclick= 'addEntry(this)'  data-val = '${res.cash_id}'> <i class='glyphicon glyphicon-plus'></i>Entry</button>
-                        <button type='button' class='btn-xs btn-warning'  onclick= 'addEntry(this,"reimbursement")'  data-val = '${res.cash_id}'> <i class='glyphicon glyphicon-plus'></i>Reim</button>
-                        <button type='button' class='btn-xs btn-primary' onclick= 'addRefund(this)'  data-val = '${res.cash_id}'> <i class='glyphicon glyphicon-plus' ></i>Refund</button>
+                        <button type='button' class='btn-xs btn-success'  onclick= 'addEntry(this)'  data-val = '${res.cash_id}'> <i class='fa fa-pencil-alt'></i>Entry</button>
+                        <button type='button' class='btn-xs btn-warning'  onclick= 'addEntry(this,"reimbursement")'  data-val = '${res.cash_id}'> <i class='fa fa-pencil-alt'></i>Reim</button>
+                        <button type='button' class='btn-xs btn-primary' onclick= 'addRefund(this)'  data-val = '${res.cash_id}'> <i class='fa fa-pencil-alt' ></i>Refund</button>
                         </td>
                     </tr>`
 

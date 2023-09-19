@@ -34,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'name',
             [
                 'label' => 'Actions',
-                'format'=>'raw',
+                'format' => 'raw',
                 'value' => function ($model) {
                     return MyHelper::gridDefaultAction($model->id,);
                 }

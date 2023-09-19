@@ -62,12 +62,12 @@ $cse_type_data = [
 ?>
 
 <div class="supplemental-ppmp-form">
-    <!-- <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Create', [
+    <!-- <?= Html::button('<i class="fa fa-pencil-alt"></i> Create', [
                 'value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=supplemental-ppmp/index'),
                 'id' => 'lgModalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
             ]); ?> -->
     <?= Html::beginForm([$action, 'id' => $model->id], 'post', ['id' => 'SupplementalPpmp']); ?>
-    <div class="panel panel-default">
+    <div class="card">
 
         <div class="row ">
             <div class="col-sm-2">
@@ -340,7 +340,7 @@ $cse_type_data = [
                     $show_hide_act_name = $type == 'activity' ? '' : 'display:none;';
                     echo "<tr>
                             <td >
-                            <div class='panel panel-default'  style=' padding: 15px;' >
+                            <div class='card'  style=' padding: 15px;' >
                                 <div class='row'>
                                     <div class='col-sm-3'>
                                     <input name='ppmp_non_cse[$non_cse_rw_cnt][non_cse_id]' class='form-control non_cse_id' type='hidden' value='$non_cse_id'>
@@ -446,7 +446,7 @@ $cse_type_data = [
                     $unit_of_measure_id = $item['unit_of_measure_id'];
                     echo "<tr>
                     <td>
-                    <div class='panel panel-default'  style=' padding: 15px;' >
+                    <div class='card'  style=' padding: 15px;' >
                     <input type='hidden' class='form-control cse_item_id' name='cse_items[$cse_row_cnt][cse_item_id]' value='{$item['id']}' >
                         <div class='row'>
                       
@@ -617,7 +617,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
         let non_cse_row = `
             <tr>
                 <td>
-                <div class='panel panel-default'  style=' padding: 15px;' >
+                <div class='card'  style=' padding: 15px;' >
                     <div class='row'>
                         <div class='col-sm-3'>
                             <label for="type">Activity/Fixed Expenses</label>
@@ -937,7 +937,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
             if (type == 'cse') {
                 const row = `<tr>
                 <td>
-                <div class='panel panel-default'  style=' padding: 15px;' >
+                <div class='card'  style=' padding: 15px;' >
                     <div class="row">
                 
                         <div class="col-sm-3">

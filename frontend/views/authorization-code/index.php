@@ -13,14 +13,14 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="authorization-code-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h3><?= Html::encode($this->title) ?></h3>
 
     <!-- <p>
         <?= Html::a('Create Authorization Code', ['create'], ['class' => 'btn btn-success']) ?>
     </p> -->
 
     <p>
-        <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Add New', ['value'=>Url::to(yii::$app->request->baseUrl . '/index.php?r=authorization-code/create'), 'id'=>'modalButtoncreate', 'class' =>'btn btn-success', 'data-placement'=>'left', 'data-toggle'=>'tooltip', 'title'=>'Add Sector']); ?>
+        <?= Html::button('<i class="fa fa-pencil-alt"></i> Add New', ['value'=>Url::to(yii::$app->request->baseUrl . '/index.php?r=authorization-code/create'), 'id'=>'modalButtoncreate', 'class' =>'btn btn-success', 'data-placement'=>'left', 'data-toggle'=>'tooltip', 'title'=>'Add Sector']); ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>

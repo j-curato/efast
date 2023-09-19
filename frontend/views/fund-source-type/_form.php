@@ -22,7 +22,7 @@ use yii\widgets\ActiveForm;
                 'FAD' => 'FAD',
                 'IDD' => 'IDD',
                 'ORD' => 'ORD',
-                'SDD' => 'SDD' 
+                'SDD' => 'SDD'
             ],
             'pluginOptions' => [
                 'placeholder' => 'Select Division'
@@ -30,8 +30,11 @@ use yii\widgets\ActiveForm;
         ]
     ) ?>
 
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+    <div class="row justify-content-center">
+
+        <div class="form-group">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        </div>
     </div>
 
     <?php ActiveForm::end(); ?>

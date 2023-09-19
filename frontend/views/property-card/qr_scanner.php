@@ -8,7 +8,7 @@ $this->title = 'Rao';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<div class="container panel panel-default">
+<div class="container card">
 
     <div class="row">
         <div class="col-sm-5">

@@ -56,7 +56,7 @@ AND dv_aucs.is_cancelled = 0
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 
         </p>
-        <h4><?= Html::encode($this->title) ?></h4>
+        <h3><?= Html::encode($this->title) ?></h3>
 
 
         <table>

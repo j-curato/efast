@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index">
     <!-- <input type="text" name="" id="sample"> -->
-    <div class="container panel panel-default">
+    <div class="container card">
 
 
     </div>

@@ -12,7 +12,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Transfer Types', 'url' => ['index'
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="transfer-type-view container panel panel-default">
+<div class="transfer-type-view container card">
 
 
     <p>

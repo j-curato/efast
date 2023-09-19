@@ -13,7 +13,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="responsibility-center-view">
 
-    <div class="container panel panel-default" style="padding:2rem">
+    <div class="container card" style="padding:2rem">
 
 
         <p>

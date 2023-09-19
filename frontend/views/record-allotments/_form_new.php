@@ -196,8 +196,8 @@ use yii\helpers\ArrayHelper;
                     <!--ADD AND REMOVE  BUTTON -->
 
                     <div>
-                        <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;" onClick="removeItem(0)"><i class="glyphicon glyphicon-minus"></i></button>
-                        <button type="button" class=' btn btn-success btn-xs' style=" text-align: center; float:right;margin-right:5px" onClick="add()"><i class="glyphicon glyphicon-plus"></i></button>
+                        <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;" onClick="removeItem(0)"><i class="fa fa-times-alt"></i></button>
+                        <button type="button" class=' btn btn-success btn-xs' style=" text-align: center; float:right;margin-right:5px" onClick="add()"><i class="fa-times"></i></button>
                     </div>
                 </div>
 
@@ -333,8 +333,8 @@ use yii\helpers\ArrayHelper;
                     <!-- chart of accounts -->
                     <div class="row"  >
                         <div>
-                            <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;" onClick="removeItem(${i})"><i class="glyphicon glyphicon-minus"></i></button>
-                            <button type="button" class=' btn btn-success btn-xs' style=" text-align: center; float:right;margin-right:5px" onClick="add()"><i class="glyphicon glyphicon-plus"></i></button>
+                            <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;" onClick="removeItem(${i})"><i class="fa fa-times"></i></button>
+                            <button type="button" class=' btn btn-success btn-xs' style=" text-align: center; float:right;margin-right:5px" onClick="add()"><i class="fa fa-pencil-alt"></i></button>
                         </div>
                     </div>
                      <div class="row gap-1">

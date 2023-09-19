@@ -13,7 +13,7 @@ $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => JqueryAsset::class]);
 ?>
-<div class="location-view panel panel-default container">
+<div class="location-view card container">
 
 
     <p>

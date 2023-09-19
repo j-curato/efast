@@ -37,7 +37,7 @@ if (!empty($model->fk_property_id)) {
 }
 ?>
 
-<div class="other-property-details-form panel panel-default">
+<div class="other-property-details-form card">
 
     <?php $form = ActiveForm::begin([
         'id' => $model->formName(),

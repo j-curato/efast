@@ -36,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 
-    <div class="container panel panel-default">
+    <div class="container card">
         <div class="actions " style="bottom: 20px;">
 
 

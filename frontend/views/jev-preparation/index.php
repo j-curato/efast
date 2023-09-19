@@ -311,7 +311,7 @@ $this->params['breadcrumbs'][] = $this->title;
     .grid-view td {
       white-space: normal;
       width: 5rem;
-      padding: 0;
+      padding: 5px;
       font-size: 12px;
     }
   </style>
@@ -340,7 +340,7 @@ $script = <<< JS
               dynaForm.find('.entry:not(:last) .btn-add')
                 .removeClass('btn-add').addClass('btn-remove')
                 .removeClass('btn-success').addClass('btn-danger')
-                .html('<span class=`glyphicon glyphicon-minus`></span>');
+                .html('<span class=`fa fa-times`></span>');
             }).on('click', '.btn-remove', function(e) {
               $(this).parents('.entry:first').remove();
           

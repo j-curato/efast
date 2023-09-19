@@ -21,7 +21,7 @@ $orsRowNum = 0;
 $orsTxnRow = 0;
 ?>
 
-<div class="process-ors-form" class='panel panel-default' style="background-color: white;padding:2rem">
+<div class="process-ors-form" class='card' style="background-color: white;padding:2rem">
 
     <?php $form = ActiveForm::begin([
         'id' => 'orsForm',

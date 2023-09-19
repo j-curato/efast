@@ -12,7 +12,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Citymuns', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="citymun-view container panel panel-default">
+<div class="citymun-view container card">
 
 
     <p>

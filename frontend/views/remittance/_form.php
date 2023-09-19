@@ -429,7 +429,7 @@ $csrfToken = Yii::$app->request->csrfToken;
         //         // checkedValue.closest('.checkbox').removeAttr('checked')
 
 
-        //         const buttons = `<td><button  class='remove btn btn-danger '><i class="glyphicon glyphicon-minus"></i></button></td>`
+        //         const buttons = `<td><button  class='remove btn btn-danger '><i class="fa fa-times"></i></button></td>`
         //         const amount_input = `<td>
         //                             <input type='text' class='form-control mask-amount' >
         //                             <input type='hidden' class='main-amount' name='amount[${row_number}]'>

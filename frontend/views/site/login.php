@@ -10,36 +10,33 @@ use yii\captcha\Captcha;
 
 $this->title = 'Sign In';
 
-$fieldOptions1 = [
-    'options' => ['class' => 'form-group has-feedback'],
-    'inputTemplate' => "{input}<span class='glyphicon glyphicon-envelope form-control-feedback'></span>"
-];
-
-$fieldOptions2 = [
-    'options' => ['class' => 'form-group has-feedback'],
-    'inputTemplate' => "{input}<span class='glyphicon glyphicon-lock form-control-feedback'></span>"
-];
 ?>
 
 
-<div class="login-box panel panel-default">
-    <div class="login-logo">
-        <a href="#"><b>DTI</b> System</a>
-    </div>
-    <!-- /.login-logo -->
-    <div class="login-box-body">
 
-        <?php $form = ActiveForm::begin(['id' => 'login-form', 'enableClientValidation' => true, 'options' => ['autocomplete' => 'off']]); ?>
+<div class="card">
+    <div class="card-body login-card-body">
+        <p class="login-box-msg">eFast Login</p>
 
-        <?= $form
-            ->field($model, 'username', $fieldOptions1)
+        <?php $form = \yii\bootstrap4\ActiveForm::begin(['id' => 'login-form']) ?>
+
+        <?= $form->field($model, 'username', [
+            'options' => ['class' => 'form-group has-feedback'],
+            'inputTemplate' => '{input}<div class="input-group-append"><div class="input-group-text"><span class="fas fa-envelope"></span></div></div>',
+            'template' => '{beginWrapper}{input}{error}{endWrapper}',
+            'wrapperOptions' => ['class' => 'input-group mb-3']
+        ])
             ->label(false)
-            ->textInput(['placeholder' => $model->getAttributeLabel('username'), 'options' => ['autocomplete' => 'off']]) ?>
+            ->textInput(['placeholder' => $model->getAttributeLabel('username')]) ?>
 
-        <?= $form
-            ->field($model, 'password', $fieldOptions2)
+        <?= $form->field($model, 'password', [
+            'options' => ['class' => 'form-group has-feedback'],
+            'inputTemplate' => '{input}<div class="input-group-append"><div class="input-group-text"><span class="fas fa-lock"></span></div></div>',
+            'template' => '{beginWrapper}{input}{error}{endWrapper}',
+            'wrapperOptions' => ['class' => 'input-group mb-3']
+        ])
             ->label(false)
-            ->passwordInput(['placeholder' => $model->getAttributeLabel('password'), 'options' => ['autocomplete' => 'off']]) ?>
+            ->passwordInput(['placeholder' => $model->getAttributeLabel('password')]) ?>
         <?= $form->field($model, 'captcha')->widget(Captcha::class, [
             'template' => '<div class="row">
             <div class="col-sm-12">{image}</div>
@@ -49,45 +46,22 @@ $fieldOptions2 = [
         </div>',
         ]) ?>
         <div class="row">
-            <div class="col-xs-8">
-                <?= $form->field($model, 'rememberMe')->checkbox() ?>
+            <div class="col-8">
+                <?= $form->field($model, 'rememberMe')->checkbox([
+                    'template' => '<div class="icheck-primary">{input}{label}</div>',
+                    'labelOptions' => [
+                        'class' => ''
+                    ],
+                    'uncheck' => null
+                ]) ?>
             </div>
-            <!-- /.col -->
-            <div class="col-xs-4">
-                <?= Html::submitButton('Sign in', ['class' => 'btn btn-primary btn-block btn-flat', 'name' => 'login-button']) ?>
+            <div class="col-4">
+                <?= Html::submitButton('Sign In', ['class' => 'btn btn-primary btn-block']) ?>
             </div>
-            <!-- /.col -->
         </div>
 
-
-        <?php ActiveForm::end(); ?>
-        <!-- 
-        <div class="social-auth-links text-center">
-            <p>- OR -</p>
-            <a href="#" class="btn btn-block btn-social btn-facebook btn-flat"><i class="fa fa-facebook"></i> Sign in
-                using Facebook</a>
-            <a href="#" class="btn btn-block btn-social btn-google-plus btn-flat"><i class="fa fa-google-plus"></i> Sign
-                in using Google+</a>
-        </div> -->
-        <!-- /.social-auth-links -->
-
-        <!-- <a href="#">I forgot my password</a><br> -->
-        <!-- <a href="index.php?r=site/signup" class="text-center">Register a new membership</a> -->
+        <?php \yii\bootstrap4\ActiveForm::end(); ?>
 
     </div>
-    <!-- /.login-box-body -->
-</div><!-- /.login-box -->
-
-
-<style>
-    .login-page {
-        background-color: #E4EAF3;
-    }
-
-    .login-box,
-    .register-box {
-        width: 400px;
-        padding: 1em;
-        margin: 15% auto;
-    }
-</style>
+    <!-- /.login-card-body -->
+</div>

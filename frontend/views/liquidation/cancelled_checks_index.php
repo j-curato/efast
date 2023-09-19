@@ -20,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
 
         <?php if (Yii::$app->user->can('po_accounting_admin')) {
-            echo Html::a('<i class="glyphicon glyphicon-plus"></i> Create ', ['create-cancelled'], ['class' => 'btn btn-success modalButtonCreate']);
+            echo Html::a('<i class="fa fa-pencil-alt"></i> Create ', ['create-cancelled'], ['class' => 'btn btn-success modalButtonCreate']);
         }
         ?>
     </p>

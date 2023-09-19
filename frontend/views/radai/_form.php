@@ -18,7 +18,7 @@ use yii\widgets\ActiveForm;
 $itemRow = 0;
 ?>
 
-<div class="radai-form panel panel-default">
+<div class="radai-form card">
     <ul class="notes">
         <li>Notes</li>
         <li>Select Book to Display the LDDAP-ADAs according to the book selected</li>

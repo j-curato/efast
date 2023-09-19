@@ -40,7 +40,7 @@ $this->params['breadcrumbs'][] = $this->title;
     ?>
 
 
-    <div class="container panel panel-default">
+    <div class="container card">
         <div class="row" style="margin: 20px;">
             <div class="col-sm-3">
                 <button id="export" class="btn btn-primary">export</button>

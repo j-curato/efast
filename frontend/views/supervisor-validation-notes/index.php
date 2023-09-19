@@ -13,7 +13,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="supervisor-validation-notes-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::a('Create Supervisor Validation Notes', ['create'], ['class' => 'btn btn-success']) ?>

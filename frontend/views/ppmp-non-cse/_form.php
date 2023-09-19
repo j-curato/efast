@@ -25,7 +25,7 @@ $ppmp_item_counter = 1;
 
 
     <ul id="ppmp_items">
-        <li class="panel panel-default">
+        <li class="card">
             <div class="row">
                 <div class="col-sm-3">
                     <?= $form->field($model, 'date')->widget(DatePicker::class, [
@@ -63,12 +63,12 @@ $ppmp_item_counter = 1;
                 $category_id = $val[$min_key]['category_id'];
                 $item_id = $val[$min_key]['item_id'];
 
-                echo "<li class='panel panel-default'>
+                echo "<li class='card'>
                 <input type='hidden' class='form-control update_item_id' name='itemId[$ppmp_item_counter]'  value='$item_id' required>
                 <div class='row'>
                     <div class='col-sm-3'>
                         <h5>Add/Remove Project</h5>
-                        <button type='button' class='add btn-xs btn-success '><i class='glyphicon glyphicon-plus'></i></button>
+                        <button type='button' class='add btn-xs btn-success '><i class='fa fa-pencil-alt'></i></button>
                         <button type='button' class='remove_item btn-xs btn-danger '><i class='fa fa-times fa-fw'></i></button>
                     </div>
                 </div>
@@ -106,7 +106,7 @@ $ppmp_item_counter = 1;
             
                 <table class=''>
                     <thead>
-                        <th colspan='3'>Add Category <button type='button' class='btn-xs btn-primary add_category'  row='$ppmp_item_counter'><i class='glyphicon glyphicon-plus'></i></button></th>
+                        <th colspan='3'>Add Category <button type='button' class='btn-xs btn-primary add_category'  row='$ppmp_item_counter'><i class='fa fa-pencil-alt'></i></button></th>
                     </thead>
                     <tbody class='body'>
                     ";
@@ -153,11 +153,11 @@ $ppmp_item_counter = 1;
         } else {
 
         ?>
-            <li class="panel panel-default">
+            <li class="card">
                 <div class="row">
                     <div class="col-sm-3 ">
                         <h5>Add/Remove Project</h5>
-                        <button type="button" class='add btn-xs btn-success '><i class="glyphicon glyphicon-plus"></i></button>
+                        <button type="button" class='add btn-xs btn-success '><i class="fa fa-pencil-alt"></i></button>
                         <button type="button" class='remove_item btn-xs btn-danger '><i class='fa fa-times fa-fw'></i></button>
                     </div>
                 </div>
@@ -191,7 +191,7 @@ $ppmp_item_counter = 1;
                 </div>
                 <table class="">
                     <thead>
-                        <th colspan="3">Add Category <button type='button' class='btn-xs btn-primary add_category' row='0'><i class="glyphicon glyphicon-plus"></i></button></th>
+                        <th colspan="3">Add Category <button type='button' class='btn-xs btn-primary add_category' row='0'><i class="fa fa-pencil-alt"></i></button></th>
                     </thead>
                     <tbody class="body">
 
@@ -203,7 +203,7 @@ $ppmp_item_counter = 1;
         <?php } ?>
     </ul>
 
-    <div class="row panel panel-default" style="margin: 12px 0 12px 4rem;   padding: 3rem;">
+    <div class="row card" style="margin: 12px 0 12px 4rem;   padding: 3rem;">
         <div class=" col-sm-2 col-sm-offset-5">
             <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
         </div>

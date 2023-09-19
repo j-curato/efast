@@ -12,7 +12,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="sub-major-accounts-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::a('Create Sub Major Accounts', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>

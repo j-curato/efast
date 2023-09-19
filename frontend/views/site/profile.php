@@ -24,7 +24,7 @@ $fieldOptions2 = [
 
 
 ?>
-<div class="panel panel-default">
+<div class="card">
 
     <div class="  ">
 
@@ -34,7 +34,7 @@ $fieldOptions2 = [
                 [
                     'label' => 'Change Password ',
                     'content' => $this->render('change_password', ['model' => $changePassModel]),
-                    'headerOptions' => ['class' => 'panel panel-default'],
+                    'headerOptions' => ['class' => 'card'],
                     'contentOptions' => ['class' => Yii::$app->session->hasFlash('error-change-pass') ? 'in' : '']
                 ],
 
@@ -49,7 +49,7 @@ $fieldOptions2 = [
                 [
                     'label' => 'Create Account',
                     'content' => $this->render('signup', ['model' => $createAcc]),
-                    'headerOptions' => ['class' => 'panel panel-default'],
+                    'headerOptions' => ['class' => 'card'],
                     'contentOptions' => ['class' => Yii::$app->session->hasFlash('error-change-pass') ? 'in' : '']
                 ],
 

@@ -251,7 +251,7 @@ if (!empty($model->object_code)) {
                             <input value='{$val['other_trust_liabilities']}' type='text'  class='mask-amount mask_liabilities'/>
                             <input value='{$val['other_trust_liabilities']}' type='text' name='other_trust_liabilities[{$dv_items_row}]' class='liabilities '/>
                             </td>
-                            <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class='glyphicon glyphicon-minus'></i></button></td>
+                            <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class='fa fa-times'></i></button></td>
                             </tr>";
                             $dv_items_row++;
                             $total_disbursed += floatval($val['amount_disbursed']);
@@ -615,7 +615,11 @@ if (!empty($model->object_code)) {
                 </tbody>
 
             </table>
-            <button type="submit" class="btn btn-success" style="width: 100%;" id="save" name="save"> SAVE</button>
+            <div class="row justify-content-center">
+                <div class="form-group col-sm-2">
+                    <button type="submit" class="btn btn-success" style="width: 100%;" id="save" name="save"> SAVE</button>
+                </div>
+            </div>
         </form>
 
     </div>
@@ -782,7 +786,7 @@ SweetAlertAsset::register($this);
                             <td> <input value='${ewt_goods_services}' type='text' name='ewt_goods_services[]' class='ewt'/></td>
                             <td> <input value='${compensation}' type='text' name='compensation[]' class='compensation'/></td>
                             <td> <input value='${other_trust_liabilities}' type='text' name='other_trust_liabilities[]' class='liabilities'/></td>
-                            <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>
+                            <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="fa fa-times"></i></button></td></tr>
                         `
             $('#transaction_table tbody').append(row);
             // total += amount_disbursed

@@ -139,7 +139,7 @@ use yii\widgets\ActiveForm;
                         <td>{$val->cashDisbursement->dvAucs->payee->account_name}</td>
                         <td>{$val->cashDisbursement->dvAucs->particular}</td>
                         <td>{$query['total_disbursed']}</td>
-                        <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class='glyphicon glyphicon-minus'></i></button></td></tr>
+                        <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class='fa fa-times'></i></button></td></tr>
                     ";
                     }
                     echo  "</tr>";
@@ -202,7 +202,7 @@ use yii\widgets\ActiveForm;
                         <td>${payee}</td>
                         <td>${particular}</td>
                         <td>${amount}</td>
-                        <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>
+                        <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="fa fa-times"></i></button></td></tr>
                     </tr>
                         `
             $('#transaction_table tbody').append(row);

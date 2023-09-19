@@ -13,24 +13,24 @@ class AppAsset extends AssetBundle
     public $baseUrl = '@web';
     public $css = [
         'css/site.css',
-        '/web/css/styles.css',
+        // '/web/css/styles.css',
         'css/select2.min.css'
     ];
     public $js = [
+        // 'js/jquery.min.js',
         'app.js',
-        'maskmoney/dist/jquery.maskMoney.min.js',
-        'js/jquery.min.js',
+        // 'maskmoney/dist/jquery.maskMoney.min.js',
         // 'js/select2.min.js',
-        'js/scripts.js',
-        'manifest.webmanifest',
+        // 'js/scripts.js',
+        // 'manifest.webmanifest',
         'js/vue.js',
-        'js/axios.js'
+        'js/axios.min.js'
 
 
 
     ];
     public $depends = [
         'yii\web\YiiAsset',
-        'yii\bootstrap\BootstrapAsset',
+        'yii\bootstrap4\BootstrapAsset',
     ];
 }

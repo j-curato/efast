@@ -28,7 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     ?>
 
-    <div class="container panel panel-default">
+    <div class="container card">
 
         <?php Pjax::begin(['id' => 'journal', 'clientOptions' => ['method' => 'POST']]) ?>
 

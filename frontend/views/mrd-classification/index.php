@@ -13,7 +13,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="mrd-classification-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
         <?= Html::a('Create Mrd Classification', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>

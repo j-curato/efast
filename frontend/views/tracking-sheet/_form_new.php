@@ -546,7 +546,7 @@ $csrfToken = Yii::$app->request->csrfToken;
                             <td> <input value='${ewt_goods_services}' type='text' name='ewt_goods_services[${row}]' class='ewt'/></td>
                             <td> <input value='${compensation}' type='text' name='compensation[${row}]' class='compensation'/></td>
                             <td> <input value='${other_trust_liabilities}' type='text' name='other_trust_liabilities[${row}]' class='liabilities'/></td>
-                            <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>
+                            <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="fa fa-times"></i></button></td></tr>
                         `
                 $('#transaction_table tbody').append(row);
                 // total += amount_disbursed

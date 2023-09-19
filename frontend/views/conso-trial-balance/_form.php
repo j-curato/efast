@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     ?>
 
-    <div class="container panel panel-default">
+    <div class="container card">
         <div class="row " style="bottom: 20px;">
             <?php $form = ActiveForm::begin(); ?>
             <div class="col-sm-3">

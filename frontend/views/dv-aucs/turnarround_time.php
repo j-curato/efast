@@ -8,7 +8,7 @@ use kartik\file\FileInput;
 use kartik\form\ActiveForm;
 use kartik\grid\GridView;
 use kartik\time\TimePicker;
-use yii\bootstrap\Modal;
+use yii\bootstrap4\Modal;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
@@ -68,7 +68,7 @@ $this->params['breadcrumbs'][] = $this->title;
     echo "</div >";
     echo "</div>";
 
-    echo "<button type='submit' class='btn btn-success' id='save'>Save</button>";
+    echo "<div class='row justify-content-center' style='margin-top:10px'><button type='submit' class='btn btn-success' id='save'>Save</button></div>";
     echo '<form>';
     Modal::end();
     $exportSearchModel = new DvAucsEntriesSearch();

@@ -202,19 +202,13 @@ if (!empty($model->fk_dv_aucs_id)) {
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-1 col-sm-offset-10">
-            <button type='button' class='add btn btn-success btn-xs' style=' text-align: center; float:right;margin-right:5px'><i class='glyphicon glyphicon-plus'></i> Add</button>
+        <div class="col  align-self-end">
+            <button type='button' class='add btn btn-success btn-xs' style=' text-align: center; float:right;margin-right:5px'><i class='fa fa-pencil-alt'></i> Add</button>
         </div>
     </div>
     <table class="table" id='entry_table'>
-
-
-
         <tbody>
-
-
             <?php
-
             foreach ($entries as $val) {
                 $debit = $val['debit'];
                 $credit = $val['credit'];
@@ -243,8 +237,8 @@ if (!empty($model->fk_dv_aucs_id)) {
                             <input type='hidden' name='items[$entry_row][credit]' class='credit main_amount' placeholder='Credit' value='$credit'>
                         </td>
                         <td style='width: 50px;'>
-                            <button type='button' class='remove btn btn-danger btn-xs' style=' text-align: center; float:right;'><i class='glyphicon glyphicon-minus'></i></button>
-                            <button type='button' class='add btn btn-success btn-xs' style=' text-align: center; float:right;margin-right:5px'><i class='glyphicon glyphicon-plus'></i></button> 
+                            <button type='button' class='remove btn btn-danger btn-xs' style=' text-align: center; float:right;'><i class='fa fa-times'></i></button>
+                            <button type='button' class='add btn btn-success btn-xs' style=' text-align: center; float:right;margin-right:5px'><i class='fa fa-pencil-alt'></i></button> 
                         </td>
                     </tr>";
                 $entry_row++;
@@ -264,14 +258,12 @@ if (!empty($model->fk_dv_aucs_id)) {
         </tfoot>
 
     </table>
-    <div class="row" style="margin-top: 4rem;">
-        <div class="col-sm-5"></div>
-        <div class="col-sm-2">
-            <div class="form-group">
-                <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%;']) ?>
-            </div>
+    <div class="row justify-content-center" style="margin-top: 4rem;">
+
+        <div class="form-group col-sm-2">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%;']) ?>
         </div>
-        <div class="col-sm-5"></div>
+
     </div>
 
     <?php ActiveForm::end(); ?>
@@ -363,8 +355,8 @@ SweetAlertAsset::register($this);
                             <input type='hidden' name='items[${row_number}][credit]' class='credit main_amount' placeholder='Credit' >
                         </td>
                         <td style='width: 50px;'>
-                            <button type='button' class='remove btn btn-danger btn-xs' style=' text-align: center; float:right;'><i class='glyphicon glyphicon-minus'></i></button>
-                            <button type='button' class='add btn btn-success btn-xs' style=' text-align: center; float:right;margin-right:5px'><i class='glyphicon glyphicon-plus'></i></button> 
+                            <button type='button' class='remove btn btn-danger btn-xs' style=' text-align: center; float:right;'><i class='fa fa-times'></i></button>
+                            <button type='button' class='add btn btn-success btn-xs' style=' text-align: center; float:right;margin-right:5px'><i class='fa fa-pencil-alt'></i></button> 
                         </td>
                     </tr>`;
         $('#entry_table tbody').append(r)
@@ -433,8 +425,8 @@ SweetAlertAsset::register($this);
                             <input type='hidden' name='items[${row_number}][credit]' class='credit main_amount'  value='${val.credit}'>
                         </td>
                         <td style='width: 50px;'>
-                            <button type='button' class='remove btn btn-danger btn-xs' style=' text-align: center; float:right;'><i class='glyphicon glyphicon-minus'></i></button>
-                            <button type='button' class='add btn btn-success btn-xs' style=' text-align: center; float:right;margin-right:5px'><i class='glyphicon glyphicon-plus'></i></button> 
+                            <button type='button' class='remove btn btn-danger btn-xs' style=' text-align: center; float:right;'><i class='fa fa-times'></i></button>
+                            <button type='button' class='add btn btn-success btn-xs' style=' text-align: center; float:right;margin-right:5px'><i class='fa fa-pencil-alt'></i></button> 
                         </td>
                     </tr>`;
             $('#entry_table tbody').append(r)

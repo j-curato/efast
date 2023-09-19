@@ -12,12 +12,11 @@ use yii\helpers\ArrayHelper;
 /* @var $searchModel app\models\SubAccounts2Search */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Sub Accounts2s';
+$this->title = 'Sub Account 2';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="sub-accounts2-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <!-- <p>
         <?= Html::a('Create Sub Accounts2', ['create'], ['class' => 'btn btn-success']) ?>
@@ -89,7 +88,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
-            'heading' => 'List of Sub Accounts 2',
+            'heading' => ' Sub Account 2 List',
         ],
         'floatHeaderOptions' => [
             'top' => 50,

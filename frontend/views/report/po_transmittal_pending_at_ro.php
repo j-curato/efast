@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index">
 
-    <div class="container panel panel-default">
+    <div class="container card">
 
 
     </div>

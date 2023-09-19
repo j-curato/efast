@@ -36,7 +36,7 @@ $books = ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name');
 $fund_categories = ArrayHelper::map(FundCategoryAndClassificationCode::find()->asArray()->all(), 'id', 'name');
 ?>
 
-<div class="record-allotments-form panel panel-default " style="padding:3rem">
+<div class="record-allotments-form card " style="padding:3rem">
 
     <?php $form = ActiveForm::begin([
         'id' => 'RecordAllotmentForm',
@@ -229,10 +229,10 @@ $fund_categories = ArrayHelper::map(FundCategoryAndClassificationCode::find()->a
                     </td>
                     <td style='max-width: 5rem; text-align:left'>
                         <button type='button' class='add-entry btn btn-success btn-xs'>
-                            <i class='glyphicon glyphicon-plus'></i>
+                            <i class='fa fa-pencil-alt'></i>
                         </button>
                         <button type='button' class='remove btn btn-danger btn-xs' style=' text-align: center; ' onClick='removeItem(this)'>
-                            <i class='glyphicon glyphicon-minus'></i>
+                            <i class=' fa fa-times'></i>
                         </button>
 
                     </td>
@@ -254,10 +254,10 @@ $fund_categories = ArrayHelper::map(FundCategoryAndClassificationCode::find()->a
                         </td>
                         <td style="max-width: 2rem; text-align:left">
                             <button type="button" class='add-entry btn btn-success btn-xs'>
-                                <i class="glyphicon glyphicon-plus"></i>
+                                <i class="fa fa-pencil-alt"></i>
                             </button>
                             <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; " onClick="removeItem(this)">
-                                <i class="glyphicon glyphicon-minus"></i>
+                                <i class="fa fa-times"></i>
                             </button>
 
                         </td>
@@ -335,10 +335,10 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
             </td>
             <td style="max-width: 1rem; text-align:left"> 
                    <button type="button" class='add-entry btn btn-success btn-xs' >
-                    <i class="glyphicon glyphicon-plus"></i>
+                    <i class="fa fa-pencil-alt"></i>
                 </button>
                 <button type="button" class='remove btn btn-danger btn-xs' onClick="removeItem(this)"">
-                    <i class="glyphicon glyphicon-minus"></i>
+                    <i class="fa fa-times"></i>
                 </button>
               
             </td>

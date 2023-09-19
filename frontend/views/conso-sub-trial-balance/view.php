@@ -36,7 +36,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ]) ?>
         <button id="export" type='button' class="btn-xs btn-success" style="margin:1rem;"><i class="glyphicon glyphicon-export"></i></button>
     </p>
-    <div class="container panel panel-default">
+    <div class="container card">
 
         <table id="data_table">
             <thead>

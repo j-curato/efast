@@ -180,7 +180,7 @@ use yii\widgets\ActiveForm;
                         <td>${payee}</td>
                         <td>${particular}</td>
                         <td>${amount}</td>
-                        <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td></tr>
+                        <td><button  class='btn-xs btn-danger ' onclick='remove(this)'><i class="fa fa-times"></i></button></td></tr>
                     </tr>
                         `
             $('#transaction_table tbody').append(row);
@@ -225,7 +225,7 @@ use yii\widgets\ActiveForm;
             // });
             var row = `
              <td><a id='copy' class='btn btn-success ' type='button' onclick='copy(this)'><i class="fa fa-copy "></i></a></td>
-                            <td><button id='remove' class='btn btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td>`
+                            <td><button id='remove' class='btn btn-danger ' onclick='remove(this)'><i class="fa fa-times"></i></button></td>`
             var clone = checkedValue.clone();
             clone.children('td').eq(0).remove();
             clone.append(row)

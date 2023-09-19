@@ -254,7 +254,7 @@ $user_data = Yii::$app->memem->getUserData();
 
                         echo "<tr class='' style='margin-top: 1rem;margin-bottom:1rem;'>
                     <td style='max-width:100rem;'>
-                        <div class='panel panel-default' style='border:1px solid black'>
+                        <div class='card' style='border:1px solid black'>
                             <div class='row' style='padding: 2rem;padding-left:4rem'>
                                 <div class='col-sm-6'>
                                     <label for='ppmp'> Select PPMP</label>
@@ -286,7 +286,7 @@ $user_data = Yii::$app->memem->getUserData();
                             $itemTtl  = floatval($unit_cost) * intval($quantity);
                             $specs_grnd_ttl += $itemTtl;
                             echo "<li style='width:100%;padding-right: 4rem;'>
-                                <div class='panel panel-default' style=' padding: 15px;'>
+                                <div class='card' style=' padding: 15px;'>
                                 <div class='row'>
                                     <div class=' col-sm-12'>
                                         <a class='remove_ppmp_item btn btn-danger btn-xs  pull-right' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
@@ -346,7 +346,7 @@ $user_data = Yii::$app->memem->getUserData();
                 ?>
                     <tr class='' style='margin-top: 1rem;margin-bottom:1rem;'>
                         <td style='max-width:100rem;'>
-                            <div class='panel panel-default' style='border:1px solid black'>
+                            <div class='card' style='border:1px solid black'>
                                 <div class='row' style="padding: 2rem;padding-left:4rem">
                                     <div class="col-sm-6">
                                         <label for="ppmp"> Select PPMP</label>
@@ -918,7 +918,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
             event.preventDefault();
             const addRow = `<tr class='' style='margin-top: 1rem;margin-bottom:1rem;'>
                     <td style='max-width:100rem;'>
-                        <div class='panel panel-default' style='border:1px solid black'>
+                        <div class='card' style='border:1px solid black'>
                             <div class='row' style="padding: 2rem;padding-left:4rem">
                                 <div class="col-sm-6">
                                     <label for="ppmp"> Select PPMP</label>
@@ -1075,7 +1075,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
             let cse_type = val.cse_type
             let row = `
                 <li style="width:100%;padding-right: 4rem;">
-                     <div class='panel panel-default' style=' padding: 15px;'>
+                     <div class='card' style=' padding: 15px;'>
                         <div class="row">
                             <div class=' col-sm-12'>
                                 <a class='remove_ppmp_item btn btn-danger btn-xs  pull-right' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>

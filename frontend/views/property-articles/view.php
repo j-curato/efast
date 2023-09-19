@@ -12,7 +12,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Property Articles', 'url' => ['ind
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="property-articles-view panel panel-default container">
+<div class="property-articles-view card container">
 
 
     <p>

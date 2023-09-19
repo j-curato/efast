@@ -18,14 +18,16 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'fk_mfo_pap_id')->widget(Select2::class, [
         'data' => ArrayHelper::map(MfoPapCode::find()->asArray()->all(), 'id', 'name'),
-        'pluginOptions'=>[
-            'placeholder'=>'Select MFO/PAP'
+        'pluginOptions' => [
+            'placeholder' => 'Select MFO/PAP'
         ]
     ]) ?>
 
+    <div class="row justify-content-center">
 
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        <div class="form-group">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        </div>
     </div>
 
     <?php ActiveForm::end(); ?>

@@ -16,8 +16,11 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'description')->textInput(['maxlength' => true]) ?>
 
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+    <div class="row justify-content-md-center">
+
+        <div class="form-group col-sm-2">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
+        </div>
     </div>
 
     <?php ActiveForm::end(); ?>

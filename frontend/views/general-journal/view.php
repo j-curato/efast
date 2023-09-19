@@ -20,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="jev-preparation-index">
 
 
-    <div class="container panel panel-default">
+    <div class="container card">
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
             <button id="export" type='button' class="btn btn btn-success" style="margin:1rem;">Export</button>

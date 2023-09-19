@@ -25,7 +25,7 @@ $bank_account_id = '';
 
 
 
-    <!-- <div class="container panel panel-default"> -->
+    <!-- <div class="container card"> -->
     <form id='save_data' style="margin:12px;">
         <?php
         if (!empty($model->id)) {

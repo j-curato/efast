@@ -18,11 +18,10 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="dv-aucs-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Create Dv Aucs', ['create'], ['class' => 'btn btn-success']) ?>
-        <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button>
+        <!-- <?= Html::a('Create Dv Aucs', ['create'], ['class' => 'btn btn-success']) ?>
+        <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button> -->
     </p>
 
     <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -283,7 +282,7 @@ $this->params['breadcrumbs'][] = $this->title;
         .grid-view td {
             white-space: normal;
             width: 5rem;
-            padding: 0;
+            padding: 10px;
         }
     </style>
 </div>

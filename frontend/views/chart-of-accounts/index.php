@@ -20,10 +20,9 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="chart-of-accounts-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('<i class="glyphicon glyphicon-plus"></i> Add New ', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
+        <?= Html::a('<i class="fa fa-plus"></i> Create ', ['create'], ['class' => 'btn btn-success lrgModal']) ?>
         <!-- <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button> -->
     </p>
 
@@ -141,7 +140,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'options' => ['id' => 'table-grid'],
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
-            'heading' => 'Recommendation List',
+            'heading' => 'Chart of Accounts List',
             //'after'=>$after,0
         ],
         'toolbar' =>  [
@@ -169,9 +168,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'position' => 'absolute',
         ],
         'columns' => [
-
-
-            'id',
 
             [
                 'label' => 'UACS',

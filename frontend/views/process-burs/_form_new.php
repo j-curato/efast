@@ -363,7 +363,7 @@ use kartik\select2\Select2;
                             </td>
                             <td> <input value='${result[i]['obligation_amount']}'  type='text' name='obligation_amount[]' id='amount_${select_id}' class='amount'/></td>
                             <td><a id='copy_${select_id}' class='btn btn-success ' type='button' onclick='copy(this)'><i class="fa fa-copy "></i></a></td>
-                            <td><button id='remove_${select_id}' class='btn btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td>
+                            <td><button id='remove_${select_id}' class='btn btn-danger ' onclick='remove(this)'><i class="fa fa-times"></i></button></td>
                             </tr>`
                 $('#transaction_table').append(row);
                 $(`#amount_${select_id}`).maskMoney({

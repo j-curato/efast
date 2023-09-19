@@ -24,7 +24,7 @@ $cshRcvItmRowNum = 0;
 $cancelItmRowNum = 0;
 ?>
 
-<div class="accics-form panel panel-default">
+<div class="accics-form card">
 
     <ul class="notes">
         <li>Notes</li>

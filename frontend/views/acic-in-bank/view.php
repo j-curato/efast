@@ -11,7 +11,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Acic In Banks', 'url' => ['index']
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="acic-in-bank-view panel panel-default container">
+<div class="acic-in-bank-view card container">
 
 
     <p>

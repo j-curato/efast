@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 
-    <div class="container panel panel-default">
+    <div class="container card">
 
         <p>
             <?= Html::button('<i class="glyphicon glyphicon-pencil"></i> Update', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=pr-stock/update&id=' . $model->id), 'id' => 'modalButtoncreate', 'class' => 'btn btn-primary', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>

@@ -347,8 +347,8 @@ $payee = !empty($model->payee_id) ? ArrayHelper::map(MyHelper::getPayee($model->
             ?>
         </tbody>
     </table>
-    <div class="row">
-        <div class="form-group col-sm-3 col-sm-offset-5">
+    <div class="row justify-content-center">
+        <div class="form-group ">
             <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:11rem']) ?>
         </div>
     </div>

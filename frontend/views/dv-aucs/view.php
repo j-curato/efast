@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Dv Aucs', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="dv-aucs-view">
+<div class="dv-aucs-view ">
 
     <div class="modal fade" id="dvLinkModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
@@ -72,8 +72,9 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
     </div>
-    <h1><?= Html::encode($this->title) ?></h1>
-    <div class="container panel panel-default">
+    <div class="container card">
+        <h3><?= Html::encode($this->title) ?></h3>
+
         <p>
             <?= Html::a('Print', ['dv-form', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
@@ -304,7 +305,7 @@ $this->params['breadcrumbs'][] = $this->title;
     if (!empty($advances)) {
 
     ?>
-        <div class=" container panel panel-default">
+        <div class=" container card ">
 
             <table class="">
                 <thead>
@@ -350,7 +351,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         </div>
     <?php } ?>
-    <div class=" container panel panel-default">
+    <div class=" container card panel-default">
 
         <table class="">
             <thead>

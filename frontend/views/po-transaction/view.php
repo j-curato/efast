@@ -18,7 +18,7 @@ Select2Asset::register($this);
 
 
 
-    <div class="container panel panel-default">
+    <div class="container card">
 
         <p>
             <?= Html::button('Update', [

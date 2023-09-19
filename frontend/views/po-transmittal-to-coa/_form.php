@@ -21,7 +21,7 @@ use yii\widgets\ActiveForm;
 $itemRow = 0;
 ?>
 
-<div class="transmittal-form panel panel-default">
+<div class="transmittal-form card">
     <?php
     $viewSearchModel = new VwNotInCoaTransmittalSearch();
     $viewDataProvider = $viewSearchModel->search(Yii::$app->request->queryParams);
@@ -92,7 +92,7 @@ $itemRow = 0;
                         <input type='text' name='items[$itemRow][transmittal_id]' value='{$itm['transmittal_id']}'>
                     </td>
                     <td>{$itm['transmittal_number']}</td>
-                    <td><button id='remove' class='btn-xs btn-danger ' onclick='remove(this)'><i class='glyphicon glyphicon-minus'></i></button></td>
+                    <td><button id='remove' class='btn-xs btn-danger ' onclick='remove(this)'><i class='fa fa-times'></i></button></td>
                 </tr>";
                 $itemRow++;
             }
@@ -124,7 +124,7 @@ $itemRow = 0;
         let clone = source.clone(true)
         clone.find('.add_btn').closest('td').remove()
         clone.find('.transmittal_id').prop('name', 'items[][transmittal_id]');
-        let row = `<td><button id='remove' class='btn-xs btn-danger ' onclick='remove(this)'><i class="glyphicon glyphicon-minus"></i></button></td>`
+        let row = `<td><button id='remove' class='btn-xs btn-danger ' onclick='remove(this)'><i class="fa fa-times"></i></button></td>`
         clone.append(row)
         $('#transaction_table tbody').append(clone);
     }

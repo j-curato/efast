@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' 
     $fund = Yii::$app->db->createCommand("SELECT fund_cluster_code.id,fund_cluster_code.name FROM fund_cluster_code")->queryAll();
     $books = Yii::$app->db->createCommand("SELECT books.id,books.name FROM books")->queryAll();
     ?>
-    <div class="container panel panel-default">
+    <div class="container card">
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 

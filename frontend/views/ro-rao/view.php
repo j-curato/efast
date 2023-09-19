@@ -20,10 +20,10 @@ if ($model->is_final === 1) {
 ?>
 <div class="ro-rao-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h3><?= Html::encode($this->title) ?></h3>
 
     <p>
-        <?= Html::button('<i class="glyphicon glyphicon-plus"></i> Update', [
+        <?= Html::button('<i class="fa fa-pencil-alt"></i> Update', [
             'value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=ro-rao/update&id=' . $model->id),
             'id' => 'modalButtoncreate', 'class' => 'btn btn-primary', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
         ]); ?>

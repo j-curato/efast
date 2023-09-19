@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' 
     ?>
 
 
-    <div class="container panel panel-default">
+    <div class="container card">
 
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>

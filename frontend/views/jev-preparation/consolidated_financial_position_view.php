@@ -31,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
     $sub1 = (new \yii\db\Query())->select('*')->from('sub_accounts1')->all();
 
     ?>
-    <div class="container panel panel-default">
+    <div class="container card">
 
         <div>
             <?php

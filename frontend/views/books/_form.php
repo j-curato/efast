@@ -54,9 +54,9 @@ $banks = Yii::$app->db->createCommand("SELECT id,UPPER(banks.name) as `name` FRO
 
     <?= $form->field($model, 'remarks')->textInput(['maxlength' => true]) ?>
 
-    <div class="row">
+    <div class="row justify-content-center">
 
-        <div class="form-group col-sm-2 col-sm-offset-5">
+        <div class="form-group ">
             <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
         </div>
     </div>

@@ -6,7 +6,7 @@ use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
 use kartik\grid\GridView;
 use kartik\select2\Select2;
-use yii\bootstrap\Modal;
+use yii\bootstrap4\Modal;
 
 /* @var $this yii\web\View */
 /* @var $searchModel frontend\models\hre\HreAreasSearch */

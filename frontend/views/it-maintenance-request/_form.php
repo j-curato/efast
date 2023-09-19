@@ -14,7 +14,7 @@ use yii\widgets\ActiveForm;
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-<div class="it-maintenance-request-form panel panel-default ">
+<div class="it-maintenance-request-form card ">
 
     <?php $form = ActiveForm::begin(); ?>
     <div class="row">
