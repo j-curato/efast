@@ -1,3 +1,7 @@
+<?php
+
+use hail812\adminlte\widgets\Menu;
+?>
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
     <a href="index.php" class="brand-link">
@@ -277,17 +281,17 @@
                     'items' => [
                         [
                             'label' => 'Master Records',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull($accountingMasterRecords)
                         ],
                         [
                             'label' => 'Transactions',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far  text-info',
                             'items' => removeNull($accountingTransactions)
                         ],
                         [
                             'label' => 'Reports',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far  text-info',
                             'items' =>  removeNull($accountingReports)
                         ],
                     ]
@@ -299,22 +303,22 @@
                     'items' => [
                         [
                             'label' => 'Master Records',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far  text-info',
                             'items' => removeNull($budgetMasterRecords)
                         ],
                         [
                             'label' => 'Transactions',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far  text-info',
                             'items' => removeNull($budgetTransactions)
                         ],
                         [
                             'label' => 'Reports',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far  text-info',
                             'items' => removeNull($budgetReports)
                         ],
                         [
                             'label' => 'Status of Funds',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far  text-info',
                             'items' => removeNull($budgetStatusOfFunds)
                         ],
                     ],
@@ -327,17 +331,17 @@
                     'items' => [
                         [
                             'label' => 'Master Records',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull($cashMasterRecords)
                         ],
                         [
                             'label' => 'Transactions',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull($cashTransactions)
                         ],
                         [
                             'label' => 'Reports',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull($cashReports)
                         ],
 
@@ -357,17 +361,17 @@
                     'items' => [
                         [
                             'label' => 'Master Records',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull($propertyMasterRecords)
                         ],
                         [
                             'label' => 'Transactions',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull($propertyTransactions)
                         ],
                         [
                             'label' => 'Reports',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull($propertReports)
                         ],
                     ],
@@ -380,17 +384,17 @@
                     'items' => [
                         [
                             'label' => 'Master Records',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull($procurementMasterRecords)
                         ],
                         [
                             'label' => 'Transactions',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull($procurementTransactions)
                         ],
                         [
                             'label' => 'Reports',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull($procurementReports)
                         ],
                     ],
@@ -404,17 +408,17 @@
                     'items' => [
                         [
                             'label' => 'Master Records',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull($generalServiceMasterRecords)
                         ],
                         [
                             'label' => 'Transactions',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull($generalServiceTransactions)
                         ],
                         [
                             'label' => 'Reports',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull($generalServiceReports)
                         ],
                     ],
@@ -427,17 +431,17 @@
                     'items' => [
                         [
                             'label' => 'Master Records',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull($inspectionMasterRecords)
                         ],
                         [
                             'label' => 'Transactions',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull($inspectionTransactions)
                         ],
                         [
                             'label' => 'Reports',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull($inspectionReports)
                         ],
                     ],
@@ -450,17 +454,17 @@
                     'items' => [
                         [
                             'label' => 'Master Records',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull($provinceMasterRecords)
                         ],
                         [
                             'label' => 'Transactions',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull($provinceTransactions)
                         ],
                         [
                             'label' => 'Reports',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull($provinceReports)
                         ],
                     ],
@@ -473,17 +477,17 @@
                     'items' => [
                         [
                             'label' => 'Master Records',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull($itMasterRecords)
                         ],
                         [
                             'label' => 'Transactions',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull($itTransactions)
                         ],
                         [
                             'label' => 'Reports',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull($itReports)
                         ],
                     ],
@@ -497,7 +501,7 @@
 
                 [
                     'label' => 'Master Records',
-                    'icon' => 'fa fa-book',
+                    'icon' => 'fa fa-book ',
                     'items' => removeNull([
                         Yii::$app->user->can('po_check_range') ?  ['label' => 'Check Range', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/check-range/index'],] : null,
                         Yii::$app->user->can('po_asignatory') ?     ['label' => 'PO Asignatory', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/po-assignatory/index'],] : null,
@@ -511,7 +515,7 @@
                     'items' => [
                         [
                             'label' => 'Transaction',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'url' => '#',
                             'items' => removeNull([
                                 Yii::$app->user->can('po_advances') ?     ['label' => 'Advances', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/advances/index'],] : null,
@@ -524,7 +528,7 @@
                         ],
                         [
                             'label' => 'Reports',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull([
                                 Yii::$app->user->can('po_alphalist') ?     ['label' => 'Alphalist', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/alphalist/index'],] : null,
                                 Yii::$app->user->can('po_cibr') ?     ['label' => 'CIBR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/cibr/index'],] : null,
@@ -538,7 +542,7 @@
                         ],
                         [
                             'label' => 'Querys',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull([
                                 Yii::$app->user->can('po_fnd_src_fur') ?     ['label' => 'Fund Source FUR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/fund-source-fur'],] : null,
                                 Yii::$app->user->can('po_smry_fnd_src_fur') ?     ['label' => 'Summary Fund Source FUR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/summary-fund-source-fur'],] : null,
@@ -558,7 +562,7 @@
 
                         [
                             'label' => 'Transaction',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull([
                                 Yii::$app->user->can('property') ?     ['label' => 'Property', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/property/index'],] : null,
                                 Yii::$app->user->can('ptr') ?     ['label' => 'PTR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/ptr/index'],] : null,
@@ -570,7 +574,7 @@
                         ],
                         [
                             'label' => 'Reports',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull([
                                 Yii::$app->user->can('property') ?  ['label' => 'Property Database', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/property/property-database'],] : null,
                                 Yii::$app->user->can('rpcppe') ?     ['label' => 'RPCPPE', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rpcppe/index'],] : null,
@@ -598,7 +602,7 @@
                     'items' => [
                         [
                             'label' => 'Master Records',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull([
                                 Yii::$app->user->can('po_procurement_admin') ?     ['label' => 'RBAC', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/bac-composition/index'],] : null,
 
@@ -606,7 +610,7 @@
                         ],
                         [
                             'label' => 'Transaction',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull([
                                 // Yii::$app->user->can('super-user') ?     ['label' => 'Activity/Project Procurement', 'icon' => 'dot-circle','iconStyle'=>'far', 'url' => ['/pr-project-procurement'],] : null,
                                 Yii::$app->user->can('ppmp') ?     ['label' => 'Supplemental PPMP', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/supplemental-ppmp/index'],] : null,
@@ -620,7 +624,7 @@
                         ],
                         [
                             'label' => 'Reports',
-                            'iconStyle' => 'far',
+                            'iconStyle' => 'far text-info',
                             'items' => removeNull([
                                 Yii::$app->user->can('super-user') ?     ['label' => 'Procurement Summary', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/procurement-summary'],] : null,
                                 Yii::$app->user->can('super-user') ?     ['label' => 'PO Summary', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/pr-summary'],] : null,
@@ -650,8 +654,14 @@
             ];
 
 
-            echo \hail812\adminlte\widgets\Menu::widget([
-                'items' => strtolower($user_data->office->office_name) !== 'ro' ? $poUserMenuItems : $menuItems
+            echo Menu::widget([
+                'items' => strtolower($user_data->office->office_name) !== 'ro' ? $poUserMenuItems : $menuItems,
+                'options' => [
+                    'class' => 'nav nav-pills nav-sidebar flex-column nav-compact nav-child-indent',
+                    'data-widget' => 'treeview',
+                    'role' => 'menu',
+                    'data-accordion' => 'false'
+                ],
             ]);
             ?>
         </nav>

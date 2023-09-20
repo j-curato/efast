@@ -24,15 +24,14 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row" style="float:right">
             <?= Html::img(Yii::$app->request->baseUrl . '/frontend/web/dti3.png', ['alt' => 'some', 'class' => 'pull-left img-responsive', 'style' => 'width: 100px;height:100px;margin-left:auto']); ?>
         </div>
-        <div class="row" style="margin-top: 130px;">
-            <div class="row head" style=" margin-bottom:2rem"><?php echo date('F d, Y', strtotime($model->date)) ?></div>
-            <div class="row head" style="font-weight: bold;">ADA JUNE M. HORMILLADA</div>
-            <div class="row head">State Auditor III</div>
-            <div class="row head">OIC - Audit Team Leader</div>
-            <div class="row head">COA - DTI Caraga</div>
-            <div class="row head" style="padding-top: 2rem;padding-bottom: 2rem;">Dear Ma’am Hormillada:</div>
+        <div class="addresseeInfo" style="margin-top: 130px;">
+            <div class="addresseeInfo head" style=" margin-bottom:2rem"><?php echo date('F d, Y', strtotime($model->date)) ?></div>
+            <div class="addresseeInfo head" style="font-weight: bold;">ADA JUNE M. HORMILLADA</div>
+            <div class="addresseeInfo head">State Auditor III</div>
+            <div class="addresseeInfo head">OIC - Audit Team Leader</div>
+            <div class="addresseeInfo head">COA - DTI Caraga</div>
+            <div class="addresseeInfo head" style="padding-top: 2rem;padding-bottom: 2rem;">Dear Ma’am Hormillada:</div>
             <p style="font-size: 12pt;">
-
                 We are hereby submitting the following DVs, with assigned Transmittal # <?php echo $model->transmittal_number; ?> of DTI Regional Office:
             </p>
         </div>
@@ -229,7 +228,7 @@ $this->params['breadcrumbs'][] = $this->title;
         padding: 2rem;
     }
 
-    .row {
+    .addresseeInfo {
         margin-left: 0;
         margin-right: 0;
     }
