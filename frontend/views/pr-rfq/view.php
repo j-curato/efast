@@ -411,33 +411,27 @@ SweetAlertAsset::register($this);
 
     @media print {
         .container {
-            padding: 0;
+            padding: 2rem;
         }
 
-        #link_table {
-            display: none;
-
-        }
-
-        .btn {
-            display: none;
-        }
-
+        #link_table,
+        .btn,
         .main-footer {
             display: none;
+
         }
 
         th,
         td {
             padding: .5rem;
-            font-size: 10px
+            font-size: 13px
         }
 
         .select2-selection__arrow {
             display: none;
         }
 
-        .select2-container--krajee .select2-selection {
+        .select2-container--krajee-bs4 .select2-selection {
             /* -webkit-box-shadow: inset 0 1px 1px rgb(0 0 0 / 8%); */
             box-shadow: none;
             background-color: #fff;
@@ -448,7 +442,7 @@ SweetAlertAsset::register($this);
             outline: 0;
         }
 
-        .select2-container--krajee .select2-selection--single {
+        .select2-container--krajee-bs4 .select2-selection--single {
             height: 5px;
             line-height: 1;
             padding: 0;
@@ -456,6 +450,10 @@ SweetAlertAsset::register($this);
 
         .select2-container .select2-selection--single .select2-selection__rendered {
             padding-right: 0;
+        }
+
+        .select2-selection__rendered {
+            color: red;
         }
 
     }

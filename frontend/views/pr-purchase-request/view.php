@@ -404,7 +404,7 @@ SweetAlertAsset::register($this);
         th,
         td {
             padding: 8px;
-            font-size: 12px;
+            font-size: 13px;
         }
     }
 </style>

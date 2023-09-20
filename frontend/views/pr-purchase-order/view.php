@@ -613,21 +613,20 @@ if (!empty($model->date_completed)) {
     }
 
     @media print {
-        .btn {
+
+        .btn,
+        .main-footer,
+        #rfi_links {
             display: none;
         }
 
         .container {
-            padding: 0;
+            padding: 2rem;
         }
 
         td,
         th {
             padding: 1rem;
-        }
-
-        .main-footer {
-            display: none;
         }
 
         .table {
@@ -640,9 +639,7 @@ if (!empty($model->date_completed)) {
             padding-bottom: 0;
         }
 
-        #rfi_links {
-            display: none;
-        }
+
 
 
     }
