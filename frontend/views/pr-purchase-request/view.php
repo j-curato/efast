@@ -220,9 +220,9 @@ SweetAlertAsset::register($this);
                                         <br>
                                         <span style="text-decoration:underline;font-weight: bold;">
                                             <?php
+                                            $reqMname = !empty($model->requestedBy->m_name[0]) ? $model->requestedBy->m_name[0] . '.' : '';
                                             $name = $model->requestedBy->f_name
-                                                . ' ' . !empty($model->requestedBy->m_name[0]) ? $model->requestedBy->m_name[0] . '.' : ''
-                                                . $model->requestedBy->l_name;
+                                                . ' ' . $reqMname . $model->requestedBy->l_name;
                                             echo strtoupper($name);
                                             ?>
                                         </span>
