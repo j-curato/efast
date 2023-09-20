@@ -313,7 +313,7 @@ $blnk = "                <tr>
 
         th,
         td {
-            font-size: 10px;
+            font-size: 13px;
             padding: 5px;
         }
     }

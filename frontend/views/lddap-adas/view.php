@@ -295,7 +295,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         th,
         td {
-            font-size: 10px;
+            font-size: 13px;
             padding: 4px;
         }
 
