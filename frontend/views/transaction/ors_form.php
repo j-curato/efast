@@ -907,7 +907,7 @@ $this->params['breadcrumbs'][] = $title;
         td {
             border: 1px solid black;
             padding: 5px;
-            font-size: 10px;
+            font-size: 14px;
         }
 
         @page {

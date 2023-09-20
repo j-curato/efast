@@ -80,19 +80,21 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
             </tbody>
         </table>
-        <div class="row head" style="margin-top:1rem">Thank you.</div>
-        <div class="row head" style="margin-top:4rem">Very truly yours,</div>
-        <div class="row head" style="margin-top:2rem">
+        <div class="addresseeInfo head" style="margin-top:1rem">Thank you.</div>
+        <div class="addresseeInfo head" style="margin-top:4rem">Very truly yours,</div>
+        <div class="addresseeInfo head" style="margin-top:2rem">
             <div class="head" style="font-weight:bold;right:10;" id="asig_1">
 
             </div>
             <div class="head" id="oic">Regional Director</div>
         </div>
         <div class="row" style="margin-top:2rem">
+            <br>
             <div class="head" id="for_rd"></div>
         </div>
-        <div class="row" style="margin-top: 2rem;">
+        <div class="addresseeInfo" style="margin-top: 2rem;">
             <div class="head" id='ass' style="font-weight: bold;"></div>
+            <br>
             <div class="head" id="oic_position_text"></div>
         </div>
         <div class="row" style="margin-top: 20px;">
@@ -334,7 +336,7 @@ $this->params['breadcrumbs'][] = $this->title;
         td {
             border: 1px solid black;
             padding: 5px;
-            font-size: 10px;
+            font-size: 13px;
         }
 
         @page {

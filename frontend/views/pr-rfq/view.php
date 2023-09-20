@@ -423,7 +423,8 @@ SweetAlertAsset::register($this);
 
         th,
         td {
-            padding: .5rem;
+            padding: 3px;
+            font-size: 14px;
         }
 
         .select2-selection__arrow {
