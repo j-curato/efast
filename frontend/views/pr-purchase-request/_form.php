@@ -1075,12 +1075,14 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
             let cse_type = val.cse_type
             let row = `
                 <li style="width:100%;padding-right: 4rem;">
+                
                      <div class='card' style=' padding: 15px;'>
-                        <div class="row">
-                            <div class=' col-sm-12'>
-                                <a class='remove_ppmp_item btn btn-danger btn-xs  pull-right' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                        <div class="row justify-content-end">
+                          
+                            <div class="">
+                            <a class='remove_ppmp_item btn btn-danger btn-xs  pull-right' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                                </div>
                             </div>
-                        </div>
                         <div class="row">
                             <div class="col-sm-4">
                                 <label for="stocks">Stock</label>
