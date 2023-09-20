@@ -114,11 +114,6 @@ use yii\bootstrap4\ActiveForm;
         </div>
     </div>
 
-
-
-
-
-
     <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>
     <?= $form->field($model, 'action_taken')->textarea(['rows' => 6]) ?>
 
