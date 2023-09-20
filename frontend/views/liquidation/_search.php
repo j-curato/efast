@@ -26,9 +26,11 @@ use yii\bootstrap4\ActiveForm;
 
     <?= $form->field($model, 'check_number') ?>
 
-    <?php // echo $form->field($model, 'dv_number') ?>
+    <?php // echo $form->field($model, 'dv_number') 
+    ?>
 
-    <?php // echo $form->field($model, 'particular') ?>
+    <?php // echo $form->field($model, 'particular') 
+    ?>
 
     <div class="form-group">
         <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>
