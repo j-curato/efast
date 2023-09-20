@@ -273,12 +273,12 @@ $this->params['breadcrumbs'][] = $this->title;
         }
 
         .container {
-            padding: 0;
+            padding: 1rem;
         }
 
         th,
         td {
-            font-size: 10px;
+            /* font-size: 10px; */
             padding: 4px;
         }
 

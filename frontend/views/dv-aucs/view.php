@@ -545,7 +545,7 @@ $this->params['breadcrumbs'][] = $this->title;
         td {
             border: 1px solid black;
             padding: 8px;
-            font-size: 10px;
+            /* font-size: 10px; */
         }
 
 

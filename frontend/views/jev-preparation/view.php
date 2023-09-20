@@ -363,20 +363,20 @@ Select2Asset::register($this);
             }
 
             h5 {
-                font-size: 10px;
+                /* font-size: 10px; */
             }
 
             td,
             th {
-                font-size: 10px;
+                /* font-size: 10px; */
             }
 
             h6 {
-                font-size: 10px;
+                /* font-size: 10px; */
             }
 
             span {
-                font-size: 10px;
+                /* font-size: 10px; */
             }
 
             /* 

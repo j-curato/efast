@@ -374,149 +374,149 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>PR</span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>RIC/ICS</span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>Payroll</span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>Summary of Exp.</span>
                     </td>
                 </tr>
                 <tr>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>Canvas</span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>Delivery Receipt</span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>DTR</span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>OBR</span>
                     </td>
                 </tr>
                 <tr>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>Abstract</span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>SOA/Billing</span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>Letter/Memo</span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>Trip/Ticket</span>
                     </td>
                 </tr>
                 <tr>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>PO</span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>Pre/Post Repair Inspection</span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>Contract</span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>Request Slip</span>
                     </td>
                 </tr>
                 <tr>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>JO </span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>Report of Wast Material</span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>TO</span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>Remittance List</span>
                     </td>
                 </tr>
                 <tr>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>IAR</span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>Property Acknowledgement Receipt</span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>IT</span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>Others</span>
                     </td>
                 </tr>
                 <tr>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>OR/RER</span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>Proposal</span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>CTC</span>
                     </td>
                     <td>
@@ -527,17 +527,17 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>Charge Invoice</span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>Attendance</span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>CA</span>
                     </td>
                     <td>
@@ -548,17 +548,17 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>Sales/Cash Invoice</span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>Terminal/Post-Activity Report/Minutes</span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>Ticket</span>
                     </td>
                     <td>
@@ -569,18 +569,17 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
                     <td>
-
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>RCA</span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>Authorization</span>
                     </td>
                     <td>
 
-                        <i class="glyphicon glyphicon-unchecked"></i>
+                        <i class="fa-square" style="font-size: 18px;"></i>
                         <span>Certification</span>
                     </td>
                     <td>
@@ -670,15 +669,14 @@ $this->params['breadcrumbs'][] = $this->title;
 
     @media print {
         .container {
-            margin: 0;
-            padding: 0;
+            padding: 1rem;
         }
 
         table,
         td,
         th {
             padding: 5px;
-            font-size: 12px;
+            font-size: 14px;
         }
 
         .btn {
