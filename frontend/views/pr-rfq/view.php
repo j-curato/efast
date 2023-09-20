@@ -411,7 +411,7 @@ SweetAlertAsset::register($this);
 
     @media print {
         .container {
-            padding: 2rem;
+            padding: 1rem;
         }
 
         #link_table,
@@ -424,7 +424,6 @@ SweetAlertAsset::register($this);
         th,
         td {
             padding: .5rem;
-            font-size: 13px
         }
 
         .select2-selection__arrow {
