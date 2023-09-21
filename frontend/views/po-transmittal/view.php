@@ -335,42 +335,37 @@ $user_data = Yii::$app->memem->getUserData();
         font-size: 12pt;
     }
 
-    @page {
+    /* @page {
         margin: 30px;
-    }
+    } */
 
     @media print {
+
         td {
-            font-size: 14px;
+            /* font-size: 14px; */
+        }
+
+        .links,
+        .btn,
+        .status,
+        .as,
+        .actions,
+        .assignatory,
+        .main-footer {
+            display: none;
         }
 
         body {
-            margin: 25mm 25mm 25mm 25mm;
-        }
-
-        .container {
-            padding: 0;
+            /* margin: 25mm 25mm 25mm 25mm; */
         }
 
         #header td {
             font-size: 15px;
         }
 
-        .status {
-            display: none;
-        }
-
-        .as {
-            display: none;
-        }
-
-        .assignatory {
-            display: none;
-        }
-
-        .container {
-            width: 100%;
-        }
+        /* .container {
+            padding: 1rem;
+        } */
 
         header.onlyprint {
             position: fixed;
@@ -385,11 +380,6 @@ $user_data = Yii::$app->memem->getUserData();
             /* Because it's footer */
         }
 
-
-        .actions {
-            display: none;
-        }
-
         .select2-container--default .select2-selection--single,
         .select2-selection .select2-selection--single {
             /* border: 1px solid #d2d6de; */
@@ -402,13 +392,7 @@ $user_data = Yii::$app->memem->getUserData();
             height: 20px;
         }
 
-        .links {
-            display: none;
-        }
 
-        .btn {
-            display: none;
-        }
 
         .krajee-datepicker {
             border: 1px solid white;
@@ -442,60 +426,23 @@ $user_data = Yii::$app->memem->getUserData();
             border: none;
         }
 
-        table,
         th,
         td {
-            border: 1px solid black;
             padding: 5px;
-            font-size: 10px;
-        }
-
-        @page {
-            size: auto;
-            margin: 0;
-            margin-top: 0.5cm;
+            font-size: 16px;
         }
 
 
 
-        .container {
-            margin: 0;
-            top: 0;
-        }
-
-        .entity_name {
-            font-size: 5pt;
-        }
 
 
 
-        .container {
-
-            border: none;
-        }
-
-
-        table {
-            page-break-after: auto
-        }
-
-        tr {
-            page-break-inside: avoid;
-            page-break-after: auto
-        }
-
-        td {
-            page-break-inside: avoid;
-            page-break-after: auto
-        }
 
         /* thead {
                 display: table-header-group
             } */
 
-        .main-footer {
-            display: none;
-        }
+
     }
 </style>
 <?php
