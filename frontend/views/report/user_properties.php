@@ -163,7 +163,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
 ?>
 <script>
     function display(data) {
-        $('#data_table tbody').html('')
+        $('#con').html('')
         $.each(data, (key, accountable) => {
             let r = `
             <table>
