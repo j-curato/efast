@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Pr Aoqs', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="pr-aoq-view">
+<div class="pr-aoq-view" id="app">
 
     <div class="card" style="background-color: white;padding:1rem">
 
@@ -49,8 +49,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
         ?>
 
-        <table id="table">
-            <thead>
+        <table>
+            <!-- <thead>
                 <tr>
                     <th colspan="<?= $header_count ?>" style='text-align:center;border:none;'>
                         <span>
@@ -127,14 +127,93 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
             </thead>
-            <tbody></tbody>
+            <tbody>
+
+
+            </tbody> -->
+            <thead>
+                <tr>
+                    <th rowspan="2" class="center">Item No.</th>
+                    <th rowspan="2" class="center">Qty</th>
+                    <th rowspan="2" class="center">Unit</th>
+                    <th rowspan="2" class="center">Description</th>
+                    <th v-for="payee in payees" colspan="2" class="center">
+                        {{payee}}
+                    </th>
+                    <th>Lowest</th>
+                </tr>
+                <tr>
+                    <template v-for="payee in payees">
+                        <th class='center'>Unit Cost</th>
+                        <th class='center'>Gross Amount</th>
+                    </template>
+                    <td></td>
+                </tr>
+            </thead>
+            <tr v-for="(item,idx) in displayItems">
+
+                <td>{{idx +1}}</td>
+                <td>{{item.quantity}}</td>
+                <td>{{item.unit_of_measure}}</td>
+                <th>{{item.description}}</th>
+                <template v-for="payee in payees">
+                    <td class="center">
+                        <p v-if="getPayeeAmtPerItem(item,payee)!=0">
+                            {{formatAmount(getPayeeAmtPerItem(item,payee))}}
+                        </p>
+                        <p v-else=>-</p>
+                    </td>
+                    <td class="center">
+                        <p v-if="getPayeeAmtPerItem(item,payee)!=0">
+                            {{formatAmount(getPayeeAmtPerItem(item,payee) *item.quantity)}}
+                        </p>
+                        <p v-else=>-</p>
+                    </td>
+                </template>
+
+                <td>
+                    <p v-for="rm in item.lowests">
+
+                        {{rm}}
+                    </p>
+                </td>
+
+            </tr>
+            <tr>
+                <th colspan=""></th>
+                <th colspan=""></th>
+                <th colspan=""></th>
+                <th colspan="" class="center">
+                    Total
+                </th>
+                <template v-for="payee in payees">
+                    <td class="center">
+                        <!-- {{payee}} -->
+                    </td>
+                    <td class="center">
+                        {{ formatAmount(calculatePayeeGrossTotal(payee))}}
+                    </td>
+                </template>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="4">
+
+                </td>
+                <template v-for="payee in payees">
+                    <td colspan="2" class="center">
+                        <span v-for="itm in getPayeeRemarks(payee)">{{itm}} <br></span>
+                    </td>
+                </template>
+                <td></td>
+
+            </tr>
             <tfoot>
                 <tr>
                     <td colspan="<?= $header_count ?>" style='border:none;padding-top:0'>
                         Based on the above abstract of canvass, it is recommended that the award be made to the Lowest Calculated and Responsive Bidder,
                     </td>
                 </tr>
-
                 <tr>
                     <td colspan="<?= $header_count ?>" class='no-border' style='padding-top:2em'>
 
@@ -196,6 +275,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     </td>
                 </tr>
             </tfoot>
+
         </table>
         <table class="links_table table table-stripe">
             <tbody>
@@ -212,8 +292,86 @@ $this->params['breadcrumbs'][] = $this->title;
                    </tr>";
                 }
                 ?>
+
+
             </tbody>
         </table>
+        <!-- <table class="">
+            <thead>
+                <tr>
+                    <th rowspan="2" class="center">Item No.</th>
+                    <th rowspan="2" class="center">Qty</th>
+                    <th rowspan="2" class="center">Unit</th>
+                    <th rowspan="2" class="center">Description</th>
+                    <th v-for="payee in payees" colspan="2" class="center">
+                        {{payee}}
+                    </th>
+                    <th>Lowest</th>
+                </tr>
+                <tr>
+                    <template v-for="payee in payees">
+                        <th class='center'>Unit Cost</th>
+                        <th class='center'>Gross Amount</th>
+                    </template>
+                    <td></td>
+                </tr>
+            </thead>
+            <tr v-for="(item,idx) in displayItems">
+
+                <td>{{idx +1}}</td>
+                <td>{{item.quantity}}</td>
+                <td>{{item.unit_of_measure}}</td>
+                <th>{{item.description}}</th>
+                <template v-for="payee in payees">
+                    <td class="center">
+                        <p v-if="q(item,payee)!=0">
+                            {{q(item,payee)}}
+                        </p>
+                        <p v-else=>-</p>
+                    </td>
+                    <td class="center">
+                        <p v-if="q(item,payee)!=0">
+                            {{q(item,payee) *item.quantity}}
+                        </p>
+                        <p v-else=>-</p>
+                    </td>
+                </template>
+
+                <td>
+                    <p v-for="rm in item.lowests">
+
+                        {{rm}}
+                    </p>
+                </td>
+
+            </tr>
+            <tr>
+                <th colspan="4">
+                    Total
+                </th>
+                <template v-for="payee in payees">
+                    <td class="center">
+                        {{payee}}
+                    </td>
+                    <td class="center">
+                        {{ calculatePayeeGrossTotal(payee)}}
+                    </td>
+                </template>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="4">
+
+                </td>
+                <template v-for="payee in payees">
+                    <td colspan="2" class="center">
+                        <span v-for="itm in getPayeeRemarks(payee)">{{itm}} <br></span>
+                    </td>
+                </template>
+                <td></td>
+
+            </tr>
+        </table> -->
     </div>
 
 </div>
@@ -320,6 +478,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+
 ?>
 <script>
     $(document).ready(function() {
@@ -376,6 +535,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
 
         });
         const q = <?php echo json_encode($for_print) ?>;
+        console.log(q)
         const payee_position = JSON.parse(`<?php echo json_encode($payee_position) ?>`);
         let ttlAmtPerPayee = []
         let row_number = 0
@@ -543,5 +703,94 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
         $("#table tbody").append(purpose_row)
 
 
+
+        new Vue({
+            el: "#app",
+            data: {
+                items: <?php echo json_encode($model->getViewItems()) ?>,
+                payees: <?php echo json_encode($payee_position) ?>,
+                displayItems: []
+            },
+            mounted() {
+                this.reformatItems()
+            },
+            methods: {
+
+                reformatItems() {
+                    let remarks = []
+                    this.displayItems = Object.keys(this.items).map((item, q) => {
+                        let payeeKeys = Object.keys(this.items[item])
+                        let lowests = []
+                        Object.keys(this.items[item]).map((payeeName) => {
+                            if (parseInt(this.items[item][payeeName].is_lowest) === 1) {
+                                lowests.push(payeeName)
+                            }
+                            if (this.items[item][payeeName].remark) {
+                                // remarks[q].push(this.items[item][q].remark)
+                            }
+
+                        })
+                        // console.log(lowests)
+                        let r = {
+                            description: this.items[item][payeeKeys[0]].description,
+                            quantity: this.items[item][payeeKeys[0]].quantity,
+                            unit_of_measure: this.items[item][payeeKeys[0]].unit_of_measure,
+
+                            lowests: lowests
+                        }
+                        return {
+                            ...r,
+                            ...this.items[item],
+                        }
+                    })
+                    console.log(this.displayItems)
+                },
+                getPayeeAmtPerItem(item, payee) {
+
+
+                    if (item[payee]) {
+                        if (parseFloat(item[payee].amount) !== 0) {
+                            return item[payee].amount
+                        }
+                    }
+                    return 0
+
+                },
+                calculatePayeeGrossTotal(payeeName) {
+                    return this.displayItems.reduce((total, item) => {
+
+                        let x = 0
+                        if (item[payeeName]) {
+                            x = parseFloat(item[payeeName].amount) * parseFloat(item[payeeName].quantity)
+                        }
+                        return total + x
+                    }, 0);
+
+                },
+                getPayeeRemarks(payeeName) {
+                    let remarks = []
+                    this.displayItems.reduce((total, item, y) => {
+                        if (item[payeeName]) {
+                            if (item[payeeName].remark) {
+                                remarks.push(`${item[payeeName].remark} Item No. ${y+1}`)
+                            }
+                        }
+                    }, []);
+
+                    console.log(remarks)
+                    return remarks
+
+                },
+                formatAmount(amount) {
+                    amount = parseFloat(amount)
+                    if (typeof amount === 'number' && !isNaN(amount)) {
+                        return amount.toLocaleString(); // Formats with commas based on user's locale
+                    }
+                    return 0; // If unitCost is not a number, return it as is
+                },
+
+            }
+
+        })
     })
 </script>
