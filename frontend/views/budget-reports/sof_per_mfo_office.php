@@ -342,7 +342,9 @@ $this->registerJsFile('@web/js/vue-spinner.min.js', ['position' => $this::POS_HE
                     }
                     const response = axios.post(url, data)
                         .then((response) => {
-
+                            this.grandTotals = []
+                            this.mooeCoTotal = []
+                            this.finalData = []
                             // console.log(response.data)
                             Object.keys(response.data).map((bookName) => {
                                 let arr = []

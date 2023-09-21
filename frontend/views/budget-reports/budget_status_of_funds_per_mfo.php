@@ -282,6 +282,9 @@ $this->registerJsFile('@web/js/vue-spinner.min.js', ['position' => $this::POS_HE
 
                 },
                 filterForm() {
+                    this.grandTotals = []
+                    this.mooeCoTotal = []
+                    this.finalData = []
                     this.loading = true
                     this.showTable = false
                     const url = window.location.href
@@ -318,6 +321,7 @@ $this->registerJsFile('@web/js/vue-spinner.min.js', ['position' => $this::POS_HE
                                 })
                             })
                             this.grandTotals = this.calculateGrandTotal()
+                            console.log(this.grandTotals)
                             this.mooeCoTotal = this.calculateSumOfCoAndMooe()
                             setTimeout(() => {
                                 this.loading = false
@@ -464,6 +468,7 @@ $this->registerJsFile('@web/js/vue-spinner.min.js', ['position' => $this::POS_HE
                     let grandTotalOrsTtl = 0
                     let grandTotalOtherDocsTtl = 0
                     let grandTotalSaaTtl = 0
+                    console.log(grandTotalAdjustmentTtl)
                     this.finalData.map((item) => {
                         grandTotalAdjustmentTtl += parseFloat(item.bookAdjustmentTtl)
                         grandTotalBalanceTtl += parseFloat(item.bookBalanceTtl)
@@ -502,7 +507,7 @@ $this->registerJsFile('@web/js/vue-spinner.min.js', ['position' => $this::POS_HE
                         bookItem.value.map((allotmentClassItem) => {
 
                             if (allotmentClassItem.allotmentClassName.toLowerCase() === "maintenance and other operating expenses" || allotmentClassItem.allotmentClassName.toLowerCase() === "capital outlays") {
-                                console.log(allotmentClassItem.allotmentClassName)
+                                // console.log(allotmentClassItem.allotmentClassName)
                                 mooeCoAdjustmentTtl += parseFloat(allotmentClassItem.allotmentClassAdjustmentTtl)
                                 mooeCoBalanceTtl += parseFloat(allotmentClassItem.allotmentClassBalanceTtl)
                                 mooeCoFlrTtl += parseFloat(allotmentClassItem.allotmentClassFlrTtl)
