@@ -534,173 +534,173 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
             })
 
         });
-        const q = <?php echo json_encode($for_print) ?>;
-        console.log(q)
-        const payee_position = JSON.parse(`<?php echo json_encode($payee_position) ?>`);
-        let ttlAmtPerPayee = []
-        let row_number = 0
-        let purpose = ''
-        let remark_arr = []
-        let remark_arr_index = 0
-        let row_number_index = 1
-        $.each(q, function(x, val) {
-            let min_key = ''
-            $.each(val, function(key, val2) {
-                min_key = key
-                return false
-            })
-            const quantity = val[min_key]['quantity']
-            const unit_of_measure = val[min_key]['unit_of_measure']
-            const description = val[min_key]['description']
-            const specification = val[min_key]['specification']
-            purpose = val[min_key]['purpose']
+        // const q = <?php echo json_encode($for_print) ?>;
+        // console.log(q)
+        // const payee_position = JSON.parse(`<?php echo json_encode($payee_position) ?>`);
+        // let ttlAmtPerPayee = []
+        // let row_number = 0
+        // let purpose = ''
+        // let remark_arr = []
+        // let remark_arr_index = 0
+        // let row_number_index = 1
+        // $.each(q, function(x, val) {
+        //     let min_key = ''
+        //     $.each(val, function(key, val2) {
+        //         min_key = key
+        //         return false
+        //     })
+        //     const quantity = val[min_key]['quantity']
+        //     const unit_of_measure = val[min_key]['unit_of_measure']
+        //     const description = val[min_key]['description']
+        //     const specification = val[min_key]['specification']
+        //     purpose = val[min_key]['purpose']
 
-            let row = `<tr>
-            <td class='amount' style='vertical-align:top'>${row_number+1}</td>
-            <td style='vertical-align:top'>${quantity}</td>
-            <td style='vertical-align:top'>${unit_of_measure}</td>
-            <td>
-                <span style='font-weight:bold;vertical-align:top'>
-                ${description}
-                </span>
-                </br>
-                <span style='vertical-align:text-bottom;font-style:italic;'>
-                ${specification}
-                </span>
-            </td>`;
-            $.each(payee_position, function(key, val2) {
-                row += `<td class='fooed' style='text-align:center;vertical-align:middle' ></td>`;
-                row += `<td class='fooed' style='text-align:center;vertical-align:middle' ></td>`;
-            })
-            row += `<td style='vertical-align:top'></td>`;
-            $("#table tbody").append(row)
+        //     let row = `<tr>
+        //     <td class='amount' style='vertical-align:top'>${row_number+1}</td>
+        //     <td style='vertical-align:top'>${quantity}</td>
+        //     <td style='vertical-align:top'>${unit_of_measure}</td>
+        //     <td>
+        //         <span style='font-weight:bold;vertical-align:top'>
+        //         ${description}
+        //         </span>
+        //         </br>
+        //         <span style='vertical-align:text-bottom;font-style:italic;'>
+        //         ${specification}
+        //         </span>
+        //     </td>`;
+        //     $.each(payee_position, function(key, val2) {
+        //         row += `<td class='fooed' style='text-align:center;vertical-align:middle' ></td>`;
+        //         row += `<td class='fooed' style='text-align:center;vertical-align:middle' ></td>`;
+        //     })
+        //     row += `<td style='vertical-align:top'></td>`;
+        //     $("#table tbody").append(row)
 
-            let lowest = ''
+        //     let lowest = ''
 
-            $.each(val, function(key, val2) {
-                let key_pos = '';
+        //     $.each(val, function(key, val2) {
+        //         let key_pos = '';
 
-                $.each(payee_position, function(payee_pos_key, payee) {
-                    if (payee == val2.payee) {
-                        key_pos = parseInt(payee_pos_key)
-                        return false
-                    }
-                })
-                if (key_pos != '') {
-                    let rem = val2.remark
-                    if ($.trim(val2.remark) != '') {
-                        rem += ` Item No. ${row_number+1}`
-                    }
-                    remark_arr[remark_arr_index] = {
-                        'key_pos': key_pos,
-                        'remark': rem
-                    };
-                    remark_arr_index++
-                }
+        //         $.each(payee_position, function(payee_pos_key, payee) {
+        //             if (payee == val2.payee) {
+        //                 key_pos = parseInt(payee_pos_key)
+        //                 return false
+        //             }
+        //         })
+        //         if (key_pos != '') {
+        //             let rem = val2.remark
+        //             if ($.trim(val2.remark) != '') {
+        //                 rem += ` Item No. ${row_number+1}`
+        //             }
+        //             remark_arr[remark_arr_index] = {
+        //                 'key_pos': key_pos,
+        //                 'remark': rem
+        //             };
+        //             remark_arr_index++
+        //         }
 
-                if (parseInt(val2.is_lowest) == 1) {
-                    lowest = lowest + val2.payee
-                }
-                let to_display = ''
-                if (val2.amount.toLowerCase() != '-') {
+        //         if (parseInt(val2.is_lowest) == 1) {
+        //             lowest = lowest + val2.payee
+        //         }
+        //         let to_display = ''
+        //         if (val2.amount.toLowerCase() != '-') {
 
-                    to_display = thousands_separators(val2.amount)
-                } else if (val2.amount.toLowerCase() == '-') {
-                    to_display = '-'
-                }
-                let key_pos_1 = 5
-                const amount = `${to_display}<br>`
-                const remark = `<span>${val2.remark}</span>`
-                const ttl = parseFloat(val2.amount) * parseInt(val2.quantity);
-                if (ttlAmtPerPayee[key_pos + 1]) {
-                    let ttlPerItm = ttl ? parseFloat(ttl) : 0
-                    ttlAmtPerPayee[key_pos + 1] = parseFloat(ttlAmtPerPayee[key_pos + 1]) + ttlPerItm
-                } else {
-                    ttlAmtPerPayee[key_pos + 1] = parseFloat(ttl)
-                }
+        //             to_display = thousands_separators(val2.amount)
+        //         } else if (val2.amount.toLowerCase() == '-') {
+        //             to_display = '-'
+        //         }
+        //         let key_pos_1 = 5
+        //         const amount = `${to_display}<br>`
+        //         const remark = `<span>${val2.remark}</span>`
+        //         const ttl = parseFloat(val2.amount) * parseInt(val2.quantity);
+        //         if (ttlAmtPerPayee[key_pos + 1]) {
+        //             let ttlPerItm = ttl ? parseFloat(ttl) : 0
+        //             ttlAmtPerPayee[key_pos + 1] = parseFloat(ttlAmtPerPayee[key_pos + 1]) + ttlPerItm
+        //         } else {
+        //             ttlAmtPerPayee[key_pos + 1] = parseFloat(ttl)
+        //         }
 
-                $("#table tbody").find(`td:nth-child(${key_pos})`).eq(row_number).append(amount)
-                $("#table tbody").find(`td:nth-child(${key_pos+1})`).eq(row_number).append(thousands_separators(ttl))
+        //         $("#table tbody").find(`td:nth-child(${key_pos})`).eq(row_number).append(amount)
+        //         $("#table tbody").find(`td:nth-child(${key_pos+1})`).eq(row_number).append(thousands_separators(ttl))
 
-            })
-            $("#table tbody ").find(`td:last-child`).eq(row_number).text(lowest)
-            row_number++
+        //     })
+        //     $("#table tbody ").find(`td:last-child`).eq(row_number).text(lowest)
+        //     row_number++
 
 
-        })
+        // })
 
-        let colCount = 5
-        let remark_row = `<tr>
-            <td class='amount' style='vertical-align:top'></td>
-            <td style='vertical-align:top'></td>
-            <td style='vertical-align:top'></td>
-            <td>
-            <span style='font-weight:bold;vertical-align:top'>
-            </span>
-            </br>
-            <span style='vertical-align:text-bottom;font-style:italic;'>
-            </span>
+        // let colCount = 5
+        // let remark_row = `<tr>
+        //     <td class='amount' style='vertical-align:top'></td>
+        //     <td style='vertical-align:top'></td>
+        //     <td style='vertical-align:top'></td>
+        //     <td>
+        //     <span style='font-weight:bold;vertical-align:top'>
+        //     </span>
+        //     </br>
+        //     <span style='vertical-align:text-bottom;font-style:italic;'>
+        //     </span>
       
-            </td>
+        //     </td>
 
-          `;
-        let ttlRow = `<tr>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th>TOTAL</th>`
-
-
-        //   ADD REMARKS  COL
-        $.each(payee_position, function(key, val2) {
-            remark_row += `<td ></td>`;
-            remark_row += `<td ></td>`;
-            ttlRow += "<td></td><td  class='center'></td>"
-            colCount += 2
-        })
-        remark_row += `<td style='vertical-align:top'></td>`;
-        ttlRow += `<td ></td>`;
-        $("#table tbody").append(ttlRow)
-        $("#table tbody").append(remark_row)
-        let posNeg = 0
-        let arrSibRemove = []
-        $.each(remark_arr, function(key, val) {
-
-            let pos = 0
-            pos = parseInt(val.key_pos)
-            if (ttlAmtPerPayee[val.key_pos + 1]) {
-                // console.log(ttlAmtPerPayee[val.key_pos + 1])
-                $("#table tbody ").find(`td:nth-child(${pos+1})`).eq(row_number).text(thousands_separators(ttlAmtPerPayee[val.key_pos + 1]))
-            }
+        //   `;
+        // let ttlRow = `<tr>
+        // <th></th>
+        // <th></th>
+        // <th></th>
+        // <th>TOTAL</th>`
 
 
-            const remark = val.remark
-            const table_col = $("#table tbody").find(`td:nth-child(${pos})`).eq(row_number + 1)
-            if (table_col.text() != '  ') {
-                if ($.trim(remark) != '') {
-                    if (table_col.text() != '')
-                        table_col.append(',<br>')
-                }
-            }
-            table_col.append(val.remark)
-            table_col.attr('colspan', 2)
-            // console.log(pos + '-' + !arrSibRemove.includes(pos))
+        // //   ADD REMARKS  COL
+        // $.each(payee_position, function(key, val2) {
+        //     remark_row += `<td ></td>`;
+        //     remark_row += `<td ></td>`;
+        //     ttlRow += "<td></td><td  class='center'></td>"
+        //     colCount += 2
+        // })
+        // remark_row += `<td style='vertical-align:top'></td>`;
+        // ttlRow += `<td ></td>`;
+        // $("#table tbody").append(ttlRow)
+        // $("#table tbody").append(remark_row)
+        // let posNeg = 0
+        // let arrSibRemove = []
+        // $.each(remark_arr, function(key, val) {
 
-            if (!arrSibRemove.includes(pos)) {
-
-                arrSibRemove.push(pos)
-            }
-
-
-        })
-        $.each(arrSibRemove.sort((a, b) => b - a), (key, val) => {
-            console.log(val)
-            $("#table tbody").find(`td:nth-child(${val})`).eq(row_number + 1).next('td').remove()
-        })
+        //     let pos = 0
+        //     pos = parseInt(val.key_pos)
+        //     if (ttlAmtPerPayee[val.key_pos + 1]) {
+        //         // console.log(ttlAmtPerPayee[val.key_pos + 1])
+        //         $("#table tbody ").find(`td:nth-child(${pos+1})`).eq(row_number).text(thousands_separators(ttlAmtPerPayee[val.key_pos + 1]))
+        //     }
 
 
-        const purpose_row = `<tr><td colspan='${colCount}'><span style='font-weight:bold'>Purpose:  </span><span>${purpose}</span></td></tr>`;
-        $("#table tbody").append(purpose_row)
+        //     const remark = val.remark
+        //     const table_col = $("#table tbody").find(`td:nth-child(${pos})`).eq(row_number + 1)
+        //     if (table_col.text() != '  ') {
+        //         if ($.trim(remark) != '') {
+        //             if (table_col.text() != '')
+        //                 table_col.append(',<br>')
+        //         }
+        //     }
+        //     table_col.append(val.remark)
+        //     table_col.attr('colspan', 2)
+        //     // console.log(pos + '-' + !arrSibRemove.includes(pos))
+
+        //     if (!arrSibRemove.includes(pos)) {
+
+        //         arrSibRemove.push(pos)
+        //     }
+
+
+        // })
+        // $.each(arrSibRemove.sort((a, b) => b - a), (key, val) => {
+        //     console.log(val)
+        //     $("#table tbody").find(`td:nth-child(${val})`).eq(row_number + 1).next('td').remove()
+        // })
+
+
+        // const purpose_row = `<tr><td colspan='${colCount}'><span style='font-weight:bold'>Purpose:  </span><span>${purpose}</span></td></tr>`;
+        // $("#table tbody").append(purpose_row)
 
 
 
