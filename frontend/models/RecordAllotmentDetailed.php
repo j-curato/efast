@@ -70,6 +70,8 @@ class RecordAllotmentDetailed extends \yii\db\ActiveRecord
     }
     public static function getStatusOfFundsPerMfo($from_period, $to_period)
     {
+
+
         return Yii::$app->db->createCommand("SELECT 
             record_allotment_detailed.book_name,
             record_allotment_detailed.allotment_class,
@@ -82,6 +84,7 @@ class RecordAllotmentDetailed extends \yii\db\ActiveRecord
             FROM record_allotment_detailed
             WHERE record_allotment_detailed.reporting_period >=:from_period
             AND record_allotment_detailed.reporting_period <= :to_period
+          
             GROUP BY
             record_allotment_detailed.book_name,
             record_allotment_detailed.allotment_class,
@@ -94,6 +97,14 @@ class RecordAllotmentDetailed extends \yii\db\ActiveRecord
     }
     public static function getStatusOfFundsPerOffice($from_period, $to_period)
     {
+        $params = [];
+        $sql = '';
+        if (!YIi::$app->user->can('super-user')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $sql = ' AND ';
+            $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['=', 'record_allotment_detailed.division', $user_data->divisionName->division], $params);
+        }
+
         return Yii::$app->db->createCommand("SELECT 
                 record_allotment_detailed.book_name,
                 record_allotment_detailed.allotment_class,
@@ -107,19 +118,28 @@ class RecordAllotmentDetailed extends \yii\db\ActiveRecord
                 FROM record_allotment_detailed
                 WHERE  record_allotment_detailed.reporting_period >= :from_period
                     AND record_allotment_detailed.reporting_period <= :to_period
+                    $sql
                 GROUP BY 
                     record_allotment_detailed.book_name,
                     record_allotment_detailed.allotment_class,
                     record_allotment_detailed.office_name,
                     record_allotment_detailed.division,
                     record_allotment_detailed.document_recieve
-                ORDER BY record_allotment_detailed.allotment_class DESC")
+                ORDER BY record_allotment_detailed.allotment_class DESC", $params)
             ->bindValue(':from_period', $from_period)
             ->bindValue(':to_period', $to_period)
             ->queryAll();
     }
     public static function getStatusOfFundsPerMfoOffice($from_period, $to_period)
     {
+        $params = [];
+        $sql = '';
+        if (!YIi::$app->user->can('super-user')) {
+            $user_data = Yii::$app->memem->getUserData();
+            $sql = ' AND ';
+            $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['=', 'record_allotment_detailed.division', $user_data->divisionName->division], $params);
+        }
+
         return Yii::$app->db->createCommand("SELECT 
         record_allotment_detailed.book_name,
         record_allotment_detailed.allotment_class,
@@ -134,6 +154,7 @@ class RecordAllotmentDetailed extends \yii\db\ActiveRecord
         FROM record_allotment_detailed
         WHERE  record_allotment_detailed.reporting_period >= :from_period
         AND record_allotment_detailed.reporting_period <= :to_period
+        $sql
         GROUP BY 
         record_allotment_detailed.book_name,
         record_allotment_detailed.allotment_class,
@@ -141,7 +162,7 @@ class RecordAllotmentDetailed extends \yii\db\ActiveRecord
         record_allotment_detailed.office_name,
         record_allotment_detailed.division,
         record_allotment_detailed.document_recieve
-        ORDER BY record_allotment_detailed.allotment_class DESC")
+        ORDER BY record_allotment_detailed.allotment_class DESC", $params)
             ->bindValue(':from_period', $from_period)
             ->bindValue(':to_period', $to_period)
             ->queryAll();
