@@ -238,11 +238,13 @@ class ProcessOrsController extends Controller
                     LEFT JOIN responsibility_center ON `transaction`.responsibility_center_id = responsibility_center.id
                     LEFT JOIN books ON `transaction`.fk_book_id = books.id
                     LEFT JOIN payee ON `transaction`.payee_id = payee.id
+                    LEFT JOIN process_ors O 
                     LEFT JOIN (SELECT 
                     process_ors_txn_items.fk_transaction_item_id,
                     SUM(process_ors_txn_items.amount) *-1 as ttl
                     FROM 
                     process_ors_txn_items
+                    JOIN process_ors ON process_ors_txn_items.fk_process_ors_id = process_ors.id
                     WHERE process_ors_txn_items.is_deleted = 0
                      AND process_ors.is_cancelled=0
                     GROUP BY process_ors_txn_items.fk_transaction_item_id) as ttlObligated ON transaction_items.id  = ttlObligated.fk_transaction_item_id
