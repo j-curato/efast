@@ -477,14 +477,13 @@ $this->params['breadcrumbs'][] = $title;
                         <h6 style="margin-top:8px">A: Certified: Expenses/Cash Advance necessary, lawful and incurred under my direct supervision.</h6>
 
                         <div style="text-align: center;
-                        margin-top:3rem;
+                        margin-top:2.5rem;
                         margin-bottom:2rem;
                         font-size:10pt">
                             <select class="asignatory" style="width: 300px;padding:0;" data-pos='form2_box_a_signatory' id="form2_box_a_signatory">
                                 <option value=""></option>
                             </select>
-                            <div style="padding:0;font-weight:normal" class="pos form2_box_a_signatory">
-
+                            <div style="padding:0;font-weight:normal;margin-top:12px" class="pos form2_box_a_signatory">
                             </div>
                         </div>
 
@@ -906,8 +905,8 @@ $this->params['breadcrumbs'][] = $title;
         th,
         td {
             border: 1px solid black;
-            padding: 5px;
-            font-size: 14px;
+            padding: 3px;
+            font-size: 16px;
         }
 
         @page {
