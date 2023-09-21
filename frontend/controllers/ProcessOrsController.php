@@ -244,6 +244,7 @@ class ProcessOrsController extends Controller
                     FROM 
                     process_ors_txn_items
                     WHERE process_ors_txn_items.is_deleted = 0
+                     AND process_ors.is_cancelled=0
                     GROUP BY process_ors_txn_items.fk_transaction_item_id) as ttlObligated ON transaction_items.id  = ttlObligated.fk_transaction_item_id
                     WHERE  
                     process_ors_txn_items.is_deleted = 0
@@ -668,5 +669,135 @@ class ProcessOrsController extends Controller
         $serial_number = $book->name . '-' . $reporting_period . '-' . $final_number . $x;
 
         return $serial_number;
+    }
+    public function actionExport()
+    {
+        if (Yii::$app->request->post()) {
+
+            $year = Yii::$app->request->post('year');
+            $qry  = Yii::$app->db->createCommand("
+            SELECT 
+            process_ors.serial_number as ors_num,
+            `transaction`.tracking_number as txn_num,
+            responsibility_center.`name` as r_center,
+            payee.account_name as payee,
+            `transaction`.particular,
+            process_ors_entries.reporting_period,
+            books.`name` as book_name,
+            CONCAT(chart_of_accounts.uacs,'-',chart_of_accounts.general_ledger) as UACS,
+            process_ors_entries.amount,
+            process_ors.is_cancelled
+            FROM process_ors
+            JOIN process_ors_entries ON process_ors.id  = process_ors_entries.process_ors_id
+             LEFT JOIN `transaction` ON process_ors.transaction_id = `transaction`.id
+            LEFT JOIN payee ON `transaction`.payee_id = payee.id
+            LEFT JOIN responsibility_center ON `transaction`.responsibility_center_id = responsibility_center.id 
+            LEFT JOIN books ON process_ors.book_id = books.id
+            LEFT JOIN chart_of_accounts ON process_ors_entries.chart_of_account_id = chart_of_accounts.id
+            WHERE 
+            process_ors.reporting_period >= :yr
+            AND process_ors.type='ors'
+            ORDER BY process_ors.serial_number,process_ors.created_at 
+            ")->bindValue(':yr', $year . '%')->queryAll();
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            // // header
+            $headers = [
+                "Budget Year",
+                "Office Name",
+                "Division",
+                "Allotment No.",
+                "MFO/PAP",
+                "Fund Source",
+                "Book",
+                "Object Code",
+                "Account Title",
+                "PR No.",
+                "PR Date",
+                "PR Purpose",
+                "Transaction Tracking No.",
+                "Transaction Date",
+                "Transaction Particular",
+                "Payee",
+                "ORS No.",
+                "Allotment Amount",
+                "PR Amount",
+                "Transaction Amount",
+                "ORS Amount",
+
+
+            ];
+            $cellVal = [
+                'budget_year',
+                'office_name',
+                'division',
+                'allotmentNumber',
+                'mfo_name',
+                'fund_source_name',
+                'book_name',
+                'uacs',
+                'account_title',
+                'pr_number',
+                'prDate',
+                'prPurpose',
+                'transaction_num',
+                'txnDate',
+                'txnParticular',
+                'txnPayee',
+                'orsNum',
+                'allotAmt',
+                'prAmt',
+                'txnAmt',
+                'orsAmt',
+
+            ];
+            foreach ($headers as $key => $head) {
+                $sheet->setCellValue([$key + 1, 2], $head);
+            }
+
+
+
+
+            $x = 7;
+            $styleArray = array(
+                'borders' => array(
+                    'allBorders' => array(
+                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
+                        'color' => array('argb' => 'FFFF0000'),
+                    ),
+                ),
+            );
+
+
+            $row = 3;
+            foreach ($qry as $itm) {
+                foreach ($cellVal as $col => $cell) {
+                    $sheet->setCellValue(
+                        [$col + 1, $row],
+                        $itm[$cell] ?? ''
+                    );
+                }
+                $row++;
+            }
+
+            date_default_timezone_set('Asia/Manila');
+            $date = date('Y-m-d h-s A');
+            $file_name = "rao_$year.xlsx";
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
+            $fileSaveLoc =  "exports\\" . $file_name;
+            $path = Yii::getAlias('@webroot') . '/exports';
+            $file = $path . "/$file_name";
+            $writer->save($file);
+            header('Content-Type: application/vnd.ms-excel');
+            header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
+            header('Content-Transfer-Encoding: binary');
+            header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+            header('Pragma: public'); // HTTP/1.0
+            echo  json_encode($fileSaveLoc);
+            // unlink($fileSaveLoc)
+            // echo "<script>window.open('$fileDwnldLoc','_self')</script>";
+            exit();
+        }
+        return $this->render('rao');
     }
 }
