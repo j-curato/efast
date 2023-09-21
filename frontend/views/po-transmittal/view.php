@@ -243,7 +243,7 @@ $user_data = Yii::$app->memem->getUserData();
         <div class="row" style="margin-top:2rem">
             <div class="head" id="for_rd"></div>
         </div>
-        <div class="row" style="margin-top: 2rem;">
+        <div class="" style="margin-top: 2rem;">
             <div class="head" id='ass' style="font-weight: bold;"></div>
             <div class="head" id='position' style="font-size:12px"></div>
         </div>
@@ -340,36 +340,24 @@ $user_data = Yii::$app->memem->getUserData();
     }
 
     @media print {
-        td {
-            font-size: 14px;
-        }
 
-        body {
-            margin: 25mm 25mm 25mm 25mm;
-        }
 
-        .container {
-            padding: 0;
-        }
-
-        #header td {
-            font-size: 15px;
-        }
-
-        .status {
-            display: none;
-        }
-
-        .as {
-            display: none;
-        }
-
-        .assignatory {
-            display: none;
+        @page {
+            margin: 12in 12in 12in 12in;
         }
 
         .container {
+            padding: 25px 100px 0 100px;
             width: 100%;
+        }
+
+        .status,
+        .assignatory,
+        .as,
+        .actions,
+        .links,
+        .btn {
+            display: none;
         }
 
         header.onlyprint {
@@ -385,11 +373,6 @@ $user_data = Yii::$app->memem->getUserData();
             /* Because it's footer */
         }
 
-
-        .actions {
-            display: none;
-        }
-
         .select2-container--default .select2-selection--single,
         .select2-selection .select2-selection--single {
             /* border: 1px solid #d2d6de; */
@@ -402,23 +385,13 @@ $user_data = Yii::$app->memem->getUserData();
             height: 20px;
         }
 
-        .links {
-            display: none;
-        }
-
-        .btn {
-            display: none;
-        }
-
         .krajee-datepicker {
             border: 1px solid white;
             font-size: 10px;
             padding-left: 9px;
         }
 
-        /* .select2-selection__rendered{
-            text-decoration: underline;
-        } */
+
         .select2-container--default .select2-selection--single {
             background-color: #fff;
             border: none;
@@ -442,56 +415,12 @@ $user_data = Yii::$app->memem->getUserData();
             border: none;
         }
 
-        table,
         th,
         td {
-            border: 1px solid black;
             padding: 5px;
-            font-size: 10px;
+            /* font-size: 10px; */
         }
 
-        @page {
-            size: auto;
-            margin: 0;
-            margin-top: 0.5cm;
-        }
-
-
-
-        .container {
-            margin: 0;
-            top: 0;
-        }
-
-        .entity_name {
-            font-size: 5pt;
-        }
-
-
-
-        .container {
-
-            border: none;
-        }
-
-
-        table {
-            page-break-after: auto
-        }
-
-        tr {
-            page-break-inside: avoid;
-            page-break-after: auto
-        }
-
-        td {
-            page-break-inside: avoid;
-            page-break-after: auto
-        }
-
-        /* thead {
-                display: table-header-group
-            } */
 
         .main-footer {
             display: none;
