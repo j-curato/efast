@@ -43,6 +43,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => 'purchaseRequest.pr_number'
             ],
             '_date',
+            'deadline',
 
             [
 

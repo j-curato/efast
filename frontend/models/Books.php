@@ -54,7 +54,10 @@ class Books extends \yii\db\ActiveRecord
 
         ];
     }
-
+    public static function getBooksA()
+    {
+        return Books::find()->asArray()->all();
+    }
     /**
      * {@inheritdoc}
      */

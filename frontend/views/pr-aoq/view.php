@@ -245,6 +245,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 <td></td>
 
             </tr>
+            <tr>
+                <td colspan="<?= $header_count ?>" style='border:0;padding-top:0'> <?= $model->rfq->purchaseRequest->purpose ?? ''; ?></td>
+            </tr>
             <tfoot>
                 <tr>
                     <td colspan="<?= $header_count ?>" style='border:none;padding-top:0'>

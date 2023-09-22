@@ -27,6 +27,7 @@ class PrRfqSearch extends PrRfq
                 'office_unit',
                 'project_title',
                 'fk_office_id',
+                'deadline'
             ], 'safe'],
         ];
     }
@@ -82,6 +83,7 @@ class PrRfqSearch extends PrRfq
             ->andFilterWhere(['like', 'pr_purchase_request.pr_number', $this->pr_purchase_request_id])
             ->andFilterWhere(['like', 'pr_purchase_request.purpose', $this->purpose])
             ->andFilterWhere(['like', 'office.office_name', $this->fk_office_id])
+            ->andFilterWhere(['like', 'deadline', $this->deadline])
             ->andFilterWhere(['like', 'pr_office.unit', $this->office_unit]);
 
         return $dataProvider;

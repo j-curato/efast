@@ -48,4 +48,8 @@ class FundSource extends \yii\db\ActiveRecord
             'note' => 'Note'
         ];
     }
+    public static function getFundSourcesA()
+    {
+        return FundSource::find()->asArray()->all();
+    }
 }

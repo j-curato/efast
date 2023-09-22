@@ -54,4 +54,8 @@ class MfoPapCode extends \yii\db\ActiveRecord
             'division' => 'Division',
         ];
     }
+    public static function getMfoPapCodesA()
+    {
+        return MfoPapCode::find()->asArray()->all();
+    }
 }

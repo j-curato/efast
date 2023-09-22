@@ -53,19 +53,19 @@ use yii\bootstrap4\ActiveForm;
                     ]) ?>
                 </div>
                 <div class="col-sm-2 form-group">
-                    <?= $form->field($model, 'book_id')->dropDownList(ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'), [
+                    <?= $form->field($model, 'book_id')->dropDownList(ArrayHelper::map(Books::getBooksA(), 'id', 'name'), [
                         'prompt' => 'Select Book',
                         'v-model' => 'bookSelect'
                     ]) ?>
                 </div>
                 <div class="col-sm-3 form-group">
-                    <?= $form->field($model, 'allotment_type_id')->dropDownList(ArrayHelper::map(AllotmentType::find()->asArray()->all(), 'id', 'type'), [
+                    <?= $form->field($model, 'allotment_type_id')->dropDownList(ArrayHelper::map(AllotmentType::getAllotmentTypesA(), 'id', 'type'), [
                         'prompt' => 'Select Allotment Type ',
                         'v-model' => 'allotmentTypeSelect'
                     ]) ?>
                 </div>
                 <div class="col-sm-3 form-group">
-                    <?= $form->field($model, 'mfo_pap_code_id')->dropDownList(ArrayHelper::map(MfoPapCode::find()->asArray()->all(), 'id', 'name'), [
+                    <?= $form->field($model, 'mfo_pap_code_id')->dropDownList(ArrayHelper::map(MfoPapCode::getMfoPapCodesA(), 'id', 'name'), [
                         'prompt' => 'Select MFO/PAP',
                         'v-model' => 'mfoPapSelect'
                     ]) ?>
@@ -74,33 +74,30 @@ use yii\bootstrap4\ActiveForm;
             <div class="row">
 
                 <div class="col-sm-3 form-group">
-                    <?= $form->field($model, 'document_recieve_id')->dropDownList(ArrayHelper::map(DocumentRecieve::find()->asArray()->all(), 'id', 'name'), [
+                    <?= $form->field($model, 'document_recieve_id')->dropDownList(ArrayHelper::map(DocumentRecieve::getDocumentReceivesA(), 'id', 'name'), [
                         'prompt' => 'Select Document Receive ',
                         'v-model' => 'documentReceiveSelect'
                     ]) ?>
                 </div>
                 <div class="col-sm-3 form-group">
 
-                    <?= $form->field($model, 'fund_source_id')->dropDownList(ArrayHelper::map(FundSource::find()->asArray()->all(), 'id', 'name'), [
+                    <?= $form->field($model, 'fund_source_id')->dropDownList(ArrayHelper::map(FundSource::getFundSourcesA(), 'id', 'name'), [
                         'prompt' => 'Select Fund Source',
                         'v-model' => 'fundSourceSelect'
                     ]) ?>
                 </div>
                 <div class="col-sm-3 form-group">
 
-                    <?= empty($model->id) ? $form->field($model, 'fk_major_account_id')->dropDownList(ArrayHelper::map(MajorAccounts::find()->asArray()->all(), 'id', 'name'), [
+                    <?= empty($model->id) ? $form->field($model, 'fk_major_account_id')->dropDownList(ArrayHelper::map(MajorAccounts::getMafMajorAccountsA(), 'id', 'name'), [
                         'prompt' => 'Major Account',
                         'v-model' => 'majorAccountSelect',
                         'class' => 'major-account form-control'
                     ]) : '' ?>
                 </div>
             </div>
-
             <div class="form-group">
                 <?= $form->field($model, 'particulars')->textarea(['rows' => 4]) ?>
             </div>
-
-
             <table class="table">
                 <thead>
                     <tr class="success">
@@ -225,7 +222,8 @@ use yii\bootstrap4\ActiveForm;
         gap: 4px;
         /* Add some spacing between the buttons */
     }
-    .allotment-modification-advice-form{
+
+    .allotment-modification-advice-form {
         padding: 1rem;
     }
 </style>

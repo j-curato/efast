@@ -33,7 +33,6 @@ class MajorAccounts extends \yii\db\ActiveRecord
             [['name'], 'string', 'max' => 255],
             [['object_code'], 'string', 'max' => 20],
             [[
-                'id',
                 'name',
                 'object_code',
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
@@ -60,5 +59,18 @@ class MajorAccounts extends \yii\db\ActiveRecord
     public function getChartOfAccounts()
     {
         return $this->hasMany(ChartOfAccounts::class, ['major_account_id' => 'id']);
+    }
+    public static function getMajorAccountsA()
+    {
+        return MajorAccounts::find()->asArray()->all();
+    }
+    public static function getMafMajorAccountsA()
+    {
+        return  MajorAccounts::find()
+            ->orwhere('object_code =:object_code', ['object_code' => 5010000000])
+            ->orwhere('object_code =:object_code2', ['object_code2' => 5020000000])
+            ->orwhere('object_code =:object_code3', ['object_code3' => 5060000000])
+            ->asArray()
+            ->all();
     }
 }

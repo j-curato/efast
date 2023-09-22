@@ -21,6 +21,8 @@ class AllotmentType extends \yii\db\ActiveRecord
         return '{{%allotment_type}}';
     }
 
+
+
     /**
      * {@inheritdoc}
      */
@@ -43,5 +45,9 @@ class AllotmentType extends \yii\db\ActiveRecord
             'type' => 'Type',
             'created_at' => 'Created At',
         ];
+    }
+    public static function getAllotmentTypesA()
+    {
+        return AllotmentType::find()->asArray()->all();
     }
 }

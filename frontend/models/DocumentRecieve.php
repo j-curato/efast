@@ -48,4 +48,7 @@ class DocumentRecieve extends \yii\db\ActiveRecord
             'description' => 'Description',
         ];
     }
+    public static function getDocumentReceivesA()  {
+        return DocumentRecieve::find()->asArray()->all();
+    }
 }
