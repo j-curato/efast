@@ -2,14 +2,13 @@
 
 use aryelds\sweetalert\SweetAlertAsset;
 use yii\helpers\Html;
-use yii\bootstrap\ActiveForm;
+use yii\bootstrap4\ActiveForm;
 use yii\captcha\Captcha;
 
 /* @var $this yii\web\View */
 /* @var $form yii\bootstrap\ActiveForm */
 /* @var $model \common\models\LoginForm */
 
-$this->title = 'Change Password';
 
 $fieldOptions1 = [
     'options' => ['class' => 'form-group has-feedback'],
@@ -23,7 +22,7 @@ $fieldOptions2 = [
 ?>
 
 
-<div class="">
+<div class="" style="">
 
     <?php $form = ActiveForm::begin([
         'id' => 'changePass',
@@ -60,11 +59,10 @@ $fieldOptions2 = [
 
     <div class="row">
 
-        <div class="col-xs-1">
-            <?= Html::submitButton('Save Changes', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
+        <div class="form-group">
+            <?= Html::submitButton('Save Changes', ['class' => 'btn btn-success', 'name' => 'login-button', 'style' => 'margin-left:6rem']) ?>
         </div>
     </div>
-
 
     <?php ActiveForm::end(); ?>
 

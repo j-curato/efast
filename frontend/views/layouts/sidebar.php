@@ -471,6 +471,7 @@ use hail812\adminlte\widgets\Menu;
 
 
                 ],
+
                 [
                     'label' => 'IT Helpdesk',
                     'icon' => 'fa fa-wifi',
@@ -494,7 +495,13 @@ use hail812\adminlte\widgets\Menu;
 
 
                 ],
+                [
+                    'label' => 'Profile',
+                    'icon' => 'fa fa-user',
+                    'url' => ['/site/profile']
 
+
+                ],
 
             ];
             $poUserMenuItems = [
@@ -648,7 +655,11 @@ use hail812\adminlte\widgets\Menu;
 
 
 
-
+                [
+                    'label' => 'Profile',
+                    'icon' => 'fa fa-user',
+                    'url' => ['/site/profile']
+                ],
 
 
             ];
