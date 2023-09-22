@@ -83,6 +83,14 @@ $this->registerJsFile("@web/js/vue.js", ['position' => $this::POS_HEAD]);
         .select2-container--krajee-bs4 {
             width: 100% !important;
         }
+
+        @media print {
+
+            @page {
+                size: auto !important;
+            }
+
+        }
     </style>
     <?php $this->head() ?>
 </head>
