@@ -77,7 +77,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <th colspan="<?= $header_count ?>" style='padding:0;border:none;'>
                         <?php
-                        $date = DateTime::createFromFormat('Y-m-d', $model->rfq->deadline);
+                        $date = DateTime::createFromFormat('Y-m-d H:i:s', $model->rfq->deadline);
                         echo $date->format('F d, Y');
 
                         ?>
@@ -158,7 +158,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <th colspan="<?= $header_count ?>" style='padding:0;border:none;'>
                         <?php
-                        $date = DateTime::createFromFormat('Y-m-d', $model->rfq->deadline);
+                        $date = DateTime::createFromFormat('Y-m-d H:i:s', $model->rfq->deadline);
                         echo $date->format('F d, Y');
 
                         ?>

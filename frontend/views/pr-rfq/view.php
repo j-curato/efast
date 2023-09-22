@@ -129,6 +129,10 @@ SweetAlertAsset::register($this);
                     </td>
                 </tr>
                 <tr>
+                    <?php
+                    $deadline = DateTime::createFromFormat('Y-m-d H:i:s', $model->deadline);
+                    $timeDeadline =   $deadline->format('h:i a ');
+                    ?>
                     <td class="bdr-none"></td>
                     <td colspan="6" class=" bdr-none">
                         <br>
@@ -136,10 +140,10 @@ SweetAlertAsset::register($this);
                             &emsp;&emsp; Please quote your lowest price on the item/s listed below, subject to the General Conditions
                         </span>
                         <br>
-                        stated herein. Submit your quotation duly signed by you or your representative not later than 3:00 PM on
+                        stated herein. Submit your quotation duly signed by you or your representative not later than <?= $timeDeadline == '12:00 am' ? $timeDeadline : '3:00 PM'; ?> on
                         <br>
                         <span style="text-align: left;">
-                            <?= DateTime::createFromFormat('Y-m-d', $model->deadline)->format('F d, Y') ?> in a sealed envelope. Late submission will not be accepted.
+                            <?= $deadline->format('F d, Y') ?> in a sealed envelope. Late submission will not be accepted.
                         </span>
                     </td>
 

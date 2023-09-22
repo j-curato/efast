@@ -180,9 +180,10 @@ class PrAoqController extends Controller
             try {
                 $transaction  = Yii::$app->db->beginTransaction();
                 $items  = Yii::$app->request->post('items') ?? [];
+                $aoqDeadline =  DateTime::createFromFormat('Y-m-d H:i:s', $model->rfq->deadline)->format('Y-m-d');
                 $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()  % 9223372036854775807")->queryScalar();
-                $model->aoq_number = $this->aoqNumberGenerator($model->rfq->deadline, $model->fk_office_id);
-                $model->pr_date = $model->rfq->deadline;
+                $model->aoq_number = $this->aoqNumberGenerator($aoqDeadline, $model->fk_office_id);
+                $model->pr_date = $aoqDeadline;
                 if (empty($items)) {
                     throw new ErrorException('Please Insert an Item');
                 }
