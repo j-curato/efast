@@ -102,7 +102,6 @@ class RecordAllotmentDetailed extends \yii\db\ActiveRecord
     }
     public static function getStatusOfFundsPerOffice($from_period, $to_period)
     {
-        $params = [];
         $sql = '';
         if (!YIi::$app->user->can('super-user')) {
             $user_data = Yii::$app->memem->getUserData();
@@ -344,7 +343,6 @@ class RecordAllotmentDetailed extends \yii\db\ActiveRecord
         //     ->bindValue(':from_period', $from_period)
         //     ->bindValue(':to_period', $to_period)
         //     ->queryAll();
-        $params = [];
         $sql = '';
         if (!YIi::$app->user->can('super-user')) {
             $user_data = Yii::$app->memem->getUserData();
