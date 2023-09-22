@@ -12,7 +12,6 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="iar-transmittal-index">
 
-    <h3><?= Html::encode($this->title) ?></h3>
 
     <p>
         <?= Html::a('Create IAR Transmittal', ['create'], ['class' => 'btn btn-success']) ?>

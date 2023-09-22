@@ -21,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <div class="container card" style="padding: 1rem;">
-        <h4><?= Html::encode($this->title) ?></h4>
+        <h5><?= Html::encode($this->title) ?></h5>
 
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
@@ -31,30 +31,53 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row" style="float:right">
             <?= Html::img(Yii::$app->request->baseUrl . '/frontend/web/dti3.png', ['alt' => 'some', 'class' => 'pull-left img-responsive', 'style' => 'width: 100px;height:100px;margin-left:auto']); ?>
         </div>
-        <div class="row" style="margin-top: 130px;">
-            <div class="row head" style=" margin-bottom:2rem"><?php echo date('F d, Y', strtotime($model->date)) ?></div>
-            <div class="row head" style="font-weight: bold;">ADA JUNE M. HORMILLADA</div>
-            <div class="row head">State Auditor III</div>
-            <div class="row head">OIC - Audit Team Leader</div>
-            <div class="row head">COA - DTI Caraga</div>
-            <div class="row head" style="padding-top: 2rem;padding-bottom: 2rem;">Dear Ma’am Hormillada:</div>
+        <!-- <div class="row" style="margin-top: 130px;">
+            <span class=" head" style=" margin-bottom:2rem"><?php echo date('F d, Y', strtotime($model->date)) ?></span>
+            <span class=" head" style="font-weight: bold;">ADA JUNE M. HORMILLADA</span>
+            <span class=" head">State Auditor III</span>
+            <span class=" head">OIC - Audit Team Leader</span>
+            <span class=" head">COA - DTI Caraga</span>
+            <span class=" head" style="padding-top: 2rem;padding-bottom: 2rem;">Dear Ma’am Hormillada:</span>
             <p style="font-size: 12pt;">
-
                 We are hereby submitting the following Purchase Orders, with assigned Transmittal # <?php
-                                                                                                    echo $model->serial_number;
                                                                                                     ?> of DTI Regional Office:
             </p>
-        </div>
+        </div> -->
 
 
+        <table>
+            <tr>
+                <td colspan="5" style="border: 0;">
+                    <span class=" head" style=" margin-bottom:2rem"><?php echo date('F d, Y', strtotime($model->date)) ?></span><br><br>
+                    <b class=" head">ADA JUNE M. HORMILLADA</b><br>
+                    <span class=" head">State Auditor III</span><br>
+                    <span class=" head">OIC - Audit Team Leader</span><br>
+                    <span class=" head">COA - DTI Caraga</span><br>
 
+                </td>
+            </tr>
+            <tr>
+
+                <td colspan="5" style="border: 0;">
+                    <span class=" head" style="padding-top: 2rem;padding-bottom: 2rem;">Dear Ma’am Hormillada:</span><br><br>
+                    <p style="font-size: 12pt;">
+                        We are hereby submitting the following Purchase Orders, with assigned Transmittal # <?= $model->serial_number ?> of DTI Regional Office:
+                    </p>
+                </td>
+            </tr>
+        </table>
         <table class="">
-            <thead style="border-top: 1px solid black;">
-                <th>No.</th>
-                <th>PO Number</th>
-                <th>Payee</th>
-                <th>Purpose</th>
-                <th>Amount</th>
+            <thead>
+
+
+                <tr>
+                    <th>No.</th>
+                    <th>PO Number</th>
+                    <th>Payee</th>
+                    <th>Purpose</th>
+                    <th>Amount</th>
+                </tr>
+
             </thead>
 
             <tbody>
@@ -86,10 +109,8 @@ $this->params['breadcrumbs'][] = $this->title;
         </table>
         <div class="row head" style="margin-top:1rem">Thank you.</div>
         <div class="row head" style="margin-top:4rem">Very truly yours,</div>
-        <div class="row head" style="margin-top:2rem">
-            <div class="head" style="font-weight:bold;right:10;" id="signatory">
-
-            </div>
+        <div class=" head" style="margin-top:2rem">
+            <div class="head" style="font-weight:bold;right:10;" id="signatory"></div>
             <div class="head" id="asig_pos">Regional Director</div>
         </div>
 
@@ -135,7 +156,6 @@ $this->params['breadcrumbs'][] = $this->title;
 $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", []);
 ?>
 <style>
-    table,
     td,
     th {
         background-color: white;
@@ -167,19 +187,16 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", []);
     }
 
     @media print {
-        td {
-            font-size: 10px;
-        }
 
-        .select_row {
-            display: none;
-        }
 
-        .as {
-            display: none;
-        }
+        .select_row,
+        .as,
+        .assignatory,
+        .links,
 
-        .assignatory {
+        .btn,
+        .actions,
+        .main-footer {
             display: none;
         }
 
@@ -201,28 +218,16 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", []);
         }
 
 
-        .actions {
-            display: none;
-        }
 
         .select2-container--default .select2-selection--single,
         .select2-selection .select2-selection--single {
             /* border: 1px solid #d2d6de; */
             /* border-radius: 0; */
             padding: 0;
-
         }
 
         .select2-container {
             height: 20px;
-        }
-
-        .links {
-            display: none;
-        }
-
-        .btn {
-            display: none;
         }
 
         .krajee-datepicker {
@@ -257,12 +262,11 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", []);
             border: none;
         }
 
-        table,
         th,
         td {
             border: 1px solid black;
             padding: 5px;
-            font-size: 10px;
+
         }
 
         @page {
@@ -273,44 +277,8 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", []);
 
 
 
-        .container {
-            margin: 0;
-            top: 0;
-        }
-
-        .entity_name {
-            font-size: 5pt;
-        }
 
 
-
-        .container {
-
-            border: none;
-        }
-
-
-        table {
-            page-break-after: auto
-        }
-
-        tr {
-            page-break-inside: avoid;
-            page-break-after: auto
-        }
-
-        td {
-            page-break-inside: avoid;
-            page-break-after: auto
-        }
-
-        /* thead {
-                display: table-header-group
-            } */
-
-        .main-footer {
-            display: none;
-        }
     }
 </style>
 <script>
