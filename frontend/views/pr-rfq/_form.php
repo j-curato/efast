@@ -4,6 +4,7 @@ use app\models\Office;
 use aryelds\sweetalert\SweetAlert;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
+use kartik\datetime\DateTimePicker;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -100,9 +101,9 @@ if (!empty($model->pr_purchase_request_id)) {
                     ]) ?>
                 </div>
                 <div class="col-sm-2">
-                    <?= $form->field($model, 'deadline')->widget(DatePicker::class, [
+                    <?= $form->field($model, 'deadline')->widget(DateTimePicker::class, [
                         'pluginOptions' => [
-                            'format' => 'yyyy-mm-dd',
+                            'format' => 'yyyy-mm-dd HH:ii P',
                             'autoclose' => true
                         ],
                         'options' => [
