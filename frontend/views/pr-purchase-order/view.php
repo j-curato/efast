@@ -389,7 +389,7 @@ if (!empty($model->date_completed)) {
                         foreach ($val as $val2) {
 
                             $total_amount = intval($val2['quantity']) * floatval($val2['unit_cost']);
-                            $unit_cost = number_format($val2['unit_cost'], 2);
+                            $unit_cost =  !empty($val2['unit_cost']) ? number_format($val2['unit_cost'], 2) : 0;
                             echo "<tr>
                                 <td>{$val2['bac_code']}</td>
                                 <td>{$val2['unit_of_measure']}</td>
