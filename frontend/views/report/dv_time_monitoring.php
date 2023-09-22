@@ -19,8 +19,9 @@ $this->title = "DV Time Monitoring";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index" style="background-color: white;padding:2rem;">
-    <div class="row">
-        <form id="filter">
+    <form id="filter">
+        <div class="row">
+
             <div class="col-sm-3">
                 <label for="from_reporting_period">From Reporting Period</label>
                 <?php
@@ -57,8 +58,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 <button class="btn btn-success" type="submit">Generate</button>
                 <button class="btn btn-warning" type="button" id="export">Export</button>
             </div>
-        </form>
-    </div>
+        </div>
+
+    </form>
     <table id="data_table">
         <thead>
             <tr>
@@ -177,6 +179,10 @@ $this->params['breadcrumbs'][] = $this->title;
         .select2-container--default .select2-selection--single {
             border: none !important;
             text-decoration: underline;
+        }
+
+        @page {
+            size: landscape;
         }
     }
 </style>
