@@ -290,7 +290,8 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['dep
     .container {
         background-color: white;
     }
-    .card{
+
+    .card {
         padding: 1rem;
     }
 
@@ -330,7 +331,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['dep
         th,
         td {
             padding: 2px;
-            font-size: small;
+            /* font-size: small; */
         }
     }
 </style>
