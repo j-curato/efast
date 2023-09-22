@@ -133,6 +133,43 @@ $this->params['breadcrumbs'][] = $this->title;
             </tbody> -->
             <thead>
                 <tr>
+                    <th colspan="<?= $header_count ?>" style='text-align:center;border:none;'>
+                        <span>
+                            Department of Trade and Industry - Caraga
+                        </span>
+                        <br>
+                        <span>
+                            Regional Office XIII
+                        </span>
+                        <br>
+                        <span>
+                            Butuan City
+                        </span>
+
+                    </th>
+                </tr>
+                <tr>
+                    <th colspan="<?= $header_count ?>" style='text-align:center;border:none;'>
+                        <span>
+                            ABSTRACT OF CANVASS AND ACTION OF AWARDS
+                        </span>
+                    </th>
+                </tr>
+                <tr>
+                    <th colspan="<?= $header_count ?>" style='padding:0;border:none;'>
+                        <?php
+                        $date = DateTime::createFromFormat('Y-m-d', $model->rfq->deadline);
+                        echo $date->format('F d, Y');
+
+                        ?>
+                        <span style="float: right;">
+                            <?php
+                            echo $model->aoq_number;
+                            ?>
+                        </span>
+                    </th>
+                </tr>
+                <tr>
                     <th rowspan="2" class="center">Item No.</th>
                     <th rowspan="2" class="center">Qty</th>
                     <th rowspan="2" class="center">Unit</th>
@@ -640,7 +677,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
         //     </br>
         //     <span style='vertical-align:text-bottom;font-style:italic;'>
         //     </span>
-      
+
         //     </td>
 
         //   `;
