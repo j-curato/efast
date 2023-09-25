@@ -103,7 +103,7 @@ if (!empty($model->pr_purchase_request_id)) {
                 <div class="col-sm-2">
                     <?= $form->field($model, 'deadline')->widget(DateTimePicker::class, [
                         'pluginOptions' => [
-                            'format' => 'yyyy-mm-dd HH:ii P',
+                            'format' => 'yyyy-mm-dd hh:ii',
                             'autoclose' => true
                         ],
                         'options' => [
