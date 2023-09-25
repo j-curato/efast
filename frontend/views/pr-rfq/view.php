@@ -140,7 +140,8 @@ SweetAlertAsset::register($this);
                             &emsp;&emsp; Please quote your lowest price on the item/s listed below, subject to the General Conditions
                         </span>
                         <br>
-                        stated herein. Submit your quotation duly signed by you or your representative not later than <?= $timeDeadline == '12:00 am' ? $timeDeadline : '3:00 PM'; ?> on
+                        stated herein. Submit your quotation duly signed by you or your representative not later than
+                        <?= $timeDeadline ?> on
                         <br>
                         <span style="text-align: left;">
                             <?= $deadline->format('F d, Y') ?> in a sealed envelope. Late submission will not be accepted.
