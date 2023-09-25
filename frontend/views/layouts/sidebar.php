@@ -241,6 +241,7 @@ use hail812\adminlte\widgets\Menu;
                 Yii::$app->user->can('super-user') ?     ['label' => 'Alphalist', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/alphalist/index'],] : null,
             ];
             $provinceReports = [
+                Yii::$app->user->can('po_cibr') ?     ['label' => 'CIBR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/cibr'],] :  null,
                 Yii::$app->user->can('po_cdr') ?     ['label' => 'CDR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/cdr/index'],] : null,
                 Yii::$app->user->can('super-user') ?     ['label' => 'FUR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fur/index'],] : null,
                 Yii::$app->user->can('province') ?     ['label' => 'ROD', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rod/index'],] : null,
