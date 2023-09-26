@@ -244,10 +244,6 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 
     @media print {
-        td {
-            font-size: 10px;
-        }
-
         .as {
             display: none;
         }
@@ -331,13 +327,6 @@ $this->params['breadcrumbs'][] = $this->title;
             border: none;
         }
 
-        table,
-        th,
-        td {
-            border: 1px solid black;
-            padding: 5px;
-            font-size: 13px;
-        }
 
         @page {
             size: auto;
@@ -363,24 +352,6 @@ $this->params['breadcrumbs'][] = $this->title;
             border: none;
         }
 
-
-        table {
-            page-break-after: auto
-        }
-
-        tr {
-            page-break-inside: avoid;
-            page-break-after: auto
-        }
-
-        td {
-            page-break-inside: avoid;
-            page-break-after: auto
-        }
-
-        /* thead {
-                display: table-header-group
-            } */
 
         .main-footer {
             display: none;
