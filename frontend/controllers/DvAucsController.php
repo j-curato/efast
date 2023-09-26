@@ -70,8 +70,9 @@ class DvAucsController extends Controller
                     'in',
                     'out',
                     'turnarround-view',
-                    'get-object-code'
-
+                    'get-object-code',
+                    'create-routing',
+                    'update-routing',
                 ],
                 'rules' => [
                     [
@@ -105,8 +106,28 @@ class DvAucsController extends Controller
                     ],
                     [
                         'actions' => [
-                            'index',
+                            'tracking-index',
+                            'create-routing',
+                            'tracking-view',
+                            'update-routing',
 
+                        ],
+                        'allow' => true,
+                        'roles' => ['ro_routing_slip']
+                    ],
+                    [
+                        'actions' => [
+                            'index',
+                            'update',
+                            'view',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['ro_process_dv']
+                    ],
+                    [
+                        'actions' => [
+                            'index',
                         ],
                         'allow' => true,
                         'roles' => ['@']
@@ -987,17 +1008,16 @@ class DvAucsController extends Controller
             }
             $fund_source_type_id = Yii::$app->db->createCommand("SELECT fund_source_type.id FROM fund_source_type WHERE fund_source_type.name  = :_type")
                 ->bindValue(':_type', $report_type[$i])
-                ->queryOne();
+                ->queryScalar();
             $report_type_id = Yii::$app->db->createCommand("SELECT advances_report_types.id FROM advances_report_types WHERE advances_report_types.name  = :_type")
                 ->bindValue(':_type', $report_type[$i])
-                ->queryOne();
+                ->queryScalar();
             $ad_entry->fund_source_type = $fund_source_type[$i];
             $ad_entry->object_code = $object_codes[$i];
             $ad_entry->fund_source = trim($val, " \r\n\t");
             $ad_entry->reporting_period = $reporting_periods[$i];
             $ad_entry->amount = $amounts[$i];
             $ad_entry->report_type = $report_type[$i];
-
             $ad_entry->book_id = intval($book_id);
             $ad_entry->fk_fund_source_type_id = $fund_source_type_id;
             $ad_entry->fk_advances_report_type_id = $report_type_id;
