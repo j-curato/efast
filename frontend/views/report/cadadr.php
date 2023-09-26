@@ -512,6 +512,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
     function displayData(data) {
         console.log(data.begin_balance)
         $("#cadadr tbody").html('');
+        $("#cancelled_checks_table tbody").html('');
 
         $('#cadadr tbody').append(`<tr class='data_row'>
                 <td colspan='' ></td>
