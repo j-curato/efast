@@ -66,7 +66,7 @@ if (!empty($model->authorized_by)) {
                     </td>
                 </tr>
                 <tr>
-                    <td class=" first_col  no-border">Driver</td>
+                    <td class=" first_col  no-border" style="min-width: 70px;">Driver</td>
                     <td colspan="2" class="   underlined no-border"><?= $driver ?></td>
                     <td class="  no-border" colspan="3">Series No: <span class="underlined" style="margin-left: 1rem;"><?= $model->serial_no ?></span></td>
                 </tr>
