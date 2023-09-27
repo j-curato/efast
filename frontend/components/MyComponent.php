@@ -575,12 +575,12 @@ class MyComponent extends Component
             :txnPrItmId,
             :orsItmId,
             :orsTxnItmId)")
-                ->bindValue(':allotment_id', $allotment_id)
-                ->bindValue(':prAllotmentId', $prAllotmentId)
-                ->bindValue(':txnAllotmentId', $txnAllotmentId)
-                ->bindValue(':txnPrItmId', $txnPrItmId)
-                ->bindValue(':orsItmId', $orsItmId)
-                ->bindValue(':orsTxnItmId', $orsTxnItmId)
+                ->bindValue(':allotment_id', !empty($allotment_id)?$allotment_id:null)
+                ->bindValue(':prAllotmentId', !empty($prAllotmentId)?$prAllotmentId:null)
+                ->bindValue(':txnAllotmentId', !empty($txnAllotmentId)?$txnAllotmentId:null)
+                ->bindValue(':txnPrItmId', !empty($txnPrItmId)?$txnPrItmId:null)
+                ->bindValue(':orsItmId', !empty($orsItmId)?$orsItmId:null)
+                ->bindValue(':orsTxnItmId', !empty($orsTxnItmId)?$orsTxnItmId:null)
                 ->queryScalar();
             $cur_balance = floatval($balance) - floatval($amount);
 

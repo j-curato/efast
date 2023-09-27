@@ -15,12 +15,12 @@ class m230901_003936_update_GetAllotmentBalance_procedure extends Migration
         YIi::$app->db->createCommand(` DROP PROCEDURE IF EXISTS GetAllotmentBalance;
         DELIMITER //
         CREATE PROCEDURE GetAllotmentBalance(
-        IN allotmentEntryId INT,
-        IN prAllotmentId BIGINT,
-        IN txnAllotmentId INT,
-        IN txnPrItmId INT,
-        IN orsItmId INT,
-        IN orsTxnItmId INT
+        IN allotmentEntryId VARCHAR(1024),
+        IN prAllotmentId VARCHAR(1024),
+        IN txnAllotmentId VARCHAR(1024),
+        IN txnPrItmId VARCHAR(1024),
+        IN orsItmId VARCHAR(1024),
+        IN orsTxnItmId VARCHAR(1024)
          )
         BEGIN 
         DECLARE prAllotmentQry VARCHAR(1024) DEFAULT NULL;
@@ -28,26 +28,26 @@ class m230901_003936_update_GetAllotmentBalance_procedure extends Migration
         DECLARE txnPrItmQry VARCHAR(1024)DEFAULT NULL;
         DECLARE orsItmQry VARCHAR(1024)DEFAULT NULL;
         DECLARE orsTxnItmQry VARCHAR(1024) DEFAULT NULL;
-         SET  @prAllotmentQry =  '';
-         SET  @txnAllotmentQry =  '';
-         SET  @txnPrItmQry =  '';
-         SET  @orsItmQry =  '';
-         SET  @orsTxnItmQry =  '';
+         SET  prAllotmentQry =  '';
+         SET  txnAllotmentQry =  '';
+         SET  txnPrItmQry =  '';
+         SET  orsItmQry =  '';
+         SET  orsTxnItmQry =  '';
          IF prAllotmentId IS NOT NULL THEN
-             SET  @prAllotmentQry =  CONCAT(' AND pr_purchase_request_allotments.id != ',prAllotmentId);
+             SET  prAllotmentQry =  CONCAT(' AND pr_purchase_request_allotments.id != ',prAllotmentId);
          END IF;
         
          IF txnAllotmentId IS NOT NULL THEN
-             SET  @txnAllotmentQry =  CONCAT(' AND transaction_items.id != ',txnAllotmentId);
+             SET  txnAllotmentQry =  CONCAT(' AND transaction_items.id != ',txnAllotmentId);
          END IF;
          IF txnPrItmId IS NOT NULL THEN
-             SET  @txnPrItmQry =  CONCAT(' AND transaction_pr_items.id != ',txnPrItmId);
+             SET  txnPrItmQry =  CONCAT(' AND transaction_pr_items.id != ',txnPrItmId);
          END IF;
          IF orsItmId IS NOT NULL THEN
-             SET  @orsItmQry =  CONCAT(' AND process_ors_entries.id != ',orsItmId);
+             SET  orsItmQry =  CONCAT(' AND process_ors_entries.id != ',orsItmId);
          END IF;
          IF orsTxnItmId IS NOT NULL THEN
-             SET  @orsTxnItmQry =  CONCAT(' AND process_ors_txn_items.id != ',orsTxnItmId);
+             SET  orsTxnItmQry =  CONCAT(' AND process_ors_txn_items.id != ',orsTxnItmId);
          END IF;
         
         
@@ -61,7 +61,7 @@ class m230901_003936_update_GetAllotmentBalance_procedure extends Migration
           FROM  pr_purchase_request_allotments 
           JOIN pr_purchase_request ON pr_purchase_request_allotments.fk_purchase_request_id = pr_purchase_request.id
           WHERE pr_purchase_request_allotments.is_deleted = 0  AND pr_purchase_request.is_cancelled = 0',
-            @prAllotmentQry,
+            prAllotmentQry,
             "  UNION ALL 
              SELECT 
            transaction_items.fk_record_allotment_entries_id as allotment_entry_id,
@@ -71,7 +71,7 @@ class m230901_003936_update_GetAllotmentBalance_procedure extends Migration
            FROM 
            transaction_items 
            WHERE transaction_items.is_deleted = 0",
-            @txnAllotmentQry,
+            txnAllotmentQry,
         " UNION ALL 
          SELECT 
          pr_purchase_request_allotments.fk_record_allotment_entries_id as allotment_entry_id,
@@ -81,7 +81,7 @@ class m230901_003936_update_GetAllotmentBalance_procedure extends Migration
          FROM transaction_pr_items
          INNER JOIN pr_purchase_request_allotments ON transaction_pr_items.fk_pr_allotment_id = pr_purchase_request_allotments.id
         WHERE transaction_pr_items.is_deleted = 0",
-        @txnPrItmQry,
+        txnPrItmQry,
         " UNION ALL 
         SELECT 
         process_ors_entries.record_allotment_entries_id as allotment_entry_id,
@@ -91,7 +91,7 @@ class m230901_003936_update_GetAllotmentBalance_procedure extends Migration
         FROM process_ors_entries
 				JOIN process_ors ON process_ors_entries.process_ors_id = process_ors.id
 				WHERE process_ors.is_cancelled = 0",
-        @orsItmQry,
+        orsItmQry,
         " UNION ALL 
          SELECT 
          transaction_items.fk_record_allotment_entries_id as allotment_entry_id,
@@ -103,7 +103,7 @@ class m230901_003936_update_GetAllotmentBalance_procedure extends Migration
          LEFT JOIN transaction_items ON process_ors_txn_items.fk_transaction_item_id = transaction_items.id
 						JOIN process_ors ON process_ors_txn_items.fk_process_ors_id = process_ors.id
          WHERE process_ors_txn_items.is_deleted = 0 AND process_ors.is_cancelled = 0",
-        @orsTxnItmQry,
+        orsTxnItmQry,
         "),
         consoUsedAllotments as (
         SELECT 
