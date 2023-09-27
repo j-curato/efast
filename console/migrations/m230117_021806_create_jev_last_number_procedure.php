@@ -17,11 +17,11 @@ class m230117_021806_create_jev_last_number_procedure extends Migration
             DELIMITER //
             CREATE PROCEDURE jev_last_number (IN  reporting_period VARCHAR(10),IN book_id INT,IN ref_number VARCHAR(10) )
             BEGIN
-            SET @row := 0;
+            SET @r := 0;
             WITH seq AS 
             (
-            SELECT @row := @row + 1 as row
-            FROM jev_preparation t, (SELECT @row := 0) r
+            SELECT @r := @r + 1 as r
+            FROM jev_preparation t, (SELECT @r := 0) r
             WHERE
             t.reporting_period LIKE reporting_period AND t.book_id = book_id AND t.ref_number = ref_number
             ),

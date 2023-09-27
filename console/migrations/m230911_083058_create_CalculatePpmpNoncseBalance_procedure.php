@@ -15,7 +15,7 @@ class m230911_083058_create_CalculatePpmpNoncseBalance_procedure extends Migrati
         $sql = <<< SQL
                   DROP PROCEDURE IF EXISTS CalculatePpmpNonCseBalance;
                   CREATE PROCEDURE CalculatePpmpNonCseBalance(
-                    IN prItemId BIGINT,
+                            IN prItemId VARCHAR(255),
                             IN ppmpId BIGINT,
                             IN amount DECIMAL(10,2),
                             IN qty INT
@@ -24,7 +24,7 @@ class m230911_083058_create_CalculatePpmpNoncseBalance_procedure extends Migrati
                         DECLARE prItemQry VARCHAR(1024) DEFAULT NULL;
                         SET  prItemQry =  '';
                         IF prItemId IS NOT NULL THEN
-                            SET  @prItemQry =  CONCAT(' AND pr_purchase_request_item.id != ',prItemId);
+                            SET  prItemQry =  CONCAT(' AND pr_purchase_request_item.id != ',prItemId);
                         END IF;
                         SET @finalQuery = CONCAT("WITH cteGetPpmp AS (
                            SELECT
@@ -53,7 +53,7 @@ class m230911_083058_create_CalculatePpmpNoncseBalance_procedure extends Migrati
                                 JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id
                                 WHERE pr_purchase_request_item.is_deleted = 0
                                 AND pr_purchase_request.is_cancelled = 0
-                                ",@prItemQry,"
+                                ",prItemQry,"
                                 GROUP BY pr_purchase_request_item.fk_ppmp_cse_item_id
                             ) AS ttlInPr ON supplemental_ppmp_cse.id = ttlInPr.fk_ppmp_cse_item_id
                             WHERE

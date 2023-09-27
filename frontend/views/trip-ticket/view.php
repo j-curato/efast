@@ -168,7 +168,7 @@ if (!empty($model->authorized_by)) {
 
                         <br>
                     </td>
-                    <td class=" no-border">
+                    <td class=" no-border" colspan="2">
                         <br>
                         <span>_____________________ Liters</span> <br>
                         <span>_____________________ Liters</span> <br>
@@ -259,10 +259,5 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['dep
             display: none;
         }
 
-        th,
-        td {
-            padding: 8px;
-            border: 1px solid black;
-        }
     }
 </style>
