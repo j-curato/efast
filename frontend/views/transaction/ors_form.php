@@ -603,7 +603,7 @@ $this->params['breadcrumbs'][] = $title;
                 <!-- LETTER E -->
                 <tr>
                     <td colspan="6" class="head">
-                        E. Reciept Payment
+                        E. Receipt Payment
                     </td>
                     <td rowspan="2" style="width: 100px;vertical-align:top">JEV No.</td>
                 </tr>
