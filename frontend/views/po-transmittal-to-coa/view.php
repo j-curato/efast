@@ -29,18 +29,20 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row" style="float:right">
             <?= Html::img(Yii::$app->request->baseUrl . '/frontend/web/dti3.png', ['alt' => 'some', 'class' => 'pull-left img-responsive', 'style' => 'width: 100px;height:100px;margin-left:auto']); ?>
         </div>
-        <div class="row" style="margin-top: 130px;">
-            <div class="row head" style=" margin-bottom:2rem"><?php echo date('F d, Y', strtotime($model->date)) ?></div>
-            <div class="row head" style="font-weight: bold;">ADA JUNE M. HORMILLADA</div>
-            <div class="row head">State Auditor III</div>
-            <div class="row head">OIC - Audit Team Leader</div>
-            <div class="row head">COA - DTI Caraga</div>
-            <div class="row head" style="padding-top: 2rem;padding-bottom: 2rem;">Dear Ma’am Hormillada:</div>
+        <div class="addresseeInfo" style="margin-top: 130px;">
+            <div class="addresseeInfo head" style=" margin-bottom:2rem"><?php echo date('F d, Y', strtotime($model->date)) ?></div><br>
+            <div class="addresseeInfo head" style="font-weight: bold;">ADA JUNE M. HORMILLADA</div>
+            <div class="addresseeInfo head">State Auditor III</div>
+            <div class="addresseeInfo head">OIC - Audit Team Leader</div>
+            <div class="addresseeInfo head">COA - DTI Caraga</div>
+            <div class="addresseeInfo head" style="padding-top: 2rem;padding-bottom: 2rem;">Dear Ma’am Hormillada:</div>
             <p style="font-size: 12pt;">
 
                 We are hereby submitting the following DVs, with assigned Transmittal # <?php echo $model->transmittal_number; ?> of DTI Regional Office:
             </p>
         </div>
+
+
 
 
 
@@ -82,17 +84,17 @@ $this->params['breadcrumbs'][] = $this->title;
         </table>
         <div class="row head" style="margin-top:1rem">Thank you.</div>
         <div class="row head" style="margin-top:4rem">Very truly yours,</div>
-        <div class="row head" style="margin-top:2rem">
+        <div class=" head" style="margin-top:2rem">
             <div class="head" style="font-weight:bold;right:10;" id="asig_1">
 
             </div>
             <div class="head" id="oic">Regional Director</div>
         </div>
-        <div class="row" style="margin-top:2rem">
+        <div class="" style="margin-top:2rem">
             <div class="head" id="for_rd"></div>
 
         </div>
-        <div class="row" style="margin-top: 2rem;">
+        <div class="" style="margin-top: 2rem;">
             <div class="head" id='ass' style="font-weight: bold;"></div>
             <div class="head" id="oic_position_text"></div>
         </div>
@@ -227,10 +229,12 @@ $this->params['breadcrumbs'][] = $this->title;
         width: 80%;
     }
 
-    .row {
+    .addresseeInfo {
         margin-left: 0;
         margin-right: 0;
     }
+
+
 
     .main-footer {
         display: none;
@@ -241,20 +245,19 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 
     @media print {
-        td {
-            font-size: 10px;
-        }
 
-        .as {
-            display: none;
-        }
+        .as,
+        .assignatory,
 
-        .assignatory {
+        .actions,
+        .links,
+        .btn,
+        .main-footer {
             display: none;
         }
 
         .container {
-            width: 100%;
+            width: 80%;
         }
 
         header.onlyprint {
@@ -270,11 +273,6 @@ $this->params['breadcrumbs'][] = $this->title;
             /* Because it's footer */
         }
 
-
-        .actions {
-            display: none;
-        }
-
         .select2-container--default .select2-selection--single,
         .select2-selection .select2-selection--single {
             /* border: 1px solid #d2d6de; */
@@ -287,13 +285,7 @@ $this->params['breadcrumbs'][] = $this->title;
             height: 20px;
         }
 
-        .links {
-            display: none;
-        }
 
-        .btn {
-            display: none;
-        }
 
         .krajee-datepicker {
             border: 1px solid white;
@@ -327,60 +319,7 @@ $this->params['breadcrumbs'][] = $this->title;
             border: none;
         }
 
-        table,
-        th,
-        td {
-            border: 1px solid black;
-            padding: 5px;
-            font-size: 10px;
-        }
 
-        @page {
-            size: auto;
-            margin: 0;
-            margin-top: 0.5cm;
-        }
-
-
-
-        .container {
-            margin: 0;
-            top: 0;
-        }
-
-        .entity_name {
-            font-size: 5pt;
-        }
-
-
-
-        .container {
-
-            border: none;
-        }
-
-
-        table {
-            page-break-after: auto
-        }
-
-        tr {
-            page-break-inside: avoid;
-            page-break-after: auto
-        }
-
-        td {
-            page-break-inside: avoid;
-            page-break-after: auto
-        }
-
-        /* thead {
-                display: table-header-group
-            } */
-
-        .main-footer {
-            display: none;
-        }
     }
 </style>
 
