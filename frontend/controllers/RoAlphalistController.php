@@ -42,6 +42,17 @@ class RoAlphalistController extends Controller
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                            'delete',
+                            'view',
+                            'create',
+                            'index',
+                        ],
+                        'allow' => true,
+                        'roles' => ['ro_alphalist']
                     ]
                 ]
             ],
@@ -191,63 +202,135 @@ class RoAlphalistController extends Controller
     public function generate($reporting_period, $sql = '', $id = '', $params = '')
     {
 
-        $detailed_query = Yii::$app->db->createCommand("SELECT 
-        dv_aucs.dv_number,
-        cash_disbursement.check_or_ada_no as check_number,
-        cash_disbursement.issuance_date  as check_date,
-        IFNULL(dv.amount_disbursed,0) as amount_disbursed,
-        IFNULL(dv.vat_nonvat,0) as vat_nonvat,
-        IFNULL(dv.ewt_goods_services,0) as ewt_goods_services,
-        IFNULL(dv.compensation,0) as compensation,
-        IFNULL(dv.other_trust_liabilities,0) as other_trust_liabilities,
-        books.name as book_name
-        FROM (
-        SELECT 
-        dv_aucs.id,
-        SUM(dv_aucs_entries.amount_disbursed) as amount_disbursed,
-        SUM(dv_aucs_entries.vat_nonvat) as vat_nonvat,
-        SUM(dv_aucs_entries.ewt_goods_services) as ewt_goods_services,
-        SUM(dv_aucs_entries.compensation) as compensation,
-        SUM(dv_aucs_entries.other_trust_liabilities) as other_trust_liabilities
-        FROM dv_aucs
-        LEFT JOIN dv_aucs_entries ON dv_aucs.id = dv_aucs_entries.dv_aucs_id
-        INNER JOIN cash_disbursement ON dv_aucs.id  = cash_disbursement.dv_aucs_id
+        // echo   $detailed_query = Yii::$app->db->createCommand("SELECT 
+        // dv_aucs.dv_number,
+        // cash_disbursement.check_or_ada_no as check_number,
+        // cash_disbursement.issuance_date  as check_date,
+        // IFNULL(dv.amount_disbursed,0) as amount_disbursed,
+        // IFNULL(dv.vat_nonvat,0) as vat_nonvat,
+        // IFNULL(dv.ewt_goods_services,0) as ewt_goods_services,
+        // IFNULL(dv.compensation,0) as compensation,
+        // IFNULL(dv.other_trust_liabilities,0) as other_trust_liabilities,
+        // books.name as book_name
+        // FROM (
+        // SELECT 
+        // dv_aucs.id,
+        // SUM(dv_aucs_entries.amount_disbursed) as amount_disbursed,
+        // SUM(dv_aucs_entries.vat_nonvat) as vat_nonvat,
+        // SUM(dv_aucs_entries.ewt_goods_services) as ewt_goods_services,
+        // SUM(dv_aucs_entries.compensation) as compensation,
+        // SUM(dv_aucs_entries.other_trust_liabilities) as other_trust_liabilities
+        // FROM dv_aucs
+        // LEFT JOIN dv_aucs_entries ON dv_aucs.id = dv_aucs_entries.dv_aucs_id
+        // INNER JOIN cash_disbursement ON dv_aucs.id  = cash_disbursement.dv_aucs_id
 
-        WHERE 
-        dv_aucs_entries.is_deleted = 0
-        AND 
-        $sql
-        GROUP BY 
-        dv_aucs.id) as dv
-        INNER JOIN dv_aucs ON dv.id  = dv_aucs.id
-        LEFT JOIN books ON dv_aucs.book_id  = books.id
-        INNER JOIN cash_disbursement ON dv_aucs.id  = cash_disbursement.dv_aucs_id
-        WHERE cash_disbursement.is_cancelled !=1
-        
-        ", $params)
+        // WHERE 
+        // dv_aucs_entries.is_deleted = 0
+        // AND 
+        // $sql
+        // GROUP BY 
+        // dv_aucs.id) as dv
+        // INNER JOIN dv_aucs ON dv.id  = dv_aucs.id
+        // LEFT JOIN books ON dv_aucs.book_id  = books.id
+        // INNER JOIN cash_disbursement ON dv_aucs.id  = cash_disbursement.dv_aucs_id
+        // WHERE cash_disbursement.is_cancelled !=1
+
+        // ", $params)
+        //     ->getRawSql();
+        $detailed_query = Yii::$app->db->createCommand("WITH 
+            cte_goodCashDvs as (
+                SELECT 
+                    cash_disbursement_items.fk_dv_aucs_id,
+                    cash_disbursement.check_or_ada_no as check_number,
+                    cash_disbursement.issuance_date  as check_date
+                FROM cash_disbursement
+                JOIN cash_disbursement_items ON cash_disbursement.id = cash_disbursement_items.fk_cash_disbursement_id
+                WHERE 
+                    cash_disbursement.is_cancelled = 0
+                    AND cash_disbursement_items.is_deleted  = 0
+                    AND NOT EXISTS (SELECT * FROM cash_disbursement as c WHERE c.is_cancelled = 1 AND c.parent_disbursement = cash_disbursement.id) 
+                    )
+            SELECT 
+                dv_aucs.dv_number,
+                cte_goodCashDvs.check_number,
+                cte_goodCashDvs.check_date,
+                books.name as book_name,
+                COALESCE(dv.amount_disbursed,0) as amount_disbursed,
+                COALESCE(dv.vat_nonvat,0) as vat_nonvat,
+                COALESCE(dv.ewt_goods_services,0) as ewt_goods_services,
+                COALESCE(dv.compensation,0) as compensation,
+                COALESCE(dv.other_trust_liabilities,0) as other_trust_liabilities
+            FROM (
+            SELECT 
+                dv_aucs.id,
+                SUM(dv_aucs_entries.amount_disbursed) as amount_disbursed,
+                SUM(dv_aucs_entries.vat_nonvat) as vat_nonvat,
+                SUM(dv_aucs_entries.ewt_goods_services) as ewt_goods_services,
+                SUM(dv_aucs_entries.compensation) as compensation,
+                SUM(dv_aucs_entries.other_trust_liabilities) as other_trust_liabilities
+            FROM dv_aucs
+            LEFT JOIN dv_aucs_entries ON dv_aucs.id = dv_aucs_entries.dv_aucs_id
+            JOIN cash_disbursement_items ON dv_aucs.id = cash_disbursement_items.fk_dv_aucs_id
+            JOIN cash_disbursement ON cash_disbursement_items.fk_cash_disbursement_id  = cash_disbursement.id
+            WHERE 
+                dv_aucs_entries.is_deleted = 0
+                AND cash_disbursement_items.is_deleted = 0
+                AND cash_disbursement.is_cancelled = 0
+                AND
+                $sql
+              
+            GROUP BY dv_aucs.id) as dv
+            JOIN  dv_aucs ON dv.id  = dv_aucs.id
+            LEFT JOIN books ON dv_aucs.book_id  = books.id
+            LEFT JOIN cte_goodCashDvs ON dv_aucs.id = cte_goodCashDvs.fk_dv_aucs_id", $params)
             ->queryAll();
 
+        // $conso_query = Yii::$app->db->createCommand("SELECT conso.*,books.name as book_name 
+        //         FROM (SELECT 
+        //             dv_aucs.reporting_period,
+        //             dv_aucs.book_id,
+        //             COALESCE(SUM(dv_aucs_entries.vat_nonvat),0) as total_vat_nonvat,
+        //             COALESCE(SUM(dv_aucs_entries.vat_nonvat),0) + COALESCE(SUM(dv_aucs_entries.ewt_goods_services),0) as total_tax,
+        //             COALESCE(SUM(dv_aucs_entries.ewt_goods_services),0) as total_ewt_goods_services,
+        //             COALESCE(SUM(dv_aucs_entries.compensation),0) as total_compensation
+        //         FROM dv_aucs
+        //         LEFT JOIN dv_aucs_entries ON dv_aucs.id = dv_aucs_entries.dv_aucs_id
+        //         JOIN cash_disbursement_items ON dv_aucs.id = cash_disbursement_items.fk_dv_aucs_id
+        //         JOIN cash_disbursement ON cash_disbursement_items.fk_cash_disbursement_id  = cash_disbursement.id
+        //         WHERE 
+        //             dv_aucs_entries.is_deleted = 0
+        //             AND cash_disbursement_items.is_deleted = 0
+        //             AND cash_disbursement.is_cancelled = 0
+        //             AND
+        //             $sql
+        //             GROUP BY 
+        //             dv_aucs.reporting_period,
+        //             dv_aucs.book_id)as conso
+        //         LEFT JOIN books ON conso.book_id = books.id", $params)
+        //     ->queryAll();
         $conso_query = Yii::$app->db->createCommand("SELECT conso.*,books.name as book_name 
-                FROM (SELECT 
-                    dv_aucs.reporting_period,
-                    dv_aucs.book_id,
-                    IFNULL(SUM(dv_aucs_entries.vat_nonvat),0)+
-                    IFNULL(SUM(dv_aucs_entries.ewt_goods_services),0) as total_tax,
-                    IFNULL(SUM(dv_aucs_entries.vat_nonvat),0) as total_vat_nonvat,
-                    IFNULL(SUM(dv_aucs_entries.ewt_goods_services),0) as total_ewt_goods_services,
-                    IFNULL(SUM(dv_aucs_entries.compensation),0) as total_compensation
-                    FROM dv_aucs
-                    INNER JOIN cash_disbursement ON dv_aucs.id  = cash_disbursement.dv_aucs_id
-                    LEFT JOIN dv_aucs_entries ON dv_aucs.id = dv_aucs_entries.dv_aucs_id
-                    WHERE
-                    dv_aucs_entries.is_deleted = 0
-                    AND 
-                     $sql
-                    GROUP BY 
-                    dv_aucs.reporting_period,
-                    dv_aucs.book_id)as conso
-                LEFT JOIN books ON conso.book_id = books.id
-            ", $params)
+        FROM (SELECT 
+            dv_aucs.reporting_period,
+            dv_aucs.book_id,
+            IFNULL(SUM(dv_aucs_entries.vat_nonvat),0)+
+            IFNULL(SUM(dv_aucs_entries.ewt_goods_services),0) as total_tax,
+            IFNULL(SUM(dv_aucs_entries.vat_nonvat),0) as total_vat_nonvat,
+            IFNULL(SUM(dv_aucs_entries.ewt_goods_services),0) as total_ewt_goods_services,
+            IFNULL(SUM(dv_aucs_entries.compensation),0) as total_compensation
+            FROM dv_aucs
+            JOIN cash_disbursement_items ON dv_aucs.id = cash_disbursement_items.fk_dv_aucs_id
+            JOIN cash_disbursement ON cash_disbursement_items.fk_cash_disbursement_id  = cash_disbursement.id
+            LEFT JOIN dv_aucs_entries ON dv_aucs.id = dv_aucs_entries.dv_aucs_id
+            WHERE
+            dv_aucs_entries.is_deleted = 0
+             AND cash_disbursement_items.is_deleted = 0
+              AND cash_disbursement.is_cancelled = 0
+            AND 
+             $sql
+            GROUP BY 
+            dv_aucs.reporting_period,
+            dv_aucs.book_id)as conso
+        LEFT JOIN books ON conso.book_id = books.id", $params)
             ->queryAll();
         $reporting_periods  = array_unique(array_column($conso_query, 'reporting_period'));
         $conso_result = ArrayHelper::index($conso_query, 'reporting_period', 'book_name');
@@ -268,7 +351,7 @@ class RoAlphalistController extends Controller
                 'AND',
                 ["<=", 'cash_disbursement.reporting_period', $reporting_period],
                 ['>=', 'cash_disbursement.reporting_period', '2022-01'],
-                ['!=', 'dv_aucs.is_cancelled', 1],
+                ['=', 'dv_aucs.is_cancelled', 0],
                 'dv_aucs.fk_ro_alphalist_id IS  NULL'
             ], $params);
 
