@@ -2415,92 +2415,7 @@ class ReportController extends \yii\web\Controller
 
             $book_id = $_POST['book'];
             $from_reporting_period = date('Y-01', strtotime($to_reporting_period));
-            $db = Yii::$app->db;
-            // if ($_SERVER['REMOTE_ADDR'] !== '210.1.103.26') {
-
-            //     $db = Yii::$app->cloud_db;
-            // // }
-            // $query = $db->createCommand("SELECT
-            //     cash_disbursement.id,
-            //     cash_disbursement.check_or_ada_no as check_number,
-            //     cash_disbursement.issuance_date as check_date,
-            //     dv_aucs.particular,
-            //     CONCAT(accounting_codes.object_code,' - ',accounting_codes.account_title) as account_name,
-            //     IFNULL(totals.advances_amount,0) as advances_amount,
-            //     IFNULL(totals.total_liquidation,0) as total_liquidation,
-            //     IFNULL(totals.advances_amount,0)-
-            //     IFNULL(totals.total_liquidation,0) as unliquidated,
-            //     totals.province,
-            //     totals.advance_type
-            //     FROM
-            //     cash_disbursement 
-            //     LEFT JOIN dv_aucs ON cash_disbursement.dv_aucs_id  = dv_aucs.id
-            //     INNER JOIN 
-            //     (
-            //         SELECT
-            //         advances.province,
-            //         report_type.advance_type,
-            //         cash_disbursement.id,
-            //         accounting_codes.coa_object_code,
-            //         SUM(advances_entries.amount)  as advances_amount,
-            //         IFNULL(SUM(current.current_liquidation),0) as current_liquidation,
-            //         SUM(advances_entries.amount)   -  IFNULL(SUM(current.current_liquidation),0) as current_unliquidated,
-            //         IFNULL(SUM(prev.current_liquidation),0) as prev_liquidation,
-            //         SUM(advances_entries.amount)   -  IFNULL(SUM(prev.current_liquidation),0) as prev_unliquidated,
-            //         IFNULL(SUM(current.current_liquidation),0) +  IFNULL(SUM(prev.current_liquidation),0) as total_liquidation
-            //         FROM 
-            //         advances_entries
-            //         LEFT JOIN report_type ON advances_entries.report_type = report_type.name
-            //         LEFT JOIN accounting_codes ON advances_entries.object_code = accounting_codes.object_code
-            //         LEFT JOIN cash_disbursement ON advances_entries.cash_disbursement_id = cash_disbursement.id
-            //         LEFT JOIN dv_aucs ON cash_disbursement.dv_aucs_id = dv_aucs.id
-            //         LEFT JOIN advances ON advances_entries.advances_id = advances.id
-            //         LEFT JOIN 
-            //     (
-
-            //             SELECT 
-            //             liquidation_balance_per_advances.advances_entries_id,
-            //             SUM(liquidation_balance_per_advances.total_withdrawals) as current_liquidation
-            //             FROM 
-            //             liquidation_balance_per_advances 
-            //             WHERE 
-            //             liquidation_balance_per_advances.reporting_period >= :from_reporting_period
-            //             AND liquidation_balance_per_advances.reporting_period <= :to_reporting_period
-
-            //             GROUP BY liquidation_balance_per_advances.advances_entries_id
-            //         ) as current ON advances_entries.id = current.advances_entries_id
-            //         LEFT JOIN 
-            //         (
-
-            //             SELECT 
-            //             liquidation_balance_per_advances.advances_entries_id,
-            //             SUM(liquidation_balance_per_advances.total_withdrawals) as current_liquidation
-            //             FROM 
-            //             liquidation_balance_per_advances 
-            //             WHERE 
-            //             liquidation_balance_per_advances.reporting_period < :from_reporting_period
-
-            //             GROUP BY liquidation_balance_per_advances.advances_entries_id
-            //         ) as prev ON advances_entries.id = prev.advances_entries_id
-            //     WHERE 
-
-            //     dv_aucs.reporting_period <= :to_reporting_period
-            //     AND  report_type.advance_type  NOT LIKE 'Others'
-            //     AND advances_entries.is_deleted NOT IN (1,9)
-            //     AND advances_entries.book_id = :book_id
-            //     GROUP BY 
-            //     advances.province,
-            //     report_type.advance_type,
-            //     cash_disbursement.id,
-            //     accounting_codes.coa_object_code) as totals ON cash_disbursement.id = totals.id
-            //     LEFT JOIN accounting_codes ON totals.coa_object_code = accounting_codes.object_code
-            //     WHERE totals.prev_unliquidated >0
-            //     ORDER BY totals.province,cash_disbursement.issuance_date
-            // ")
-            //     ->bindValue(':from_reporting_period', $from_reporting_period)
-            //     ->bindValue(':to_reporting_period', $to_reporting_period)
-            //     ->bindValue(':book_id', $book_id)
-            //     ->queryAll();
+           
             $query = YIi::$app->db->createCommand("WITH 
             -- advances_entries current year liqidation
             cte_adv_cur_liq as (  SELECT 
@@ -2519,7 +2434,7 @@ class ReportController extends \yii\web\Controller
             FROM 
             liquidation_balance_per_advances 
             WHERE 
-            liquidation_balance_per_advances.reporting_period <= :from_reporting_period
+            liquidation_balance_per_advances.reporting_period < :from_reporting_period
             GROUP BY liquidation_balance_per_advances.advances_entries_id),
             cte_adv as (
             
@@ -5953,18 +5868,29 @@ class ReportController extends \yii\web\Controller
             return $e->getMessage();
         }
     }
-    // function actionBudgetStatusOfFundsPerMfo()
-    // {
-    //     if (Yii::$app->request->post()) {
-    //         $year  = Yii::$app->request->post('year');
-    //         $qry = RecordAllotmentDetailed::getStatusOfFundsPerMfo($year);
-    //         $result = ArrayHelper::index($qry, 'mfo_name', function ($element) {
-    //             return $element['allotment_class'];
-    //         });
-    //         return json_encode($result);
-    //     }
-    //     return $this->render('budget_status_of_funds_per_mfo');
-    // }
+    public function actionQ()
+    {
+        // Yii::$app->authManager->revoke('ro_common_users', 101);
+        // var_dump(Yii::$app->authManager->getPermissionsByUser(101));
+
+        // Yii::$app->authManager->revoke('ro_common_users', 101);
+        // Yii::$app->authManager->save();
+        // $authManager = Yii::$app->authManager; // Get the RBAC manager component
+        $auth = Yii::$app->authManager;
+        $permissions = $auth->checkAccess(101, 'department-offices');
+        $permission = $auth->getPermission('department-offices');
+        // $auth->revoke($permission, 101);
+        $auth->assign($permission, 101);
+        // $authManager->assign($permission, $userId);
+        var_dump($permission->name);
+        // foreach ($permissions as $permission) {
+        //     echo "Permission: {$permission->roleName}<br>";
+        // }
+
+        // $createPost = $auth->createPermission('createPost');
+        // $createPost->description = 'Create a post';
+        // $auth->add($createPost);
+    }
 }
 
 // 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
