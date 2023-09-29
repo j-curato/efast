@@ -192,7 +192,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <td>{{idx +1}}</td>
                 <td>{{item.quantity}}</td>
                 <td>{{item.unit_of_measure}}</td>
-                <th>{{item.description}}</th>
+                <td> <b>{{item.description}} </b><br> {{item.specification}}</td>
                 <template v-for="payee in payees">
                     <td class="center">
                         <p v-if="getPayeeAmtPerItem(item,payee)!=0">
@@ -770,9 +770,10 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                             }
 
                         })
-                        // console.log(lowests)
+
                         let r = {
                             description: this.items[item][payeeKeys[0]].description,
+                            specification: this.items[item][payeeKeys[0]].specification.replace(/<br\s*\/?>/g, '\n'),
                             quantity: this.items[item][payeeKeys[0]].quantity,
                             unit_of_measure: this.items[item][payeeKeys[0]].unit_of_measure,
 
@@ -783,7 +784,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                             ...this.items[item],
                         }
                     })
-                    console.log(this.displayItems)
+                    // console.log(this.displayItems)
                 },
                 getPayeeAmtPerItem(item, payee) {
 
@@ -817,7 +818,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                         }
                     }, []);
 
-                    console.log(remarks)
+                    // console.log(remarks)
                     return remarks
 
                 },
