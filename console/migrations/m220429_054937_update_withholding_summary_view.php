@@ -42,6 +42,7 @@ class m220429_054937_update_withholding_summary_view extends Migration
                 WHERE remittance_items.is_removed =0
                 GROUP BY fk_dv_acounting_entries_id) as remitted ON dv_accounting_entries.id = remitted.fk_dv_acounting_entries_id
                 WHERE payroll.reporting_period >='2022-05'
+                AND dv_aucs.is_cancelled = 0
         SQL;
         $this->execute($sql);
     }

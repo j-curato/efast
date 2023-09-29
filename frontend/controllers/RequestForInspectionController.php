@@ -330,6 +330,7 @@ class RequestForInspectionController extends Controller
                     $iar = new Iar();
                     $iar->fk_ir_id = $ir->id;
                     $iar->office_name =  $rfi_office;
+                    $iar->date_generated =  date('Y-m-d');
                     if (!$iar->validate()) {
                         throw new ErrorException(json_encode($iar->errors));
                     }

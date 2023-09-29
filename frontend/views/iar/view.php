@@ -77,11 +77,11 @@ $payee = !empty($GLOBALS['payee']) ? $GLOBALS['payee'] : '';
 $department = !empty($GLOBALS['department']) ? $GLOBALS['department'] : '';
 $po_date = !empty($GLOBALS['po_date']) ? $GLOBALS['po_date'] : '';
 $po_number = !empty($GLOBALS['po_number']) ? $GLOBALS['po_number'] : '';
-$date_generated = !empty($GLOBALS['date_generated']) ? $GLOBALS['date_generated'] : '';
+// $date_generated = !empty($GLOBALS['date_generated']) ? $GLOBALS['date_generated'] : '';
 $date_inspected = !empty($GLOBALS['date_inspected']) ? $GLOBALS['date_inspected'] : '';
 
 $iarDetails = $model->getIarDetails();
-
+$date_generated = !empty($model->date_generated) ? DateTime::createFromFormat('Y-m-d', $model->date_generated)->format('F d, Y') : '';
 ?>
 <div class="iar-view">
     <div class="container card" style="padding: 1rem;">
