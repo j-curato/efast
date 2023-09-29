@@ -95,7 +95,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'registered_name',
         'contact_person',
         'registered_address',
-      
+
         'created_at',
         'fk_office_id',
 

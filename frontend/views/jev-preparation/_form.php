@@ -203,7 +203,7 @@ if (!empty($model->fk_dv_aucs_id)) {
     </div>
     <div class="row">
         <div class="col  align-self-end">
-            <button type='button' class='add btn btn-success btn-xs' style=' text-align: center; float:right;margin-right:5px'><i class='fa fa-pencil-alt'></i> Add</button>
+            <button type='button' class='add btn btn-success btn-xs' style=' text-align: center; float:right;margin-right:5px'><i class='fa fa-plus'></i> Add</button>
         </div>
     </div>
     <table class="table" id='entry_table'>
@@ -238,7 +238,7 @@ if (!empty($model->fk_dv_aucs_id)) {
                         </td>
                         <td style='width: 50px;'>
                             <button type='button' class='remove btn btn-danger btn-xs' style=' text-align: center; float:right;'><i class='fa fa-times'></i></button>
-                            <button type='button' class='add btn btn-success btn-xs' style=' text-align: center; float:right;margin-right:5px'><i class='fa fa-pencil-alt'></i></button> 
+                            <button type='button' class='add btn btn-success btn-xs' style=' text-align: center; float:right;margin-right:5px'><i class='fa fa-plus'></i></button> 
                         </td>
                     </tr>";
                 $entry_row++;
@@ -356,7 +356,7 @@ SweetAlertAsset::register($this);
                         </td>
                         <td style='width: 50px;'>
                             <button type='button' class='remove btn btn-danger btn-xs' style=' text-align: center; float:right;'><i class='fa fa-times'></i></button>
-                            <button type='button' class='add btn btn-success btn-xs' style=' text-align: center; float:right;margin-right:5px'><i class='fa fa-pencil-alt'></i></button> 
+                            <button type='button' class='add btn btn-success btn-xs' style=' text-align: center; float:right;margin-right:5px'><i class='fa fa-plus'></i></button> 
                         </td>
                     </tr>`;
         $('#entry_table tbody').append(r)
@@ -426,7 +426,7 @@ SweetAlertAsset::register($this);
                         </td>
                         <td style='width: 50px;'>
                             <button type='button' class='remove btn btn-danger btn-xs' style=' text-align: center; float:right;'><i class='fa fa-times'></i></button>
-                            <button type='button' class='add btn btn-success btn-xs' style=' text-align: center; float:right;margin-right:5px'><i class='fa fa-pencil-alt'></i></button> 
+                            <button type='button' class='add btn btn-success btn-xs' style=' text-align: center; float:right;margin-right:5px'><i class='fa fa-plus'></i></button> 
                         </td>
                     </tr>`;
             $('#entry_table tbody').append(r)
