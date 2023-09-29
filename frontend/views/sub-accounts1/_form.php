@@ -15,24 +15,21 @@ use yii\bootstrap4\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'reporting_period')->widget(DatePicker::class, [
+    <label class="control-label">Tag Multiple</label>
+    <?=
+    Select2::widget([
+        'name' => 'color_2',
+        'value' => ['red', 'green'], // initial value
+        'data' => $data,
+        'maintainOrder' => true,
+        'options' => ['placeholder' => 'Select a color ...', 'multiple' => true],
         'pluginOptions' => [
-            'autoclose' => true,
-            'format' => 'yyyy-mm',
-            'minViewMode' => 'months'
-        ]
-    ]) ?>
+            'tags' => true,
+            'maximumInputLength' => 10
+        ],
 
-
-    <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
-    <?= $form->field($model, 'is_active')->widget(
-        Select2::class,
-        [
-            'data' => [1 => 'True', 0 => 'False'],
-            'name' => 'is_active'
-        ]
-    ) ?>
-
+    ]);
+    ?>
     <div class="row justify-content-center">
 
         <div class="form-group">

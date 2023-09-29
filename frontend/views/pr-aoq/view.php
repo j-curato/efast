@@ -104,7 +104,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     FROM `pr_aoq_entries`
                     LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
                     WHERE pr_aoq_entries.pr_aoq_id = :id
-                    GROUP BY payee.account_name
+                    GROUP BY payee
                     ")
                     ->bindValue(':id', $model->id)
                     ->queryAll();
