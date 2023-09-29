@@ -271,7 +271,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             <select name="" id="assignatory_5" class="assignatory" style="width: 300px;padding:0;" onchange="setPosition(this,5)">
                                 <option value=""></option>
                             </select>
-                            <div style="padding:0;font-weight:normal" class="pos" id="position_5">
+                            <div style="padding:12px;font-weight:normal" class="pos" id="position_5">
 
                             </div>
                         </div>
@@ -574,13 +574,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 border: none;
             }
 
-            table,
-            th,
-            td {
-                border: 1px solid black;
-                padding: 5px;
-                font-size: 10px;
-            }
+
 
             @page {
                 size: auto;
@@ -599,12 +593,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 font-size: 5pt;
             }
 
-            td {
-                border: 1px solid black;
-                padding: 5px;
-                font-size: x-small;
-                background-color: white;
-            }
 
             .container {
 
@@ -612,19 +600,6 @@ $this->params['breadcrumbs'][] = $this->title;
             }
 
 
-            table {
-                page-break-after: auto
-            }
-
-            tr {
-                page-break-inside: avoid;
-                page-break-after: auto
-            }
-
-            td {
-                page-break-inside: avoid;
-                page-break-after: auto
-            }
 
             /* thead {
                 display: table-header-group
