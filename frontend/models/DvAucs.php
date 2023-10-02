@@ -70,6 +70,10 @@ class DvAucs extends \yii\db\ActiveRecord
 
         ];
     }
+    public static function getDetailedDv($year)
+    {
+        return Yii::$app->db->createCommand("CALL prc_GetDetailedDvs(:yr)")->bindValue(':yr', $year)->queryAll();
+    }
 
     /**
      * {@inheritdoc}
