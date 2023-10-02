@@ -15,6 +15,9 @@ use yii\bootstrap4\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
     <?= $form->field($model, 'name')->textarea() ?>
+    <?= $form->field($model, 'is_active')->widget(Select2::class, [
+        'data' => [1 => 'True', 0 => 'False']
+    ]) ?>
     <div class="row justify-content-center">
         <div class="form-group">
             <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
