@@ -46,27 +46,17 @@ class ProcessOrs extends \yii\db\ActiveRecord
             [['is_cancelled'], 'default', 'value' => 0],
             [['type'], 'default', 'value' => 'ors'],
             [['transaction_id'], 'exist', 'skipOnError' => true, 'targetClass' => Transaction::class, 'targetAttribute' => ['transaction_id' => 'id']],
-            [[
-                'id',
-                'transaction_id',
-                'reporting_period',
-                'serial_number',
-                'obligation_number',
-                'funding_code',
-                'document_recieve_id',
-                'mfo_pap_code_id',
-                'fund_source_id',
-                'book_id',
-                'date',
-                'is_cancelled',
-                'type',
-                'created_at',
-                'transaction_begin_time',
 
-            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 
+    public static function getDetailedProcessOrs($year, $type)
+    {
+        return Yii::$app->db->createCommand("CALL prc_GetDetailedProcessOrs(:yr,:typ)")
+            ->bindValue(':yr', $year)
+            ->bindValue(':typ', $type)
+            ->queryAll();
+    }
     /**
      * {@inheritdoc}
      */
