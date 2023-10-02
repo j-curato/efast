@@ -402,7 +402,8 @@ class CashDisbursementController extends Controller
         $dvDataProvider->pagination = ['pageSize' => 10];
         if ($model->load(Yii::$app->request->post())) {
             $items = Yii::$app->request->post('items') ?? [];
-
+            $model->begin_time =  DateTime::createFromFormat('h:i a', $model->begin_time)->format('H:i');
+            $model->begin_time =  DateTime::createFromFormat('h:i a', $model->out_time)->format('H:i');
             try {
                 $txn = Yii::$app->db->beginTransaction();
                 $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
@@ -502,11 +503,14 @@ class CashDisbursementController extends Controller
         $dvDataProvider = $dvSearchModel->search(Yii::$app->request->queryParams);
         $dvDataProvider->pagination = ['pageSize' => 10];
 
+        $model->begin_time =  DateTime::createFromFormat('H:i:s', $model->begin_time)->format('h:i A');
+        $model->out_time =  DateTime::createFromFormat('H:i:s', $model->out_time)->format('h:i a');
         if ($model->load(Yii::$app->request->post())) {
             $items = Yii::$app->request->post('items') ?? [];
             try {
                 $txn = Yii::$app->db->beginTransaction();
-
+                $model->begin_time =  DateTime::createFromFormat('h:i a', $model->begin_time)->format('H:i');
+                $model->out_time =  DateTime::createFromFormat('h:i a', $model->out_time)->format('H:i');
                 if ($this->hasAcic($model->id)) {
                     throw new ErrorException('Cannot Update this Check is already in ACIC');
                 }
