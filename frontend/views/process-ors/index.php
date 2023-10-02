@@ -1,10 +1,8 @@
 <?php
 
 use app\components\helpers\MyHelper;
-use kartik\date\DatePicker;
 use yii\helpers\Html;
 use kartik\grid\GridView;
-use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\ProccessOrsSearch */
@@ -16,9 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="process-ors-index">
 
-
     <p>
-
         <?php
         if ($type === 'burs') {
             echo  Html::a('Create Process ' . $type_dis, ['create-burs'], ['class' => 'btn btn-success']);
@@ -27,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
         }
         ?>
     </p>
-
+    <?= $this->render('export_form', ['orsType' => $type]) ?>
     <!-- ANG MODEL ANI KAY SA PROCESS ORS ENTRIES -->
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -36,33 +32,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'type' => 'primary',
             'heading' => 'Process ' . $type_dis
         ],
-        'toolbar' =>  [
-            [
-                'content' =>
-                "<form id='ors'>
-                    <div class='row'>
-                        <div class='col-sm-8'>" .
-                    DatePicker::widget([
-                        'name' => 'year',
-                        'pluginOptions' => [
-                            'format' => 'yyyy',
-                            'startView' => 'years',
-                            'minViewMode' => 'years',
-                            'autoclose' => true
-                        ]
-                    ])
-                    . "</div>
-                        <div class='col-sm-2'>" .
-                    Html::button('Export', ['type' => 'submit', 'class' => 'btn btn-success'])
-                    . "</div>
-                    </div>
-                </form>",
-                'options' => ['class' => 'btn-group', 'style' => 'margin-right:20px;display:flex']
-            ],
 
-        ],
         'columns' => [
-
             'serial_number',
             'reporting_period',
             'date',
@@ -71,7 +42,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'r_center',
             'payee',
             'type',
-
             [
                 'label' => 'Actions',
                 'format' => 'raw',
@@ -85,18 +55,18 @@ $this->params['breadcrumbs'][] = $this->title;
 
 </div>
 <script>
-    $(document).ready(() => {
-        $('#ors').submit((e) => {
-            e.preventDefault()
-            $.ajax({
-                type: 'POST',
-                url: window.location.pathname + "?r=process-ors/export",
-                data: $('#ors').serialize(),
-                success: (data) => {
-                    window.open(JSON.parse(data))
-                }
-            })
+    // $(document).ready(() => {
+    //     $('#ors').submit((e) => {
+    //         e.preventDefault()
+    //         $.ajax({
+    //             type: 'POST',
+    //             url: window.location.pathname + "?r=process-ors/export",
+    //             data: $('#ors').serialize(),
+    //             success: (data) => {
+    //                 window.open(JSON.parse(data))
+    //             }
+    //         })
 
-        })
-    })
+    //     })
+    // })
 </script>

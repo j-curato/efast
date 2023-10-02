@@ -18,6 +18,7 @@ class m230929_063847_create_prc_getDetailedProcessOrs_procedure extends Migratio
             BEGIN 
                     SELECT 
                     process_ors.serial_number as ors_num,
+                    process_ors_entries.reporting_period,
                     process_ors.date as ors_date,
                     books.`name` as book_name,
                     `transaction`.tracking_number,

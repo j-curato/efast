@@ -7,11 +7,13 @@ use kartik\date\DatePicker;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 ?>
-<div class="jev-preparation-index " style="background-color: white;padding:20px" id="main">
-    <form id="rao" @submit.prevent="exportDvs">
+<div style="background-color: white;padding:20px" id="main">
+
+
+    <form id="rao" @submit.prevent="exportOrs">
         <div class="row">
             <div class="col-sm-2">
-                <label for="year">Export Detailed DV Year</label>
+                <label for="year">Export Detailed <?= strtoupper($orsType) ?> Year</label>
                 <?php
                 echo DatePicker::widget([
                     'name' => 'year',
@@ -51,7 +53,7 @@ use kartik\date\DatePicker;
     }
 </style>
 <?php
-$csrf = YIi::$app->request->csrfToken;
+$csrf = Yii::$app->request->csrfToken;
 $this->registerJsFile('@web/js/vue-spinner.min.js', ['position' => $this::POS_HEAD]);
 ?>
 <script>
@@ -69,16 +71,18 @@ $this->registerJsFile('@web/js/vue-spinner.min.js', ['position' => $this::POS_HE
                 loading: false,
                 color: '#03befc',
                 size: '20px',
+                orsType: '<?= $orsType ?>',
 
             },
-            computed: {},
+
             methods: {
-                exportDvs() {
+                exportOrs() {
                     this.loading = true
                     this.showTable = false
-                    const url = window.location.pathname + '?r=dv-aucs/detailed-dv'
+                    const url = window.location.pathname + '?r=process-ors/export'
                     const data = {
                         year: $("#year").val(),
+                        type: this.orsType,
                         _csrf: '<?= $csrf ?>'
                     }
                     const response = axios.post(url, data)

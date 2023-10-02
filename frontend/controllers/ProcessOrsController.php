@@ -687,41 +687,33 @@ class ProcessOrsController extends Controller
         if (Yii::$app->request->post()) {
 
             $year = Yii::$app->request->post('year');
-            $type = Yii::$app->request->post('tyype');
+            $type = Yii::$app->request->post('type');
             $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
-            $headers = [
-                'DV No.',
-                'Reporting Period',
-                'Check No.',
-                'ADA No.',
-                'Total Amount Disbursed',
-                'ORS No.',
-                'ORS Amount',
-                'Payee',
-                'Particular',
-                'Amount Disburse',
-                'Vat/Non-Vat',
-                'EWT',
-                'Compensation',
-                'Other Trust Liabilities',
-                'Nature of Transaction',
-                'MRD Classification',
-                'DV isCancelled',
-                'DV isPayable',
-                'Book',
 
+
+            $headers = [
+                'ORS No.',
+                'Reporting Period',
+                'Date',
+                'Book',
+                'Transaction Tracking No.',
+                'UACS',
+                'ORS Amount',
+                'Allotment No.',
+                'Allotment UACS',
+                'Allotment Amount',
+                'Fund Source Name',
+                'MFO/PAP Code',
             ];
             foreach ($headers as $key => $head) {
                 $sheet->setCellValue([$key + 1, 2], $head);
             }
             $row = 3;
-            foreach (ProcessOrs::getDetailedProcessOrs($year,$type) as $val) {
-
-
+            foreach (ProcessOrs::getDetailedProcessOrs($year, $type) as $val) {
                 $sheet->setCellValue(
                     [1, $row],
-                    $val['dv_number']
+                    $val['ors_num']
                 );
                 $sheet->setCellValue(
                     [2, $row],
@@ -729,82 +721,45 @@ class ProcessOrsController extends Controller
                 );
                 $sheet->setCellValue(
                     [3, $row],
-                    $val['check_or_ada_no']
+                    $val['ors_date']
                 );
                 $sheet->setCellValue(
                     [4, $row],
-                    $val['ada_number']
+                    $val['book_name']
                 );
                 $sheet->setCellValue(
                     [5, $row],
-                    $val['total_disbursed']
+                    $val['tracking_number']
                 );
                 $sheet->setCellValue(
                     [6, $row],
-                    $val['ors_number']
+                    $val['uacs']
                 );
                 $sheet->setCellValue(
                     [7, $row],
-                    $val['ors_amt']
+                    $val['amount']
                 );
+
                 $sheet->setCellValue(
                     [8, $row],
-                    $val['payee']
+                    $val['allotmentNumber']
                 );
                 $sheet->setCellValue(
                     [9, $row],
-                    $val['particular']
+                    $val['allotment_uacs']
                 );
                 $sheet->setCellValue(
                     [10, $row],
-                    $val['amount_disbursed']
+                    $val['allotment_amt']
                 );
                 $sheet->setCellValue(
                     [11, $row],
-                    $val['vat_nonvat']
+                    $val['fund_source_name']
                 );
                 $sheet->setCellValue(
                     [12, $row],
-                    $val['ewt_goods_services']
+                    $val['mfo_name']
                 );
-                $sheet->setCellValue(
-                    [13, $row],
-                    $val['compensation']
-                );
-                $sheet->setCellValue(
-                    [14, $row],
-
-                    $val['other_trust_liabilities']
-                );
-
-                $sheet->setCellValue(
-                    [15, $row],
-                    $val['nature_of_transaction']
-                );
-
-
-                $sheet->setCellValue(
-                    [16, $row],
-                    $val['mrd_classification']
-                );
-
-                $sheet->setCellValue(
-                    [17, $row],
-                    $val['is_cancelled']
-                );
-
-
-                $sheet->setCellValue(
-                    [18, $row],
-                    $val['payable']
-                );
-
-                $sheet->setCellValue(
-                    [19, $row],
-                    $val['book_name']
-                );
-
-
                 $row++;
             }
 
