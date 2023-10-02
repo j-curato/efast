@@ -403,7 +403,7 @@ class CashDisbursementController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             $items = Yii::$app->request->post('items') ?? [];
             $model->begin_time =  DateTime::createFromFormat('h:i a', $model->begin_time)->format('H:i');
-            $model->begin_time =  DateTime::createFromFormat('h:i a', $model->out_time)->format('H:i');
+            $model->out_time =  DateTime::createFromFormat('h:i a', $model->out_time)->format('H:i');
             try {
                 $txn = Yii::$app->db->beginTransaction();
                 $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
