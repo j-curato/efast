@@ -92,6 +92,7 @@ JOIN cash_disbursement ON rci_items.fk_cash_disbursement_id = cash_disbursement.
      LEFT JOIN checkTtlAmt ON cash_disbursement.id  = checkTtlAmt.fk_cash_disbursement_id
 WHERE 
 rci_items.fk_rci_id= :id
+AND rci_items.is_deleted  =0
 ")->bindValue(':id', $id)
             ->queryAll();
     }
