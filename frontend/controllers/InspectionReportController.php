@@ -30,19 +30,10 @@ class InspectionReportController extends Controller
                     'index',
                     'delete',
                     'create',
+
+
                 ],
                 'rules' => [
-                    [
-                        'actions' => [
-                            'update',
-                            'view',
-                            'index',
-                            'delete',
-                            'create',
-                        ],
-                        'allow' => true,
-                        'roles' => ['inspection-report']
-                    ],
                     [
                         'actions' => [
                             'view',
@@ -51,7 +42,7 @@ class InspectionReportController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['ro-common-user', 'inspection_report']
+                        'roles' => ['inspection_report']
                     ],
                 ]
             ],
@@ -198,7 +189,7 @@ class InspectionReportController extends Controller
         inspector.employee_name,
         property_unit.employee_name,
         payee.account_name,
-        pr_project_procurement.title,
+        pr_purchase_request.purpose
          DATE_FORMAT(request_for_inspection_items.`from`,'%M %d, %Y'),
         DATE_FORMAT(request_for_inspection_items.`to`,'%M %d, %Y')
         
