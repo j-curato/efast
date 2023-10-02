@@ -16,7 +16,7 @@ use yii\bootstrap4\ActiveForm;
 
 
 
-    <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'name')->textarea() ?>
     <?= $form->field($model, 'is_active')->widget(Select2::class, [
         'data' => [1 => 'True', 0 => 'False']
     ]) ?>
