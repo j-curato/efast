@@ -199,6 +199,7 @@ class IarController extends Controller
         property_unit.employee_name ,
         payee.registered_name ,
         rfi_without_po_items.project_name ,
+        responsibility_center.name,
          DATE_FORMAT(rfi_without_po_items.`from_date`,'%M %d, %Y') ,
         DATE_FORMAT(rfi_without_po_items.`to_date`,'%M %d, %Y') ,
         DATE_FORMAT(iar.created_at,'%M %d, %Y') 
