@@ -89,7 +89,7 @@ class m230929_051543_create_prc_GetDetailedDv_procedure extends Migration
             )as  disbursed ON dv_aucs.id= disbursed.dv_aucs_id
             WHERE
             dv_aucs_entries.is_deleted = 0
-            AND dv_aucs.reporting_period LIKE CONCAT(yr,'%');;
+            AND dv_aucs.reporting_period LIKE CONCAT(yr,'%');
             END 
         SQL;
         $this->execute($sql);
