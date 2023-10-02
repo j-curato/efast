@@ -144,12 +144,15 @@ class InspectionReportController extends Controller
             WHERE inspection_report_no_po_items.fk_inspection_report_id = :id
             GROUP BY
             inspection_report_no_po_items.fk_inspection_report_id,
-            request_for_inspection.rfi_number,
-            rfi_without_po_items.project_name ,
-            payee.account_name ,
+            rfi_without_po_items.project_name,
+            payee.account_name,
             requested_by.employee_name ,
             inspected_by.employee_name ,
-            responsibility_center.`name`")
+            responsibility_center.`name` ,
+            chairperson.employee_name ,
+            property_unit.employee_name ,
+            DATE_FORMAT(rfi_without_po_items.`from_date`,'%M %d, %Y') ,
+            DATE_FORMAT(rfi_without_po_items.`to_date`,'%M %d, %Y') ")
             ->bindValue(':id', $id)
             ->queryOne();
     }
