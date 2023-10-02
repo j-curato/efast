@@ -49,31 +49,24 @@ class RequestForInspectionController extends Controller
                     'update',
                     'final',
                     'search-rfi'
-
                 ],
                 'rules' => [
                     [
                         'actions' => [
-                            'view',
-                            'index',
-                            'create',
-                            'update',
                             'final',
                         ],
                         'allow' => true,
-                        'roles' => ['request_for_inspection', 'super-user', 'ro-admin', 'request-for-inspection']
+                        'roles' => ['final_request_for_inspection']
                     ],
                     [
-
                         'actions' => [
                             'view',
                             'index',
                             'create',
                             'update',
-                            'final',
                         ],
                         'allow' => true,
-                        'roles' => ['ro-common-user']
+                        'roles' => ['request_for_inspection']
                     ]
                 ]
             ],
@@ -388,6 +381,7 @@ class RequestForInspectionController extends Controller
                         $iar = new Iar();
                         $iar->fk_ir_id = $ir->id;
                         $iar->office_name =  $rfi_office;
+                        $iar->date_generated = date('Y-m-d');
                         if (!$iar->validate()) {
                             throw new ErrorException(json_encode($iar->errors));
                         }
