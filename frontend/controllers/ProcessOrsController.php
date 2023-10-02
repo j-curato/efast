@@ -47,10 +47,15 @@ class ProcessOrsController extends Controller
                     'delete',
                     'update',
                     'view',
+                    'insert-process-ors',
+                    'search-ors',
+                    'burs-index',
+                    'create-burs',
                     'sample',
                     'insert-process-ors',
-                    'qwe',
-                    'search-ors'
+                    'search-ors',
+                    'get-txn-allotments',
+                    'export',
                 ],
                 'rules' => [
                     [
@@ -60,14 +65,19 @@ class ProcessOrsController extends Controller
                             'delete',
                             'update',
                             'view',
+                            'insert-process-ors',
+                            'search-ors',
+                            'burs-index',
+                            'create-burs',
                             'sample',
                             'insert-process-ors',
-                            'qwe',
-                            'search-ors'
+                            'search-ors',
+                            'get-txn-allotments',
+                            'export',
 
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['process_ors']
                     ]
                 ]
             ],
@@ -469,46 +479,46 @@ class ProcessOrsController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function actionSample()
-    {
-        $x = [];
-        foreach ($_POST['selection'] as $val) {
+    // public function actionSample()
+    // {
+    //     $x = [];
+    //     foreach ($_POST['selection'] as $val) {
 
-            $query = (new \yii\db\Query())
-                ->select([
-                    'mfo_pap_code.code AS mfo_pap_code_code', 'mfo_pap_code.name AS mfo_pap_name', 'fund_source.name AS fund_source_name',
-                    'chart_of_accounts.uacs as object_code', 'chart_of_accounts.general_ledger', 'major_accounts.name',
-                    'chart_of_accounts.id as chart_of_account_id', 'raouds.id AS raoud_id',
-                    'entry.total', 'record_allotment_entries.amount', '(record_allotment_entries.amount - entry.total) AS remain'
-                ])
-                ->from('raouds')
-                ->join("LEFT JOIN", "record_allotments", "raouds.record_allotment_id=record_allotments.id")
-                ->join("LEFT JOIN", "record_allotment_entries", "raouds.record_allotment_entries_id=record_allotment_entries.id")
-                ->join("LEFT JOIN", "chart_of_accounts", "record_allotment_entries.chart_of_account_id=chart_of_accounts.id")
-                ->join("LEFT JOIN", "major_accounts", "chart_of_accounts.major_account_id=major_accounts.id")
-                ->join("LEFT JOIN", "fund_source", "record_allotments.fund_source_id=fund_source.id")
-                ->join("LEFT JOIN", "mfo_pap_code", "record_allotments.mfo_pap_code_id=mfo_pap_code.id")
-                ->join("LEFT JOIN", "raoud_entries", "raouds.id=raoud_entries.raoud_id")
-                ->join("LEFT JOIN", "(SELECT SUM(raoud_entries.amount) as total,
-                raouds.id, raouds.record_allotment_id,raouds.process_ors_id,
-                raouds.record_allotment_entries_id
-                FROM raouds,raoud_entries,process_ors
-                WHERE raouds.process_ors_id= process_ors.id
-                AND raouds.id = raoud_entries.raoud_id
-                AND raouds.process_ors_id IS NOT NULL 
-                GROUP BY raouds.record_allotment_entries_id) as entry", "raouds.record_allotment_entries_id=entry.record_allotment_entries_id")
-                // ->join("LEFT JOIN","","raouds.process_ors_id=process_ors.id")
+    //         $query = (new \yii\db\Query())
+    //             ->select([
+    //                 'mfo_pap_code.code AS mfo_pap_code_code', 'mfo_pap_code.name AS mfo_pap_name', 'fund_source.name AS fund_source_name',
+    //                 'chart_of_accounts.uacs as object_code', 'chart_of_accounts.general_ledger', 'major_accounts.name',
+    //                 'chart_of_accounts.id as chart_of_account_id', 'raouds.id AS raoud_id',
+    //                 'entry.total', 'record_allotment_entries.amount', '(record_allotment_entries.amount - entry.total) AS remain'
+    //             ])
+    //             ->from('raouds')
+    //             ->join("LEFT JOIN", "record_allotments", "raouds.record_allotment_id=record_allotments.id")
+    //             ->join("LEFT JOIN", "record_allotment_entries", "raouds.record_allotment_entries_id=record_allotment_entries.id")
+    //             ->join("LEFT JOIN", "chart_of_accounts", "record_allotment_entries.chart_of_account_id=chart_of_accounts.id")
+    //             ->join("LEFT JOIN", "major_accounts", "chart_of_accounts.major_account_id=major_accounts.id")
+    //             ->join("LEFT JOIN", "fund_source", "record_allotments.fund_source_id=fund_source.id")
+    //             ->join("LEFT JOIN", "mfo_pap_code", "record_allotments.mfo_pap_code_id=mfo_pap_code.id")
+    //             ->join("LEFT JOIN", "raoud_entries", "raouds.id=raoud_entries.raoud_id")
+    //             ->join("LEFT JOIN", "(SELECT SUM(raoud_entries.amount) as total,
+    //             raouds.id, raouds.record_allotment_id,raouds.process_ors_id,
+    //             raouds.record_allotment_entries_id
+    //             FROM raouds,raoud_entries,process_ors
+    //             WHERE raouds.process_ors_id= process_ors.id
+    //             AND raouds.id = raoud_entries.raoud_id
+    //             AND raouds.process_ors_id IS NOT NULL 
+    //             GROUP BY raouds.record_allotment_entries_id) as entry", "raouds.record_allotment_entries_id=entry.record_allotment_entries_id")
+    //             // ->join("LEFT JOIN","","raouds.process_ors_id=process_ors.id")
 
-                ->where("raouds.id = :id", ['id' => $val])->one();
-            $query['obligation_amount'] =  $_POST['amount'][$val];
-            $x[] = $query;
-        }
+    //             ->where("raouds.id = :id", ['id' => $val])->one();
+    //         $query['obligation_amount'] =  $_POST['amount'][$val];
+    //         $x[] = $query;
+    //     }
 
-        // return json_encode($_POST['selection']);
-        // $query=Yii::$app->db->createCommand("SELECT * FROM raouds where id IN ('1','2')")->queryAll();
+    //     // return json_encode($_POST['selection']);
+    //     // $query=Yii::$app->db->createCommand("SELECT * FROM raouds where id IN ('1','2')")->queryAll();
 
-        return json_encode(['results' => $x]);
-    }
+    //     return json_encode(['results' => $x]);
+    // }
 
     public function actionInsertProcessOrs()
     {
@@ -564,15 +574,15 @@ class ProcessOrsController extends Controller
 
         }
     }
-    public function actionQwe()
-    {
-        $query = (new \yii\db\Query())
-            ->select('*')
-            ->from('raouds')
-            ->where("id= :id", ['id' => 44])
-            ->one();
-        return $query['id'];
-    }
+    // public function actionQwe()
+    // {
+    //     $query = (new \yii\db\Query())
+    //         ->select('*')
+    //         ->from('raouds')
+    //         ->where("id= :id", ['id' => 44])
+    //         ->one();
+    //     return $query['id'];
+    // }
     public function actionSearchOrs($q = null, $id = null)
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
@@ -673,132 +683,148 @@ class ProcessOrsController extends Controller
     }
     public function actionExport()
     {
+
         if (Yii::$app->request->post()) {
 
             $year = Yii::$app->request->post('year');
-            $qry  = Yii::$app->db->createCommand("
-            SELECT 
-            process_ors.serial_number as ors_num,
-            `transaction`.tracking_number as txn_num,
-            responsibility_center.`name` as r_center,
-            payee.account_name as payee,
-            `transaction`.particular,
-            process_ors_entries.reporting_period,
-            books.`name` as book_name,
-            CONCAT(chart_of_accounts.uacs,'-',chart_of_accounts.general_ledger) as UACS,
-            process_ors_entries.amount,
-            process_ors.is_cancelled
-            FROM process_ors
-            JOIN process_ors_entries ON process_ors.id  = process_ors_entries.process_ors_id
-             LEFT JOIN `transaction` ON process_ors.transaction_id = `transaction`.id
-            LEFT JOIN payee ON `transaction`.payee_id = payee.id
-            LEFT JOIN responsibility_center ON `transaction`.responsibility_center_id = responsibility_center.id 
-            LEFT JOIN books ON process_ors.book_id = books.id
-            LEFT JOIN chart_of_accounts ON process_ors_entries.chart_of_account_id = chart_of_accounts.id
-            WHERE 
-            process_ors.reporting_period >= :yr
-            AND process_ors.type='ors'
-            ORDER BY process_ors.serial_number,process_ors.created_at 
-            ")->bindValue(':yr', $year . '%')->queryAll();
+            $type = Yii::$app->request->post('tyype');
             $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
-            // // header
             $headers = [
-                "Budget Year",
-                "Office Name",
-                "Division",
-                "Allotment No.",
-                "MFO/PAP",
-                "Fund Source",
-                "Book",
-                "Object Code",
-                "Account Title",
-                "PR No.",
-                "PR Date",
-                "PR Purpose",
-                "Transaction Tracking No.",
-                "Transaction Date",
-                "Transaction Particular",
-                "Payee",
-                "ORS No.",
-                "Allotment Amount",
-                "PR Amount",
-                "Transaction Amount",
-                "ORS Amount",
-
-
-            ];
-            $cellVal = [
-                'budget_year',
-                'office_name',
-                'division',
-                'allotmentNumber',
-                'mfo_name',
-                'fund_source_name',
-                'book_name',
-                'uacs',
-                'account_title',
-                'pr_number',
-                'prDate',
-                'prPurpose',
-                'transaction_num',
-                'txnDate',
-                'txnParticular',
-                'txnPayee',
-                'orsNum',
-                'allotAmt',
-                'prAmt',
-                'txnAmt',
-                'orsAmt',
+                'DV No.',
+                'Reporting Period',
+                'Check No.',
+                'ADA No.',
+                'Total Amount Disbursed',
+                'ORS No.',
+                'ORS Amount',
+                'Payee',
+                'Particular',
+                'Amount Disburse',
+                'Vat/Non-Vat',
+                'EWT',
+                'Compensation',
+                'Other Trust Liabilities',
+                'Nature of Transaction',
+                'MRD Classification',
+                'DV isCancelled',
+                'DV isPayable',
+                'Book',
 
             ];
             foreach ($headers as $key => $head) {
                 $sheet->setCellValue([$key + 1, 2], $head);
             }
-
-
-
-
-            $x = 7;
-            $styleArray = array(
-                'borders' => array(
-                    'allBorders' => array(
-                        'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
-                        'color' => array('argb' => 'FFFF0000'),
-                    ),
-                ),
-            );
-
-
             $row = 3;
-            foreach ($qry as $itm) {
-                foreach ($cellVal as $col => $cell) {
-                    $sheet->setCellValue(
-                        [$col + 1, $row],
-                        $itm[$cell] ?? ''
-                    );
-                }
+            foreach (ProcessOrs::getDetailedProcessOrs($year,$type) as $val) {
+
+
+                $sheet->setCellValue(
+                    [1, $row],
+                    $val['dv_number']
+                );
+                $sheet->setCellValue(
+                    [2, $row],
+                    $val['reporting_period']
+                );
+                $sheet->setCellValue(
+                    [3, $row],
+                    $val['check_or_ada_no']
+                );
+                $sheet->setCellValue(
+                    [4, $row],
+                    $val['ada_number']
+                );
+                $sheet->setCellValue(
+                    [5, $row],
+                    $val['total_disbursed']
+                );
+                $sheet->setCellValue(
+                    [6, $row],
+                    $val['ors_number']
+                );
+                $sheet->setCellValue(
+                    [7, $row],
+                    $val['ors_amt']
+                );
+                $sheet->setCellValue(
+                    [8, $row],
+                    $val['payee']
+                );
+                $sheet->setCellValue(
+                    [9, $row],
+                    $val['particular']
+                );
+                $sheet->setCellValue(
+                    [10, $row],
+                    $val['amount_disbursed']
+                );
+                $sheet->setCellValue(
+                    [11, $row],
+                    $val['vat_nonvat']
+                );
+                $sheet->setCellValue(
+                    [12, $row],
+                    $val['ewt_goods_services']
+                );
+                $sheet->setCellValue(
+                    [13, $row],
+                    $val['compensation']
+                );
+                $sheet->setCellValue(
+                    [14, $row],
+
+                    $val['other_trust_liabilities']
+                );
+
+                $sheet->setCellValue(
+                    [15, $row],
+                    $val['nature_of_transaction']
+                );
+
+
+                $sheet->setCellValue(
+                    [16, $row],
+                    $val['mrd_classification']
+                );
+
+                $sheet->setCellValue(
+                    [17, $row],
+                    $val['is_cancelled']
+                );
+
+
+                $sheet->setCellValue(
+                    [18, $row],
+                    $val['payable']
+                );
+
+                $sheet->setCellValue(
+                    [19, $row],
+                    $val['book_name']
+                );
+
+
                 $row++;
             }
 
             date_default_timezone_set('Asia/Manila');
             $date = date('Y-m-d h-s A');
-            $file_name = "rao_$year.xlsx";
+            $file_name = "detailed_dv_$year.xlsx";
             $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
             $fileSaveLoc =  "exports\\" . $file_name;
             $path = Yii::getAlias('@webroot') . '/exports';
             $file = $path . "/$file_name";
             $writer->save($file);
-            header('Content-Type: application/vnd.ms-excel');
+            // return ob_get_clean();
             header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
             header('Content-Transfer-Encoding: binary');
             header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
             header('Pragma: public'); // HTTP/1.0
             echo  json_encode($fileSaveLoc);
-            // unlink($fileSaveLoc)
-            // echo "<script>window.open('$fileDwnldLoc','_self')</script>";
+
             exit();
         }
-        return $this->render('rao');
+        return $this->render('detailed_dvs');
     }
 }
