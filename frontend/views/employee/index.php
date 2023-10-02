@@ -1,11 +1,12 @@
 <?php
 
-use app\components\helpers\MyHelper;
+use yii\helpers\Url;
+use yii\helpers\Html;
+use yii\web\JqueryAsset;
+use kartik\grid\GridView;
 use kartik\file\FileInput;
 use kartik\form\ActiveForm;
-use kartik\grid\GridView;
-use yii\helpers\Html;
-use yii\helpers\Url;
+use app\components\helpers\MyHelper;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\EmployeeSearch */
@@ -18,7 +19,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Html::button('<i class="fa fa-pencil-alt"></i> Create', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=employee/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
+        <?= Html::a(
+            '<i class="fa fa-pencil-alt"></i> Create',
+            ['create'],
+            ['class' => 'btn btn-success modalButtonCreate']
+        ); ?>
 
     </p>
 
@@ -56,7 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Actions',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return MyHelper::gridDefaultAction($model->employee_id);
+                    return MyHelper::gridDefaultAction($model->employee_id, 'modalButtonUpdate');
                 }
             ],
         ],
@@ -64,18 +69,24 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 </div>
+<?php
 
+$this->registerJsFile(
+    '@web/frontend/web/js/globalFunctions.js',
+    ['depends' => [JqueryAsset::class]]
+)
+?>
 <?php
 $script = <<<JS
-            var i=false;
-        $('#modalButtoncreate').click(function(){
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-        });
-        $('a[title=Update]').click(function(e){
-            e.preventDefault();
+        //     var i=false;
+        // $('#modalButtoncreate').click(function(){
+        //     $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
+        // });
+        // $('a[title=Update]').click(function(e){
+        //     e.preventDefault();
             
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
-        });
+        //     $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
+        // });
         
 JS;
 $this->registerJs($script);
