@@ -44,13 +44,6 @@ class PropertyController extends Controller
                     'property-database',
                     'blank-sticker',
                     'search-ssf-category',
-
-
-
-
-
-
-
                 ],
                 'rules' => [
                     [
@@ -66,10 +59,16 @@ class PropertyController extends Controller
                             'blank-sticker',
                             'search-ssf-category',
                             'create-blank',
+                        ],
+                        'allow' => true,
+                        'roles' => ['property']
+                    ],
+                    [
+                        'actions' => [
                             'property-database',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['property_database']
                     ],
 
 

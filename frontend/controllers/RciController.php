@@ -43,7 +43,7 @@ class RciController extends Controller
                             'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['rci']
                     ]
                 ]
             ],

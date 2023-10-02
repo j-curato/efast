@@ -114,38 +114,40 @@ class EmployeeController extends Controller
         $model = new Employee();
 
         if ($model->load(Yii::$app->request->post())) {
+            try {
+                $txn = YIi::$app->db->beginTransaction();
+                $model->employee_id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
 
-            $model->employee_id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-
-            if ($model->save()) {
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->validate()));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save Failed');
+                }
+                $sign_up = new SignupForm();
+                $sign_up->username = explode(' ', $model->f_name)[0] . '.' . $model->l_name;
+                $sign_up->email = 'email3@email.com';
+                $sign_up->password = 'abcde54321';
+                $sign_up->fk_office_id = $model->fk_office_id;
+                $sign_up->fk_division_id = $model->fk_division_id;
+                $sign_up->fk_employee_id = $model->employee_id;
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$sign_up->signup()) {
+                    throw new ErrorException(json_encode($sign_up->errors));
+                }
+                $txn->commit();
                 return $this->redirect(['view', 'id' => $model->employee_id]);
+            } catch (ErrorException $e) {
+                $txn->rollBack();
+                return $e->getMessage();
             }
-            // $sign_up = new SignupForm();
-
-            // $sign_up->username = explode(' ', $model->f_name)[0] . '.' . $model->l_name;
-            // $sign_up->email = 'email3@email.com';
-            // $sign_up->password = 'abcde54321';
-            // $sign_up->province = 'ro';
-            // $sign_up->employee_id = $model->employee_id;
-            // try {
-            //     if ($sign_up->signup(false)) {
-            //         return 'true';
-            //     }
-            //     else{
-            //         return json_encode($sign_up->errors);
-            //     }
-            // } catch (ErrorException $e) {
-            //     return $e->getMessage();
-            // }
-
-
-
-        } else {
-
-            return $this->renderAjax('create', [
-                'model' => $model,
-            ]);
         }
+
+        return $this->renderAjax('create', [
+            'model' => $model,
+        ]);
     }
 
     /**
@@ -159,8 +161,41 @@ class EmployeeController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->employee_id]);
+        if ($model->load(Yii::$app->request->post())) {
+            try {
+                $txn = YIi::$app->db->beginTransaction();
+
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->validate()));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save Failed');
+                }
+                // $qry = Yii::$app->db->createCommand("SELECT * FROM `user` WHERE fk_employee_id = :id")->bindValue(':id', $model->employee_id)->queryOne();
+                // return var_dump($model->employee_id);
+                if (empty($model->user->id)) {
+
+                    $sign_up = new SignupForm();
+                    $sign_up->username = explode(' ', $model->f_name)[0] . '.' . $model->l_name;
+                    $sign_up->email = $sign_up->username . '@gmail.com';
+                    $sign_up->password = 'abcde54321';
+                    $sign_up->fk_office_id = $model->fk_office_id;
+                    $sign_up->fk_division_id = $model->fk_division_id;
+                    $sign_up->fk_employee_id = $model->employee_id;
+                    if (!$model->validate()) {
+                        throw new ErrorException(json_encode($model->errors));
+                    }
+                    if (!$sign_up->signup()) {
+                        throw new ErrorException(json_encode($sign_up->errors));
+                    }
+                }
+
+                $txn->commit();
+                return $this->redirect(['view', 'id' => $model->employee_id]);
+            } catch (ErrorException $e) {
+                $txn->rollBack();
+                return $e->getMessage();
+            }
         }
 
         return $this->renderAjax('update', [

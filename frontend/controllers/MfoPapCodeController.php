@@ -22,26 +22,27 @@ class MfoPapCodeController extends Controller
     public function behaviors()
     {
         return [
-            'access'=>[
-                'class'=>AccessControl::class,
-                'only'=>[
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
                     'index',
                     'view',
                     'update',
                     'delete',
                     'create'
                 ],
-                'rules'=>[
+                'rules' => [
+      
                     [
-                        'actions'=>[
+                        'actions' => [
                             'index',
                             'view',
                             'update',
                             'delete',
                             'create'
                         ],
-                        'allow'=>true,
-                        'roles'=>['super-user']
+                        'allow' => true,
+                        'roles' => ['mfo_pap_code']
                     ]
                 ]
             ],

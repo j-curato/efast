@@ -43,7 +43,7 @@ class RoCheckRangesController extends Controller
                             'update',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['ro_check_range']
                     ]
                 ]
             ],

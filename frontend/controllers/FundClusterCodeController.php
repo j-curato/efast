@@ -32,6 +32,7 @@ class FundClusterCodeController extends Controller
                     'get-all-cluster'
                 ],
                 'rules' => [
+     
                     [
                         'actions' => [
                             'index',
@@ -42,8 +43,8 @@ class FundClusterCodeController extends Controller
                             'get-all-cluster'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
-                    ]
+                        'roles' => ['fund_cluster_code']
+                    ],
                 ]
             ],
             'verbs' => [

@@ -42,7 +42,7 @@ class LddapAdasController extends Controller
                             'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['lddap_ada']
                     ]
                 ]
             ],

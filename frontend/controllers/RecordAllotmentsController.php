@@ -53,7 +53,7 @@ class RecordAllotmentsController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['record_allotment']
                     ]
                 ]
             ],

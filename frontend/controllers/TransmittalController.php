@@ -45,6 +45,17 @@ class TransmittalController extends Controller
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
+                    ],
+                    [
+                        'actions' => [
+                            'index',
+                            'update',
+                            'view',
+                            'create',
+                            'insert-transmittal'
+                        ],
+                        'allow' => true,
+                        'roles' => ['ro_transmittal']
                     ]
                 ]
             ],

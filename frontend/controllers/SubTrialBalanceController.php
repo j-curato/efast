@@ -47,7 +47,7 @@ class SubTrialBalanceController extends Controller
                             'export'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['super-user','ro_sub_trial_balance']
                     ]
                 ]
             ],

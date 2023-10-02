@@ -30,7 +30,6 @@ class TripTicketController extends Controller
                     'update',
                     'delete',
                     'create',
-
                 ],
                 'rules' => [
                     [
@@ -42,7 +41,7 @@ class TripTicketController extends Controller
                             'create',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['trip_ticket']
                     ]
                 ]
             ],

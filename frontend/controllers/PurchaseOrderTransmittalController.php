@@ -44,7 +44,7 @@ class PurchaseOrderTransmittalController extends Controller
                             'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['purchase_order_transmittal']
                     ]
                 ]
             ],

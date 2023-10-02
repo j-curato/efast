@@ -49,11 +49,10 @@ class SubAccounts1Controller extends Controller
                             'create',
                             'create-sub-account',
                             'import',
-
                             'get-all-sub-account1',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['sub_account_1']
                     ]
                 ]
             ],

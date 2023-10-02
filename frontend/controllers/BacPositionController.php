@@ -31,7 +31,6 @@ class BacPositionController extends Controller
                     'delete',
                     'get-position',
 
-
                 ],
                 'rules' => [
                     [
@@ -44,14 +43,14 @@ class BacPositionController extends Controller
                             'get-position',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['bac_position']
                     ],
                     [
                         'actions' => [
                             'get-position',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user', '@']
+                        'roles' => ['@']
                     ]
                 ]
             ],

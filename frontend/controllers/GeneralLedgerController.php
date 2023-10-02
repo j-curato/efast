@@ -47,6 +47,19 @@ class GeneralLedgerController extends Controller
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
+                    ],
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'update',
+                            'delete',
+                            'create',
+                            'generate-general-ledger',
+                            'export'
+                        ],
+                        'allow' => true,
+                        'roles' => ['ro_general_ledger']
                     ]
                 ]
             ],

@@ -44,7 +44,7 @@ class LocationController extends Controller
                             'search-location'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['locations']
                     ],
                     [
 

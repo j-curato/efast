@@ -112,11 +112,39 @@ class JevPreparationController extends Controller
                         'allow' => true,
                         'roles' => ['super-user'],
                     ],
-                    // [
-                    //     'actions' => ['create'],
-                    //     'allow' => true,
-                    //     'roles' => ['accounting'],
-                    // ],
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'update',
+                            'create',
+                            'export-jev',
+                        ],
+                        'allow' => true,
+                        'roles' => ['ro_jev'],
+                    ],
+                    [
+                        'actions' => [
+                            'adadj',
+                        ],
+                        'allow' => true,
+                        'roles' => ['ro_adadj'],
+                    ],
+                    [
+                        'actions' => [
+                            'ckdj',
+                        ],
+                        'allow' => true,
+                        'roles' => ['ro_ckdj'],
+                    ],
+                    [
+                        'actions' => [
+                            'get-subsidiary-ledger',
+                        ],
+                        'allow' => true,
+                        'roles' => ['ro_subsidiary_ledger'],
+                    ],
+
 
 
                 ],
@@ -551,7 +579,7 @@ class JevPreparationController extends Controller
             $depSched = DepreciationSchedule::findOne($depSchedId);
             $qry = Yii::$app->db->createCommand("CALL depreciations(:reporting_period,:book)")
                 ->bindValue(':reporting_period', $depSched->reporting_period)
-                ->bindValue(':book', $depSched->fk_book_id)
+                ->bindValue(':book', !empty($depSched->fk_book_id) ? $depSched->fk_book_id : null)
                 ->queryAll();
             $entries = ArrayHelper::getColumn($qry, function ($element) {
                 $arr = [];

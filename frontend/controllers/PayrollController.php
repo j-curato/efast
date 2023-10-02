@@ -49,6 +49,18 @@ class PayrollController extends Controller
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
+                    ],
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'update',
+                            'create',
+                            'delete',
+                            'remove-row'
+                        ],
+                        'allow' => true,
+                        'roles' => ['ro_payroll']
                     ]
                 ]
             ],

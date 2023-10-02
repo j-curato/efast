@@ -55,7 +55,7 @@ class PrStockController extends Controller
                             'final'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['stock']
                     ],
                     [
                         'actions' => [

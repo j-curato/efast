@@ -43,6 +43,16 @@ class JevBeginningBalanceController extends Controller
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
+                    ],
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'create',
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['ro_jev_beginning_balance']
                     ]
                 ]
             ],

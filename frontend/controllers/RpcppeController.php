@@ -48,7 +48,7 @@ class RpcppeController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['rpcppe']
                     ],
 
 

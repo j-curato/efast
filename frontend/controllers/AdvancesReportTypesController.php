@@ -29,6 +29,7 @@ class AdvancesReportTypesController extends Controller
                     'update',
                     'delete',
                     'create',
+                    'get-report-types'
                 ],
 
                 'rules' => [
@@ -39,9 +40,20 @@ class AdvancesReportTypesController extends Controller
                             'update',
                             'delete',
                             'create',
+
+
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['advances_report_type']
+                    ],
+                    [
+                        'actions' => [
+                            'get-report-types'
+
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
                     ]
                 ]
             ],

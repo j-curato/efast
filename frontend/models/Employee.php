@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use common\models\User;
 use Yii;
 
 /**
@@ -113,4 +114,12 @@ class Employee extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Divisions::class, ['id' => 'fk_division_id']);
     }
+    public function getUser()
+    {
+        return $this->hasOne(User::class, ['fk_employee_id' => 'employee_id']);
+    }
+    // public function getUser()
+    // {
+    //     return $this->hasOne(User::class, ['fk_employee_id' => 'employee_id']);
+    // }
 }

@@ -44,7 +44,7 @@ class ReportTypeController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['report_type']
                     ],
 
 

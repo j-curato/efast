@@ -30,7 +30,10 @@ class PropertyArticlesController extends Controller
                     'create',
                     'update',
                     'delete',
+                    'search-article'
                 ],
+
+
                 'rules' => [
                     [
                         'actions' => [
@@ -39,6 +42,13 @@ class PropertyArticlesController extends Controller
                             'create',
                             'update',
                             'delete',
+                        ],
+                        'allow' => true,
+                        'roles' => ['property_articles']
+                    ],
+                    [
+                        'actions' => [
+                            'search-article'
                         ],
                         'allow' => true,
                         'roles' => ['@']

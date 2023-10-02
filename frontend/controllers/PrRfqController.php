@@ -42,6 +42,7 @@ class PrRfqController extends Controller
                     'delete',
                     'search-rfq',
                     'cancel',
+                    'get-pr-items'
                 ],
                 'rules' => [
                     [
@@ -53,9 +54,10 @@ class PrRfqController extends Controller
                             'delete',
                             'search-rfq',
                             'cancel',
+                            'get-pr-items'
                         ],
                         'allow' => true,
-                        'roles' => ['rfq', 'super-user']
+                        'roles' => ['rfq']
                     ]
                 ]
             ],

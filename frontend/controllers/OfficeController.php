@@ -41,10 +41,9 @@ class OfficeController extends Controller
                             'update',
                             'delete',
                             'create',
-                            'search-office'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['office']
                     ],
                     [
                         'actions' => [

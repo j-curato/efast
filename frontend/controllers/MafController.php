@@ -44,7 +44,7 @@ class MafController extends \yii\web\Controller
                             'get-allotments'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['super-user','maf']
                     ]
                 ]
             ],

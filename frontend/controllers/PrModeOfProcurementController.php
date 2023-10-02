@@ -29,6 +29,7 @@ class PrModeOfProcurementController extends Controller
                     'update',
                     'delete',
                     'create',
+                    'get-mode-of-procurements'
                 ],
                 'rules' => [
                     [
@@ -38,9 +39,19 @@ class PrModeOfProcurementController extends Controller
                             'update',
                             'delete',
                             'create',
+
+
+
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['mode_of_procurement']
+                    ],
+                    [
+                        'actions' => [
+                            'get-mode-of-procurements'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
                     ]
                 ]
             ],

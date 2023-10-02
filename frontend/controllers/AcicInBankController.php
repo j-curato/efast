@@ -43,7 +43,7 @@ class AcicInBankController extends Controller
                             'update',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['acic_in_bank']
                     ]
                 ]
             ],

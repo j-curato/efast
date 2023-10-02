@@ -40,7 +40,7 @@ class CitymunController extends Controller
                             'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['citymun']
                     ]
                 ]
             ],

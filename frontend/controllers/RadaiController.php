@@ -43,7 +43,7 @@ class RadaiController extends Controller
                             'update',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['radai']
                     ]
                 ]
             ],

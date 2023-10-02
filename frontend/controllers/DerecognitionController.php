@@ -36,6 +36,7 @@ class DerecognitionController extends Controller
                     'delete',
                     'get-iirup-items',
                     'get-property-details'
+
                 ],
                 'rules' => [
                     [
@@ -49,7 +50,7 @@ class DerecognitionController extends Controller
                             'get-property-details'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['derecognition']
                     ]
                 ]
             ],

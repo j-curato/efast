@@ -46,7 +46,7 @@ class ConsoSubTrialBalanceController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['super-user', 'ro_conso_sub_trial_balance']
                     ]
                 ]
             ],

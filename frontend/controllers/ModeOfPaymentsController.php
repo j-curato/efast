@@ -41,7 +41,7 @@ class ModeOfPaymentsController extends Controller
                             'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['ro_mode_of_payment']
                     ]
                 ]
             ],

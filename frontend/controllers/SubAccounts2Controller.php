@@ -45,7 +45,7 @@ class SubAccounts2Controller extends Controller
                             'import',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['sub_account_2']
                     ]
                 ]
             ],

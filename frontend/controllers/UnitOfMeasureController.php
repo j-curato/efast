@@ -44,7 +44,7 @@ class UnitOfMeasureController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['unit_of_measure']
                     ],
                     [
                         'actions' => [

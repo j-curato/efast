@@ -40,7 +40,7 @@ class BanksController extends Controller
                             'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['banks']
                     ]
                 ]
             ],

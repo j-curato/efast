@@ -30,6 +30,8 @@ class SliiesController extends Controller
                     'create',
                     'delete',
                     'update',
+
+
                 ],
                 'rules' => [
                     [
@@ -41,7 +43,7 @@ class SliiesController extends Controller
                             'update',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['sliie']
                     ]
                 ]
             ],

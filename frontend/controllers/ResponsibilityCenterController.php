@@ -34,6 +34,7 @@ class ResponsibilityCenterController extends Controller
                     'create',
                 ],
                 'rules' => [
+
                     [
                         'actions' => [
                             'index',
@@ -43,7 +44,7 @@ class ResponsibilityCenterController extends Controller
                             'create',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['ro_responsibility_center',]
                     ],
                     [
                         'actions' => [

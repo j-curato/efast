@@ -41,7 +41,7 @@ class CashReceivedController extends Controller
                             'view',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['cash_receive']
                     ]
                 ]
             ],

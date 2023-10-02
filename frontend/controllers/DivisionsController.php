@@ -43,7 +43,7 @@ class DivisionsController extends Controller
                             'search-division'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['division']
                     ],
                     [
                         'actions' => [

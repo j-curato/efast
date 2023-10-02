@@ -45,7 +45,7 @@ class ConsoTrialBalanceController extends Controller
                             'export'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['super-user', 'ro_conso_trial_balance']
                     ]
                 ]
             ],

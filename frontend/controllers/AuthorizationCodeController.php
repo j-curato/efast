@@ -32,6 +32,7 @@ class AuthorizationCodeController extends Controller
                     'get-authorization-codes'
                 ],
                 'rules' => [
+        
                     [
 
                         'actions' => [
@@ -43,7 +44,7 @@ class AuthorizationCodeController extends Controller
                             'get-authorization-codes'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['authorization_code']
                     ]
 
                 ]

@@ -46,6 +46,17 @@ class RemittanceController extends Controller
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
+                    ],
+                    [
+                        'actions' => [
+                            'view',
+                            'update',
+                            'index',
+                            'create',
+                            'delete',
+                        ],
+                        'allow' => true,
+                        'roles' => ['ro_remitttance']
                     ]
                 ]
             ],

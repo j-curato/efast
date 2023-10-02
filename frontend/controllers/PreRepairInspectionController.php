@@ -29,6 +29,7 @@ class PreRepairInspectionController extends Controller
                     'create',
                     'update',
                     'delete',
+
                 ],
                 'rules' => [
                     [
@@ -40,7 +41,7 @@ class PreRepairInspectionController extends Controller
                             'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['pre_repair_inspection']
                     ]
                 ]
             ],

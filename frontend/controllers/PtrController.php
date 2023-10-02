@@ -36,7 +36,8 @@ class PtrController extends Controller
                     'create',
                     'update',
                     'delete',
-                    'insert-ptr'
+                    'insert-ptr',
+                    'get-property-details'
                 ],
                 'rules' => [
                     [
@@ -46,13 +47,11 @@ class PtrController extends Controller
                             'create',
                             'update',
                             'delete',
-                            'insert-ptr'
+                            'get-property-details'
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['ptr']
                     ],
-
-
                 ]
             ],
             'verbs' => [

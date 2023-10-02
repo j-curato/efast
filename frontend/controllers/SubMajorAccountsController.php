@@ -40,7 +40,7 @@ class SubMajorAccountsController extends Controller
                             'index',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['sub_major_account']
                     ],
 
                 ]

@@ -46,6 +46,17 @@ class RoLiquidationReportController extends Controller
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                            'create',
+                            'delete',
+                            'index',
+                            'view',
+                        ],
+                        'allow' => true,
+                        'roles' => ['ro_liquidation_report']
                     ]
                 ]
             ],

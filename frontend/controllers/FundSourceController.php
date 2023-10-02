@@ -34,6 +34,7 @@ class FundSourceController extends Controller
                     'get-fund-sources'
                 ],
                 'rules' => [
+
                     [
                         'actions' => [
                             'index',
@@ -44,7 +45,7 @@ class FundSourceController extends Controller
                             'get-fund-sources'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['fund_source']
                     ],
                     [
                         'actions' => [

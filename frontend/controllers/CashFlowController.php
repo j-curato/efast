@@ -42,11 +42,11 @@ class CashFlowController extends Controller
                             'create',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['cash_flow']
                     ],
                     [
                         'actions' => [
-                          
+
                             'get-all-cashflow'
                         ],
                         'allow' => true,

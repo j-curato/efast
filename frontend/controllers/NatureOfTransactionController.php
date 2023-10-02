@@ -41,7 +41,7 @@ class NatureOfTransactionController extends Controller
                             'update'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['nature_of_transaction']
                     ],
                     [
                         'actions' => [

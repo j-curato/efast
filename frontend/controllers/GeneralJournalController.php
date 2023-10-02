@@ -48,6 +48,19 @@ class GeneralJournalController extends Controller
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
+                    ],
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'delete',
+                            'update',
+                            'create',
+                            'generate',
+                            'export'
+                        ],
+                        'allow' => true,
+                        'roles' => ['ro_general_journal']
                     ]
                 ]
             ],

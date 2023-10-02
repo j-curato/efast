@@ -40,7 +40,7 @@ class AllotmentTypeController extends Controller
                             'delete'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['allotment_type']
                     ]
                 ]
             ],

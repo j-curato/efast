@@ -46,7 +46,7 @@ class FundSourceTypeController extends Controller
                             'all-fund-source-type'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['fund_source_type']
                     ],
                     [
                         'actions' => [

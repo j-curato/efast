@@ -33,7 +33,20 @@ class MrdClassificationController extends Controller
                 ],
                 'rules' => [
                     [
-                        'actions' => [],
+                        'actions' => [
+                            'index',
+                            'view',
+                            'create',
+                            'update',
+                            'delete',
+                        ],
+                        'allow' => true,
+                        'roles' => ['mrd_classification']
+                    ],
+                    [
+                        'actions' => [
+                            'get-mrd-classification',
+                        ],
                         'allow' => true,
                         'roles' => ['@']
                     ]

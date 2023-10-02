@@ -40,7 +40,7 @@ class MaintenanceJobRequestController extends Controller
                             'create',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['maintenance_job_request']
                     ]
                 ]
             ],

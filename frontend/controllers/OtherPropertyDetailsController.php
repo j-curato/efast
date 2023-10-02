@@ -56,7 +56,7 @@ class OtherPropertyDetailsController extends Controller
                             'get-frt-mth-dep',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['other_property_details']
                     ]
                 ]
             ],

@@ -56,11 +56,7 @@ class CashDisbursementController extends Controller
                     'search-dv',
                     'dv-details',
                     'get-dv',
-
-
-
-
-
+                    'cash-chart-of-accounts'
 
                 ],
 
@@ -82,18 +78,11 @@ class CashDisbursementController extends Controller
                             'search-dv',
                             'dv-details',
                             'get-dv',
+                            'cash-chart-of-accounts'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['cash_disbursement']
                     ],
-                    // [
-                    //     'actions' => [
-                    //         'index',
-
-                    //     ],
-                    //     'allow' => true,
-                    //     'roles' => ['department-offices']
-                    // ]
                 ]
             ],
             'verbs' => [

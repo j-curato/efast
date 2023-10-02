@@ -31,6 +31,7 @@ class FundCategoryAndClassificationCodeController extends Controller
                     'delete'
                 ],
                 'rules' => [
+         
                     [
                         'actions' => [
                             'index',
@@ -40,7 +41,7 @@ class FundCategoryAndClassificationCodeController extends Controller
                             'delete'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['fund_classification_code']
                     ]
                 ]
             ],

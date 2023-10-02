@@ -41,7 +41,7 @@ class CarsController extends Controller
                             'create',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['car']
                     ]
                 ]
             ],

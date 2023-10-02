@@ -32,6 +32,7 @@ class SsfSpNumController extends Controller
                     'create',
                     'delete',
                     'search-SsfSp'
+
                 ],
                 'rules' => [
                     [
@@ -44,7 +45,7 @@ class SsfSpNumController extends Controller
                             'search-SsfSp'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['ssf_sp_num']
                     ],
                     [
                         'actions' => [

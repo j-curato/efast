@@ -40,7 +40,7 @@ class TransferTypeController extends Controller
                             'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['transfer_type']
                     ],
 
 

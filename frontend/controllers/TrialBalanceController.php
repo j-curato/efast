@@ -49,6 +49,20 @@ class TrialBalanceController extends Controller
 
                         'allow' => true,
                         'roles' => ['super-user']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                            'create',
+                            'view',
+                            'index',
+                            'delete',
+                            'generate-trial-balance',
+                            'export'
+                        ],
+
+                        'allow' => true,
+                        'roles' => ['ro_trial_balance']
                     ]
                 ]
             ],

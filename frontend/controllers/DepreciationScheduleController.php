@@ -33,6 +33,8 @@ class DepreciationScheduleController extends Controller
                     'delete',
                     'generate',
 
+
+
                 ],
                 'rules' => [
                     [
@@ -45,7 +47,7 @@ class DepreciationScheduleController extends Controller
                             'generate',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['depreciation_schedule']
                     ]
                 ]
             ],
@@ -159,7 +161,7 @@ class DepreciationScheduleController extends Controller
     {
         $query =   Yii::$app->db->createCommand("CALL depreciations(:reporting_period,:book_id)")
             ->bindValue(':reporting_period', $reporting_period)
-            ->bindValue(':book_id', $book)
+            ->bindValue(':book_id', !empty($book)?$book:null)
             ->queryAll();
         return $query;
     }

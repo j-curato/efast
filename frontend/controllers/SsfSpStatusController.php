@@ -40,7 +40,7 @@ class SsfSpStatusController extends Controller
                             'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['ssf_sp_status']
                     ]
                 ]
             ],

@@ -38,33 +38,23 @@ class PrAoqController extends Controller
                     'delete',
                     'get-rqf-info',
                     'cancel',
+                    'search-aoq'
                 ],
                 'rules' => [
                     [
                         'actions' => [
+                            'index',
+                            'view',
+                            'create',
+                            'update',
+                            'delete',
+                            'get-rqf-info',
                             'cancel',
-                            'index',
-                            'view',
-                            'create',
-                            'update',
-                            'delete',
-                            'get-rqf-info',
+                            'search-aoq'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['aoq']
                     ],
-                    [
-                        'actions' => [
-                            'index',
-                            'view',
-                            'create',
-                            'update',
-                            'delete',
-                            'get-rqf-info',
-                        ],
-                        'allow' => true,
-                        'roles' => ['@']
-                    ]
                 ]
             ],
             'verbs' => [

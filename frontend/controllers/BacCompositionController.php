@@ -45,7 +45,7 @@ class BacCompositionController extends Controller
                             'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user', 'po_procurement_admin']
+                        'roles' => ['bac']
                     ]
                 ]
             ],

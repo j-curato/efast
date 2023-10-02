@@ -38,9 +38,10 @@ class PrContractTypeController extends Controller
                             'create',
                             'update',
                             'delete',
+
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['contract_type']
                     ]
                 ]
             ],

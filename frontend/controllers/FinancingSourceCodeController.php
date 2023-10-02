@@ -32,6 +32,7 @@ class FinancingSourceCodeController extends Controller
                     'get-financing-source-codes'
                 ],
                 'rules' => [
+     
                     [
                         'actions' => [
                             'index',
@@ -42,8 +43,8 @@ class FinancingSourceCodeController extends Controller
                             'get-financing-source-codes'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
-                    ]
+                        'roles' => ['financing_source_code']
+                    ],
                 ]
             ],
             'verbs' => [

@@ -45,6 +45,19 @@ class DocumentRecieveController extends Controller
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
+                    ],
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'create',
+                            'update',
+                            'delete',
+                            'get-document-recieves',
+                            'find-document',
+                        ],
+                        'allow' => true,
+                        'roles' => ['document_receive']
                     ]
                 ]
             ],

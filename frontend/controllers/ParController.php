@@ -37,11 +37,12 @@ class ParController extends Controller
                     'create',
                     'update',
                     'delete',
-                    'search-employee',
+
                     'search-par',
                     'par-details',
                     'get-par',
                     'blank-sticker'
+
                 ],
                 'rules' => [
                     [
@@ -51,7 +52,6 @@ class ParController extends Controller
                             'create',
                             'update',
                             'delete',
-                            'search-employee',
                             'search-par',
                             'par-details',
                             'get-par',
@@ -59,24 +59,8 @@ class ParController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['par']
                     ],
-                    [
-                        'actions' => [
-                            'index',
-                            'view',
-                            'create',
-                            'search-employee',
-                            'search-par',
-                            'par-details',
-                            'get-par',
-                            'blank-sticker'
-
-                        ],
-                        'allow' => true,
-                        'roles' => ['@']
-                    ],
-
 
                 ]
             ],
@@ -239,12 +223,12 @@ class ParController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
+    // public function actionDelete($id)
+    // {
+    //     $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
-    }
+    //     return $this->redirect(['index']);
+    // }
 
     /**
      * Finds the Par model based on its primary key value.

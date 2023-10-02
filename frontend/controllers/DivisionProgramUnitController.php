@@ -41,7 +41,7 @@ class DivisionProgramUnitController extends Controller
                             'delete'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['division_program_unit']
                     ]
                 ]
             ],
