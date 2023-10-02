@@ -28,6 +28,8 @@ class IarController extends Controller
                 'only' => [
                     'view',
                     'index',
+                    'search-iar'
+
                 ],
                 'rules' => [
                     [
@@ -36,7 +38,14 @@ class IarController extends Controller
                             'index'
                         ],
                         'allow' => true,
-                        'roles' => ['iar', 'ro-common-user']
+                        'roles' => ['iar']
+                    ],
+                    [
+                        'actions' => [
+                            'search-iar'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
                     ]
                 ]
             ],
@@ -144,6 +153,8 @@ class IarController extends Controller
         property_unit.employee_name ,
         payee.registered_name ,
         pr_project_procurement.title ,
+        pr_purchase_order.po_number,
+        responsibility_center.`name`,
          DATE_FORMAT(request_for_inspection_items.`from`,'%M %d, %Y') ,
         DATE_FORMAT(request_for_inspection_items.`to`,'%M %d, %Y') ,
         DATE_FORMAT(iar.created_at,'%M %d, %Y') ,
