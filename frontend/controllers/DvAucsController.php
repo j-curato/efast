@@ -452,6 +452,7 @@ class DvAucsController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             $items = !empty(Yii::$app->request->post('items')) ? Yii::$app->request->post('items') : [];
+            $model->recieved_at = DateTime::createFromFormat('Y-m-d h:i A', $model->recieved_at)->format('Y-m-d  H:i');
             $model->dv_number =  $this->getDvNumber($model->reporting_period, $model->book_id);
             try {
                 $t_type = strtolower(DvTransactionType::findOne($model->fk_dv_transaction_type_id)->name);
