@@ -14,24 +14,8 @@ use yii\bootstrap4\ActiveForm;
 <div class="sub-accounts1-form">
 
     <?php $form = ActiveForm::begin(); ?>
-
-    <label class="control-label">Tag Multiple</label>
-    <?=
-    Select2::widget([
-        'name' => 'color_2',
-        'value' => ['red', 'green'], // initial value
-        'data' => $data,
-        'maintainOrder' => true,
-        'options' => ['placeholder' => 'Select a color ...', 'multiple' => true],
-        'pluginOptions' => [
-            'tags' => true,
-            'maximumInputLength' => 10
-        ],
-
-    ]);
-    ?>
+    <?= $form->field($model, 'name')->textarea() ?>
     <div class="row justify-content-center">
-
         <div class="form-group">
             <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
         </div>
