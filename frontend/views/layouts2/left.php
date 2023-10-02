@@ -793,6 +793,15 @@ $user_data = Yii::$app->memem->getUserData();
                                     'url' => '#',
                                     'items' => [
                                         Yii::$app->user->can('super-user') ?     ['label' => 'IT Maintenance Request', 'icon' => 'circle-o', 'url' => ['/it-maintenance-request'],] : [],
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'CSF', 'icon' => 'circle-o', 'url' => ['/it-helpdesk-csf'],] : [],
+                                    ],
+                                ],
+                                [
+                                    'label' => 'Reports',
+                                    'icon' => 'circle-o',
+                                    'url' => '#',
+                                    'items' => [
+                                        Yii::$app->user->can('super-user') ?     ['label' => 'CSF', 'icon' => 'circle-o', 'url' => ['/csf-reports/csf-tabulation'],] : [],
                                     ],
                                 ],
 
@@ -800,9 +809,6 @@ $user_data = Yii::$app->memem->getUserData();
                         ] : [],
                         Yii::$app->user->can('super-user') ?     ['label' => 'Travel Order', 'icon' => 'circle-o', 'url' => ['/travel-order'],] : [],
                         Yii::$app->user->can('super-user') ?     ['label' => 'Supervisor Validation Notes', 'icon' => 'circle-o', 'url' => ['/supervisor-validation-notes'],] : [],
-
-
-
 
                     ],
                 ]
