@@ -6,33 +6,34 @@ use Yii;
 use DateTime;
 use yii\db\Query;
 use ErrorException;
+use yii\helpers\Url;
 use app\models\Books;
-use app\models\DvAucs;
 
+use app\models\DvAucs;
 use yii\web\Controller;
 use app\models\Advances;
-use yii\filters\VerbFilter;
-use app\models\DvAucsSearch;
+use app\models\DvAucsFile;
 
+use PHPUnit\Util\Log\JSON;
+use yii\filters\VerbFilter;
+use yii\helpers\FileHelper;
+use app\models\DvAucsSearch;
 use app\models\SubAccounts2;
+use yii\helpers\ArrayHelper;
 use app\models\DvAucsEntries;
+use common\models\UploadForm;
+use yii\validators\Validator;
 use yii\filters\AccessControl;
 use app\models\AdvancesEntries;
 use app\models\ProcessOrsSearch;
+use app\models\DvAucsIndexSearch;
+use app\models\DvTransactionType;
 use app\models\ProcessOrsEntries;
 use yii\web\NotFoundHttpException;
 use app\models\DvAccountingEntries;
-use app\models\DvAucsFile;
-use app\models\DvAucsIndexSearch;
-use app\models\DvTransactionType;
-use app\models\TrackingSheetIndexSearch;
 use app\models\VwNoFileLinkDvsSearch;
-use common\models\UploadForm;
+use app\models\TrackingSheetIndexSearch;
 use phpDocumentor\Reflection\PseudoTypes\False_;
-use PHPUnit\Util\Log\JSON;
-use yii\helpers\FileHelper;
-use yii\helpers\Url;
-use yii\validators\Validator;
 
 /**
  * DvAucsController implements the CRUD actions for DvAucs model.
@@ -120,11 +121,23 @@ class DvAucsController extends Controller
                             'index',
                             'update',
                             'view',
-
+                            'cancel',
+                            'add-link',
                         ],
                         'allow' => true,
                         'roles' => ['ro_process_dv']
                     ],
+                    [
+                        'actions' => [
+                            'turnarround-time',
+                            'in',
+                            'out',
+                        ],
+                        'allow' => true,
+                        'roles' => ['ro_turn_arround_time']
+                    ],
+
+
                     [
                         'actions' => [
                             'index',
@@ -2495,7 +2508,6 @@ class DvAucsController extends Controller
         $limit = 5;
         $offset = ($page - 1) * $limit;
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-
         $out = ['results' => ['id' => '', 'text' => '']];
         if ($id > 0) {
             $out['results'] = ['id' => $id, 'text' => DvAucs::findOne($id)->dv_number];
@@ -2512,5 +2524,150 @@ class DvAucsController extends Controller
             $out['pagination'] = ['more' => !empty($data) ? true : false];
         }
         return $out;
+    }
+    public function actionDetailedDv()
+    {
+
+        if (Yii::$app->request->post()) {
+
+            $year = Yii::$app->request->post('year');
+            $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+            $headers = [
+                'DV No.',
+                'Reporting Period',
+                'Check No.',
+                'ADA No.',
+                'Total Amount Disbursed',
+                'ORS No.',
+                'ORS Amount',
+                'Payee',
+                'Particular',
+                'Amount Disburse',
+                'Vat/Non-Vat',
+                'EWT',
+                'Compensation',
+                'Other Trust Liabilities',
+                'Nature of Transaction',
+                'MRD Classification',
+                'DV isCancelled',
+                'DV isPayable',
+                'Book',
+
+            ];
+            foreach ($headers as $key => $head) {
+                $sheet->setCellValue([$key + 1, 2], $head);
+            }
+            $row = 3;
+            foreach (DvAucs::getDetailedDv($year) as $val) {
+
+
+                $sheet->setCellValue(
+                    [1, $row],
+                    $val['dv_number']
+                );
+                $sheet->setCellValue(
+                    [2, $row],
+                    $val['reporting_period']
+                );
+                $sheet->setCellValue(
+                    [3, $row],
+                    $val['check_or_ada_no']
+                );
+                $sheet->setCellValue(
+                    [4, $row],
+                    $val['ada_number']
+                );
+                $sheet->setCellValue(
+                    [5, $row],
+                    $val['total_disbursed']
+                );
+                $sheet->setCellValue(
+                    [6, $row],
+                    $val['ors_number']
+                );
+                $sheet->setCellValue(
+                    [7, $row],
+                    $val['ors_amt']
+                );
+                $sheet->setCellValue(
+                    [8, $row],
+                    $val['payee']
+                );
+                $sheet->setCellValue(
+                    [9, $row],
+                    $val['particular']
+                );
+                $sheet->setCellValue(
+                    [10, $row],
+                    $val['amount_disbursed']
+                );
+                $sheet->setCellValue(
+                    [11, $row],
+                    $val['vat_nonvat']
+                );
+                $sheet->setCellValue(
+                    [12, $row],
+                    $val['ewt_goods_services']
+                );
+                $sheet->setCellValue(
+                    [13, $row],
+                    $val['compensation']
+                );
+                $sheet->setCellValue(
+                    [14, $row],
+
+                    $val['other_trust_liabilities']
+                );
+
+                $sheet->setCellValue(
+                    [15, $row],
+                    $val['nature_of_transaction']
+                );
+
+
+                $sheet->setCellValue(
+                    [16, $row],
+                    $val['mrd_classification']
+                );
+
+                $sheet->setCellValue(
+                    [17, $row],
+                    $val['is_cancelled']
+                );
+
+
+                $sheet->setCellValue(
+                    [18, $row],
+                    $val['payable']
+                );
+
+                $sheet->setCellValue(
+                    [19, $row],
+                    $val['book_name']
+                );
+
+
+                $row++;
+            }
+
+            date_default_timezone_set('Asia/Manila');
+            $date = date('Y-m-d h-s A');
+            $file_name = "detailed_dv_$year.xlsx";
+            $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
+            $fileSaveLoc =  "exports\\" . $file_name;
+            $path = Yii::getAlias('@webroot') . '/exports';
+            $file = $path . "/$file_name";
+            $writer->save($file);
+            // return ob_get_clean();
+            header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
+            header('Content-Transfer-Encoding: binary');
+            header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+            header('Pragma: public'); // HTTP/1.0
+            echo  json_encode($fileSaveLoc);
+
+            exit();
+        }
+        return $this->render('detailed_dvs');
     }
 }
