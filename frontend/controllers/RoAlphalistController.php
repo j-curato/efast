@@ -270,12 +270,9 @@ class RoAlphalistController extends Controller
                 SUM(dv_aucs_entries.other_trust_liabilities) as other_trust_liabilities
             FROM dv_aucs
             LEFT JOIN dv_aucs_entries ON dv_aucs.id = dv_aucs_entries.dv_aucs_id
-            JOIN cash_disbursement_items ON dv_aucs.id = cash_disbursement_items.fk_dv_aucs_id
-            JOIN cash_disbursement ON cash_disbursement_items.fk_cash_disbursement_id  = cash_disbursement.id
+            JOIN cte_goodCashDvs ON dv_aucs.id = cte_goodCashDvs.fk_dv_aucs_id
             WHERE 
                 dv_aucs_entries.is_deleted = 0
-                AND cash_disbursement_items.is_deleted = 0
-                AND cash_disbursement.is_cancelled = 0
                 AND
                 $sql
               
@@ -318,13 +315,10 @@ class RoAlphalistController extends Controller
             COALESCE(SUM(dv_aucs_entries.ewt_goods_services),0) as total_ewt_goods_services,
             COALESCE(SUM(dv_aucs_entries.compensation),0) as total_compensation
             FROM dv_aucs
-            JOIN cash_disbursement_items ON dv_aucs.id = cash_disbursement_items.fk_dv_aucs_id
-            JOIN cash_disbursement ON cash_disbursement_items.fk_cash_disbursement_id  = cash_disbursement.id
+            JOIN cte_goodCashDvs ON dv_aucs.id = cte_goodCashDvs.fk_dv_aucs_id
             LEFT JOIN dv_aucs_entries ON dv_aucs.id = dv_aucs_entries.dv_aucs_id
             WHERE
             dv_aucs_entries.is_deleted = 0
-             AND cash_disbursement_items.is_deleted = 0
-              AND cash_disbursement.is_cancelled = 0
             AND 
              $sql
             GROUP BY 
