@@ -55,8 +55,8 @@ class SupplementalPpmpCse extends \yii\db\ActiveRecord
     {
 
 
-        return Yii::$app->db->createCommand("CALL CalculatePpmpNonCseBalance(:prItemId,:id,:amount,:qty)")
-            ->bindValue(':prItemId', $prItemId)
+        return Yii::$app->db->createCommand("CALL CalculatePpmpCseBalance(:prItemId,:id,:amount,:qty)")
+            ->bindValue(':prItemId', !empty($prItemId)?$prItemId:null)
             ->bindValue(':id', $this->id)
             ->bindValue(':amount', $amount)
             ->bindValue(':qty', $qty)
