@@ -90,29 +90,31 @@ if (!empty($model->id)) {
                     ]
                 ]) ?>
             </div>
-            <div class="col-sm-3">
-                <?= $form->field($model, 'fk_pr_aoq_id')->widget(Select2::class, [
-                    'data' => $aoq_id,
-                    'options' => ['placeholder' => 'Search for a AOQ Number'],
-                    'pluginOptions' => [
-                        'allowClear' => true,
-                        'minimumInputLength' => 1,
-                        'language' => [
-                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+            <?php if (empty($model->id)) : ?>
+                <div class="col-sm-3">
+                    <?= $form->field($model, 'fk_pr_aoq_id')->widget(Select2::class, [
+                        'data' => $aoq_id,
+                        'options' => ['placeholder' => 'Search for a AOQ Number'],
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                            'minimumInputLength' => 1,
+                            'language' => [
+                                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                            ],
+                            'ajax' => [
+                                'url' => Yii::$app->request->baseUrl . '?r=pr-aoq/search-aoq',
+                                'dataType' => 'json',
+                                'delay' => 250,
+                                'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                                'cache' => true
+                            ],
+                            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
                         ],
-                        'ajax' => [
-                            'url' => Yii::$app->request->baseUrl . '?r=pr-aoq/search-aoq',
-                            'dataType' => 'json',
-                            'delay' => 250,
-                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                            'cache' => true
-                        ],
-                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                    ],
-                ]) ?>
-            </div>
+                    ]) ?>
+                </div>
+            <?php endif; ?>
 
             <div class="col-sm-2">
                 <?= $form->field($model, 'fk_contract_type_id')->widget(Select2::class, [
