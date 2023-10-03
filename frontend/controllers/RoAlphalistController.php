@@ -312,11 +312,11 @@ class RoAlphalistController extends Controller
         FROM (SELECT 
             dv_aucs.reporting_period,
             dv_aucs.book_id,
-            IFNULL(SUM(dv_aucs_entries.vat_nonvat),0)+
-            IFNULL(SUM(dv_aucs_entries.ewt_goods_services),0) as total_tax,
-            IFNULL(SUM(dv_aucs_entries.vat_nonvat),0) as total_vat_nonvat,
-            IFNULL(SUM(dv_aucs_entries.ewt_goods_services),0) as total_ewt_goods_services,
-            IFNULL(SUM(dv_aucs_entries.compensation),0) as total_compensation
+            COALESCE(SUM(dv_aucs_entries.vat_nonvat),0)+
+            COALESCE(SUM(dv_aucs_entries.ewt_goods_services),0) as total_tax,
+            COALESCE(SUM(dv_aucs_entries.vat_nonvat),0) as total_vat_nonvat,
+            COALESCE(SUM(dv_aucs_entries.ewt_goods_services),0) as total_ewt_goods_services,
+            COALESCE(SUM(dv_aucs_entries.compensation),0) as total_compensation
             FROM dv_aucs
             JOIN cash_disbursement_items ON dv_aucs.id = cash_disbursement_items.fk_dv_aucs_id
             JOIN cash_disbursement ON cash_disbursement_items.fk_cash_disbursement_id  = cash_disbursement.id

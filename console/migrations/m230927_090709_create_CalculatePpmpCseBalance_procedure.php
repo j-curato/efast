@@ -79,7 +79,6 @@ class m230927_090709_create_CalculatePpmpCseBalance_procedure extends Migration
      */
     public function safeDown()
     {
-
     }
 
     /*

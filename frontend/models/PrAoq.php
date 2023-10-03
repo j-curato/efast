@@ -34,6 +34,7 @@ class PrAoq extends \yii\db\ActiveRecord
                 'pr_rfq_id',
                 'is_cancelled',
                 'fk_office_id',
+                'is_deleted'
             ], 'integer'],
             [['pr_date', 'created_at', 'cancelled_at'], 'safe'],
             [['aoq_number'], 'string', 'max' => 255],
@@ -78,6 +79,45 @@ class PrAoq extends \yii\db\ActiveRecord
             ->bindValue(':id', $this->id)
             ->queryAll();
     }
+    public function checkHasPo()
+    {
+        return Yii::$app->db->createCommand("SELECT EXISTS(SELECT * FROM `pr_aoq` 
+        JOIN pr_purchase_order ON pr_aoq.id = pr_purchase_order.fk_pr_aoq_id
+        WHERE
+        pr_purchase_order.is_cancelled = 0
+        AND pr_aoq.id = :id
+        )")
+            ->bindValue(':id', $this->id)
+            ->queryScalar();
+    }
+    public function getItems()
+    {
+        return Yii::$app->db->createCommand("SELECT
+                pr_aoq_entries.id as item_id,
+                pr_rfq_item.id as rfq_item_id,
+                pr_stock.bac_code,
+                unit_of_measure.unit_of_measure,
+                pr_stock.stock_title,
+                IFNULL(REPLACE( pr_purchase_request_item.specification, '[n]', '<br>'),'') as specification,
+                pr_purchase_request_item.quantity,
+                payee.account_name as payee,
+                payee.id as payee_id,
+                pr_aoq_entries.amount,
+                pr_aoq_entries.remark,
+                pr_aoq_entries.is_lowest
+                FROM pr_aoq_entries
+                LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
+                LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
+                LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
+                LEFT JOIN unit_of_measure ON pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
+                LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
+                WHERE 
+                pr_aoq_entries.is_deleted = 0
+                AND
+                pr_aoq_entries.pr_aoq_id = :pr_aoq_id")
+            ->bindValue(':pr_aoq_id', $this->id)
+            ->queryAll();
+    }
     /**
      * {@inheritdoc}
      */
@@ -91,7 +131,8 @@ class PrAoq extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
             'is_cancelled' => 'Is Cancel',
             'cancelled_at=' => 'Cancelled  At',
-            'fk_office_id' => 'Office'
+            'fk_office_id' => 'Office',
+            'is_deleted' => 'is Deleted',
         ];
     }
     public function getPrAoqEntries()

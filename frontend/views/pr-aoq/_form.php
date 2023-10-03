@@ -1,13 +1,14 @@
 <?php
 
+use yii\helpers\Html;
 use app\models\Office;
+use yii\web\JqueryAsset;
+use yii\web\JsExpression;
 use kartik\date\DatePicker;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
-use yii\web\JqueryAsset;
-use yii\web\JsExpression;
 use yii\bootstrap4\ActiveForm;
+use aryelds\sweetalert\SweetAlertAsset;
 
 
 /* @var $this yii\web\View */
@@ -29,7 +30,9 @@ $row = 1;
 <div class="pr-aoq-form">
     <span style="font-size: 2rem;color:red;padding-bottom:5rem;font-variant:small-caps">*select the lowest supplier by checking the checkbox.</span>
     <div class="con">
-        <?php $form = ActiveForm::begin(); ?>
+        <?php $form = ActiveForm::begin([
+            'id' => $model->formName()
+        ]); ?>
         <div class="row">
             <?php
             if (Yii::$app->user->can('super-user')) {
@@ -270,3 +273,34 @@ $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [
         })
     })
 </script>
+<?php
+SweetAlertAsset::register($this);
+$js = <<< JS
+    $("#PrAoq").on("beforeSubmit", function (event) {
+        event.preventDefault();
+        var form = $(this);
+        $.ajax({
+            url: form.attr("action"),
+            type: form.attr("method"),
+            data: form.serialize(),
+            success: function (data) {
+                let res = JSON.parse(data)
+                console.log(res)
+                swal({
+                    icon: 'error',
+                    title: res,
+                    type: "error",
+                    timer: 3000,
+                    closeOnConfirm: false,
+                    closeOnCancel: false
+                })
+            },
+            error: function (data) {
+        
+            }
+        });
+        return false;
+    });
+JS;
+$this->registerJs($js);
+?>
