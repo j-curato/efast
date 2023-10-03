@@ -242,7 +242,8 @@ class RoAlphalistController extends Controller
                 SELECT 
                     cash_disbursement_items.fk_dv_aucs_id,
                     cash_disbursement.check_or_ada_no as check_number,
-                    cash_disbursement.issuance_date  as check_date
+                    cash_disbursement.issuance_date  as check_date,
+                    cash_disbursement.reporting_period
                 FROM cash_disbursement
                 JOIN cash_disbursement_items ON cash_disbursement.id = cash_disbursement_items.fk_cash_disbursement_id
                 WHERE 
@@ -315,10 +316,13 @@ class RoAlphalistController extends Controller
             COALESCE(SUM(dv_aucs_entries.ewt_goods_services),0) as total_ewt_goods_services,
             COALESCE(SUM(dv_aucs_entries.compensation),0) as total_compensation
             FROM dv_aucs
-            JOIN cte_goodCashDvs ON dv_aucs.id = cte_goodCashDvs.fk_dv_aucs_id
+            JOIN cash_disbursement_items ON dv_aucs.id = cash_disbursement_items.fk_dv_aucs_id
+            JOIN cash_disbursement ON cash_disbursement_items.fk_cash_disbursement_id  = cash_disbursement.id
             LEFT JOIN dv_aucs_entries ON dv_aucs.id = dv_aucs_entries.dv_aucs_id
             WHERE
             dv_aucs_entries.is_deleted = 0
+             AND cash_disbursement_items.is_deleted = 0
+              AND cash_disbursement.is_cancelled = 0
             AND 
              $sql
             GROUP BY 
@@ -343,8 +347,8 @@ class RoAlphalistController extends Controller
 
             $sql = Yii::$app->db->getQueryBuilder()->buildCondition([
                 'AND',
-                ["<=", 'cash_disbursement.reporting_period', $reporting_period],
-                ['>=', 'cash_disbursement.reporting_period', '2022-01'],
+                ["<=", 'cte_goodCashDvs.reporting_period', $reporting_period],
+                ['>=', 'cte_goodCashDvs.reporting_period', '2022-01'],
                 ['=', 'dv_aucs.is_cancelled', 0],
                 'dv_aucs.fk_ro_alphalist_id IS  NULL'
             ], $params);
