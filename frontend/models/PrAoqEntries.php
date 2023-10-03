@@ -30,22 +30,9 @@ class PrAoqEntries extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['pr_aoq_id', 'payee_id', 'is_lowest', 'pr_rfq_item_id'], 'integer'],
+            [['pr_aoq_id', 'payee_id', 'is_lowest', 'pr_rfq_item_id', 'is_deleted'], 'integer'],
             [['amount'], 'number'],
             [['remark'], 'string'],
-            [[
-
-                'id',
-                'pr_aoq_id',
-                'payee_id',
-                'amount',
-                'remark',
-                'is_lowest',
-                'pr_rfq_item_id',
-                'no_bid',
-
-            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
-
         ];
     }
 
@@ -62,6 +49,8 @@ class PrAoqEntries extends \yii\db\ActiveRecord
             'remark' => 'Remark',
             'is_lowest' => 'Is Lowest',
             'pr_rfq_item_id' => 'RFQ Item',
+            'is_deleted' => 'is Deleted',
+
         ];
     }
     public function getPayee()

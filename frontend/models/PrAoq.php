@@ -34,7 +34,6 @@ class PrAoq extends \yii\db\ActiveRecord
                 'pr_rfq_id',
                 'is_cancelled',
                 'fk_office_id',
-                'is_deleted'
             ], 'integer'],
             [['pr_date', 'created_at', 'cancelled_at'], 'safe'],
             [['aoq_number'], 'string', 'max' => 255],
@@ -132,7 +131,6 @@ class PrAoq extends \yii\db\ActiveRecord
             'is_cancelled' => 'Is Cancel',
             'cancelled_at=' => 'Cancelled  At',
             'fk_office_id' => 'Office',
-            'is_deleted' => 'is Deleted',
         ];
     }
     public function getPrAoqEntries()
