@@ -2784,20 +2784,20 @@ class JevPreparationController extends Controller
                 ->joinWith('jevPreparation')
                 ->where('jev_preparation.reporting_period >=:reporting_period', ['reporting_period' => $reporting_period])
                 ->all();
-            $q1 = (new \yii\db\Query())
-                ->select([
-                    'SUM(jev_accounting_entries.debit) as total_debit',
-                    'SUM(jev_accounting_entries.credit) as total_credit',
-                    'jev_accounting_entries.object_code',
-                    'jev_accounting_entries.lvl',
-                    'books.name as book_name'
-                ])
-                ->from('jev_accounting_entries')
-                ->join('LEFT JOIN', 'jev_preparation', 'jev_accounting_entries.jev_preparation_id = jev_preparation.id')
-                ->join('LEFT JOIN', 'books', 'jev_preparation.book_id = books.id')
-                ->where("jev_preparation.reporting_period <:reporting_period", ['reporting_period' => $reporting_period])
-                ->groupBy("jev_accounting_entries.object_code")
-                ->all();
+            // $q1 = (new \yii\db\Query())
+            //     ->select([
+            //         'SUM(jev_accounting_entries.debit) as total_debit',
+            //         'SUM(jev_accounting_entries.credit) as total_credit',
+            //         'jev_accounting_entries.object_code',
+            //         'jev_accounting_entries.lvl',
+            //         'books.name as book_name'
+            //     ])
+            //     ->from('jev_accounting_entries')
+            //     ->join('LEFT JOIN', 'jev_preparation', 'jev_accounting_entries.jev_preparation_id = jev_preparation.id')
+            //     ->join('LEFT JOIN', 'books', 'jev_preparation.book_id = books.id')
+            //     ->where("jev_preparation.reporting_period <:reporting_period", ['reporting_period' => $reporting_period])
+            //     ->groupBy("jev_accounting_entries.object_code")
+            //     ->all();
 
             // $sub1 = (new \yii\db\Query())
             //     ->select('*')
