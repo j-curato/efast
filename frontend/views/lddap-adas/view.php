@@ -308,7 +308,7 @@ $accounting_head = !empty($model->fk_accounting_head) ?  $accounting_head =  $em
 
         th,
         td {
-            font-size: 13px;
+            /* font-size: 13px; */
             padding: 4px;
         }
 
