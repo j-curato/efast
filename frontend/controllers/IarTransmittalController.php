@@ -33,6 +33,7 @@ class IarTransmittalController extends Controller
                     'update',
                     'create',
                     'delete',
+                    
                 ],
                 'rules' => [
                     [
@@ -44,7 +45,7 @@ class IarTransmittalController extends Controller
                             'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['iar_transmittal']
                     ]
                 ]
             ],

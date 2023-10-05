@@ -1,6 +1,8 @@
 <?php
 
 use yii\helpers\Html;
+use app\models\Employee;
+use yii\web\JqueryAsset;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
@@ -10,12 +12,18 @@ $this->title = $model->serial_number;
 $this->params['breadcrumbs'][] = ['label' => 'Lddap Adas', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
-
+$emp = new Employee();
+$cerified_correct_by = !empty($model->fk_certified_correct_by) ?  $emp->getEmployeeById($model->fk_certified_correct_by) : [];
+$approved_by = !empty($model->fk_approved_by) ? $emp->getEmployeeById($model->fk_approved_by) : [];
+$accounting_head = !empty($model->fk_accounting_head) ?  $accounting_head =  $emp->getEmployeeById($model->fk_accounting_head) : [];
 
 ?>
 <div class="lddap-adas-view">
     <div class="container">
-        <?= Html::a('Cash Disbursement', ['cash-disbursement/view', 'id' => $model->fk_cash_disbursement_id], ['class' => 'btn btn-link']) ?>
+        <p>
+            <?= Html::a('<id class="fa fa-pencil-alt"></id> add Signatories', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']) ?>
+            <?= Html::a('Cash Disbursement', ['cash-disbursement/view', 'id' => $model->fk_cash_disbursement_id], ['class' => 'btn btn-link']) ?>
+        </p>
         <table>
 
             <tbody>
@@ -140,14 +148,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <td colspan="8" class="no-bdr">
                         <div class="signatory">
-                            <u><b>MARRY ANN L. PASCUAL</b></u><br>
-                            <span>Administrative Officer V</span>
+                            <u><b class="upper-case"><?= !empty($cerified_correct_by['employee_name']) ? $cerified_correct_by['employee_name'] : '' ?></b></u><br>
+                            <span><?= !empty($cerified_correct_by['position']) ? $cerified_correct_by['position'] : '' ?></span>
                         </div>
                         <div class="signatory">
 
 
-                            <u><b>BRENDA B. CORVERA, CESO V </b></u><br>
-                            <span>Assistant Regional Director </span>
+                            <u><b class="upper-case"><?= !empty($approved_by['employee_name']) ? $approved_by['employee_name'] : '' ?></b></u><br>
+                            <span><?= !empty($approved_by['position']) ? $approved_by['position'] : '' ?></span>
                         </div>
 
                     </td>
@@ -183,14 +191,14 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td colspan="8" class="no-bdr">
 
                         <div class='signatory'>
-                            <u><b>CHARLIE C. DECHOS, CPA </b></u><br>
-                            <span> Accountant III </span>
+                            <u><b class="upper-case"><?= !empty($accounting_head['employee_name']) ? $accounting_head['employee_name'] : '' ?></b></u><br>
+                            <span><?= !empty($accounting_head['position']) ? $accounting_head['position'] : '' ?></span>
                         </div>
                         <div class="signatory">
 
 
-                            <u><b>BRENDA B. CORVERA, CESO V </b></u><br>
-                            <span>Assistant Regional Director </span>
+                            <u><b class="upper-case"><?= !empty($approved_by['employee_name']) ? $approved_by['employee_name'] : '' ?></b></u><br>
+                            <span><?= !empty($approved_by['position']) ? $approved_by['position'] : '' ?></span>
                         </div>
                     </td>
 
@@ -265,6 +273,10 @@ $this->params['breadcrumbs'][] = $this->title;
         border: 0;
     }
 
+    .upper-case {
+        text-transform: uppercase;
+    }
+
     .signatory {
         width: 50%;
         float: left;
@@ -305,3 +317,10 @@ $this->params['breadcrumbs'][] = $this->title;
         }
     }
 </style>
+<?php
+
+$this->registerJsFile(
+    '@web/frontend/web/js/globalFunctions.js',
+    ['depends' => [JqueryAsset::class]]
+)
+?>

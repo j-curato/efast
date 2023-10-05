@@ -17,7 +17,12 @@ class SliiesSearch extends Sliies
     public function rules()
     {
         return [
-            [['id', 'fk_cash_disbursement_id'], 'integer'],
+            [[
+                'id', 'fk_cash_disbursement_id',
+                'fk_certified_correct_by',
+                'fk_approved_by',
+                'fk_accounting_head',
+            ], 'integer'],
             [['serial_number', 'created_at'], 'safe'],
         ];
     }
@@ -64,6 +69,9 @@ class SliiesSearch extends Sliies
         ]);
 
         $query->andFilterWhere(['like', 'serial_number', $this->serial_number]);
+        $query->andFilterWhere(['like', 'fk_certified_correct_by', $this->fk_certified_correct_by]);
+        $query->andFilterWhere(['like', 'fk_approved_by', $this->fk_approved_by]);
+        $query->andFilterWhere(['like', 'fk_accounting_head', $this->fk_accounting_head]);
 
         return $dataProvider;
     }

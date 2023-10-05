@@ -86,6 +86,16 @@ class Employee extends \yii\db\ActiveRecord
             ->where('employee.employee_id = :id', ['id' => $this->employee_id])
             ->createCommand()->queryOne();
     }
+    public static function getEmployeeById($id)
+    {
+
+        return Yii::$app->db->createCommand("SELECT employee_name,
+        employee_id,
+        position
+         FROM employee_search_view WHERE employee_id = :id")
+            ->bindValue(':id', $id)
+            ->queryOne();
+    }
     /**
      * {@inheritdoc}
      */

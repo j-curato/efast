@@ -30,7 +30,12 @@ class LddapAdas extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['fk_cash_disbursement_id'], 'integer'],
+            [[
+                'fk_cash_disbursement_id',
+                'fk_certified_correct_by',
+                'fk_approved_by',
+                'fk_accounting_head',
+            ], 'integer'],
             [['serial_number'], 'required'],
             [['created_at'], 'safe'],
             [['serial_number'], 'string', 'max' => 255],
@@ -49,6 +54,9 @@ class LddapAdas extends \yii\db\ActiveRecord
             'fk_cash_disbursement_id' => 'Fk Cash Disbursement ID',
             'serial_number' => 'Serial Number',
             'created_at' => 'Created At',
+            'fk_certified_correct_by' => 'Certified Correct',
+            'fk_approved_by' => 'Approved By',
+            'fk_accounting_head' => 'Accounting Unit',
         ];
     }
 
