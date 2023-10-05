@@ -41,12 +41,24 @@ class CibrController extends Controller
                     [
                         'actions' => [
                             'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_cibr']
+                    ],
+                    [
+                        'actions' => [
                             'delete',
-                            'final',
 
                         ],
                         'allow' => true,
-                        'roles' => ['ro_accounting_admin']
+                        'roles' => ['delete_cibr']
+                    ],
+                    [
+                        'actions' => [
+                            'final',
+                        ],
+                        'allow' => true,
+                        'roles' => ['final_cibr']
                     ],
                     [
                         'actions' => [
@@ -58,7 +70,7 @@ class CibrController extends Controller
                             'export',
                         ],
                         'allow' => true,
-                        'roles' => ['po_cibr', 'ro_accounting_admin']
+                        'roles' => ['po_cibr']
                     ],
                 ]
             ],

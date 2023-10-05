@@ -144,9 +144,9 @@ class ReportController extends \yii\web\Controller
                             'conso-detailed-dv',
                             'get-cash',
                             'tax-remittance',
-                            'fund-source-fur',
-                            'summary-fund-source-fur',
-                            'budget-year-fur',
+
+
+
                             'git-pull',
                             'cadadr',
                             'annex3',
@@ -159,6 +159,7 @@ class ReportController extends \yii\web\Controller
                         'allow' => true,
                         'roles' => ['@']
                     ],
+
                     [
                         'actions' => [
                             'division-fur',
@@ -174,7 +175,6 @@ class ReportController extends \yii\web\Controller
                         'actions' => [
 
                             'advances-liquidation',
-                            'province-adequacy'
 
                         ],
                         'allow' => true,
@@ -189,6 +189,38 @@ class ReportController extends \yii\web\Controller
                         ],
                         'allow' => true,
                         'roles' => ['saob', 'fur-mfo', 'fur-ro', 'super-user']
+                    ],
+                    [
+                        'actions' => [
+                            'summary-fund-source-fur',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['po_summary_fund_source_fur']
+                    ],
+                    [
+                        'actions' => [
+                            'fund-source-fur',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['po_fund_source_fur']
+                    ],
+                    [
+                        'actions' => [
+                            'budget-year-fur',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['po_budget_year_fur']
+                    ],
+                    [
+                        'actions' => [
+                            'province-adequacy'
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['po_adequacy_of_resource']
                     ],
 
 
@@ -2415,7 +2447,7 @@ class ReportController extends \yii\web\Controller
 
             $book_id = $_POST['book'];
             $from_reporting_period = date('Y-01', strtotime($to_reporting_period));
-           
+
             $query = YIi::$app->db->createCommand("WITH 
             -- advances_entries current year liqidation
             cte_adv_cur_liq as (  SELECT 

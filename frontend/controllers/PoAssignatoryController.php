@@ -39,6 +39,12 @@ class PoAssignatoryController extends Controller
                             'create',
                             'update',
                             'delete',
+                        ],
+                        'allow' => true,
+                        'roles' => ['po_asignatory']
+                    ],
+                    [
+                        'actions' => [
                             'get-all-assignatory',
                         ],
                         'allow' => true,

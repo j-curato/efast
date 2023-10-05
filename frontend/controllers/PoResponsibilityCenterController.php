@@ -27,6 +27,8 @@ class PoResponsibilityCenterController extends Controller
                     'update',
                     'delete',
                     'create',
+                    'index',
+                    'view'
                 ],
                 'rules' => [
                     [
@@ -34,9 +36,11 @@ class PoResponsibilityCenterController extends Controller
                             'update',
                             'delete',
                             'create',
+                            'index',
+                            'view'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['po_responsibility_center']
                     ]
                 ]
 

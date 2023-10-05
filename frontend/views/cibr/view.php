@@ -32,8 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <button type='button' id="export" class="btn btn-warning">Export</button>
             <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Add Link</button>
             <?php
-            if (Yii::$app->user->can('create_cibr')) {
-
+            if (Yii::$app->user->can('final_cibr')) {
                 echo Html::a($model->is_final === 1 ? 'Draft' : 'Final', ['final', 'id' => $model->id], ['class' => "btn $color"]);
             }
             $document_link = '';

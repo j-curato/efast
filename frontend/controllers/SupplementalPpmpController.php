@@ -45,16 +45,11 @@ class SupplementalPpmpController extends Controller
                 'rules' => [
                     [
                         'actions' => [
-                            'index',
-                            'view',
-                            'create',
-                            'update',
                             'delete',
                             'import',
-                            'get-stock-amount'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['ppmp']
                     ],
                     [
                         'actions' => [
@@ -65,7 +60,7 @@ class SupplementalPpmpController extends Controller
                             'get-stock-amount'
                         ],
                         'allow' => true,
-                        'roles' => ['@', 'supplemental_ppmp']
+                        'roles' => ['ppmp']
                     ]
                 ]
             ],

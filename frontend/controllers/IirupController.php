@@ -38,6 +38,7 @@ class IirupController extends Controller
                     'delete',
                     'get-properties',
                     'search-iirup'
+
                 ],
                 'rules' => [
                     [
@@ -49,7 +50,7 @@ class IirupController extends Controller
                             'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user', 'ro-common-user', '@']
+                        'roles' => ['iirup']
                     ]
                 ]
             ],

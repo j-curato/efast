@@ -35,10 +35,13 @@ class RodController extends Controller
                     'insert-rod',
                     'get-rod',
                     'search-fund-source',
+
+
                 ],
                 'rules' => [
                     [
                         'actions' => [
+                            'index',
                             'update',
                             'view',
                             'create',

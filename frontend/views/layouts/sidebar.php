@@ -205,7 +205,7 @@ use hail812\adminlte\widgets\Menu;
             ];
 
             $procurementReports = [
-                
+
                 Yii::$app->user->can('pr_to_iar_tracking') ?     ['label' => 'PR to IAR Tracking', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/procurement-reports/procurement-to-inspection-tracking'],] : null,
                 // Yii::$app->user->can('super-user') ?     ['label' => 'Procurement Summary', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/procurement-summary'],] : null,
                 // Yii::$app->user->can('super-user') ?     ['label' => 'PO Summary', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/pr-summary'],] : null,
@@ -215,7 +215,6 @@ use hail812\adminlte\widgets\Menu;
             $generalServiceMasterRecords = [
                 Yii::$app->user->can('car') ?     ['label' => 'Cars', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/cars/index'],] : null,
             ];
-
             $generalServiceTransactions = [
 
                 Yii::$app->user->can('maintenance_job_request') ?     ['label' => 'Job Request', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/maintenance-job-request/index'],] : null,
@@ -263,7 +262,7 @@ use hail812\adminlte\widgets\Menu;
                 Yii::$app->user->can('po_rod') ?     ['label' => 'ROD', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rod/index'],] : null,
                 Yii::$app->user->can('po_fund_source_fur') ?     ['label' => 'Fund Source FUR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/fund-source-fur'],] : null,
                 Yii::$app->user->can('po_summary_fund_source_fur') ?     ['label' => 'Summary Fund Source FUR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/summary-fund-source-fur'],] : null,
-                Yii::$app->user->can('po_summary_fund_source_fur') ?     ['label' => 'Summary Budget Year FUR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/budget-year-fur'],] : null,
+                Yii::$app->user->can('po_budget_year_fur') ?     ['label' => 'Summary Budget Year FUR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/budget-year-fur'],] : null,
                 Yii::$app->user->can('po_mlp') ?     ['label' => 'MLP', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/monthly-liquidation-program/index'],] : null,
                 Yii::$app->user->can('po_adequacy_of_resource') ?     ['label' => 'Adequacy of Resource', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/province-adequacy'],] : null,
                 Yii::$app->user->can('advances_liquidation') ?     ['label' => 'Advances/Liquidation', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/advances-liquidation'],] : null,
@@ -564,7 +563,7 @@ use hail812\adminlte\widgets\Menu;
                             'iconStyle' => 'far text-info',
                             'url' => '#',
                             'items' => removeNull([
-                                Yii::$app->user->can('po_advances') ?     ['label' => 'Advances', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/advances/index'],] : null,
+                                Yii::$app->user->can('advances') ?     ['label' => 'Advances', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/advances/index'],] : null,
                                 Yii::$app->user->can('po_transaction') ?     ['label' => 'PO Transaction', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/po-transaction/index'],] : null,
                                 Yii::$app->user->can('liquidation') ?     ['label' => 'Liquidation', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/liquidation/index'],] : null,
                                 Yii::$app->user->can('liquidation') ?     ['label' => 'Cancelled Check', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/liquidation/cancelled-check-index'],] : null,
@@ -592,9 +591,9 @@ use hail812\adminlte\widgets\Menu;
                             'items' => removeNull([
                                 Yii::$app->user->can('po_fund_source_fur') ?     ['label' => 'Fund Source FUR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/fund-source-fur'],] : null,
                                 Yii::$app->user->can('po_summary_fund_source_fur') ?     ['label' => 'Summary Fund Source FUR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/summary-fund-source-fur'],] : null,
-                                Yii::$app->user->can('po_summary_fund_source_fur') ?     ['label' => 'Summary Budget Year FUR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/budget-year-fur'],] : null,
+                                Yii::$app->user->can('po_budget_year_fur') ?     ['label' => 'Summary Budget Year FUR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/budget-year-fur'],] : null,
                                 Yii::$app->user->can('po_adequacy_of_resource') ?     ['label' => 'Adequacy of Resource', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/province-adequacy'],] : null,
-                                Yii::$app->user->can('po_mlp') ?     ['label' => 'MLP', 'icon' => 'dot-circle','iconStyle'=>'far', 'url' => ['/monthly-liquidation-program'],] : null,
+                                Yii::$app->user->can('po_mlp') ?     ['label' => 'MLP', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/monthly-liquidation-program/index'],] : null,
 
                             ]),
                         ]
@@ -624,24 +623,24 @@ use hail812\adminlte\widgets\Menu;
                             'items' => removeNull([
                                 Yii::$app->user->can('property') ?  ['label' => 'Property Database', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/property/property-database'],] : null,
                                 Yii::$app->user->can('rpcppe') ?     ['label' => 'RPCPPE', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rpcppe/index'],] : null,
-                                Yii::$app->user->can('property') ?     ['label' => 'PPELC', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/ppelc'],] : null,
-                                Yii::$app->user->can('property') ?     ['label' => 'Accountabilities', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/user-properties'],] : null,
+                                Yii::$app->user->can('ppelc') ?     ['label' => 'PPELC', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/ppelc'],] : null,
+                                Yii::$app->user->can('property_accountabilities') ?     ['label' => 'Accountabilities', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/user-properties'],] : null,
                             ]),
                         ],
                     ],
                 ],
-                [
-                    'label' => 'Query',
-                    'icon' => 'fa fa-database',
-                    'items' => removeNull([
-                        Yii::$app->user->can('province') ?     ['label' => 'Fund Source FUR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/fund-source-fur'],] : null,
-                        Yii::$app->user->can('summary_fund_source_fur') ?     ['label' => 'Summary Fund Source FUR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/summary-fund-source-fur'],] : null,
-                        Yii::$app->user->can('summary_fund_source_fur') ?     ['label' => 'Summary Budget Year FUR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/budget-year-fur'],] : null,
-                        Yii::$app->user->can('province') ?     ['label' => 'ROD', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rod/index'],] : null,
-                        Yii::$app->user->can('province') ?     ['label' => 'Adequacy of Resource', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/province-adequacy'],] : null,
+                // [
+                //     'label' => 'Query',
+                //     'icon' => 'fa fa-database',
+                //     'items' => removeNull([
+                //         Yii::$app->user->can('po_fund_source_fur') ?     ['label' => 'Fund Source FUR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/fund-source-fur'],] : null,
+                //         Yii::$app->user->can('po_summary_fund_source_fur') ?     ['label' => 'Summary Fund Source FUR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/summary-fund-source-fur'],] : null,
+                //         Yii::$app->user->can('po_summary_fund_source_fur') ?     ['label' => 'Summary Budget Year FUR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/budget-year-fur'],] : null,
+                //         Yii::$app->user->can('po_rod') ?     ['label' => 'ROD', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rod/index'],] : null,
+                //         Yii::$app->user->can('po_adequacy_of_resource') ?     ['label' => 'Adequacy of Resource', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/province-adequacy'],] : null,
 
-                    ]),
-                ],
+                //     ]),
+                // ],
                 [
                     'label' => 'Procurement',
                     'icon' => 'fa fa-shopping-cart',
@@ -650,7 +649,7 @@ use hail812\adminlte\widgets\Menu;
                             'label' => 'Master Records',
                             'iconStyle' => 'far text-info',
                             'items' => removeNull([
-                                Yii::$app->user->can('po_procurement_admin') ?     ['label' => 'RBAC', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/bac-composition/index'],] : null,
+                                Yii::$app->user->can('bac') ?     ['label' => 'RBAC', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/bac-composition/index'],] : null,
 
                             ]),
                         ],
@@ -658,24 +657,17 @@ use hail812\adminlte\widgets\Menu;
                             'label' => 'Transaction',
                             'iconStyle' => 'far text-info',
                             'items' => removeNull([
-                                // Yii::$app->user->can('super-user') ?     ['label' => 'Activity/Project Procurement', 'icon' => 'dot-circle','iconStyle'=>'far', 'url' => ['/pr-project-procurement'],] : null,
                                 Yii::$app->user->can('ppmp') ?     ['label' => 'Supplemental PPMP', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/supplemental-ppmp/index'],] : null,
                                 Yii::$app->user->can('purchase_request') ?     ['label' => 'Purchase Request', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/pr-purchase-request/index'],] : null,
                                 Yii::$app->user->can('rfq') ?     ['label' => 'RFQ', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/pr-rfq/index'],] : null,
                                 Yii::$app->user->can('aoq') ?     ['label' => 'AOQ', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/pr-aoq/index'],] : null,
                                 Yii::$app->user->can('purchase_order') ?     ['label' => 'Purchase Order', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/pr-purchase-order/index'],] : null,
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Transmittal', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/purchase-order-transmittal/index'],] : null,
-
                             ]),
                         ],
                         [
                             'label' => 'Reports',
                             'iconStyle' => 'far text-info',
-                            'items' => removeNull([
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Procurement Summary', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/procurement-summary'],] : null,
-                                Yii::$app->user->can('super-user') ?     ['label' => 'PO Summary', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/pr-summary'],] : null,
-                                Yii::$app->user->can('super-user') ?     ['label' => 'Procurement Search', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/proc-summary'],] : null,
-                            ]),
+                            'items' => removeNull([]),
                         ],
 
 
@@ -685,15 +677,11 @@ use hail812\adminlte\widgets\Menu;
                     'label' => 'Inspection',
                     'icon' => 'fa fa-search',
                     'items' => removeNull([
-
                         Yii::$app->user->can('request_for_inspection') ?     ['label' => 'Request for Inspection', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/request-for-inspection/index'],] : null,
                         Yii::$app->user->can('inspection_report') ?     ['label' => 'Inspection Report', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/inspection-report/index'],] : null,
                         Yii::$app->user->can('iar') ?     ['label' => 'IAR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/iar/index'],] : null,
                     ]),
                 ],
-
-
-
                 [
                     'label' => 'Profile',
                     'icon' => 'fa fa-user',

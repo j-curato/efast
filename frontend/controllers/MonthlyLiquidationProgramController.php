@@ -41,7 +41,7 @@ class MonthlyLiquidationProgramController extends Controller
                             'update',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['po_mlp']
                     ]
                 ]
             ],

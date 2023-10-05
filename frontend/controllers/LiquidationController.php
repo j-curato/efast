@@ -62,44 +62,18 @@ class LiquidationController extends Controller
                 ],
                 'rules' => [
                     [
-                        'actions' => [
-
-                            'create',
-                            'update',
-                            'delete',
-                            're-align',
-                            'add-advances',
-                            'insert-liquidation',
-                            'update-liquidation',
-                            'cancel',
-                            'import',
-                            'cancelled-check-index',
-                            'cancelled-Check-update',
-                            'cancelled-form',
-                            'view'
-                        ],
+                        'actions' => [],
                         'allow' => true,
-                        'roles' => ['super-user', 'create_liquidation']
+                        'roles' => ['@']
                     ],
                     [
                         'actions' => [
                             'index',
                             'exclude-raaf',
                             'drafts',
-                            'cancelled-check-index',
-                            'cancelled-check-update',
-                            'cancelled-form',
                             'update-uacs',
                             'export',
                             'add-link',
-                        ],
-                        'allow' => true,
-                        'roles' => ['@']
-                    ],
-
-                    [
-                        'actions' => [
-
                             'create',
                             'update',
                             'delete',
@@ -110,7 +84,7 @@ class LiquidationController extends Controller
                             'cancel',
                             'import',
                             'cancelled-check-index',
-                            'cancelled-Check-update',
+                            'cancelled-check-update',
                             'cancelled-form',
                             'view'
                         ],

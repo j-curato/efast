@@ -81,7 +81,7 @@ $total_ewt = 0;
 
     <div class=" card" style="padding: 1rem;">
 
-        <?php if (\Yii::$app->user->can('po_accounting_admin')) { ?>
+        <?php if (\Yii::$app->user->can('liquidation')) { ?>
             <p>
                 <?= Html::a('Re-Align/Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
                 <?php

@@ -43,6 +43,7 @@ class PrPurchaseOrderController extends Controller
                     'search-purchase-order-for-rfi',
                     'po-details',
                     'cancel',
+
                 ],
                 'rules' => [
                     [
@@ -57,6 +58,14 @@ class PrPurchaseOrderController extends Controller
                             'search-purchase-order-for-rfi',
                             'po-details',
                             'cancel',
+                        ],
+                        'allow' => true,
+                        'roles' => ['purchase_order']
+                    ],
+                    [
+                        'actions' => [
+                            'search-purchase-order-for-rfi',
+                            'search-purchase-order',
                         ],
                         'allow' => true,
                         'roles' => ['@']

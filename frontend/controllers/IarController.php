@@ -177,8 +177,6 @@ class IarController extends Controller
         DATE_FORMAT(rfi_without_po_items.`to_date`,'%M %d, %Y') as inspection_to_date,
         DATE_FORMAT(iar.created_at,'%M %d, %Y') as date_generated,
         responsibility_center.name as department
-      
-					
         FROM iar
         INNER JOIN  inspection_report ON iar.fk_ir_id = inspection_report.id
         INNER JOIN inspection_report_no_po_items ON inspection_report.id = inspection_report_no_po_items.fk_inspection_report_id
@@ -190,10 +188,7 @@ class IarController extends Controller
         LEFT JOIN employee_search_view as inspector ON request_for_inspection.fk_inspector = inspector.employee_id 
         LEFT JOIN payee ON rfi_without_po_items.fk_payee_id = payee.id
         WHERE iar.id = :id
-        
-
         GROUP BY 
-        
         chairperson.employee_name ,
         inspector.employee_name ,
         property_unit.employee_name ,

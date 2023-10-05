@@ -46,7 +46,7 @@ class AlphalistController extends Controller
                             'final'
                         ],
                         'allow' => true,
-                        'roles' => ['po_alphalist', 'super-user']
+                        'roles' => ['po_alphalist']
                     ]
                 ]
 

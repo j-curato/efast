@@ -42,13 +42,26 @@ class CdrController extends Controller
                 'rules' => [
                     [
                         'actions' => [
+                            'insert-cdr',
                             'update',
-                            'delete',
-                            'cdr-final',
-                            'insert-cdr'
                         ],
                         'allow' => true,
-                        'roles' => ['ro_accounting_admin']
+                        'roles' => ['update_po_cdr']
+                    ],
+                    [
+                        'actions' => [
+                            'delete',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['delete_po_cdr']
+                    ],
+                    [
+                        'actions' => [
+                            'cdr-final',
+                        ],
+                        'allow' => true,
+                        'roles' => ['final_po_cdr']
                     ],
                     [
                         'actions' => [
@@ -60,7 +73,7 @@ class CdrController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['po_cdr', 'ro_accounting_admin']
+                        'roles' => ['po_cdr']
                     ],
                 ]
             ],

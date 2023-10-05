@@ -37,12 +37,27 @@ class FurController extends Controller
                     [
                         'actions' => [
                             'update',
-                            'delete',
-                            'insert-fur',
+
 
                         ],
                         'allow' => true,
-                        'roles' => ['ro_accounting_admin']
+                        'roles' => ['update_po_fur']
+                    ],
+                    [
+                        'actions' => [
+                            'delete',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['delete_po_fur']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                            'insert-fur',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_po_fur']
                     ],
                     [
                         'actions' => [
@@ -52,7 +67,7 @@ class FurController extends Controller
                             'create',
                         ],
                         'allow' => true,
-                        'roles' => ['po_fur', 'ro_accounting_admin']
+                        'roles' => ['po_fur']
                     ]
                 ]
             ],

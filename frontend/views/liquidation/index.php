@@ -20,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="liquidation-index">
 
 
-    <?php if (Yii::$app->user->can('po_accounting_admin')) { ?>
+    <?php if (Yii::$app->user->can('liquidation')) { ?>
         <p>
             <?= Html::a('Create Liquidation', ['create'], ['class' => 'btn btn-success']) ?>
             <!-- <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button> -->

@@ -42,32 +42,30 @@ class AdvancesController extends Controller
                     'disable',
                     'view',
                     'update-advances',
+                    'get-all-advances'
                 ],
                 'rules' => [
                     [
                         'actions' => [
-                            'index',
                             'create',
                             'update',
-                            'view',
                             'add-data',
                             'insert-advances',
-                            'get-all-advances',
                             'import',
                             'disable',
                             'update-advances'
-
                         ],
                         'allow' => true,
-                        'roles' => ['ro_accounting_admin']
+                        'roles' => ['advances_crud']
                     ],
                     [
                         'actions' => [
                             'index',
                             'view',
+                            'get-all-advances',
                         ],
                         'allow' => true,
-                        'roles' => ['po_advances']
+                        'roles' => ['advances']
                     ],
 
 
