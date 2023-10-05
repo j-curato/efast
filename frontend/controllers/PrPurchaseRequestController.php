@@ -42,7 +42,10 @@ class PrPurchaseRequestController extends Controller
                     'delete',
                     'search-pr',
                     'get-items',
-                    'final'
+                    'final',
+                    'cancel',
+                    'search-ppmp',
+                    'get-ppmp-items'
                 ],
                 'rules' => [
                     [
@@ -53,6 +56,9 @@ class PrPurchaseRequestController extends Controller
                             'search-pr',
                             'get-items',
                             'update',
+                            'cancel',
+                            'search-ppmp',
+                            'get-ppmp-items'
                         ],
                         'allow' => true,
                         'roles' => [
@@ -61,13 +67,6 @@ class PrPurchaseRequestController extends Controller
                     ],
                     [
                         'actions' => [
-                            'index',
-                            'view',
-                            'create',
-                            'update',
-                            'delete',
-                            'search-pr',
-                            'get-items',
                             'final'
                         ],
                         'allow' => true,
@@ -75,20 +74,7 @@ class PrPurchaseRequestController extends Controller
                             'super-user',
                         ]
                     ],
-                    [
-                        'actions' => [
-                            'index',
-                            'view',
-                            'create',
-                            'update',
-                            'search-pr',
-                            'get-items',
-                        ],
-                        'allow' => true,
-                        'roles' => [
-                            'ro-common-user',
-                        ]
-                    ]
+
                 ]
             ],
             'verbs' => [
@@ -176,8 +162,8 @@ class PrPurchaseRequestController extends Controller
             // supplemental_ppmp_cse.id  = :cse_or_non_cse_id", $params)
             //     ->bindValue(':cse_or_non_cse_id', $ppmp_item_id)
             //     ->queryOne();
-
-            $qry = SupplementalPpmpCse::findOne($ppmp_item_id)->calculateBalance($item_id, ($amount * $qty), $qty);
+            $id  = !empty($item_id) ? $item_id : null;
+            $qry = SupplementalPpmpCse::findOne($ppmp_item_id)->calculateBalance($id, ($amount * $qty), $qty);
             if (floatval($qry['newAmtBal']) < 0) {
                 return  "Amount Cannot be more than " . number_format($qry['amtBal'], 2);
             }
@@ -987,7 +973,7 @@ class PrPurchaseRequestController extends Controller
                     CAST(supplemental_ppmp_cse.id as CHAR(50)) as item_id,
                     'cse_item_id' as cse_type,
                     '' as `description`,
-                    pr_stock.id as stock_id,
+                    CAST(pr_stock.id as CHAR(50)) as stock_id,
                     pr_stock.stock_title,
                     pr_stock.amount as unit_cost,
                     IFNULL(unit_of_measure.unit_of_measure,'') as unit_of_measure,
