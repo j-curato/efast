@@ -5,9 +5,9 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\LddapAdas */
 
-$this->title = 'Update Lddap Adas: ' . $model->id;
+$this->title = 'Update LDDAP ADA: ' . $model->serial_number;
 $this->params['breadcrumbs'][] = ['label' => 'Lddap Adas', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = ['label' => $model->serial_number, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Update';
 ?>
 <div class="lddap-adas-update">
