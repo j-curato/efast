@@ -145,8 +145,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
                         <div class="signatory">
 
-                            <u><b>GAY A. TIDALGO, CESO IV </b></u><br>
-                            <span>Regional Director </span>
+
+                            <u><b>BRENDA B. CORVERA, CESO V </b></u><br>
+                            <span>Assistant Regional Director </span>
                         </div>
 
                     </td>
@@ -164,7 +165,6 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
                     <th colspan="8" class="no-bdr">TOTAL AMOUNT:
-
                         <u>&emsp; <?php echo Yii::$app->memem->convertNumberToWords($ttlNet) . ' Pesos';
                                     $dcl = round(fmod($ttlNet, 1) * 100);
                                     if ($dcl > 0) {
@@ -188,8 +188,9 @@ $this->params['breadcrumbs'][] = $this->title;
                         </div>
                         <div class="signatory">
 
-                            <u><b>GAY A. TIDALGO, CESO IV </b></u><br>
-                            <span>Regional Director </span>
+
+                            <u><b>BRENDA B. CORVERA, CESO V </b></u><br>
+                            <span>Assistant Regional Director </span>
                         </div>
                     </td>
 
