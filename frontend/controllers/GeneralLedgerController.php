@@ -203,7 +203,9 @@ class GeneralLedgerController extends Controller
         jev_beginning_balance.`year` = :_year
         AND jev_beginning_balance.book_id = :book_id
         AND jev_beginning_balance_item.object_code LIKE :object_code
-                
+        GROUP BY accounting_codes.object_code,
+accounting_codes.normal_balance
+
         ")
             ->bindValue(':_year', $year)
             ->bindValue(':book_id', $book_id)
