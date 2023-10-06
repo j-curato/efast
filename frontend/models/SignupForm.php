@@ -15,7 +15,9 @@ class SignupForm extends Model
     public $email;
     public $password;
     public $province;
-    public $employee_id;
+    public $fk_employee_id;
+    public $fk_office_id;
+    public $fk_division_id;
 
 
     /**
@@ -29,9 +31,11 @@ class SignupForm extends Model
             ['username', 'unique', 'targetClass' => '\common\models\User', 'message' => 'This username has already been taken.'],
             ['username', 'string', 'min' => 2, 'max' => 255],
             ['province', 'string', 'min' => 2, 'max' => 255],
-            ['employee_id', 'trim'],
-            ['employee_id', 'string', 'min' => 2, 'max' => 255],
+            ['fk_employee_id', 'trim'],
+            ['fk_employee_id', 'string', 'min' => 2, 'max' => 255],
 
+            [['fk_office_id', 'fk_division_id'], 'integer'],
+            [['fk_office_id'], 'required'],
             ['email', 'trim'],
             ['email', 'required'],
             ['email', 'email'],
@@ -40,9 +44,19 @@ class SignupForm extends Model
 
             ['password', 'required'],
             ['password', 'string', 'min' => Yii::$app->params['user.passwordMinLength']],
+
+
+
         ];
     }
+    public function attributeLabels()
+    {
+        return [
+            'fk_office_id' => 'Office',
+            'fk_division_id' => 'Division',
 
+        ];
+    }
     /**
      * Signs user up.
      *
@@ -59,11 +73,13 @@ class SignupForm extends Model
         $user->username = $this->username;
         $user->email = $this->email;
         $user->province = $this->province;
-        $user->employee_id = $this->employee_id;
+        $user->fk_office_id = $this->fk_office_id;
+        $user->fk_employee_id = $this->fk_employee_id;
         $user->status = 10;
         $user->setPassword($this->password);
         $user->generateAuthKey();
         $user->generateEmailVerificationToken();
+        return $user->save();
         return $user->save() && $this->sendEmail($user);
     }
 
