@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Roles',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return $model->getRole();
+                    return $model->getRoles();
                 }
             ],
 

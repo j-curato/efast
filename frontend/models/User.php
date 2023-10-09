@@ -56,15 +56,17 @@ class User extends \yii\db\ActiveRecord
 
         ];
     }
-    public function getRole()
+    public function getRoles()
     {
         $auth = Yii::$app->authManager;
+        $roles = '';
         foreach ($auth->getRolesByUser($this->id) as $key => $role) {
             if ($key !== 'guest') {
-                return $key;
+                $roles .= !empty($roles) ? ',' : '';
+                $roles .= $key;
             }
         }
-        return '';
+        return $roles;
     }
     /**
      * {@inheritdoc}

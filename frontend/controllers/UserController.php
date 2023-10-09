@@ -103,27 +103,28 @@ class UserController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
         $auth = \Yii::$app->authManager;
         // return json_encode($model->getRole());
         if ($model->load(Yii::$app->request->post())) {
-
             try {
                 // return $model->status;
                 $txn = Yii::$app->db->beginTransaction();
-                $role = Yii::$app->request->post('role');
-                $roleType = $auth->getRole($role);
-                $auth->revokeAll($id);
+                $roles = Yii::$app->request->post('roles');
 
+                $auth->revokeAll($id);
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
                 if (!$model->save(false)) {
                     throw new ErrorException('Model Save failed');
                 }
-                if (!empty($role)) {
-                    $auth->assign($roleType, $id);
+                foreach ($roles as $role) {
+                    $roleType = $auth->getRole($role);
+                    if (!empty($role)) {
+                        $auth->assign($roleType, $id);
+                    }
                 }
+
                 $txn->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
