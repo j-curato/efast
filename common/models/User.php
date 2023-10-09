@@ -229,14 +229,15 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return $this->hasOne(Divisions::class, ['id' => 'fk_division_id']);
     }
-    public static function getUserData()
+    public static function getUserDetails()
     {
 
         return  User::find()
-            ->joinWith('employee')
+            ->join('LEFT JOIN', 'employee', 'user.fk_employee_id = employee.employee_id')
             ->join('LEFT JOIN', 'office', 'employee.fk_office_id = office.id')
             ->join('LEFT JOIN', 'divisions', 'employee.fk_division_id = divisions.id')
             ->where('user.id = :id', ['id' => Yii::$app->user->identity->id])
             ->one();
+        // ->createCommand()->getRawSql();
     }
 }
