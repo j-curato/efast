@@ -75,7 +75,7 @@ class RecordAllotmentDetailedSearch extends RecordAllotmentDetailed
     public function search($params, $type = '')
     {
         $query = RecordAllotmentDetailed::find();
-        if (!Yii::$app->user->can('ro_budget_admin')) {
+        if (!Yii::$app->user->can('ro_budget_admin') || !Yii::$app->user->can('ro_accounting_admin')) {
             $user_data = User::getUserDetails();
             // $query->andWhere('office_name = :office_name', ['office_name' => $user_data->employee->office->office_name]);
             $query->andWhere('division = :division', ['division' => $user_data->employee->empDivision->division]);
