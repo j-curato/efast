@@ -58,8 +58,8 @@ if (!empty($model->date_completed)) {
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
             <?php
             if (!$model->is_cancelled) {
-                echo  Html::a($cncl_txt, ['cancel', 'id' => $model->id], [
-                    'class' => $btn_color,
+                echo  Html::a('Cancel', ['cancel', 'id' => $model->id], [
+                    'class' => 'btn btn-danger',
                     'id' => 'cancel'
 
                 ]);

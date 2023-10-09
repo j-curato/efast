@@ -263,7 +263,6 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                 Yii::$app->user->can('po_responsibility_center') ?     ['label' => 'PO Responsibility Center', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/po-responsibility-center/index'],] : null,
             ];
             // SKIPED
-
             $provinceTransactions = [
                 Yii::$app->user->can('advances') ?     ['label' => 'Advances', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/advances/index'],] : null,
                 Yii::$app->user->can('po_transaction') ?     ['label' => 'PO Transaction', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/po-transaction/index'],] : null,
