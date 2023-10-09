@@ -9,7 +9,6 @@ use yii\helpers\ArrayHelper;
 /* @var $model app\models\User */
 /* @var $form yii\widgets\ActiveForm */
 
-
 ?>
 
 <div class="user-form">
@@ -22,7 +21,7 @@ use yii\helpers\ArrayHelper;
         echo Select2::widget([
             'name' => 'roles',
             'data' => ArrayHelper::map($roles, 'name', 'name'),
-            'value' => $model->getRole(),
+            'value' => $model->getRoles(),
             'size' => Select2::SMALL,
             'options' => ['placeholder' => 'Select a Role', 'multiple' => true, 'style' => 'width: 300px;'],
             'pluginOptions' => [

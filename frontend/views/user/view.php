@@ -10,9 +10,11 @@ $this->title = $model->id;
 $this->params['breadcrumbs'][] = ['label' => 'Users', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
+var_dump($model->getRoles());
+
 ?>
 <div class="user-view">
 
- 
+
 
 </div>

@@ -11,6 +11,7 @@ use app\components\helpers\MyHelper;
 
 $this->title = 'Users';
 $this->params['breadcrumbs'][] = $this->title;
+
 ?>
 <div class="user-index">
     <?= GridView::widget([
@@ -35,7 +36,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Roles',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return $model->getRoles();
+                    $roles = '';
+                    foreach ($model->getRoles() as $role) {
+                        if (!empty($roles)) {
+                            $roles .= ',';
+                        }
+                        $roles .= $role;
+                    }
+                    return $roles;
                 }
             ],
 

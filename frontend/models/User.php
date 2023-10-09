@@ -59,11 +59,10 @@ class User extends \yii\db\ActiveRecord
     public function getRoles()
     {
         $auth = Yii::$app->authManager;
-        $roles = '';
+        $roles = [];
         foreach ($auth->getRolesByUser($this->id) as $key => $role) {
             if ($key !== 'guest') {
-                $roles .= !empty($roles) ? ',' : '';
-                $roles .= $key;
+                $roles[] = $key;
             }
         }
         return $roles;
