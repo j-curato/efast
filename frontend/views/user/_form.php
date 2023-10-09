@@ -20,11 +20,11 @@ use yii\helpers\ArrayHelper;
         <?php
         $roles = Yii::$app->authManager->getRoles();
         echo Select2::widget([
-            'name' => 'roles[]',
+            'name' => 'role',
             'data' => ArrayHelper::map($roles, 'name', 'name'),
             'value' => $model->getRole(),
             'size' => Select2::SMALL,
-            'options' => ['placeholder' => 'Select a Role', 'multiple' => true, 'style' => 'width: 300px;'],
+            'options' => ['placeholder' => 'Select a Role', 'multiple' => false, 'style' => 'width: 300px;'],
             'pluginOptions' => [
                 'allowClear' => true,
                 // 'maximumSelectionLength' => 20
