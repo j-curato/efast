@@ -10,6 +10,7 @@ use app\models\TransactionIars;
 use app\models\TransactionItems;
 use app\models\TransactionPrItems;
 use app\models\TransactionSearch;
+use common\models\User;
 use DateTime;
 use ErrorException;
 use yii\db\Query;
@@ -390,7 +391,8 @@ class TransactionController extends Controller
                     throw new ErrorException('Allotment and Gross Amount is Required');
                 }
 
-                $division = strtolower(Yii::$app->user->identity->division);
+                $user_data = User::getUserDetails();
+                $division = strtolower($user_data->employee->empDivision->division);
                 $iarItems = [];
                 if ($model->type === 'multiple') {
                     if (empty(Yii::$app->request->post('multiple_iar'))) {
