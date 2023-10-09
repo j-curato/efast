@@ -127,7 +127,7 @@ class EmployeeController extends Controller
                 }
                 $sign_up = new SignupForm();
                 $sign_up->username = explode(' ', $model->f_name)[0] . '.' . $model->l_name;
-                $sign_up->email = 'email3@email.com';
+                $sign_up->email = $sign_up->username . '@gmail.com';
                 $sign_up->password = 'abcde54321';
                 $sign_up->fk_office_id = $model->fk_office_id;
                 $sign_up->fk_division_id = $model->fk_division_id;
