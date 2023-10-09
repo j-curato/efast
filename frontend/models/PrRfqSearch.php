@@ -2,10 +2,11 @@
 
 namespace app\models;
 
-use yii\base\Model;
-use yii\data\ActiveDataProvider;
-use app\models\PrRfq;
 use Yii;
+use yii\base\Model;
+use app\models\PrRfq;
+use common\models\User;
+use yii\data\ActiveDataProvider;
 
 /**
  * PrRfqSearch represents the model behind the search form of `app\models\PrRfq`.
@@ -54,9 +55,9 @@ class PrRfqSearch extends PrRfq
 
         // add conditions that should always apply here
         $query->joinWith('office');
-        if (!Yii::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $query->andWhere('pr_rfq.fk_office_id = :office_id', ['office_id' => $user_data->office->id]);
+        if (!Yii::$app->user->can('ro_procurement_admin')) {
+            $user_data = User::getUserDetails();
+            $query->andWhere('pr_rfq.fk_office_id = :office_id', ['office_id' => $user_data->employee->office->id]);
         }
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

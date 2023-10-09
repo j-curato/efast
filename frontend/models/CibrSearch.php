@@ -2,10 +2,11 @@
 
 namespace app\models;
 
-use yii\base\Model;
-use yii\data\ActiveDataProvider;
-use app\models\Cibr;
 use Yii;
+use yii\base\Model;
+use app\models\Cibr;
+use common\models\User;
+use yii\data\ActiveDataProvider;
 
 /**
  * CibrSearch represents the model behind the search form of `app\models\Cibr`.
@@ -43,8 +44,8 @@ class CibrSearch extends Cibr
     {
         $query = Cibr::find()->joinWith('bankAccount');
         if (!Yii::$app->user->can('ro_accounting_admin')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $query->where('bank_account.province = :province', ['province' =>  $user_data->office->office_name]);
+            $user_data = User::getUserDetails();
+            $query->where('bank_account.province = :province', ['province' =>  $user_data->employee->office->office_name]);
         }
 
         // add conditions that should always apply here

@@ -1,9 +1,11 @@
 <?php
 
-use kartik\icons\Icon;
 use yii\helpers\Html;
-use yii\bootstrap\ActiveForm;
+use kartik\icons\Icon;
+use common\models\User;
+use app\models\Employee;
 use yii\captcha\Captcha;
+use yii\bootstrap\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $form yii\bootstrap\ActiveForm */
@@ -67,10 +69,34 @@ $fieldOptions2 = [
                 <div class="card card-primary card-outline">
                     <div class="card-body box-profile">
                         <div class="text-center">
-                            <img class="profile-user-img img-fluid img-circle" src="https://adminlte.io/themes/v3/dist/img/user4-128x128.jpg" alt="User profile picture">
+                            <!-- <img class="profile-user-img img-fluid img-circle" src="https://adminlte.io/themes/v3/dist/img/user4-128x128.jpg" alt="User profile picture"> -->
+                            <?php
+                            $user_data = User::getUserDetails();
+                            $imagePath = "https://adminlte.io/themes/v3/dist/img/user4-128x128.jpg";
+                            $filePath = '@webroot/profile_pics';
+                            $usr_id = Yii::$app->user->identity->id;
+                            $realFilePathPng = Yii::getAlias($filePath . "/$usr_id.png");
+                            $realFilePathJpg = Yii::getAlias($filePath . "/$usr_id.jpg");
+                            if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
+                                // File exists in the folder
+                                $imagePath =  Yii::$app->request->baseUrl . '/profile_pics' . "/$usr_id.png";
+                            } else if (file_exists($realFilePathJpg) && is_file($realFilePathJpg)) {
+                                $imagePath =  Yii::$app->request->baseUrl . '/profile_pics' . "/$usr_id.jpg";
+                            }
+                            // Display the image using Html::img
+
+                            echo Html::img($imagePath, ['alt' => 'User profile picture', 'class' => 'profile-user-img img-fluid img-circle']);
+
+                            $employee = Employee::getEmployeeById($user_data->fk_employee_id);
+                            ?>
                         </div>
-                        <h3 class="profile-username text-center">Nina Mcintire</h3>
-                        <p class="text-muted text-center">Software Engineer</p>
+                        <div class="row justify-content-center">
+                            <div class="">
+                                <?= Html::a('<i class="fa fa-camera"></i> ', ['site/upload-image',], ['class' => '  uploadImage button', 'style' => 'display:absolute;top:10']); ?>
+                            </div>
+                        </div>
+                        <h3 class="profile-username text-center"><?= !empty($employee['employee_name']) ? $employee['employee_name'] : '' ?></h3>
+                        <p class="text-muted text-center"><?= !empty($employee['position']) ? $employee['position'] : '' ?></p>
                         <ul class="list-group list-group-unbordered mb-3">
                             <li class="list-group-item">
                                 <b>Followers</b> <a class="float-right">1,322</a>
@@ -82,11 +108,11 @@ $fieldOptions2 = [
                                 <b>Friends</b> <a class="float-right">13,287</a>
                             </li>
                         </ul>
+
                         <a href="#" class="btn btn-primary btn-block"><b>Follow</b></a>
                     </div>
 
                 </div>
-
 
                 <!-- <div class="card card-primary">
                     <div class="card-header">
@@ -130,6 +156,7 @@ $fieldOptions2 = [
                     </div>
                     <div class="card-body">
                         <div class="tab-content">
+
                             <!-- <div class="tab-pane" id="activity">
 
                                 <div class="post">
@@ -395,3 +422,14 @@ $this->registerJsFile(
     ['depends' => [\yii\web\JqueryAsset::class]]
 )
 ?>
+<script>
+    $(document).ready(function() {
+        $(".uploadImage").click(function(e) {
+            e.preventDefault();
+            $("#genericModal")
+                .modal("show")
+                .find("#modalContent")
+                .load($(this).attr("href"));
+        });
+    })
+</script>

@@ -3,14 +3,15 @@
 namespace frontend\controllers;
 
 use Yii;
-use app\models\Iar;
-use app\models\IarIndexSearch;
-use app\models\IarSearch;
 use yii\db\Query;
-use yii\filters\AccessControl;
+use app\models\Iar;
+use common\models\User;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
+use app\models\IarSearch;
 use yii\filters\VerbFilter;
+use app\models\IarIndexSearch;
+use yii\filters\AccessControl;
+use yii\web\NotFoundHttpException;
 
 /**
  * IarController implements the CRUD actions for Iar model.
@@ -365,9 +366,9 @@ class IarController extends Controller
                 ->from('iar_index')
                 ->where(['like', 'iar_index.iar_number', $q]);
 
-            $user_data = Yii::$app->memem->getUserData();
+            $user_data = User::getUserDetails();
             if (!Yii::$app->user->can('ro_accounting_admin')) {
-                $query->andWhere('division = :division', ['division' => $user_data->divisionName->division]);
+                $query->andWhere('division = :division', ['division' => $user_data->employee->empDivision->division]);
             }
 
             $command = $query->createCommand();

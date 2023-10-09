@@ -2,31 +2,32 @@
 
 namespace frontend\controllers;
 
-use app\models\Iar;
-use app\models\InspectionReport;
-use app\models\InspectionReportItems;
-use app\models\InspectionReportNoPoItems;
-use app\models\NoPoInspectionReportItems;
-use app\models\Office;
-use app\models\PurchaseOrdersForRfiSearch;
 use Yii;
-use app\models\RequestForInspection;
-use app\models\RequestForInspectionItems;
-use app\models\RequestForInspectionSearch;
-use app\models\RfiWithoutPoItems;
-use aryelds\sweetalert\SweetAlert;
 use DateTime;
-use ErrorException;
-use kartik\form\ActiveForm;
-use PHPUnit\Util\Log\JSON as LogJSON;
 use yii\db\Query;
-use yii\filters\AccessControl;
-use yii\web\Controller;
-use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
-use yii\helpers\ArrayHelper;
+use app\models\Iar;
+use ErrorException;
 use yii\helpers\Json;
 use yii\web\Response;
+use app\models\Office;
+use common\models\User;
+use yii\web\Controller;
+use kartik\form\ActiveForm;
+use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
+use yii\filters\AccessControl;
+use app\models\InspectionReport;
+use app\models\RfiWithoutPoItems;
+use aryelds\sweetalert\SweetAlert;
+use yii\web\NotFoundHttpException;
+use app\models\RequestForInspection;
+use app\models\InspectionReportItems;
+use PHPUnit\Util\Log\JSON as LogJSON;
+use app\models\InspectionReportNoPoItems;
+use app\models\NoPoInspectionReportItems;
+use app\models\RequestForInspectionItems;
+use app\models\PurchaseOrdersForRfiSearch;
+use app\models\RequestForInspectionSearch;
 
 /**
  * RequestForInspectionController implements the CRUD actions for RequestForInspection model.
@@ -523,13 +524,13 @@ class RequestForInspectionController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
 
-        $user_data = Yii::$app->memem->getUserData();
-        $model->fk_office_id = $user_data->office->id;
-        $model->fk_division_id = $user_data->divisionName->id ?? '';
+        $user_data = User::getUserDetails();
+        $model->fk_office_id = $user_data->employee->office->id;
+        $model->fk_division_id = $user_data->employee->empDivision->id ?? '';
         $model->fk_created_by =  Yii::$app->user->identity->id;
-        $model->fk_property_unit = strtolower($user_data->office->office_name) === 'ro' ? 100099198938013553 : '';
-        $model->fk_chairperson = strtolower($user_data->office->office_name) === 'ro' ? 99684622555676844 : '';
-        if (!Yii::$app->user->can('super-user')) {
+        $model->fk_property_unit = strtolower($user_data->employee->office->office_name) === 'ro' ? 100099198938013553 : '';
+        $model->fk_chairperson = strtolower($user_data->employee->office->office_name) === 'ro' ? 99684622555676844 : '';
+        if (!Yii::$app->user->can('ro_inspection_admin')) {
             $user_division = strtolower(Yii::$app->user->identity->division ?? '');
             $division_id = Yii::$app->db->createCommand("SELECT id FROM responsibility_center WHERE responsibility_center.name=:division")
                 ->bindValue(':division', $user_division)

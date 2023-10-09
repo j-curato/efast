@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
     $del = 'display:none;';
-    if (Yii::$app->user->can('super-user')) {
+    if (Yii::$app->user->can('ro_accounting_admin')) {
         $del = '';
     }
     ?>

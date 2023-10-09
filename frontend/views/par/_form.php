@@ -61,7 +61,7 @@ $property_custodians = ArrayHelper::map(MyHelper::getPropertyCustodians(), 'empl
 
         <?php
 
-        if (YIi::$app->user->can('super-user')) {
+        if (YIi::$app->user->can('ro_property_admin')) {
             echo '<div class="col-sm-6">';
             echo  $form->field($model, 'fk_office_id')->widget(Select2::class, [
                 'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),

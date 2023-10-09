@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php
         $display = 'display:none';
         $province = '';
-        if (Yii::$app->user->can('super-user')) {
+        if (Yii::$app->user->can('ro_accounting_admin')) {
             echo Html::a('<i class="fa fa-pencil-alt"></i> Create', ['create'], ['class' => 'modalButtonCreate btn btn-success']);
             $display = '';
             $province = 'province';

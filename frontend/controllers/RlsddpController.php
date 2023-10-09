@@ -2,19 +2,20 @@
 
 namespace frontend\controllers;
 
-use app\components\helpers\MyHelper;
-use app\models\Office;
 use Yii;
-use app\models\Rlsddp;
-use app\models\RlsddpIndexSearch;
-use app\models\RlsddpItems;
-use app\models\RlsddpSearch;
-use ErrorException;
 use yii\db\Query;
-use yii\filters\AccessControl;
+use ErrorException;
+use app\models\Office;
+use app\models\Rlsddp;
+use common\models\User;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
+use app\models\RlsddpItems;
 use yii\filters\VerbFilter;
+use app\models\RlsddpSearch;
+use yii\filters\AccessControl;
+use app\models\RlsddpIndexSearch;
+use yii\web\NotFoundHttpException;
+use app\components\helpers\MyHelper;
 
 /**
  * RlsddpController implements the CRUD actions for Rlsddp model.
@@ -209,9 +210,9 @@ class RlsddpController extends Controller
     public function actionCreate()
     {
         $model = new Rlsddp();
-        if (!Yii::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $office_id = $user_data->office->id;
+        if (!Yii::$app->user->can('ro_property_admin')) {
+            $user_data = User::getUserDetails();
+            $office_id = $user_data->employee->office->id;
             $model->fk_office_id = $office_id;
         }
         if ($model->load(Yii::$app->request->post())) {

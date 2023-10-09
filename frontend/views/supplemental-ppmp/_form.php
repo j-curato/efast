@@ -49,17 +49,11 @@ if (!empty($model->fk_certified_funds_available_by)) {
 
     $certified_funds_available_by = ArrayHelper::map(GetEmployeeData($model->fk_certified_funds_available_by), 'employee_id', 'employee_name');
 }
-// $cse_type_data  = [];
-// if (YIi::$app->user->can('super-user')) {
 $cse_type_data = [
     'cse' => 'CSE',
     'non_cse' => 'NON-CSE'
 ];
-// } else {
-//     $cse_type_data = [
-//         'non_cse' => 'NON-CSE'
-//     ];
-// }
+
 ?>
 
 <div class="supplemental-ppmp-form card" style="padding:1rem">

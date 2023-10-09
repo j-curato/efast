@@ -2,10 +2,11 @@
 
 namespace app\models;
 
+use Yii;
 use yii\base\Model;
+use common\models\User;
 use yii\data\ActiveDataProvider;
 use app\models\VwNoPoTransmittalLiqs;
-use Yii;
 
 /**
  * VwNoPoTransmittalLiqsSearch represents the model behind the search form of `app\models\VwNoPoTransmittalLiqs`.
@@ -64,9 +65,9 @@ class VwNoPoTransmittalLiqsSearch extends VwNoPoTransmittalLiqs
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
-        if (!Yii::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $query->andWhere('province = :province', ['province' => $user_data->office->office_name]);
+        if (!Yii::$app->user->can('ro_accounting_admin')) {
+            $user_data = User::getUserDetails();
+            $query->andWhere('province = :province', ['province' => $user_data->employee->office->office_name]);
         }
         $this->load($params);
 

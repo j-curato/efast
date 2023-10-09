@@ -1,21 +1,22 @@
 <?php
 
-use aryelds\sweetalert\SweetAlertAsset;
-use kartik\date\DatePicker;
-use kartik\grid\GridView;
+use common\models\User;
 use kartik\helpers\Html;
-use kartik\select2\Select2;
+use kartik\grid\GridView;
 use yii\bootstrap\Button;
-use yii\helpers\ArrayHelper;
 use yii\web\JsExpression;
+use kartik\date\DatePicker;
+use kartik\select2\Select2;
+use yii\helpers\ArrayHelper;
+use aryelds\sweetalert\SweetAlertAsset;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Liquidation */
 /* @var $form yii\widgets\ActiveForm */
 
 $transaction = [];
-$user_data = Yii::$app->memem->getUserData();
-$user_province = strtolower($user_data->office->office_name);
+$user_data = User::getUserDetails();
+$user_province = strtolower($user_data->employee->office->office_name);
 $entries_row = 0;
 $check_range_query = (new yii\db\Query())
     ->select(['id', "CONCAT(check_range.`from`,' to ',check_range.`to`) as range"])
@@ -505,7 +506,7 @@ SweetAlertAsset::register($this);
             let disabled_input = ''
 
 
-            if (val.book_name.toLowerCase() == 'rapid lp' && <?php echo Yii::$app->user->can('super-user') ? 1 : 0 ?> != 1) {
+            if (val.book_name.toLowerCase() == 'rapid lp' && <?php echo Yii::$app->user->can('ro_accounting_admin') ? 1 : 0 ?> != 1) {
                 console.log(val.book_name.toLowerCase())
                 disabled_input = 'disabled'
             }
@@ -668,7 +669,7 @@ SweetAlertAsset::register($this);
             },
             success: function(data) {
                 const res = JSON.parse(data)
-                if (res.toLowerCase() == 'rapid lp' && <?php echo Yii::$app->user->can('super-user') ? 1 : 0 ?> != 1) {
+                if (res.toLowerCase() == 'rapid lp' && <?php echo Yii::$app->user->can('ro_accounting_admin') ? 1 : 0 ?> != 1) {
                     disable = true
 
                 }

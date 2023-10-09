@@ -1,11 +1,12 @@
 <?php
 
-use app\models\LiquidationViewSearch;
-use kartik\export\ExportMenu;
+use yii\helpers\Html;
+use common\models\User;
+use kartik\grid\GridView;
 use kartik\file\FileInput;
 use kartik\form\ActiveForm;
-use kartik\grid\GridView;
-use yii\helpers\Html;
+use kartik\export\ExportMenu;
+use app\models\LiquidationViewSearch;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\LiquidataionSearch */
@@ -29,14 +30,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php
 
-    $user_data = Yii::$app->memem->getUserData();
-    $province = strtolower($user_data->office->office_name);
-
+    $user_data = User::getUserDetails();
+    $province = strtolower($user_data->employee->office->office_name);
     $viewSearchModel = new LiquidationViewSearch();
     $viewSearchModel->is_final = 0;
     $viewDataProvider = $viewSearchModel->search(Yii::$app->request->queryParams);
     $viewDataProvider->pagination = ['pageSize' => 10];
-  
+
     $viewColumn = [
         'province',
         // [

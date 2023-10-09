@@ -42,7 +42,7 @@ class AgencyController extends Controller
                             'get-agency'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['agency']
                     ],
                     [
                         'actions' => [

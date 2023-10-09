@@ -57,16 +57,12 @@ if (!empty($model->date_completed)) {
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
             <?php
-            if (Yii::$app->user->can('super-user')) {
-                $btn_color = $model->is_cancelled ? 'btn btn-success' : 'btn btn-danger';
-                $cncl_txt = $model->is_cancelled ? 'UnCancel' : 'Cancel';
-                if (!$model->is_cancelled) {
-                    echo  Html::a($cncl_txt, ['cancel', 'id' => $model->id], [
-                        'class' => $btn_color,
-                        'id' => 'cancel'
+            if (!$model->is_cancelled) {
+                echo  Html::a($cncl_txt, ['cancel', 'id' => $model->id], [
+                    'class' => $btn_color,
+                    'id' => 'cancel'
 
-                    ]);
-                }
+                ]);
             }
             echo   Html::a('AOQ Link ', ['pr-aoq/view', 'id' => $model->fk_pr_aoq_id], ['class' => 'btn btn-link ', 'style' => 'margin:3px'])
             ?>

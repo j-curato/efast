@@ -242,7 +242,7 @@ class SiteController extends Controller
      */
     public function actionSignup()
     {
-        $this->layout = 'register';
+        // $this->layout = 'register';
         $model = new SignupForm();
         if ($model->load(Yii::$app->request->post())) {
 
@@ -542,7 +542,7 @@ class SiteController extends Controller
             $model->file = UploadedFile::getInstance($model, 'file');
             if ($model->upload()) {
                 // file is uploaded successfully
-                return $this->redirect(['index']);
+                return $this->redirect(['profile']);
             }
         }
         return $this->renderAjax('upload_form', ['model' => $model]);

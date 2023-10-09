@@ -5,6 +5,7 @@ namespace app\components\helpers;
 use app\models\ChartOfAccounts;
 use app\models\Office;
 use app\models\SubAccounts1;
+use common\models\User;
 use Da\QrCode\QrCode;
 use ErrorException;
 use PHPUnit\Framework\MockObject\Stub\ReturnValueMap;
@@ -193,9 +194,9 @@ class MyHelper extends BaseObject
         $property_custodian_query->select(['employee_id', 'UPPER(employee_name) as employee_name'])
             ->from('employee_search_view')
             ->andWhere('property_custodian  = 1');
-        if (!Yii::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $property_custodian_query->andWhere('office_name =:office_name', ['office_name' => $user_data->office->office_name]);
+        if (!Yii::$app->user->can('ro_property_admin')) {
+            $user_data = User::getUserDetails();
+            $property_custodian_query->andWhere('office_name =:office_name', ['office_name' => $user_data->employee->office->office_name]);
         }
         $f_property_custodian_query = $property_custodian_query->all();
         return $f_property_custodian_query;
@@ -218,7 +219,7 @@ class MyHelper extends BaseObject
     }
     public static function getRbac($rbac_id)
     {
-        $user_data = Yii::$app->memem->getUserData();
+        $user_data = User::getUserDetails();
         return Yii::$app->db->createCommand("SELECT 
         UPPER(employee_search_view.employee_name) as employee_name,
         CONCAT(bac_position.position,'_', employee_search_view.employee_name) as pos,
@@ -232,7 +233,7 @@ class MyHelper extends BaseObject
         -- AND 
         bac_composition.id = :id
         ")
-            // ->bindValue(':office_id', $user_data->office->id)
+            // ->bindValue(':office_id', $user_data->employee->office->id)
             ->bindValue(':id', $rbac_id)
             ->queryAll();
     }

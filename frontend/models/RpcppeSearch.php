@@ -2,10 +2,11 @@
 
 namespace app\models;
 
-use yii\base\Model;
-use yii\data\ActiveDataProvider;
-use app\models\Rpcppe;
 use Yii;
+use yii\base\Model;
+use app\models\Rpcppe;
+use common\models\User;
+use yii\data\ActiveDataProvider;
 
 /**
  * RpcppeSearch represents the model behind the search form of `app\models\Rpcppe`.
@@ -56,9 +57,9 @@ class RpcppeSearch extends Rpcppe
         $query->joinWith('chartOfAccount');
         $query->joinWith('accountableOfficer');
 
-        if (!Yii::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $query->andWhere('office.office_name =:office_name', ['office_name' => $user_data->office->office_name]);
+        if (!Yii::$app->user->can('ro_property_admin')) {
+            $user_data = User::getUserDetails();
+            $query->andWhere('office.office_name =:office_name', ['office_name' => $user_data->employee->office->office_name]);
         }
         // add conditions that should always apply here
 

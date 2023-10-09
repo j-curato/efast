@@ -1,20 +1,21 @@
 <!-- <link href="/frontend/web/css/site.css" rel="stylesheet" /> -->
 <?php
 
-use app\models\AdvancesEntries;
-use app\models\BankAccount;
-use app\models\Books;
-use app\models\DvAucs;
-use app\models\MajorAccounts;
-use kartik\grid\GridView;
-use yii\widgets\Pjax;
-use aryelds\sweetalert\SweetAlertAsset;
-use kartik\date\DatePicker;
-use kartik\export\ExportMenu;
-use kartik\select2\Select2;
 use Mpdf\Tag\Select;
-use yii\data\ActiveDataProvider;
+use app\models\Books;
+use yii\widgets\Pjax;
+use app\models\DvAucs;
+use common\models\User;
+use kartik\grid\GridView;
+use app\models\BankAccount;
+use kartik\date\DatePicker;
+use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
+use app\models\MajorAccounts;
+use kartik\export\ExportMenu;
+use app\models\AdvancesEntries;
+use yii\data\ActiveDataProvider;
+use aryelds\sweetalert\SweetAlertAsset;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\JevPreparationSearch */
@@ -60,14 +61,14 @@ if (!empty($model->id)) {
             <div class="col-sm-3">
                 <label for="bank_account">Bank Account</label>
                 <?php
-                $user_data = Yii::$app->memem->getUserData();
+                $user_data = User::getUserDetails();
                 $val = '';
                 $and = '';
                 $sql = '';
                 $params = [];
                 if (!Yii::$app->user->can('ro_accounting_admin')) {
                     $and = 'WHERE';
-                    $sql = YIi::$app->db->getQueryBuilder()->buildCondition(['=', 'province', $user_data->office->office_name], $params);
+                    $sql = YIi::$app->db->getQueryBuilder()->buildCondition(['=', 'province', $user_data->employee->office->office_name], $params);
                 }
                 $bank_accounts = Yii::$app->db->createCommand("SELECT id ,CONCAT(account_number,'-',province,'-',account_name) as account FROM bank_account
                 $and $sql

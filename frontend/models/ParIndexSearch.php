@@ -2,10 +2,11 @@
 
 namespace app\models;
 
-use yii\base\Model;
-use yii\data\ActiveDataProvider;
-use app\models\ParIndex;
 use Yii;
+use yii\base\Model;
+use common\models\User;
+use app\models\ParIndex;
+use yii\data\ActiveDataProvider;
 
 /**
  * ParIndexSearch represents the model behind the search form of `app\models\ParIndex`.
@@ -63,9 +64,9 @@ class ParIndexSearch extends ParIndex
 
         // add conditions that should always apply here
 
-        if (!Yii::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $query->andWhere('office_name = :office_name', ['office_name' => $user_data->office->office_name]);
+        if (!Yii::$app->user->can('ro_property_admin')) {
+            $user_data = User::getUserDetails();
+            $query->andWhere('office_name = :office_name', ['office_name' => $user_data->employee->office->office_name]);
         }
 
         $dataProvider = new ActiveDataProvider([

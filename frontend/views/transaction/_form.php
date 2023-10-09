@@ -156,7 +156,7 @@ $payee = !empty($model->payee_id) ? ArrayHelper::map(MyHelper::getPayee($model->
     <div class="row">
         <?php
 
-        if (Yii::$app->user->can('super-user')) { ?>
+        if (Yii::$app->user->can('ro_accounting_admin')) { ?>
             <div class="col-sm-3">
                 <?= $form->field($model, 'responsibility_center_id')->widget(Select2::class, [
                     'data' => ArrayHelper::map($respons_center, 'id', 'name'),

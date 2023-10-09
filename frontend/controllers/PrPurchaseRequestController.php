@@ -2,24 +2,25 @@
 
 namespace frontend\controllers;
 
-use app\components\helpers\MyHelper;
-use app\models\PrProjectProcurement;
 use Yii;
-use app\models\PrPurchaseRequest;
-use app\models\PrPurchaseRequestAllotments;
-use app\models\PrPurchaseRequestItem;
-use app\models\PrPurchaseRequestSearch;
-use app\models\PurchaseRequestIndex;
-use app\models\PurchaseRequestIndexSearch;
-use app\models\SupplementalPpmpCse;
 use DateTime;
-use ErrorException;
 use yii\db\Query;
-use yii\filters\AccessControl;
+use ErrorException;
+use common\models\User;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
+use yii\filters\AccessControl;
+use app\models\PrPurchaseRequest;
+use yii\web\NotFoundHttpException;
+use app\models\SupplementalPpmpCse;
+use app\components\helpers\MyHelper;
+use app\models\PrProjectProcurement;
+use app\models\PurchaseRequestIndex;
+use app\models\PrPurchaseRequestItem;
+use app\models\PrPurchaseRequestSearch;
+use app\models\PurchaseRequestIndexSearch;
+use app\models\PrPurchaseRequestAllotments;
 
 /**
  * PrPurchaseRequestController implements the CRUD actions for PrPurchaseRequest model.
@@ -821,11 +822,11 @@ class PrPurchaseRequestController extends Controller
                 ->from('pr_purchase_request')
                 ->where(['like', 'pr_number', $q])
                 ->andwhere('pr_purchase_request.is_cancelled = 0');
-            if (!Yii::$app->user->can('super-user')) {
-                $user_data = Yii::$app->memem->getUserData();
-                $query->andWhere('fk_office_id = :fk_office_id', ['fk_office_id' =>  $user_data->office->id]);
+            if (!Yii::$app->user->can('ro_procurement_admin')) {
+                $user_data = User::getUserDetails();
+                $query->andWhere('fk_office_id = :fk_office_id', ['fk_office_id' =>  $user_data->employee->office->id]);
                 if (!Yii::$app->user->can('po_procurement_admin') && !YIi::$app->user->can('ro_procurement_admin')) {
-                    $query->andWhere('fk_division_id = :fk_division_id', ['fk_division_id' => $user_data->divisionName->id]);
+                    $query->andWhere('fk_division_id = :fk_division_id', ['fk_division_id' => $user_data->employee->empDivision->id]);
                 }
             }
             $command = $query->createCommand();
@@ -911,10 +912,10 @@ class PrPurchaseRequestController extends Controller
         $offset = ($page - 1) * $limit;
         $out = ['results' => ['id' => '', 'text' => '']];
 
-        if (!Yii::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $office_id = $user_data->office->id;
-            $division_id = $division_id ?? $user_data->divisionName->id;
+        if (!Yii::$app->user->can('ro_procurement_admin')) {
+            $user_data = User::getUserDetails();
+            $office_id = $user_data->employee->office->id;
+            $division_id = $division_id ?? $user_data->employee->empDivision->id;
         }
 
         if (!is_null($q)) {
@@ -962,9 +963,9 @@ class PrPurchaseRequestController extends Controller
             //     // return $id_arr[2];
             // }
             if (!Yii::$app->user->can('po_procurement_admin') || !Yii::$app->user->can('ro_procurement_admin')) {
-                $user_data = Yii::$app->memem->getUserData();
-                $office_id = $user_data->office->id;
-                $division_id = $division_id ?? $user_data->divisionName->id;
+                $user_data = User::getUserDetails();
+                $office_id = $user_data->employee->office->id;
+                $division_id = $division_id ?? $user_data->employee->empDivision->id;
             }
 
             $res = [];

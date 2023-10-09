@@ -44,7 +44,7 @@ SELECT id,`name`FROM document_recieve
         </div>
         <?php
 
-        $user = Yii::$app->user->can('super-user');
+        $user = Yii::$app->user->can('ro_budget_admin');
         if ($user) { ?>
             <div class="col-sm-2">
                 <?= $form->field($model, 'division')->widget(Select2::class, [

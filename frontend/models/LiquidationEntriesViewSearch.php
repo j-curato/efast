@@ -2,10 +2,11 @@
 
 namespace app\models;
 
+use Yii;
 use yii\base\Model;
+use common\models\User;
 use yii\data\ActiveDataProvider;
 use app\models\LiquidationEntriesView;
-use Yii;
 
 /**
  * LiquidationEntriesViewSearch represents the model behind the search form of `app\models\LiquidationEntriesView`.
@@ -63,8 +64,8 @@ class LiquidationEntriesViewSearch extends LiquidationEntriesView
         $q = LiquidationEntriesView::find();
 
         if (!Yii::$app->user->can('ro_accounting_admin')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $q->where('province LIKE :province', ['province' => strtolower($user_data->office->office_name)]);
+            $user_data = User::getUserDetails();
+            $q->where('province LIKE :province', ['province' => strtolower($user_data->employee->office->office_name)]);
         }
         $query = $q;
 

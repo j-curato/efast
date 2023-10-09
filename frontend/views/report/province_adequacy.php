@@ -1,16 +1,11 @@
 <?php
 
 use app\models\Books;
-use app\models\DvAucs;
-use app\models\PoTransmittal;
-use app\models\ReportType;
-use kartik\grid\GridView;
-use aryelds\sweetalert\SweetAlertAsset;
+use common\models\User;
 use kartik\date\DatePicker;
-use kartik\export\ExportMenu;
 use kartik\select2\Select2;
-use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
+
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\JevPreparationSearch */
@@ -20,9 +15,9 @@ $this->title = "Adequacy of Resource";
 $this->params['breadcrumbs'][] = $this->title;
 $province = [];
 
-if (!Yii::$app->user->can('super-user')) {
-    $user_data = Yii::$app->memem->getUserData();
-    $user_province = $user_data->office->office_name;
+if (!Yii::$app->user->can('ro_accounting_admin')) {
+    $user_data = User::getUserDetails();
+    $user_province = $user_data->employee->office->office_name;
     $province = [$user_province => strtoupper($user_province)];
 } else {
     $province = [

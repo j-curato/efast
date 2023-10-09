@@ -1,6 +1,26 @@
 <?php
 
+use yii\helpers\Html;
+use yii\widgets\Pjax;
+use common\models\User;
+use app\models\Employee;
 use hail812\adminlte\widgets\Menu;
+
+$user_data = User::getUserDetails();
+$employee = Employee::getEmployeeById($user_data->fk_employee_id);
+$imagePath = "https://adminlte.io/themes/v3/dist/img/user4-128x128.jpg";
+$filePath = '@webroot/profile_pics';
+$usr_id = Yii::$app->user->identity->id;
+$realFilePathPng = Yii::getAlias($filePath . "/$usr_id.png");
+$realFilePathJpg = Yii::getAlias($filePath . "/$usr_id.jpg");
+if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
+    // File exists in the folder
+    $imagePath =  Yii::$app->request->baseUrl . '/profile_pics' . "/$usr_id.png";
+} else if (file_exists($realFilePathJpg) && is_file($realFilePathJpg)) {
+    $imagePath =  Yii::$app->request->baseUrl . '/profile_pics' . "/$usr_id.jpg";
+}
+// Display the image using Html::img
+
 ?>
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
@@ -14,16 +34,17 @@ use hail812\adminlte\widgets\Menu;
         <!-- Sidebar user panel (optional) -->
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
             <div class="image">
-                <img src="<?= $assetDir ?>/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+                <!-- <img src="<?= $assetDir ?>/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image"> -->
+                <?= Html::img($imagePath, ['alt' => 'User Image', 'class' => 'img-circle elevation-2']); ?>
             </div>
             <div class="info">
-                <a href="#" class="d-block">Alexander Pierce</a>
+                <p>
+                    <?= Html::a(!empty($employee['employee_name']) ? $employee['employee_name'] : '', ['/site/profile'], ['style' => 'max-width:100%']) ?>
+                </p>
             </div>
         </div>
-
         <nav class="mt-2">
             <?php
-            $user_data = Yii::$app->memem->getUserData();
             function removeNull($items)
             {
                 $newArr = [];
@@ -691,9 +712,8 @@ use hail812\adminlte\widgets\Menu;
 
             ];
 
-
             echo Menu::widget([
-                'items' => strtolower($user_data->office->office_name) !== 'ro' ? $poUserMenuItems : $menuItems,
+                'items' => strtolower($user_data->employee->office->office_name) !== 'ro' ? $poUserMenuItems : $menuItems,
                 'options' => [
                     'class' => 'nav nav-pills nav-sidebar flex-column nav-compact nav-child-indent',
                     'data-widget' => 'treeview',
@@ -701,6 +721,7 @@ use hail812\adminlte\widgets\Menu;
                     'data-accordion' => 'false'
                 ],
             ]);
+
             Yii::$app->authManager
             ?>
         </nav>

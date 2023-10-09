@@ -25,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 echo "<input type='hidden' value='$model->rod_number' name = 'rod_number' id = 'rod_number'> ";
                 echo "<input type='hidden' value='update' name = 'action_type'>";
             }
-            if (Yii::$app->user->can('super-user')) {
+            if (Yii::$app->user->can('ro_accounting_admin')) {
 
             ?>
                 <div class="col-sm-2">

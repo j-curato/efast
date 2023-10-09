@@ -2,10 +2,11 @@
 
 namespace app\models;
 
-use yii\base\Model;
-use yii\data\ActiveDataProvider;
-use app\models\PoTransmittal;
 use Yii;
+use yii\base\Model;
+use common\models\User;
+use app\models\PoTransmittal;
+use yii\data\ActiveDataProvider;
 
 /**
  * PoTransmittalSearch represents the model behind the search form of `app\models\PoTransmittal`.
@@ -42,9 +43,9 @@ class PoTransmittalSearch extends PoTransmittal
     {
 
         $query = PoTransmittal::find();
-        if (!Yii::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $query->andWhere('fk_office_id = :office_id', ['office_id' => $user_data->office->id]);
+        if (!Yii::$app->user->can('ro_accounting_admin')) {
+            $user_data = User::getUserDetails();
+            $query->andWhere('fk_office_id = :office_id', ['office_id' => $user_data->employee->office->id]);
         }
 
         // add conditions that should always apply here

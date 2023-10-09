@@ -63,7 +63,7 @@ class TransactionTrackingSearch extends TransactionTracking
         $query = TransactionTracking::find();
 
         // add conditions that should always apply here
-        if (!Yii::$app->user->can('super-user')) {
+        if (!Yii::$app->user->can('ro_accounting_admin')) {
             $query->where('division = :division', ['division' => Yii::$app->user->identity->division]);
         }
         $dataProvider = new ActiveDataProvider([

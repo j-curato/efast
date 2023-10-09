@@ -2,29 +2,30 @@
 
 namespace frontend\controllers;
 
-use app\models\AdvancesEntriesForLiquidationSearch;
-use app\models\CancelledChecksView;
-use app\models\CancelledChecksViewSearch;
 use Yii;
-use app\models\Liquidation;
-use app\models\LiquidataionSearch;
-use app\models\LiquidationEntries;
-use app\models\LiquidationEntriesSearch;
-use app\models\LiquidationEntriesViewSearch;
-use app\models\PoTransaction;
-use aryelds\sweetalert\SweetAlert;
 use DateTime;
-use ErrorException;
 use Exception;
-use kartik\form\ActiveForm;
 use Mpdf\Tag\Em;
 use yii\db\Query;
-use yii\filters\AccessControl;
+use ErrorException;
+use yii\web\Response;
+use common\models\User;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
+use app\models\Liquidation;
+use kartik\form\ActiveForm;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
-use yii\web\Response;
+use app\models\PoTransaction;
+use yii\filters\AccessControl;
+use app\models\LiquidataionSearch;
+use app\models\LiquidationEntries;
+use aryelds\sweetalert\SweetAlert;
+use yii\web\NotFoundHttpException;
+use app\models\CancelledChecksView;
+use app\models\LiquidationEntriesSearch;
+use app\models\CancelledChecksViewSearch;
+use app\models\LiquidationEntriesViewSearch;
+use app\models\AdvancesEntriesForLiquidationSearch;
 
 /**
  * LiquidationController implements the CRUD actions for Liquidation model.
@@ -166,8 +167,8 @@ class LiquidationController extends Controller
     ) {
 
 
-        $user_data = Yii::$app->memem->getUserData();
-        $province =  strtolower($user_data->office->office_name);
+        $user_data = User::getUserDetails();
+        $province =  strtolower($user_data->employee->office->office_name);
         foreach ($advances_entries_id as $key => $val) {
 
             $withdrawals =  !empty($withdrawal[$key]) ? $withdrawal[$key] : 0;
@@ -300,8 +301,8 @@ class LiquidationController extends Controller
 
         $searchModel = new AdvancesEntriesForLiquidationSearch();
         if (!Yii::$app->user->can('ro_accounting_admin')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $searchModel->province = $user_data->office->office_name;
+            $user_data = User::getUserDetails();
+            $searchModel->province = $user_data->employee->office->office_name;
         }
 
         $check_range_id = '';
@@ -314,7 +315,7 @@ class LiquidationController extends Controller
                 ->queryScalar();
             $searchModel->bank_account_id = $bank_account_id;
         } else if ($_POST) {
-            $user_data = Yii::$app->memem->getUserData();
+            $user_data = User::getUserDetails();;
 
             $transaction = Yii::$app->db->beginTransaction();
             $advances_entries_id = !empty($_POST['advances_entries_id']) ? $_POST['advances_entries_id'] : [];
@@ -329,7 +330,7 @@ class LiquidationController extends Controller
             $check_range_id = $_POST['check_range_id'];
             $check_number = $_POST['check_number'];
             $po_transaction_id = $_POST['po_transaction_id'];
-            $province = strtolower($user_data->office->office_name);
+            $province = strtolower($user_data->employee->office->office_name);
             $model->dv_number = $this->getDvNumber($reporting_period);
             $model->reporting_period = $reporting_period;
             $model->province = $province;
@@ -406,10 +407,10 @@ class LiquidationController extends Controller
         $model = $this->findModel($id);
 
         $searchModel = new AdvancesEntriesForLiquidationSearch();
-        $user_data = Yii::$app->memem->getUserData();
+        $user_data = User::getUserDetails();;
         if (!Yii::$app->user->can('ro_accounting_admin')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $searchModel->province = strtolower($user_data->office->office_name);
+            $user_data = User::getUserDetails();;
+            $searchModel->province = strtolower($user_data->employee->office->office_name);
         }
 
         $check_range_id = '';
@@ -435,7 +436,7 @@ class LiquidationController extends Controller
             $check_range_id = $_POST['check_range_id'];
             $check_number = $_POST['check_number'];
             $po_transaction_id = $_POST['po_transaction_id'];
-            $province = strtolower($user_data->office->office_name);
+            $province = strtolower($user_data->employee->office->office_name);
 
             // if ($province)
             // $model->province = $province;
@@ -608,7 +609,7 @@ class LiquidationController extends Controller
         if ($_POST) {
             $session = Yii::$app->session;
             $token = Yii::$app->session->get('form_token');
-            $user_data = Yii::$app->memem->getUserData();
+            $user_data = User::getUserDetails();
             // if ($token !== $_POST['token']) {
             //     return json_encode(['isSuccess' => false, 'error' => $token]);
             //     die();
@@ -638,7 +639,7 @@ class LiquidationController extends Controller
             $reporting_period = $_POST['reporting_period'];
             $check_range = $_POST['check_range'];
             $dv_number = !empty($_POST['dv_number']) ? $_POST['dv_number'] : '';
-            $province = strtolower($user_data->office->office_name);
+            $province = strtolower($user_data->employee->office->office_name);
 
 
 
@@ -697,11 +698,11 @@ class LiquidationController extends Controller
             // }
 
             // }
-            $user_data = Yii::$app->memem->getUserData();
+            $user_data =User::getUserDetails();
             $liq_r_period = (new \yii\db\Query())
                 ->select('reporting_period')
                 ->from('liquidation_reporting_period')
-                ->where('province LIKE :province', ['province' => $user_data->office->office_name])
+                ->where('province LIKE :province', ['province' => $user_data->employee->office->office_name])
                 ->all();
             $r = ArrayHelper::getColumn($liq_r_period, 'reporting_period');
 
@@ -949,9 +950,9 @@ class LiquidationController extends Controller
             return null;
         }
 
-        $user_data = Yii::$app->memem->getUserData();
+        $user_data = User::getUserDetails();
         $year = DateTime::createFromFormat('Y-m', $reporting_period)->format('Y');
-        $province = strtolower($user_data->office->office_name);
+        $province = strtolower($user_data->employee->office->office_name);
 
 
 
@@ -1088,8 +1089,8 @@ class LiquidationController extends Controller
             ->from('po_responsibility_center')
             ->where("id =:id", ['id' => $responsibility_center_id])
             ->one();
-        $user_data = Yii::$app->memem->getUserData();
-        $province = strtolower($user_data->office->office_name);
+        $user_data = User::getUserDetails();
+        $province = strtolower($user_data->employee->office->office_name);
         if ($reporting_period_year <= 2021) {
 
             $latest_tracking_no = Yii::$app->db->createCommand(
@@ -1424,8 +1425,8 @@ class LiquidationController extends Controller
         //     }
         // }
         if ($model->load(Yii::$app->request->post())) {
-            $user_data = Yii::$app->memem->getUserData();
-            $province =  strtolower($user_data->office->office_name);
+            $user_data = User::getUserDetails();
+            $province =  strtolower($user_data->employee->office->office_name);
             $model->payee = 'CANCELLED';
             $model->is_cancelled = 1;
             $model->province = $province;
@@ -1559,8 +1560,8 @@ class LiquidationController extends Controller
                 );
 
             if (!Yii::$app->user->can('ro_accounting_admin')) {
-                $user_data = Yii::$app->memem->getUserData();
-                $q->andWhere('province = :province', ['province' => $user_data->office->office_name]);
+                $user_data = User::getUserDetails();
+                $q->andWhere('province = :province', ['province' => $user_data->employee->office->office_name]);
             }
 
             $query = $q->all();
@@ -1694,8 +1695,8 @@ class LiquidationController extends Controller
         $searchModel = new AdvancesEntriesForLiquidationSearch();
         if (!Yii::$app->user->can('ro_accounting_admin')) {
 
-            $user_data = Yii::$app->memem->getUserData();
-            $searchModel->province = strtolower($user_data->office->office_name);
+            $user_data = User::getUserDetails();
+            $searchModel->province = strtolower($user_data->employee->office->office_name);
         }
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $dataProvider->pagination = ['pageSize' => $check_range_id];

@@ -2,23 +2,24 @@
 
 namespace frontend\controllers;
 
-use app\models\Liquidation;
-use app\models\LiquidationView;
-use app\models\Office;
 use Yii;
-use app\models\PoTransmittal;
-use app\models\PoTransmittalEntries;
-use app\models\PoTransmittalSearch;
-use app\models\PoTransmittalsPendingSearch;
-use app\models\TransmittalEntries;
-use app\models\VwPoTransmittalIndexSearch;
 use DateTime;
 use ErrorException;
-use yii\data\ActiveDataProvider;
-use yii\filters\AccessControl;
+use app\models\Office;
+use common\models\User;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
+use app\models\Liquidation;
 use yii\filters\VerbFilter;
+use app\models\PoTransmittal;
+use yii\filters\AccessControl;
+use app\models\LiquidationView;
+use yii\data\ActiveDataProvider;
+use app\models\TransmittalEntries;
+use yii\web\NotFoundHttpException;
+use app\models\PoTransmittalSearch;
+use app\models\PoTransmittalEntries;
+use app\models\VwPoTransmittalIndexSearch;
+use app\models\PoTransmittalsPendingSearch;
 
 /**
  * PoTransmittalController implements the CRUD actions for PoTransmittal model.
@@ -182,9 +183,9 @@ class PoTransmittalController extends Controller
     public function actionCreate()
     {
         $model = new PoTransmittal();
-        if (!Yii::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $model->fk_office_id = $user_data->office->id;
+        if (!Yii::$app->user->can('ro_accounting_admin')) {
+            $user_data = User::getUserDetails();
+            $model->fk_office_id = $user_data->employee->office->id;
         }
         if ($model->load(Yii::$app->request->post())) {
 

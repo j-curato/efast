@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\Alphalist;
 use app\models\AlphalistSearch;
+use common\models\User;
 use DateTime;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -41,13 +42,25 @@ class AlphalistController extends Controller
                             'index',
                             'create',
                             'update',
-                            'delete',
                             'generate',
-                            'final'
                         ],
                         'allow' => true,
                         'roles' => ['po_alphalist']
-                    ]
+                    ],
+                    [
+                        'actions' => [
+                            'delete'
+                        ],
+                        'allow' => true,
+                        'roles' => ['delete_po_alphalist']
+                    ],
+                    [
+                        'actions' => [
+                            'final'
+                        ],
+                        'allow' => true,
+                        'roles' => ['final_po_alphalist']
+                    ],
                 ]
 
             ],
@@ -102,8 +115,8 @@ class AlphalistController extends Controller
 
         $model = new Alphalist();
         if (!YIi::$app->user->can('ro_accounting_admin')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $model->province = strtolower($user_data->office->office_name);
+            $user_data = User::getUserDetails();
+            $model->province = strtolower($user_data->employee->office->office_name);
         }
         if ($model->load(Yii::$app->request->post())) {
             $model->id = YIi::$app->db->createCommand("SELECT UUID_SHORT() %9223372036854775807")->queryScalar();
@@ -199,13 +212,11 @@ class AlphalistController extends Controller
     public function actionDelete($id)
     {
 
-        if (Yii::$app->user->can('super-user')) {
-            $model = $this->findModel($id);
-            Yii::$app->db->createCommand("UPDATE liquidation_entries SET liquidation_entries.fk_alphalist_id=null WHERE liquidation_entries.fk_alphalist_id = :id")
-                ->bindValue(':id', $model->id)
-                ->execute();
-            $model->delete();
-        }
+        $model = $this->findModel($id);
+        Yii::$app->db->createCommand("UPDATE liquidation_entries SET liquidation_entries.fk_alphalist_id=null WHERE liquidation_entries.fk_alphalist_id = :id")
+            ->bindValue(':id', $model->id)
+            ->execute();
+        $model->delete();
         return $this->redirect(['index']);
     }
 
@@ -313,9 +324,9 @@ class AlphalistController extends Controller
     {
 
         if (Yii::$app->request->post()) {
-            $user_data = Yii::$app->memem->getUserData();
+            $user_data = User::getUserDetails();
             $range = $_POST['range'] ?? [];
-            // $query->where('province = :province', ['province' => $user_data->office->office_name]);
+            // $query->where('province = :province', ['province' => $user_data->employee->office->office_name]);
             $province = '';
 
             if (empty($range)) {
@@ -324,7 +335,7 @@ class AlphalistController extends Controller
             if (Yii::$app->user->can('ro_accounting_admin')) {
                 $province = YIi::$app->request->post('province');
             } else {
-                $province = $user_data->office->office_name;
+                $province = $user_data->employee->office->office_name;
             }
             $params = [];
             $sql = Yii::$app->db->getQueryBuilder()->buildCondition('liquidation_entries.fk_alphalist_id IS NULL', $params);
@@ -351,23 +362,18 @@ class AlphalistController extends Controller
     }
     public function actionFinal()
     {
-        if ($_POST) {
-            if (Yii::$app->user->can('super-user')) {
-                $id = $_POST['id'];
-
-
-                $model = $this->findModel($id);
-
-                if ($model->status == 9) {
-                    $model->status = 10;
-                } else {
-                    $model->status  = 9;
-                }
-                if ($model->save(false)) {
-                    return json_encode(['isSuccess' => true]);
-                } else {
-                    return json_encode(['isSuccess' => false]);
-                }
+        if (Yii::$app->request->post()) {
+            $id = Yii::$app->request->post('id');
+            $model = $this->findModel($id);
+            if ($model->status == 9) {
+                $model->status = 10;
+            } else {
+                $model->status  = 9;
+            }
+            if ($model->save(false)) {
+                return json_encode(['isSuccess' => true]);
+            } else {
+                return json_encode(['isSuccess' => false]);
             }
         }
     }

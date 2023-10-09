@@ -2,10 +2,11 @@
 
 namespace app\models;
 
+use Yii;
 use yii\base\Model;
+use common\models\User;
 use yii\data\ActiveDataProvider;
 use app\models\SupplementalPpmpIndex;
-use Yii;
 
 /**
  * SupplementalPpmpIndexSearch represents the model behind the search form of `app\models\SupplementalPpmpIndex`.
@@ -64,11 +65,11 @@ class SupplementalPpmpIndexSearch extends SupplementalPpmpIndex
 
         // add conditions that should always apply here
 
-        if (!Yii::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $query->andWhere('office_name = :office_name', ['office_name' => $user_data->office->office_name]);
+        if (!Yii::$app->user->can('ro_procurement_admin')) {
+            $user_data = User::getUserDetails();
+            $query->andWhere('office_name = :office_name', ['office_name' => $user_data->employee->office->office_name]);
             if (!Yii::$app->user->can('po_procurement_admin') && !YIi::$app->user->can('ro_procurement_admin')) {
-                $query->andWhere('division = :division', ['division' => $user_data->divisionName->division]);
+                $query->andWhere('division = :division', ['division' => $user_data->employee->empDivision->division]);
             }
         }
         $dataProvider = new ActiveDataProvider([

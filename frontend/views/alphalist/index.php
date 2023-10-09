@@ -38,18 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             [
                 'class' => 'kartik\grid\ActionColumn',
-                'template' =>  Yii::$app->user->can('super-user') ? '{view} {delete}' : '{view} ',
-
-                // 'deleteOptions' => function () {
-
-                //     if (!Yii::$app->user->can('super-user')) {
-                //         return ['style' => 'display:none'];
-                //     } else {
-                //         return [];
-                //     }
-                // },
-                // 'updateOptions' => ['hidden' => true],
-
+                'template' =>  Yii::$app->user->can('ro_accounting_admin') ? '{view} {delete}' : '{view} ',
             ],
         ],
     ]); ?>

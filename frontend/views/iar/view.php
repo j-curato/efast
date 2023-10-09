@@ -222,7 +222,7 @@ $date_generated = !empty($model->date_generated) ? DateTime::createFromFormat('Y
         </table>
     </div>
 
-    <?php if (Yii::$app->user->can('super-user')) { ?>
+    <?php if (Yii::$app->user->can('ro_inspection_admin')) { ?>
         <div class="container document_trace card">
             <table id="tracking">
                 <thead>

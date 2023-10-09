@@ -701,7 +701,7 @@ $this->params['breadcrumbs'][] = $title;
         </table>
     </div>
     <?php
-    if (Yii::$app->user->can('super-user')) {
+    if (Yii::$app->user->can('ro_accounting_admin') || Yii::$app->user->can('ro_budget_admin')) {
 
 
     ?>

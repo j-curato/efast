@@ -66,11 +66,25 @@ class Payee extends \yii\db\ActiveRecord
                 if (empty($this->id)) {
                     $this->id = Yii::$app->snowflake->generateId();
                 }
+            } else {
+                var_dump($this->getDirtyAttributes()['fk_office_id']);
+                var_dump($this->getOldAttribute('fk_office_id'));
+                var_dump($this->getDirtyAttributes()['fk_office_id'] ==$this->getOldAttribute('fk_office_id'));
+                die();
             }
             return true;
         }
         return false;
     }
+    // public function afterSave($insert, $changedAttributes)
+    // {
+    //     parent::afterSave($insert, $changedAttributes);
+    //     if (!$insert) {
+    //         var_dump($this->dirtyAttributes());
+    //         die();
+    //         // your code here like $changedAttributes['myField'];
+    //     }
+    // }
     public function beforeValidate()
     {
 
@@ -93,7 +107,7 @@ class Payee extends \yii\db\ActiveRecord
                     ->bindValue(':_name', '%' . trim($this->registered_name) . '%')
                     ->queryScalar();
                 if ($qry == 1) {
-                    $this->addError('registered_name', 'Registered Name Already Exists');
+                    // $this->addError('registered_name', 'Registered Name Already Exists');
                 }
             }
             return true;

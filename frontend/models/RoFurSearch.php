@@ -42,7 +42,7 @@ class RoFurSearch extends RoFur
     public function search($params)
     {
         $query = RoFur::find();
-        $user = Yii::$app->user->can('super-user');
+        $user = Yii::$app->user->can('ro_budget_admin');
         $user_division = Yii::$app->user->identity->division;
         if (!$user) {
             $query->andWere('division = :division', ['division' => $user_division]);

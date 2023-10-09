@@ -3,11 +3,12 @@
 
 /* @var $this yii\web\View */
 
-use aryelds\sweetalert\SweetAlertAsset;
-use dosamigos\chartjs\ChartJsAsset;
-use kartik\date\DatePicker;
-use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\helpers\Html;
+use common\models\User;
+use kartik\date\DatePicker;
+use dosamigos\chartjs\ChartJsAsset;
+use aryelds\sweetalert\SweetAlertAsset;
 
 
 $this->title = 'Dashboard';
@@ -20,9 +21,7 @@ $this->title = 'Dashboard';
 
             <div class="col-sm-3">
                 <?php
-                if (Yii::$app->user->can('super-user')) {
-                    echo Html::a('NAS Link', Url::to('http://192.168.1.190:8021', true), ['target' => '_blank', 'class' => 'btn btn-warning']);
-                }
+                echo Html::a('NAS Link', Url::to('http://192.168.1.190:8021', true), ['target' => '_blank', 'class' => 'btn btn-warning']);
                 // echo "  <div class='col-sm-1'><button class='btn btn-success' id='update_cloud' style='margin-bottom:12px'>Update Cloud</button> </div>";
                 ?>
 
@@ -37,7 +36,7 @@ $this->title = 'Dashboard';
                     </div>
                 </div>
             </div>
-            <?php if (YIi::$app->user->can('super-user')) { ?>
+            <?php if (YIi::$app->user->can('ro_accounting_admin') || YIi::$app->user->can('ro_cash_admin')) { ?>
                 <div class="col-sm-7">
                     <div class="panel panel-primary">
                         <div class="panel-heading">Transmittal</div>

@@ -2,20 +2,21 @@
 
 namespace frontend\controllers;
 
-use app\components\helpers\MyHelper;
 use Yii;
-use app\models\Par;
-use app\models\ParIndexSearch;
-use app\models\ParSearch;
-use app\models\PropertyCard;
-use Da\QrCode\QrCode;
-use ErrorException;
 use yii\db\Query;
-use yii\filters\AccessControl;
-use yii\web\Controller;
-use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
+use app\models\Par;
+use ErrorException;
 use yii\helpers\Url;
+use Da\QrCode\QrCode;
+use common\models\User;
+use yii\web\Controller;
+use app\models\ParSearch;
+use yii\filters\VerbFilter;
+use app\models\PropertyCard;
+use app\models\ParIndexSearch;
+use yii\filters\AccessControl;
+use yii\web\NotFoundHttpException;
+use app\components\helpers\MyHelper;
 
 /**
  * ParController implements the CRUD actions for Par model.
@@ -144,8 +145,8 @@ class ParController extends Controller
     public function actionCreate()
     {
         $model = new Par();
-        if (!Yii::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
+        if (!Yii::$app->user->can('ro_property_admin')) {
+            $user_data = User::getUserDetails();
             $office_id = $user_data->office->id;
             $model->fk_office_id = $office_id;
         }

@@ -24,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= Html::button('<i class="glyphicon glyphicon-pencil"></i> Update', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=pr-stock/update&id=' . $model->id), 'id' => 'modalButtoncreate', 'class' => 'btn btn-primary', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
             <?php
 
-            if (Yii::$app->user->can('super-user')) {
+            if (Yii::$app->user->can('ro_procurement_admin')) {
                 $btn_color = 'btn btn-danger';
                 if ($model->is_final) {
                     $btn_color = 'btn btn-success';

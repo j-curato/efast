@@ -2,20 +2,21 @@
 
 namespace frontend\controllers;
 
-use app\components\helpers\MyHelper;
-use app\models\Office;
 use Yii;
-use app\models\PrAoq;
-use app\models\PrAoqEntries;
-use app\models\PrAoqSearch;
 use DateTime;
-use ErrorException;
 use yii\db\Query;
-use yii\filters\AccessControl;
+use ErrorException;
+use app\models\PrAoq;
+use app\models\Office;
+use common\models\User;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
+use app\models\PrAoqSearch;
 use yii\filters\VerbFilter;
+use app\models\PrAoqEntries;
 use yii\helpers\ArrayHelper;
+use yii\filters\AccessControl;
+use yii\web\NotFoundHttpException;
+use app\components\helpers\MyHelper;
 
 /**
  * PrAoqController implements the CRUD actions for PrAoq model.
@@ -399,8 +400,8 @@ class PrAoqController extends Controller
                 ->from('pr_aoq')
                 ->where(['like', 'aoq_number', $q]);
             if (!Yii::$app->user->can('ro_procurement_admin')) {
-                $user_data = Yii::$app->memem->getUserData();
-                $query->andWhere('fk_office_id = :fk_office_id', ['fk_office_id' =>  $user_data->office->id]);
+                $user_data = User::getUserDetails();
+                $query->andWhere('fk_office_id = :fk_office_id', ['fk_office_id' =>  $user_data->employee->office->id]);
             }
             $command = $query->createCommand();
             $data = $command->queryAll();

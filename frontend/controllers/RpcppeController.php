@@ -2,18 +2,19 @@
 
 namespace frontend\controllers;
 
-use app\components\helpers\MyHelper;
-use app\models\Office;
 use Yii;
-use app\models\Rpcppe;
-use app\models\RpcppeSearch;
-use yii\db\Expression;
 use yii\db\Query;
-use yii\filters\AccessControl;
+use app\models\Office;
+use app\models\Rpcppe;
+use yii\db\Expression;
+use common\models\User;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\models\RpcppeSearch;
 use yii\helpers\ArrayHelper;
+use yii\filters\AccessControl;
+use yii\web\NotFoundHttpException;
+use app\components\helpers\MyHelper;
 
 /**
  * RpcppeController implements the CRUD actions for Rpcppe model.
@@ -101,9 +102,9 @@ class RpcppeController extends Controller
     public function actionCreate()
     {
         $model = new Rpcppe();
-        if (!Yii::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $model->fk_office_id = $user_data->office->id;
+        if (!Yii::$app->user->can('ro_property_admin')) {
+            $user_data = User::getUserDetails();
+            $model->fk_office_id = $user_data->employee->office->id;
         }
         if ($model->load(Yii::$app->request->post())) {
 
@@ -188,9 +189,9 @@ class RpcppeController extends Controller
         $uacs  = Yii::$app->db->createCommand("SELECT uacs FROM chart_of_accounts WHERE id = :id")->bindValue(':id', $uacs_id)->queryScalar();
         $book_name  = Yii::$app->db->createCommand("SELECT `name` FROM books WHERE id = :id")->bindValue(':id', $book_id)->queryScalar();
 
-        if (!Yii::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $office_id = $user_data->office->id;
+        if (!Yii::$app->user->can('ro_property_admin')) {
+            $user_data = User::getUserDetails();
+            $office_id = $user_data->employee->office->id;
         }
         $qry = new Query();
         $qry->select([

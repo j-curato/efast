@@ -2,19 +2,20 @@
 
 namespace frontend\controllers;
 
-use app\components\helpers\MyHelper;
 use Yii;
+use yii\db\Query;
+use ErrorException;
 use app\models\Iirup;
-use app\models\IirupIndexSearch;
+use app\models\Office;
+use common\models\User;
+use yii\web\Controller;
 use app\models\IirupItems;
 use app\models\IirupSearch;
-use app\models\Office;
-use ErrorException;
-use yii\db\Query;
-use yii\filters\AccessControl;
-use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
+use app\models\IirupIndexSearch;
+use yii\web\NotFoundHttpException;
+use app\components\helpers\MyHelper;
 
 /**
  * IirupController implements the CRUD actions for Iirup model.
@@ -157,9 +158,9 @@ class IirupController extends Controller
     public function actionCreate()
     {
         $model = new Iirup();
-        if (!Yii::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $office_id = $user_data->office->id;
+        if (!Yii::$app->user->can('ro_property_admin')) {
+            $user_data = User::getUserDetails();
+            $office_id = $user_data->employee->office->id;
             $model->fk_office_id = $office_id;
         }
         if ($model->load(Yii::$app->request->post())) {

@@ -1,12 +1,13 @@
 <?php
 
+use yii\helpers\Html;
+use common\models\User;
+use kartik\date\DatePicker;
 use kartik\money\MaskMoney;
 use kartik\select2\Select2;
-use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
-use yii\bootstrap4\ActiveForm;
 
-use kartik\date\DatePicker;
+use yii\helpers\ArrayHelper;
+use yii\bootstrap4\ActiveForm;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\PoTransaction */
@@ -16,8 +17,8 @@ use kartik\date\DatePicker;
 <div class="po-transaction-form">
 
     <?php
-    $user_data = Yii::$app->memem->getUserData();
-    $province = strtolower($user_data->office->office_name);
+    $user_data = User::getUserDetails();
+    $province = strtolower($user_data->employee->office->office_name);
     if (!Yii::$app->user->can('ro_accounting_admin')) {
         $respons_center = (new \yii\db\Query())->select('*')
             ->from('po_responsibility_center')

@@ -3,13 +3,14 @@
 namespace frontend\controllers;
 
 use Yii;
-use app\models\Location;
-use app\models\LocationSearch;
 use yii\db\Query;
-use yii\filters\AccessControl;
+use common\models\User;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
+use app\models\Location;
 use yii\filters\VerbFilter;
+use app\models\LocationSearch;
+use yii\filters\AccessControl;
+use yii\web\NotFoundHttpException;
 
 /**
  * LocationController implements the CRUD actions for Location model.
@@ -180,9 +181,9 @@ class LocationController extends Controller
                 ->where(['like', 'location.location', $q]);
             $query->offset($offset)
                 ->limit($limit);
-            if (!Yii::$app->user->can('super-user')) {
-                $user_data = Yii::$app->memem->getUserData();
-                $office_id = $user_data->office->id;
+            if (!Yii::$app->user->can('ro_property_admin')) {
+                $user_data = User::getUserDetails();
+                $office_id = $user_data->employee->office->office->id;
                 $query->andWhere('fk_office_id = :ofc_id', ['ofc_id' => $office_id]);
             }
             $command = $query->createCommand();

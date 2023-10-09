@@ -106,7 +106,7 @@ class SaobController extends Controller
         $model = new Saob();
 
         if ($_POST) {
-            if (Yii::$app->user->can('super-user')) {
+            if (Yii::$app->user->can('ro_budget_admin')) {
 
                 $from_reporting_period = $_POST['from_reporting_period'];
                 $to_reporting_period = $_POST['to_reporting_period'];

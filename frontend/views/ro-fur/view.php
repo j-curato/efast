@@ -21,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="container">
         <?php
 
-        $user = Yii::$app->user->can('super-user');
+        $user = Yii::$app->user->can('ro_budget_admin');
         if ($user) {
             echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
         }

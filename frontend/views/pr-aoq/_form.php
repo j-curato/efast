@@ -35,7 +35,7 @@ $row = 1;
         ]); ?>
         <div class="row">
             <?php
-            if (Yii::$app->user->can('super-user')) {
+            if (Yii::$app->user->can('ro_procurement_admin')) {
             ?>
                 <div class="col-sm-2">
                     <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [

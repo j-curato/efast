@@ -29,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row">
             <?php
 
-            if (Yii::$app->user->can('super-user')) {
+            if (Yii::$app->user->can('ro_property_admin')) {
 
             ?>
                 <div class="col-sm-2">

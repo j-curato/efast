@@ -672,11 +672,9 @@ $this->params['breadcrumbs'][] = $this->title;
             padding: 1rem;
         }
 
-        table,
         td,
         th {
             padding: 5px;
-            font-size: 14px;
         }
 
         .btn {

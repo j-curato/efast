@@ -1,15 +1,16 @@
 <?php
 
-use app\models\CashDisbursement;
-use app\models\CashDisbursementSearch;
-use app\models\ForTransmittalSearch;
-use app\models\LiquidationEntriesViewSearch;
-use app\models\LiquidationViewSearch;
-use aryelds\sweetalert\SweetAlertAsset;
-use kartik\date\DatePicker;
-use kartik\grid\GridView;
 use yii\helpers\Html;
+use common\models\User;
+use kartik\grid\GridView;
+use kartik\date\DatePicker;
 use yii\bootstrap4\ActiveForm;
+use app\models\CashDisbursement;
+use app\models\ForTransmittalSearch;
+use app\models\LiquidationViewSearch;
+use app\models\CashDisbursementSearch;
+use aryelds\sweetalert\SweetAlertAsset;
+use app\models\LiquidationEntriesViewSearch;
 
 
 /* @var $this yii\web\View */
@@ -22,9 +23,8 @@ use yii\bootstrap4\ActiveForm;
         <?php
         $viewSearchModel = new LiquidationViewSearch();
         if (!YIi::$app->user->can('ro_accounting_admin')) {
-            $user_data = Yii::$app->memem->getUserData();
-
-            $viewSearchModel->province = strtolower($user_data->office->office_name);
+            $user_data = User::getUserDetails();
+            $viewSearchModel->province = strtolower($user_data->employee->office->office_name);
         }
         $viewSearchModel->status = 'at_po';
 

@@ -138,7 +138,7 @@ if (!empty($model->id)) {
 
                 <?php
 
-                if (Yii::$app->user->can('super-user')) {
+                if (Yii::$app->user->can('ro_budget_admin')) {
                     echo "   <button class='btn btn-success' type='submit' id='save'>Save</button>";
                 }
                 ?>

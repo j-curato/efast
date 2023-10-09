@@ -40,7 +40,7 @@ if (!empty($model->part)) {
 
     <?php
     $stock_part = ['part-1' => 'Part-1', 'part-2' => 'Part-2', 'part-3' => 'Part-3'];
-    if (!Yii::$app->user->can('super-user')) {
+    if (!Yii::$app->user->can('ro_procurement_admin')) {
         $stock_part = ['part-2' => 'Part-2', 'part-3' => 'Part-3'];
     }
     ?>
@@ -112,7 +112,7 @@ if (!empty($model->part)) {
 
 
     <?php
-    if (Yii::$app->user->can('super-user')) {
+    if (Yii::$app->user->can('ro_procurement_admin')) {
         echo $form->field($model, 'chart_of_account_id')->widget(Select2::class, [
             'data' => $chart_of_account_id,
             'options' => ['placeholder' => 'Search for a Chart of Account ...'],

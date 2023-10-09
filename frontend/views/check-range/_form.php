@@ -1,12 +1,13 @@
 <?php
 
-use aryelds\sweetalert\SweetAlertAsset;
+use yii\db\Query;
+use yii\helpers\Html;
+use common\models\User;
 use kartik\date\DatePicker;
 use kartik\select2\Select2;
-use yii\db\Query;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
 use yii\bootstrap4\ActiveForm;
+use aryelds\sweetalert\SweetAlertAsset;
 
 
 /* @var $this yii\web\View */
@@ -83,8 +84,8 @@ use yii\bootstrap4\ActiveForm;
                 ->select(['bank_account.id', "CONCAT(bank_account.account_number,'-',UPPER(bank_account.province),'-',bank_account.account_name) as account_name"])
                 ->from('bank_account');
 
-            $user_data = Yii::$app->memem->getUserData();
-            $province = strtolower($user_data->office->office_name);
+            $user_data = User::getUserDetails();
+            $province = strtolower($user_data->employee->office->office_name);
             if (!Yii::$app->user->can('ro_accounting_admin')) {
                 $bank_accounts_query->andWhere('bank_account.province = :province', ['province' => $province]);
             }

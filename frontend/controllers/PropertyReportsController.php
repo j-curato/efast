@@ -7,6 +7,7 @@ use yii\db\Query;
 use app\models\Books;
 use app\models\Office;
 use yii\db\Expression;
+use common\models\User;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use yii\filters\AccessControl;
@@ -57,8 +58,8 @@ class PropertyReportsController extends \yii\web\Controller
 
             $act_usr_id  = !empty(MyHelper::post('act_usr_id')) ? MyHelper::post('act_usr_id') : null;
             $actbl_ofr  = !empty(MyHelper::post('actbl_ofr')) ? MyHelper::post('actbl_ofr') : null;
-            $user_data = Yii::$app->memem->getUserData();
-            $office  = Yii::$app->user->can('ro_property_admin') ? Yii::$app->request->post('office') ?? null : $user_data->office->id;
+            $user_data = User::getUserDetails();
+            $office  = Yii::$app->user->can('ro_property_admin') ? Yii::$app->request->post('office') ?? null : $user_data->employee->office->id;
             // if (empty($act_usr_id) && empty($actbl_ofr)) {
             //     return json_encode('');
             // }
@@ -182,9 +183,9 @@ class PropertyReportsController extends \yii\web\Controller
             ->andWhere("DATE_FORMAT(detailed_property_database.derecognition_date,'%Y-%m') >= :reporting_period 
         OR detailed_property_database.derecognition_num IS NULL", ['reporting_period' => $reporting_period]);
 
-        if (!Yii::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $office_id = $user_data->office->id;
+        if (!Yii::$app->user->can('ro_property_admin')) {
+            $user_data = User::getUserDetails();
+            $office_id = $user_data->employee->office->id;
         }
         if (!empty($office_id)) {
             $offce_name = Office::findOne($office_id)->office_name;

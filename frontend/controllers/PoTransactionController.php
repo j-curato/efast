@@ -3,14 +3,15 @@
 namespace frontend\controllers;
 
 use Yii;
-use app\models\PoTransaction;
-use app\models\PoTransactionSearch;
 use DateTime;
 use yii\db\Query;
-use yii\filters\AccessControl;
+use common\models\User;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\models\PoTransaction;
+use yii\filters\AccessControl;
+use yii\web\NotFoundHttpException;
+use app\models\PoTransactionSearch;
 
 /**
  * PoTransactionController implements the CRUD actions for PoTransaction model.
@@ -94,8 +95,8 @@ class PoTransactionController extends Controller
         $model = new PoTransaction();
 
         if (!Yii::$app->user->can('ro_accounting_admin')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $model->province = strtolower($user_data->office->office_name);
+            $user_data = User::getUserDetails();
+            $model->province = strtolower($user_data->employee->office->office_name);
         }
         if ($model->load(Yii::$app->request->post())) {
             $model->tracking_number = $this->getTrackingNumber($model->po_responsibility_center_id, $model->reporting_period);
@@ -180,8 +181,8 @@ class PoTransactionController extends Controller
             ->one();
 
         if (!Yii::$app->user->can('ro_accounting_admin')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $province = strtolower($user_data->office->office_name);
+            $user_data = User::getUserDetails();
+            $province = strtolower($user_data->employee->office->office_name);
         }
         if ($reporting_period_year <= 2021) {
 
@@ -256,12 +257,12 @@ class PoTransactionController extends Controller
     {
         if (!Yii::$app->user->can('ro_accounting_admin')) {
 
-            $user_data = Yii::$app->memem->getUserData();
+            $user_data = User::getUserDetails();
             $query = (new \yii\db\Query())
                 ->select('*')
                 ->from('po_transaction');
 
-            $query->where('po_transaction.tracking_number LIKE :tracking_number', ['tracking_number' => $user_data->office->office_name . "%"]);
+            $query->where('po_transaction.tracking_number LIKE :tracking_number', ['tracking_number' => $user_data->employee->office->office_name . "%"]);
         }
 
         $q =    $query->all();
@@ -379,8 +380,8 @@ class PoTransactionController extends Controller
                 ->from('po_transaction')
                 ->where(['like', 'po_transaction.tracking_number', $q]);
             if (!Yii::$app->user->can('ro_accounting_admin')) {
-                $user_data = Yii::$app->memem->getUserData();
-                $query->andWhere('po_transaction.province = :province', ['province' => $user_data->office->office_name]);
+                $user_data = User::getUserDetails();
+                $query->andWhere('po_transaction.province = :province', ['province' => $user_data->employee->office->office_name]);
             }
 
             $query->offset($offset)

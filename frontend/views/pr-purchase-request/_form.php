@@ -1,28 +1,28 @@
 <?php
 
 use app\models\Books;
-use app\models\DivisionProgramUnit;
-use app\models\Divisions;
+use yii\helpers\Html;
 use app\models\Office;
-use app\models\PrAllotmentViewSearch;
-use app\models\RecordAllotmentDetailedSearch;
-use aryelds\sweetalert\SweetAlert;
-use aryelds\sweetalert\SweetAlertAsset;
+use kartik\icons\Icon;
+use common\models\User;
+use app\models\Divisions;
+use kartik\grid\GridView;
+use yii\web\JsExpression;
 use kartik\date\DatePicker;
 use kartik\form\ActiveForm;
-use kartik\grid\GridView;
-use kartik\icons\Icon;
 use kartik\select2\Select2;
-use Matrix\Operators\Division;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
-use yii\web\JsExpression;
+use Matrix\Operators\Division;
+use aryelds\sweetalert\SweetAlert;
+use app\models\DivisionProgramUnit;
+use app\models\PrAllotmentViewSearch;
+use aryelds\sweetalert\SweetAlertAsset;
+use app\models\RecordAllotmentDetailedSearch;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\PrPurchaseRequest */
 /* @var $form yii\widgets\ActiveForm */
 
-$user_data = Yii::$app->memem->getUserData();
 
 $row_number = 1;
 $allotment_row_num = 1;
@@ -80,7 +80,7 @@ if (!empty($model->fk_supplemental_ppmp_noncse_id)) {
             ['id' => $ppmp_item_id, 'name' => 'Fixed Expenses']
         ], 'id', 'name');
 }
-$user_data = Yii::$app->memem->getUserData();
+$user_data = User::getUserDetails();
 ?>
 
 
@@ -92,7 +92,7 @@ $user_data = Yii::$app->memem->getUserData();
             <li>PPMPs are created in Supplemental PPMP Module </li>
             <li>The total of the Allotment table and the Specification table total must be equal. </li>
             <li>If the balance of the Stock reaches zero, it will no longer be displayed in the selected PPMP.</li>
-            <?= Yii::$app->user->can('super-user') ? '<li>Select the Office, Division, and Budget year first before selecting PPMPs.</li>' : '' ?>
+            <?= Yii::$app->user->can('ro_procurement_admin') ? '<li>Select the Office, Division, and Budget year first before selecting PPMPs.</li>' : '' ?>
         </ul>
     </div>
     <div>
@@ -101,9 +101,7 @@ $user_data = Yii::$app->memem->getUserData();
             'id' => 'PurchaseRequestForm'
         ]); ?>
         <div class="row">
-            <?php if (Yii::$app->user->can('super-user')) { ?>
-
-
+            <?php if (Yii::$app->user->can('ro_procurement_admin')) { ?>
                 <div class="col-sm-2">
                     <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
                         'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
@@ -391,12 +389,12 @@ $user_data = Yii::$app->memem->getUserData();
 
         <?php
         $allotment_colspan = 9;
-        if (Yii::$app->user->can('super-user')) {
+        if (Yii::$app->user->can('ro_procurement_admin')) {
             $allotment_colspan = 11;
             echo "<th>Office</th>";
             echo "<th>Division</th>";
         }
-        if (strtolower($user_data->office->office_name) === 'ro') {
+        if (strtolower($user_data->employee->office->office_name) === 'ro') {
 
         ?>
 
@@ -445,7 +443,7 @@ $user_data = Yii::$app->memem->getUserData();
                             echo "<tr><td>$budget_year</td>";
 
 
-                            if (Yii::$app->user->can('super-user')) {
+                            if (Yii::$app->user->can('ro_procurement_admin')) {
                                 echo "<td>$office</td>
                             <td>$division</td>";
                             }
@@ -497,7 +495,7 @@ $user_data = Yii::$app->memem->getUserData();
         }
     </style>
     <?php
-    if (strtolower($user_data->office->office_name) === 'ro') {
+    if (strtolower($user_data->employee->office->office_name) === 'ro') {
         $division = Yii::$app->user->identity->division;
         $searchModel = new RecordAllotmentDetailedSearch();
         $searchModel->budget_year = date('Y');
@@ -506,7 +504,7 @@ $user_data = Yii::$app->memem->getUserData();
         $office = '';
         $division = '';
 
-        if (Yii::$app->user->can('super-user')) {
+        if (Yii::$app->user->can('ro_procurement_admin')) {
             $office =   'office_name';
             $division =   'division';
             $col = [

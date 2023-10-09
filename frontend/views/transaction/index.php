@@ -25,11 +25,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('Create Transaction', ['create'], ['class' => 'btn btn-success']) ?>
-        <?php
-        if (Yii::$app->user->can('super-user')) {
-            // echo "<button type='button' class='btn btn-primary'  id ='update_local_transaction'>Update Local Transaction</button>";
-        }
-        ?>
     </p>
 
 
@@ -42,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'type' => GridView::TYPE_PRIMARY,
             'heading' => 'List of Transactions',
         ],
- 
+
         'columns' => [
             // ['class' => 'yii\grid\SerialColumn'],
             // [
@@ -104,7 +99,7 @@ $this->params['breadcrumbs'][] = $this->title;
         //     'before' => Html::a('<i class="fa fa-pencil-alt"></i> Create Book', ['create'], ['class' => 'btn btn-success']),
         // ],
 
-   
+
 
 
     ]); ?>

@@ -1,14 +1,15 @@
 <?php
 
-use app\models\LiquidationViewSearch;
-use aryelds\sweetalert\SweetAlertAsset;
-use kartik\date\DatePicker;
-use kartik\export\ExportMenu;
-use kartik\file\FileInput;
-use kartik\form\ActiveForm;
-use kartik\grid\GridView;
 use yii\helpers\Html;
 use yii\widgets\Pjax;
+use common\models\User;
+use kartik\grid\GridView;
+use kartik\file\FileInput;
+use kartik\date\DatePicker;
+use kartik\form\ActiveForm;
+use kartik\export\ExportMenu;
+use app\models\LiquidationViewSearch;
+use aryelds\sweetalert\SweetAlertAsset;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\LiquidataionSearch */
@@ -26,7 +27,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <!-- <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button> -->
 
             <?php
-            if (Yii::$app->user->can('super-user')) {
+            if (Yii::$app->user->can('ro_accounting_admin')) {
                 echo " <button class='btn btn-success' data-target='#updateUacsModal' data-toggle='modal'>Update Uacs</button>";
             }
             ?>
@@ -174,8 +175,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'province',
 
     ];
-    $user_data = Yii::$app->memem->getUserData();
-    $province = strtolower($user_data->office->office_name);
+    $user_data = User::getUserDetails();
+    $province = strtolower($user_data->employee->office->office_name);
     $viewSearchModel = new LiquidationViewSearch();
     $viewDataProvider = $viewSearchModel->search(Yii::$app->request->queryParams);
     $viewDataProvider->pagination = ['pageSize' => 10];

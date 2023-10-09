@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\CheckRange;
 use app\models\CheckRangeSearch;
+use common\models\User;
 use yii\db\Query;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -96,8 +97,8 @@ class CheckRangeController extends Controller
             $reporting_period = $_POST['reporting_period'];
             $begin_balance = $_POST['begin_balance'];
             $bank_account_id = !empty($_POST['bank_account_id']) ? $_POST['bank_account_id'] : null;
-            $user_data = Yii::$app->memem->getUserData();
-            $province = strtolower($user_data->office->office_name);
+            $user_data = User::getUserDetails();
+            $province = strtolower($user_data->employee->office->office_name);
             if (Yii::$app->user->can('ro_accounting_admin')) {
                 $province = $_POST['province'];
             }

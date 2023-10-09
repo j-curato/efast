@@ -2,10 +2,11 @@
 
 namespace app\models;
 
-use yii\base\Model;
-use yii\data\ActiveDataProvider;
-use app\models\PrAllotmentView;
 use Yii;
+use yii\base\Model;
+use common\models\User;
+use app\models\PrAllotmentView;
+use yii\data\ActiveDataProvider;
 
 /**
  * PrAllotmentViewSearch represents the model behind the search form of `app\models\PrAllotmentView`.
@@ -58,9 +59,9 @@ class PrAllotmentViewSearch extends PrAllotmentView
     {
         $query = PrAllotmentView::find();
         if (!Yii::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $query->andWhere('office_name = :office_name', ['office_name' => $user_data->office->office_name]);
-            $query->andWhere('division = :division', ['division' => $user_data->divisionName->division]);
+            $user_data = User::getUserDetails();
+            $query->andWhere('office_name = :office_name', ['office_name' => $user_data->employee->office->office_name]);
+            $query->andWhere('division = :division', ['division' => $user_data->employee->empDivision->division]);
         }
 
 

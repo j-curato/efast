@@ -3,18 +3,19 @@
 namespace frontend\controllers;
 
 use Yii;
-use app\models\PpmpNonCse;
-use app\models\PpmpNonCseItemCategories;
-use app\models\PpmpNonCseItems;
-use app\models\PpmpNonCseSearch;
 use ErrorException;
-use yii\db\ForeignKeyConstraint;
-use yii\debug\models\router\RouterRules;
-use yii\filters\AccessControl;
+use common\models\User;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
+use app\models\PpmpNonCse;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
+use yii\filters\AccessControl;
+use app\models\PpmpNonCseItems;
+use app\models\PpmpNonCseSearch;
+use yii\db\ForeignKeyConstraint;
+use yii\web\NotFoundHttpException;
+use app\models\PpmpNonCseItemCategories;
+use yii\debug\models\router\RouterRules;
 
 /**
  * PpmpNonCseController implements the CRUD actions for PpmpNonCse model.
@@ -241,8 +242,8 @@ class PpmpNonCseController extends Controller
     public function actionCreate()
     {
         $model = new PpmpNonCse();
-        $user_data = Yii::$app->memem->getUserData();
-        $user_province = strtolower($user_data->office->office_name);
+        $user_data = User::getUserDetails();
+        $user_province = strtolower($user_data->employee->office->office_name);
         if ($user_province === 'ro') {
             $model->responsible_center = Yii::$app->user->identity->division;
         } else {

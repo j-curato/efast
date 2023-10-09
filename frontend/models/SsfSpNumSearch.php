@@ -2,10 +2,11 @@
 
 namespace app\models;
 
-use yii\base\Model;
-use yii\data\ActiveDataProvider;
-use app\models\SsfSpNum;
 use Yii;
+use yii\base\Model;
+use common\models\User;
+use app\models\SsfSpNum;
+use yii\data\ActiveDataProvider;
 
 /**
  * SsfSpNumSearch represents the model behind the search form of `app\models\SsfSpNum`.
@@ -50,9 +51,9 @@ class SsfSpNumSearch extends SsfSpNum
             'query' => $query,
         ]);
 
-        if (!Yii::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $office_id = $user_data->office->id;
+        if (!Yii::$app->user->can('property_admin')) {
+            $user_data = User::getUserDetails();
+            $office_id = $user_data->employee->office->id;
             $query->where('fk_office_id = :office_id', ['office_id' => $office_id]);
         }
         $this->load($params);

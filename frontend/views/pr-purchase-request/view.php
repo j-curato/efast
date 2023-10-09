@@ -1,8 +1,9 @@
 <?php
 
-use aryelds\sweetalert\SweetAlertAsset;
 use yii\helpers\Html;
+use common\models\User;
 use yii\widgets\DetailView;
+use aryelds\sweetalert\SweetAlertAsset;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\PrPurchaseRequest */
@@ -262,8 +263,8 @@ SweetAlertAsset::register($this);
             </tbody>
         </table>
         <?php
-        $user_data = Yii::$app->memem->getUserData();
-        if (strtolower($user_data->office->office_name) === 'ro') : ?>
+        $user_data = User::getUserDetails();
+        if (strtolower($user_data->employee->office->office_name) === 'ro') : ?>
             <table class="table table-stripe allotment" style="margin-top: 3rem;">
                 <thead>
                     <tr class="info">

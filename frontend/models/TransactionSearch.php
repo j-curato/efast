@@ -2,11 +2,12 @@
 
 namespace app\models;
 
-use yii\base\Model;
-use yii\data\ActiveDataProvider;
-use app\models\Transaction;
 use Yii;
+use yii\base\Model;
+use common\models\User;
+use app\models\Transaction;
 use yii\helpers\ArrayHelper;
+use yii\data\ActiveDataProvider;
 
 /**
  * TransactionSearch represents the model behind the search form of `app\models\Transaction`.
@@ -55,7 +56,9 @@ class TransactionSearch extends Transaction
      */
     public function search($params)
     {
-        $province = Yii::$app->user->identity->division;
+
+        $user_data = User::getUserDetails();
+        $division = $user_data->employee->empDivision->division;
         $q = Yii::$app->db->createCommand("SELECT tracking_number 
         FROM transaction_totals 
         WHERE 
@@ -67,11 +70,11 @@ class TransactionSearch extends Transaction
         // ->where("$sql",$qwe)
 
         if (
-            !Yii::$app->user->can('super-user')
+            !Yii::$app->user->can('ro_accounting_admin')
 
         ) {
             $q->joinWith('responsibilityCenter')
-                ->where('responsibility_center.name LIKE :province', ['province' => $province]);
+                ->where('responsibility_center.name LIKE :division', ['division' => $division]);
         }
         $query = $q->orderBy("id DESC");;
         // add conditions that should always apply here

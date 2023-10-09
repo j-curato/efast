@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <form id="filter">
         <div class="row">
             <?php
-            if (Yii::$app->user->can('super-user')) {
+            if (Yii::$app->user->can('ro_accounting_admin')) {
 
             ?>
                 <div class="col-sm-2">

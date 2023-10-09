@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\RecordAllotmentDetailed;
+use common\models\User;
 use Yii;
 
 /**
@@ -74,10 +75,10 @@ class RecordAllotmentDetailedSearch extends RecordAllotmentDetailed
     public function search($params, $type = '')
     {
         $query = RecordAllotmentDetailed::find();
-        if (!Yii::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            // $query->andWhere('office_name = :office_name', ['office_name' => $user_data->office->office_name]);
-            $query->andWhere('division = :division', ['division' => $user_data->divisionName->division]);
+        if (!Yii::$app->user->can('ro_budget_admin')) {
+            $user_data = User::getUserDetails();
+            // $query->andWhere('office_name = :office_name', ['office_name' => $user_data->employee->office->office_name]);
+            $query->andWhere('division = :division', ['division' => $user_data->employee->empDivision->division]);
         }
 
         // add conditions that should always apply here

@@ -29,8 +29,8 @@ if (Yii::$app->user->isGuest) {
 }
 AppAsset::register($this);
 $this->registerJsFile("@web/js/jquery.min.js", ['position' => $this::POS_HEAD]);
-$this->registerJsFile("@web/js/select2.min.js", ['depends' => [JqueryAsset::class]]);
-$this->registerCssFile("@web/css/select2.min.css",);
+// $this->registerJsFile("@web/js/select2.min.js", ['depends' => [JqueryAsset::class]]);
+// $this->registerCssFile("@web/css/select2.min.css",);
 $this->registerJsFile("@web/js/vue.js", ['position' => $this::POS_HEAD]);
 // $this->registerJsFile(
 //     '@web/frontend/web/js/globalFunctions.js',

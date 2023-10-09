@@ -3,16 +3,17 @@
 namespace frontend\controllers;
 
 use Yii;
-use app\models\Employee;
-use app\models\EmployeeSearch;
-use app\models\EmployeeSearchView;
-use ErrorException;
-use frontend\models\SignupForm;
 use yii\db\Query;
-use yii\filters\AccessControl;
+use ErrorException;
+use common\models\User;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
+use app\models\Employee;
 use yii\filters\VerbFilter;
+use app\models\EmployeeSearch;
+use yii\filters\AccessControl;
+use frontend\models\SignupForm;
+use app\models\EmployeeSearchView;
+use yii\web\NotFoundHttpException;
 use yii\web\ForbiddenHttpException;
 
 /**
@@ -243,8 +244,8 @@ class EmployeeController extends Controller
                 ->from('employee_search_view')
                 ->andWhere(['like', 'employee_name', $q]);
             if (!Yii::$app->user->can('ro_procurement_admin')) {
-                $user_data = Yii::$app->memem->getUserData();
-                $query->andWhere('employee_search_view.office_name = :office_name', ['office_name' => $user_data->office->office_name]);
+                $user_data = User::getUserDetails();
+                $query->andWhere('employee_search_view.office_name = :office_name', ['office_name' => $user_data->employee->office->office_name]);
             }
 
             $command = $query->createCommand();

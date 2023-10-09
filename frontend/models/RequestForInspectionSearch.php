@@ -2,10 +2,11 @@
 
 namespace app\models;
 
+use Yii;
 use yii\base\Model;
+use common\models\User;
 use yii\data\ActiveDataProvider;
 use app\models\RequestForInspection;
-use Yii;
 
 /**
  * RequestForInspectionSearch represents the model behind the search form of `app\models\RequestForInspection`.
@@ -67,10 +68,10 @@ class RequestForInspectionSearch extends RequestForInspection
         $query = RequestForInspection::find();
         $query->joinWith('responsibilityCenter');
         if (!yii::$app->user->can('ro_inspection_admin')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $query->andWhere('request_for_inspection.fk_office_id = :office', ['office' => $user_data->office->id]);
+            $user_data = User::getUserDetails();
+            $query->andWhere('request_for_inspection.fk_office_id = :office', ['office' => $user_data->employee->office->id]);
             if (!Yii::$app->user->can('ro_inspection_admin') && !Yii::$app->user->can('po_inspection_admin')) {
-                $query->andWhere('request_for_inspection.fk_division_id = :division', ['division' => $user_data->divisionName->id ?? '']);
+                $query->andWhere('request_for_inspection.fk_division_id = :division', ['division' => $user_data->employee->empDivision->id ?? '']);
             }
         }
         // add conditions that should always apply here

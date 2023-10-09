@@ -2,10 +2,11 @@
 
 namespace app\models;
 
-use yii\base\Model;
-use yii\data\ActiveDataProvider;
-use app\models\SupplementalPpmp;
 use Yii;
+use yii\base\Model;
+use common\models\User;
+use app\models\SupplementalPpmp;
+use yii\data\ActiveDataProvider;
 
 /**
  * SupplementalPpmpSearch represents the model behind the search form of `app\models\SupplementalPpmp`.
@@ -56,11 +57,11 @@ class SupplementalPpmpSearch extends SupplementalPpmp
         $query->joinWith('office');
         $query->joinWith('divisionName');
         $query->joinWith('divisionProgramUnit');
-        if (!Yii::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $query->andWhere('office.id = :office_id', ['office_id' => $user_data->office->id]);
+        if (!Yii::$app->user->can('ro_procurement_admin')) {
+            $user_data = User::getUserDetails();
+            $query->andWhere('office.id = :office_id', ['office_id' => $user_data->employee->office->id]);
             if (!Yii::$app->user->can('po_procurement_admin') && !YIi::$app->user->can('ro_procurement_admin')) {
-                $query->andWhere('divisions.id = :division_id', ['division_id' => $user_data->divisionName->id]);
+                $query->andWhere('divisions.id = :division_id', ['division_id' => $user_data->employee->empDivision->id]);
             }
         }
 

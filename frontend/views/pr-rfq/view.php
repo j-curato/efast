@@ -171,7 +171,7 @@ SweetAlertAsset::register($this);
                         </span>
                         <br>
                         <span>
-                            <?= strtolower(User::getUserData()->office->office_name)  !== 'ro' ? 'BAC' : 'RBAC' ?>
+                            <?= strtolower(User::getUserDetails()->employee->office->office_name)  !== 'ro' ? 'BAC' : 'RBAC' ?>
                         </span>
                         <span id="rbac_position">
 

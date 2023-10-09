@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use common\models\User;
 
 /**
  * This is the model class for table "{{%record_allotment_detailed}}".
@@ -103,9 +104,9 @@ class RecordAllotmentDetailed extends \yii\db\ActiveRecord
     public static function getStatusOfFundsPerOffice($from_period, $to_period)
     {
         $sql = '';
-        if (!YIi::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $sql = " AND cte_allotmentDetails.division = '" . $user_data->divisionName->division . "'";
+        if (!YIi::$app->user->can('ro_budget_admin')) {
+            $user_data = User::getUserDetails();
+            $sql = " AND cte_allotmentDetails.division = '" . $user_data->employee->empDivision->division . "'";
         }
 
         // return Yii::$app->db->createCommand("SELECT 
@@ -344,9 +345,9 @@ class RecordAllotmentDetailed extends \yii\db\ActiveRecord
         //     ->bindValue(':to_period', $to_period)
         //     ->queryAll();
         $sql = '';
-        if (!YIi::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $sql = " AND cte_allotmentDetails.division = '" . $user_data->divisionName->division . "'";
+        if (!YIi::$app->user->can('ro_budget_admin')) {
+            $user_data = User::getUserDetails();
+            $sql = " AND cte_allotmentDetails.division = '" . $user_data->employee->empDivision->division . "'";
         }
         return Yii::$app->db->createCommand("CALL prc_GetSofMfoOffice(:from_period,:to_period,:sql)")
             ->bindValue(':from_period', $from_period)

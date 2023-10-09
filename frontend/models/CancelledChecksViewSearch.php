@@ -2,10 +2,11 @@
 
 namespace app\models;
 
+use Yii;
 use yii\base\Model;
+use common\models\User;
 use yii\data\ActiveDataProvider;
 use app\models\CancelledChecksView;
-use Yii;
 
 /**
  * CancelledChecksViewSearch represents the model behind the search form of `app\models\CancelledChecksView`.
@@ -48,8 +49,8 @@ class CancelledChecksViewSearch extends CancelledChecksView
         $query = CancelledChecksView::find();
 
         if (!Yii::$app->user->can('ro_accounting_admin')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $query->where('province = :province', ['province' => $user_data->office->office_name]);
+            $user_data = User::getUserDetails();
+            $query->where('province = :province', ['province' => $user_data->employee->office->office_name]);
         }
         // add conditions that should always apply here
         $dataProvider = new ActiveDataProvider([

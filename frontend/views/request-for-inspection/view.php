@@ -44,7 +44,7 @@ $isProvincialOffice = strtolower($officeName)  === 'ro' ? false : true;
                     ]);
                 }
             } else {
-                if (Yii::$app->user->can('super-user')) {
+                if (Yii::$app->user->can('ro_inspection_admin')) {
                     echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) . ' ';
                 }
             }

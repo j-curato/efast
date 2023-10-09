@@ -2,7 +2,9 @@
 
 namespace app\models;
 
+use Yii;
 use yii\base\Model;
+use common\models\User;
 use yii\data\ActiveDataProvider;
 use app\models\AdvancesLiquidation;
 
@@ -18,10 +20,11 @@ class AdvancesLiquidationSearch extends AdvancesLiquidation
     {
         return [
             // [[ 'payee_id', 'responsibility_center_id'], 'integer'],
-            [['check_date', 'check_number', 'dv_number', 'particular',
-            'reporting_period',
-            'fund_source',
-        ], 'safe'],
+            [[
+                'check_date', 'check_number', 'dv_number', 'particular',
+                'reporting_period',
+                'fund_source',
+            ], 'safe'],
         ];
     }
 
@@ -46,6 +49,10 @@ class AdvancesLiquidationSearch extends AdvancesLiquidation
         $query = AdvancesLiquidation::find();
 
         // add conditions that should always apply here
+        if (!Yii::$app->user->can('ro_accounting_admin')) {
+            $user_data = User::getUserDetails();
+            $query->where('province = :province', ['province' => $user_data->employee->office->office_name]);
+        }
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

@@ -30,7 +30,7 @@ $id = $model->id;
             ]);
         }
 
-        if (Yii::$app->user->can('super-user')) {
+        if (Yii::$app->user->can('final_po_alphalist')) {
 
             if ($model->status === 9) {
                 echo "<button class='btn btn-success final' style='margin:5px'>Final</button>";

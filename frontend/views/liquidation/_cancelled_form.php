@@ -1,17 +1,18 @@
 <?php
 
-use app\models\AdvancesEntriesForLiquidationSearch;
-use app\models\AdvancesEntriesSearch;
 use app\models\Payee;
-use app\models\PoTransaction;
-use aryelds\sweetalert\SweetAlertAsset;
+use common\models\User;
+use kartik\helpers\Html;
+use kartik\grid\GridView;
 use kartik\date\DatePicker;
 use kartik\form\ActiveForm;
-use kartik\grid\GridView;
-use kartik\helpers\Html;
 use kartik\money\MaskMoney;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
+use app\models\PoTransaction;
+use app\models\AdvancesEntriesSearch;
+use aryelds\sweetalert\SweetAlertAsset;
+use app\models\AdvancesEntriesForLiquidationSearch;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Liquidation */
@@ -28,8 +29,8 @@ use yii\helpers\ArrayHelper;
         ])
         ->from('check_range');
     if (!Yii::$app->user->can('ro_accounting_admin')) {
-        $user_data = Yii::$app->memem->getUserData();
-        $check_qry->where('province =:province', ['province' => $user_data->office->office_name]);
+        $user_data = User::getUserDetails();
+        $check_qry->where('province =:province', ['province' => $user_data->employee->office->office_name]);
     }
     $check  = $check_qry->all();
     ?>

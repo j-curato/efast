@@ -2,10 +2,11 @@
 
 namespace app\models;
 
-use yii\base\Model;
-use yii\data\ActiveDataProvider;
-use app\models\IarIndex;
 use Yii;
+use yii\base\Model;
+use common\models\User;
+use app\models\IarIndex;
+use yii\data\ActiveDataProvider;
 
 /**
  * IarIndexSearch represents the model behind the search form of `app\models\IarIndex`.
@@ -56,12 +57,11 @@ class IarIndexSearch extends IarIndex
     {
         $query = IarIndex::find();
 
-
         if (!yii::$app->user->can('ro_inspection_admin')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $query->andWhere('iar_index.office_name = :office', ['office' => $user_data->office->office_name]);
+            $user_data = User::getUserDetails();
+            $query->andWhere('iar_index.office_name = :office', ['office' => $user_data->employee->office->office_name]);
             if (!Yii::$app->user->can('ro_inspection_admin') && !Yii::$app->user->can('po_inspection_admin')) {
-                $query->andWhere('iar_index.division = :division', ['division' => $user_data->divisionName->division ?? '']);
+                $query->andWhere('iar_index.division = :division', ['division' => $user_data->employee->empDivision->division ?? '']);
             }
         }
 

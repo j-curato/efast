@@ -2,21 +2,22 @@
 
 namespace frontend\controllers;
 
-use app\models\DetailedPropertyDatabaseSearch;
-use app\models\Office;
-use app\models\Par;
 use Yii;
-use app\models\Property;
-use app\models\PropertyArticles;
-use app\models\PropertySearch;
-use barcode\barcode\BarcodeGenerator;
 use DateTime;
-use ErrorException;
 use yii\db\Query;
-use yii\filters\AccessControl;
+use app\models\Par;
+use ErrorException;
+use app\models\Office;
+use common\models\User;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
+use app\models\Property;
 use yii\filters\VerbFilter;
+use app\models\PropertySearch;
+use yii\filters\AccessControl;
+use app\models\PropertyArticles;
+use yii\web\NotFoundHttpException;
+use barcode\barcode\BarcodeGenerator;
+use app\models\DetailedPropertyDatabaseSearch;
 
 /**
  * PropertyController implements the CRUD actions for Property model.
@@ -126,9 +127,9 @@ class PropertyController extends Controller
     {
         $model = new Property();
 
-        if (!Yii::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $office_id = $user_data->office->id;
+        if (!Yii::$app->user->can('ro_property_admin')) {
+            $user_data = User::getUserDetails();
+            $office_id = $user_data->employee->office->id;
             $model->fk_office_id = $office_id;
         }
         if ($model->load(Yii::$app->request->post())) {
@@ -265,9 +266,9 @@ class PropertyController extends Controller
             if ($withOPD) {
                 $query->join("JOIN", 'other_property_details', 'property.id = other_property_details.fk_property_id');
             }
-            if (!Yii::$app->user->can('super-user')) {
-                $user_data = Yii::$app->memem->getUserData();
-                $query->andWhere('property.fk_office_id = :id', ['id' => $user_data->office->id]);
+            if (!Yii::$app->user->can('ro_property_admin')) {
+                $user_data = User::getUserDetails();
+                $query->andWhere('property.fk_office_id = :id', ['id' => $user_data->employee->office->id]);
             }
             $query->andWhere(['like', 'property.property_number', $q]);
 

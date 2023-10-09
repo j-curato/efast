@@ -2,17 +2,18 @@
 
 namespace frontend\controllers;
 
+use Yii;
+use yii\db\Query;
+use app\models\Rod;
+use ErrorException;
+use common\models\User;
+use yii\web\Controller;
+use app\models\RodSearch;
+use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 use app\models\AdvancesEntries;
 use app\models\ChartOfAccounts;
-use Yii;
-use app\models\Rod;
-use app\models\RodSearch;
-use ErrorException;
-use yii\db\Query;
-use yii\filters\AccessControl;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 
 /**
  * RodController implements the CRUD actions for Rod model.
@@ -188,9 +189,9 @@ class RodController extends Controller
             $fund_source = $_POST['fund_source'];
             $province = empty($_POST['province']) ?? '';
             $rod_number = empty($_POST['rod_number']) ?? "";
-            $user_data = Yii::$app->memem->getUserData();
+            $user_data = User::getUserDetails();
             if (!YIi::$app->user->can('ro_accounting_admin')) {
-                $province = $user_data->office->office_name;
+                $province = $user_data->employee->office->office_name;
             }
             $transaction = Yii::$app->db->beginTransaction();
 
@@ -240,9 +241,9 @@ class RodController extends Controller
 
             $province = !empty(Yii::$app->request->post('province')) ?? '';
 
-            $user_data = Yii::$app->memem->getUserData();
+            $user_data = User::getUserDetails();
             if (!YIi::$app->user->can('ro_accounting_admin')) {
-                $province = $user_data->office->office_name;
+                $province = $user_data->employee->office->office_name;
             }
 
             $fund_source = !empty($_POST['fund_source']) ? $_POST['fund_source'] : '';
@@ -345,7 +346,7 @@ IFNULL(liquidation_entries.liquidation_damage,0) as gross_amount
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        $user_data = Yii::$app->memem->getUserData();
+        $user_data = User::getUserDetails();
         $out = ['results' => ['id' => '', 'text' => '']];
         if (!is_null($q)) {
             $query = new Query();
@@ -355,7 +356,7 @@ IFNULL(liquidation_entries.liquidation_damage,0) as gross_amount
                 ->where(['like', 'advances_entries.fund_source', $q])
                 ->andWhere('advances_entries.is_deleted !=1');
             if (!Yii::$app->user->can('ro_accounting_admin')) {
-                $query->andWhere('advances.province = :province', ['province' => $user_data->office->office_name]);
+                $query->andWhere('advances.province = :province', ['province' => $user_data->employee->office->office_name]);
             }
 
             $command = $query->createCommand();

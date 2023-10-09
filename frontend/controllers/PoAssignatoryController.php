@@ -3,12 +3,13 @@
 namespace frontend\controllers;
 
 use Yii;
-use app\models\PoAsignatory;
-use app\models\PoAsignatorySearch;
-use yii\filters\AccessControl;
+use common\models\User;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\models\PoAsignatory;
+use yii\filters\AccessControl;
+use app\models\PoAsignatorySearch;
+use yii\web\NotFoundHttpException;
 
 /**
  * PoAssignatoryController implements the CRUD actions for PoAsignatory model.
@@ -99,8 +100,8 @@ class PoAssignatoryController extends Controller
         $model = new PoAsignatory();
 
         if (!Yii::$app->user->can('ro_accounting_admin')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $model->province = strtolower($user_data->office->office_name);
+            $user_data = User::getUserDetails();
+            $model->province = strtolower($user_data->employee->office->office_name);
         }
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -164,8 +165,8 @@ class PoAssignatoryController extends Controller
     {
 
 
-        $user_data = Yii::$app->memem->getUserData();
-        $province = strtolower($user_data->office->office_name);
+        $user_data = User::getUserDetails();
+        $province = strtolower($user_data->employee->office->office_name);
         $query = (new \yii\db\Query())
             ->select('*')
             ->from("po_asignatory");

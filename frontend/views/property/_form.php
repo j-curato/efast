@@ -1,22 +1,23 @@
 <?php
 
-use app\components\helpers\MyHelper;
+use yii\db\Query;
+use Mpdf\Tag\Select;
 use app\models\Books;
-use app\models\Employee;
+use yii\helpers\Html;
 use app\models\Office;
-use app\models\PropertyArticles;
+use common\models\User;
+use app\models\Employee;
 use app\models\SsfSpNum;
-use app\models\UnitOfMeasure;
-use aryelds\sweetalert\SweetAlertAsset;
+use yii\web\JsExpression;
 use kartik\date\DatePicker;
 use kartik\money\MaskMoney;
 use kartik\select2\Select2;
-use Mpdf\Tag\Select;
-use yii\db\Query;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
-use yii\web\JsExpression;
+use app\models\UnitOfMeasure;
 use yii\bootstrap4\ActiveForm;
+use app\models\PropertyArticles;
+use app\components\helpers\MyHelper;
+use aryelds\sweetalert\SweetAlertAsset;
 
 
 /* @var $this yii\web\View */
@@ -32,9 +33,9 @@ $property_custodian_query = new Query();
 $property_custodian_query->select(['employee_id', 'UPPER(employee_name) as employee_name'])
     ->from('employee_search_view')
     ->andWhere('property_custodian  = 1');
-if (!Yii::$app->user->can('super-user')) {
-    $user_data = Yii::$app->memem->getUserData();
-    $property_custodian_query->andWhere('office_name =:office_name', ['office_name' => $user_data->office->office_name]);
+if (!Yii::$app->user->can('ro_property_admin')) {
+    $user_data = User::getUserDetails();
+    $property_custodian_query->andWhere('office_name =:office_name', ['office_name' => $user_data->employee->office->office_name]);
 }
 $f_property_custodian_query = $property_custodian_query->all();
 // Yii::$app->db->createCommand("SELECT 
@@ -66,7 +67,7 @@ if (!empty($model->fk_property_article_id)) {
 
     <?php
 
-    if (Yii::$app->user->can('super-user')) {
+    if (Yii::$app->user->can('ro_property_admin')) {
 
         echo $form->field($model, 'fk_office_id')->widget(Select2::class, [
             'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),

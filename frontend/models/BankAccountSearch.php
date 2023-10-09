@@ -2,10 +2,11 @@
 
 namespace app\models;
 
-use yii\base\Model;
-use yii\data\ActiveDataProvider;
-use app\models\BankAccount;
 use Yii;
+use yii\base\Model;
+use common\models\User;
+use app\models\BankAccount;
+use yii\data\ActiveDataProvider;
 
 /**
  * BankAccountSearch represents the model behind the search form of `app\models\BankAccount`.
@@ -41,8 +42,8 @@ class BankAccountSearch extends BankAccount
      */
     public function search($params)
     {
-        $user_data = Yii::$app->memem->getUserData();
-        $province = strtolower($user_data->office->office_name);
+        $user_data = User::getUserDetails();
+        $province = strtolower($user_data->employee->office->office_name);
         $query = BankAccount::find();
         // add conditions that should always apply here
         if (!Yii::$app->user->can('ro_accounting_admin')) {

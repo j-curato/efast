@@ -101,7 +101,7 @@ class RecordAllotmentsViewSearch extends RecordAllotmentsView
             $query->andFilterWhere(['!=', 'book', 'Fund 07']);
         }
 
-        if (!Yii::$app->user->can('super-user')) {
+        if (!Yii::$app->user->can('ro_budget_admin')) {
 
             $query->andWhere("responsibility_center = :responsibility_center", ['responsibility_center' => Yii::$app->user->identity->division]);
         }

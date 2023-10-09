@@ -111,7 +111,7 @@ if (!empty($model->fk_approved_by)) {
         <?php
         $x = 6;
 
-        if (Yii::$app->user->can('super-user')) {
+        if (Yii::$app->user->can('ro_property_admin')) {
             echo '<div class="col-sm-3">';
             echo $form->field($model, 'fk_office_id')->widget(Select2::class, [
                 'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),

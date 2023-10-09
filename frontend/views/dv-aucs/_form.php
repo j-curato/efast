@@ -11,7 +11,8 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\JqueryAsset;
 use yii\web\JsExpression;
-use yii\widgets\ActiveForm;
+use yii\bootstrap4\ActiveForm;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\DvAucs */
@@ -42,7 +43,7 @@ if (!empty($model->object_code)) {
 
     <div class="row">
         <div class="col-sm-3">
-            <?= $form->field($model->model1, 'reporting_period')->widget(DatePicker::class, [
+            <?= $form->field($model, 'reporting_period')->widget(DatePicker::class, [
                 'pluginOptions' => [
                     'format' => 'yyyy-mm',
                     'minViewMode' => 'months',
@@ -52,7 +53,7 @@ if (!empty($model->object_code)) {
 
         </div>
         <div class="col-sm-3">
-            <?= $form->field($model->model1, 'nature_of_transaction_id')->widget(Select2::class, [
+            <?= $form->field($model, 'nature_of_transaction_id')->widget(Select2::class, [
                 'data' => ArrayHelper::map(NatureOfTransaction::find()->asArray()->all(), 'id', 'name'),
                 'pluginOptions' => [
                     'placeholder' => 'Select Nature  of Transaction'
@@ -61,7 +62,7 @@ if (!empty($model->object_code)) {
 
         </div>
         <div class="col-sm-3">
-            <?= $form->field($model->model1, 'mrd_classification_id')->widget(Select2::class, [
+            <?= $form->field($model, 'mrd_classification_id')->widget(Select2::class, [
                 'data' => ArrayHelper::map(MrdClassification::find()->asArray()->all(), 'id', 'name'),
                 'pluginOptions' => [
                     'placeholder' => 'Select Nature  of MRD Classification'
@@ -69,9 +70,9 @@ if (!empty($model->object_code)) {
             ]) ?>
         </div>
         <div class="col-sm-3">
-            <?= $form->field($model->model1, 'object_code')->widget(Select2::class, [
+            <?= $form->field($model, 'object_code')->widget(Select2::class, [
                 'data' => $dv_object_code,
-                'value' => !empty($model->model1->object_code) ?? '',
+                'value' => !empty($model->object_code) ?? '',
                 'options' => ['placeholder' => 'Search for a UACS ...'],
                 'pluginOptions' => [
                     'allowClear' => true,
@@ -96,7 +97,7 @@ if (!empty($model->object_code)) {
     </div>
     <div class="row">
         <div class="col-sm-3">
-            <?= $form->field($model->model1, 'payee_id')->widget(Select2::class, [
+            <?= $form->field($model, 'payee_id')->widget(Select2::class, [
                 'data' => $payee,
                 'pluginOptions' => [
                     'allowClear' => true,
@@ -119,7 +120,7 @@ if (!empty($model->object_code)) {
             ]) ?>
         </div>
         <div class="col-sm-3">
-            <?= $form->field($model->model1, 'fk_dv_transaction_type_id')->widget(Select2::class, [
+            <?= $form->field($model, 'fk_dv_transaction_type_id')->widget(Select2::class, [
                 'data' => ArrayHelper::map(DvTransactionType::find()->asArray()->all(), 'id', 'name'),
                 'pluginOptions' => [
                     'placeholder' => 'Select Transaction Type'
@@ -128,7 +129,7 @@ if (!empty($model->object_code)) {
 
         </div>
         <div class="col-sm-3">
-            <?= $form->field($model->model1, 'book_id')->widget(Select2::class, [
+            <?= $form->field($model, 'book_id')->widget(Select2::class, [
                 'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
                 'pluginOptions' => [
                     'placeholder' => 'Select Book'
@@ -137,7 +138,7 @@ if (!empty($model->object_code)) {
         </div>
     </div>
 
-    <?= $form->field($model->model1, 'particular')->textarea(['rows' => 6]) ?>
+    <?= $form->field($model, 'particular')->textarea(['rows' => 6]) ?>
 
 
 
@@ -247,7 +248,7 @@ if (!empty($model->object_code)) {
 
                 echo "<tr>
                         <td>
-                        <input type='hidden' name='dvAccItems[$accounting_entry_row][acc_entry_id]' class='' value='{$itm['acc_entry_id']}'>
+                        <input type='text' name='dvAccItems[$accounting_entry_row][acc_entry_id]' class='' value='{$itm['acc_entry_id']}'>
                         <select required name='dvAccItems[$accounting_entry_row][object_code]' class='object-codes form-control' style='width: 100%'>
                             <option value='{$itm['object_code']}'>{$itm['object_code']}-{$itm['account_title']}</option>
                         </select>
@@ -327,9 +328,6 @@ if (!empty($model->object_code)) {
                                 'data' => ArrayHelper::map($bank_accounts, 'id', 'account_number'),
                                 'name' => 'advances[bank_account_id]',
                                 'value' => $advancesModel->bank_account_id,
-                                'options' => [
-                                    // 'required' => true
-                                ],
                                 'pluginOptions' => [
                                     'placeholder' => 'Select Bank Account'
                                 ]
@@ -427,9 +425,12 @@ if (!empty($model->object_code)) {
         </tbody>
 
     </table>
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+    <div class="row justify-content-center">
+        <div class="form-group">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        </div>
     </div>
+
 
     <?php ActiveForm::end(); ?>
 
@@ -465,7 +466,7 @@ $this->registerJsFile("@web/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsse
                 </td>
                 <td style='float:right;'>
                     <a class='add_accounting_entry_row btn btn-primary btn-xs' type='button' onclick='addEntry()' ><i class='fa fa-plus fa-fw'></i> </a>
-                    <a class='remove_this_accounting_entry_row btn btn-danger btn-xs ' onclick='RemoveItem(this)' type='button' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                    <a class='remove_this_accounting_entry_row btn btn-danger btn-xs ' onclick='RemoveItem()' type='button' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
                 </td>
             </tr>`;
         $('#entries_table tbody').append(new_row)

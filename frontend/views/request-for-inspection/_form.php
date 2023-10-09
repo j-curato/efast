@@ -16,7 +16,7 @@ use yii\helpers\Html;
 use yii\web\JsExpression;
 
 $this->registerJsFile("@web/js/vue.js", ['position' => $this::POS_HEAD]);
-$userData = User::getUserData();
+$userData = User::getUserDetails();
 /* @var $this yii\web\View */
 /* @var $model app\models\RequestForInspection */
 /* @var $form yii\widgets\ActiveForm */
@@ -98,7 +98,7 @@ if (!empty($model->transaction_type)) {
         <div class="row">
             <?php
 
-            if (YIi::$app->user->can('super-user')) {
+            if (YIi::$app->user->can('ro_inspection_admin')) {
 
             ?>
                 <div class="col-sm-2">
@@ -133,7 +133,7 @@ if (!empty($model->transaction_type)) {
                     ]
                 ]) ?>
             </div>
-            <?php if (YIi::$app->user->can('super-user')) { ?>
+            <?php if (YIi::$app->user->can('ro_inspection_admin')) { ?>
                 <div class="col-sm-2">
 
                     <?= $form->field($model, 'fk_responsibility_center_id')->widget(Select2::class, [
@@ -228,7 +228,7 @@ if (!empty($model->transaction_type)) {
             $empOffice  = $userData->employee->office->office_name ?? '';
             $userOffice = Yii::$app->user->identity->office->office_name ?? '';
 
-            if (strtolower($empOffice)  === 'ro' || strtolower($userOffice) === 'ro') :
+            if (strtolower($empOffice)  === 'ro') :
             ?>
                 <div class="col-sm-3">
 

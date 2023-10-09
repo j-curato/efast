@@ -13,6 +13,7 @@ use app\models\Books;
 use app\models\DvAucs;
 use app\models\Office;
 use yii\db\Expression;
+use common\models\User;
 use app\models\Property;
 use app\models\RaoSearch;
 use yii\filters\VerbFilter;
@@ -24,6 +25,7 @@ use yii\filters\AccessControl;
 use app\components\EmailSender;
 use app\models\ChartOfAccounts;
 use app\models\PrSummarySearch;
+use frontend\models\SignupForm;
 use Symfony\Component\Mime\Email;
 use app\models\TransactionTracking;
 use Symfony\Component\Mime\Address;
@@ -31,16 +33,15 @@ use app\components\helpers\MyHelper;
 use app\models\DetailedDvAucsSearch;
 use app\models\OtherPropertyDetails;
 use app\models\UnpaidObligationSearch;
+use app\models\RecordAllotmentDetailed;
 use app\models\OtherPropertyDetailItems;
 use app\models\ProcurementSummarySearch;
 use app\models\TransactionArchiveSearch;
 use app\models\AdvancesLiquidationSearch;
 use app\models\TransactionTrackingSearch;
 use app\models\PoTransmittalsPendingSearch;
-use app\models\RecordAllotmentDetailed;
 use yii\symfonymailer\MessageWrapperInterface;
 use app\models\WithholdingAndRemittanceSummarySearch;
-use frontend\models\SignupForm;
 use Symfony\Component\Mailer\Exception\TransportException;
 use Symfony\Component\Mailer\Transport\Smtp\SmtpTransport;
 
@@ -1251,8 +1252,8 @@ class ReportController extends \yii\web\Controller
             $fund_source = Yii::$app->request->post('fund_source');
             $params = [];
             if (!Yii::$app->user->can('ro_accounting_admin')) {
-                $user_data = Yii::$app->memem->getUserData();
-                $province = $user_data->office->office_name;
+                $user_data = User::getUserDetails();
+                $province = $user_data->employee->office->office_name;
             }
             $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['IN', 'liquidation_entries.advances_entries_id', $fund_source], $params);
             $query1 = (new \yii\db\Query())
@@ -1339,8 +1340,8 @@ class ReportController extends \yii\web\Controller
                 ->join('LEFT JOIN', 'advances', 'advances_entries.advances_id = advances.id')
                 ->where(['like', 'advances_entries.fund_source', $q]);
             if (!Yii::$app->user->can('ro_accounting_admin')) {
-                $user_data = Yii::$app->memem->getUserData();
-                $query->andWhere('advances.province = :province', ['province' => $user_data->office->office_name]);
+                $user_data = User::getUserDetails();
+                $query->andWhere('advances.province = :province', ['province' => $user_data->employee->office->office_name]);
             }
             $command = $query->createCommand();
             $data = $command->queryAll();
@@ -1360,8 +1361,8 @@ class ReportController extends \yii\web\Controller
             $province = !empty($_POST['province']) ? $_POST['province'] : '';
 
             if (!Yii::$app->user->can('ro_accounting_admin')) {
-                $user_data = Yii::$app->memem->getUserData();
-                $province = $user_data->office->office_name;
+                $user_data = User::getUserDetails();
+                $province = $user_data->employee->office->office_name;
             }
             $and = '';
             $params = [];
@@ -1539,12 +1540,12 @@ class ReportController extends \yii\web\Controller
             // $province = 'all';
             // $division =  'all';
 
-            $user_data = Yii::$app->memem->getUserData();
+            $user_data = User::getUserDetails();
             if (!Yii::$app->user->can('ro_accounting_admin')) {
-                $province = $user_data->office->office_name;
+                $province = $user_data->employee->office->office_name;
             }
             if (!YIi::$app->user->can('po_accounting_admin')) {
-                $division = $user_data->divisionName->division;
+                $division = $user_data->employee->empDivision->division;
             }
             $q   = new Query();
 
@@ -1696,12 +1697,12 @@ class ReportController extends \yii\web\Controller
             // $province = 'all';
             // $division =  'all';
             $user_division = '';
-            $user_data = Yii::$app->memem->getUserData();
+            $user_data = User::getUserDetails();
             if (!YIi::$app->user->can('ro_accounting_admin')) {
-                $province = $user_data->office->office_name;
+                $province = $user_data->employee->office->office_name;
             }
             if (!YIi::$app->user->can('po_accounting_admin')) {
-                $division = $user_data->divisionName->division;
+                $division = $user_data->employee->empDivision->division;
             }
 
 
@@ -4699,9 +4700,9 @@ class ReportController extends \yii\web\Controller
         if (Yii::$app->request->post()) {
 
             $reporting_period = Yii::$app->request->post('reporting_period');
-            if (!Yii::$app->user->can('super-user')) {
-                $user_data = Yii::$app->memem->getUserData();
-                $office =   $user_data->office->office_name;
+            if (!Yii::$app->user->can('ro_property_admin')) {
+                $user_data = User::getUserDetails();
+                $office =   $user_data->employee->office->office_name;
             }
             // $query = Yii::$app->db->createCommand("SELECT * FROM detailed_property_database")->queryAll();
 
@@ -4710,16 +4711,16 @@ class ReportController extends \yii\web\Controller
                 ->from('detailed_property_database')
                 ->andWhere("DATE_FORMAT(detailed_property_database.date_acquired,'%Y-%m') <=:reporting_period", ['reporting_period' => $reporting_period]);
 
-            if (!Yii::$app->user->can('super-user')) {
-                $q->andWhere('office_name = :office_name', ['office_name' => $user_data->office->office_name]);
+            if (!Yii::$app->user->can('ro_property_admin')) {
+                $q->andWhere('office_name = :office_name', ['office_name' => $user_data->employee->office->office_name]);
             }
             $query = $q->all();
             // $items  = Yii::$app->db->createCommand("SELECT * FROM detailed_other_property_details")->queryAll();
             $i  = new Query();
             $i->select("*")
                 ->from('detailed_other_property_details');
-            if (!Yii::$app->user->can('super-user')) {
-                $i->andWhere('fk_office_id = :office_id', ['office_id' => $user_data->office->id]);
+            if (!Yii::$app->user->can('ro_property_admin')) {
+                $i->andWhere('fk_office_id = :office_id', ['office_id' => $user_data->employee->office->id]);
             }
             $items = $i->all();
             // $result = ArrayHelper::index($items,  'book_name', [function ($element) {
@@ -5643,9 +5644,9 @@ class ReportController extends \yii\web\Controller
             ->andWhere("DATE_FORMAT(detailed_property_database.derecognition_date,'%Y-%m') >= :reporting_period 
         OR detailed_property_database.derecognition_num IS NULL", ['reporting_period' => $reporting_period]);
 
-        if (!Yii::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $office_id = $user_data->office->id;
+        if (!Yii::$app->user->can('ro_property_admin')) {
+            $user_data = User::getUserDetails();
+            $office_id = $user_data->employee->office->id;
         }
         if (!empty($office_id)) {
             $offce_name = Office::findOne($office_id)->office_name;
@@ -5666,8 +5667,8 @@ class ReportController extends \yii\web\Controller
 
             $act_usr_id  = !empty(MyHelper::post('act_usr_id')) ? MyHelper::post('act_usr_id') : null;
             $actbl_ofr  = !empty(MyHelper::post('actbl_ofr')) ? MyHelper::post('actbl_ofr') : null;
-            $user_data = Yii::$app->memem->getUserData();
-            $office  = Yii::$app->user->can('ro_property_admin') ? Yii::$app->request->post('office') ?? null : $user_data->office->id;
+            $user_data = User::getUserDetails();
+            $office  = Yii::$app->user->can('ro_property_admin') ? Yii::$app->request->post('office') ?? null : $user_data->employee->office->id;
             // if (empty($act_usr_id) && empty($actbl_ofr)) {
             //     return json_encode('');
             // }

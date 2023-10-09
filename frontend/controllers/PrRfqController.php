@@ -2,21 +2,22 @@
 
 namespace frontend\controllers;
 
-use app\components\helpers\MyHelper;
-use app\models\Office;
-use app\models\PrPurchaseRequest;
 use Yii;
+use DateTime;
+use yii\db\Query;
+use ErrorException;
 use app\models\PrRfq;
+use app\models\Office;
+use common\models\User;
+
+use yii\web\Controller;
 use app\models\PrRfqItem;
 use app\models\PrRfqSearch;
-
-use DateTime;
-use ErrorException;
-use yii\db\Query;
-use yii\filters\AccessControl;
-use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
+use app\models\PrPurchaseRequest;
+use yii\web\NotFoundHttpException;
+use app\components\helpers\MyHelper;
 
 
 
@@ -319,9 +320,9 @@ class PrRfqController extends Controller
             $query->select([" CAST(id as CHAR(50)) as id, `rfq_number` as text"])
                 ->from('pr_rfq')
                 ->where(['like', 'rfq_number', $q]);
-            if (!Yii::$app->user->can('super-user')) {
-                $user_data = Yii::$app->memem->getUserData();
-                $query->andWhere('fk_office_id = :fk_office_id', ['fk_office_id' =>  $user_data->office->id]);
+            if (!Yii::$app->user->can('ro_procurement_admin')) {
+                $user_data = User::getUserDetails();
+                $query->andWhere('fk_office_id = :fk_office_id', ['fk_office_id' =>  $user_data->employee->office->id]);
             }
             $command = $query->createCommand();
             $data = $command->queryAll();

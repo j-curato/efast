@@ -30,7 +30,7 @@ use yii\bootstrap4\ActiveForm;
                 ]
             ]) ?>
         </div>
-        <?php if (Yii::$app->user->can('super-user')) { ?>
+        <?php if (Yii::$app->user->can('ro_property_admin')) { ?>
             <div class="col-sm-6">
                 <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
                     'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),

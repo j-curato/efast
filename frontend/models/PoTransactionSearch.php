@@ -2,10 +2,11 @@
 
 namespace app\models;
 
-use yii\base\Model;
-use yii\data\ActiveDataProvider;
-use app\models\PoTransaction;
 use Yii;
+use yii\base\Model;
+use common\models\User;
+use app\models\PoTransaction;
+use yii\data\ActiveDataProvider;
 
 /**
  * PoTransactionSearch represents the model behind the search form of `app\models\PoTransaction`.
@@ -44,11 +45,11 @@ class PoTransactionSearch extends PoTransaction
     {
 
 
-       
+
         $q = PoTransaction::find();
         if (!Yii::$app->user->can('ro_accounting_admin')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $province = strtolower($user_data->office->office_name);
+            $user_data = User::getUserDetails();
+            $province = strtolower($user_data->employee->office->office_name);
             $q->where('tracking_number LIKE :province', ['province' => "$province%"]);
         }
         $query = $q;

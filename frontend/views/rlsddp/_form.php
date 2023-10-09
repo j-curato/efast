@@ -31,7 +31,7 @@ $itemRow = 0;
 
         <?php
 
-        if (Yii::$app->user->can('super-user')) {
+        if (Yii::$app->user->can('ro_property_admin')) {
             echo ' <div class="col-sm-2">';
             echo     $form->field($model, 'fk_office_id')->widget(Select2::class, [
                 'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),

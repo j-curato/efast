@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         if ($_SERVER['REMOTE_ADDR'] !== '210.1.103.26') {
 
-            if (Yii::$app->user->can('super-user')) {
+            if (Yii::$app->user->can('ro_procurement_admin')) {
                 echo "<button type='button' class='btn btn-primary'  id ='update_local_purchase_request'>Update Purchase Request</button>";
             }
         }
@@ -31,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
 
-    if (Yii::$app->user->can('super-user')) {
+    if (Yii::$app->user->can('ro_procurement_admin')) {
         $actions =   [
             'class' => 'kartik\grid\ActionColumn',
             'deleteOptions' => ['hidden' => true]
@@ -61,7 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'attribute' => 'is_cancelled',
-                'visible' =>  Yii::$app->user->can('super-user') ? true : false
+                'visible' =>  Yii::$app->user->can('ro_procurement_admin') ? true : false
             ],
             [
                 'label' => 'Action',

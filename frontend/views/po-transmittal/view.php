@@ -1,8 +1,9 @@
 <?php
 
-use kartik\select2\Select2Asset;
 use yii\helpers\Html;
+use common\models\User;
 use yii\web\JqueryAsset;
+use kartik\select2\Select2Asset;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\PoTransmittal */
@@ -11,8 +12,8 @@ $this->title = $model->transmittal_number;
 $this->params['breadcrumbs'][] = ['label' => 'Po Transmittals', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
-$user_data = Yii::$app->memem->getUserData();
-// $query->where('province = :province', ['province' => $user_data->office->office_name]);
+$user_data = User::getUserDetails();
+// $query->where('province = :province', ['province' => $user_data->employee->office->office_name]);
 ?>
 <div class="po-transmittal-view">
 
@@ -28,7 +29,7 @@ $user_data = Yii::$app->memem->getUserData();
                 if (!empty($model->file_link)) {
                     echo Html::a('DV Scanned Copy Link ', $model->file_link, ['class' => 'btn btn-link', 'target' => '_blank']);
                 }
-                if (!empty($model->poTransmittalToCoa->fk_po_transmittal_to_coa_id) && YIi::$app->user->can('super-user')) {
+                if (!empty($model->poTransmittalToCoa->fk_po_transmittal_to_coa_id) && YIi::$app->user->can('ro_accounting_admin')) {
                     echo  Html::a('Transmittal to Coa Link', ['/po-transmittal-to-coa/view', 'id' => $model->poTransmittalToCoa->fk_po_transmittal_to_coa_id], ['class' => 'btn btn-link']);
                 }
                 ?>
@@ -61,7 +62,7 @@ $user_data = Yii::$app->memem->getUserData();
                     'pdi' => 'Dinagat Islands',
                 ];
                 if (!Yii::$app->user->can('ro_accounting_admin')) {
-                    $prov = $user_data->office->office_name;
+                    $prov = $user_data->employee->office->office_name;
                 }
                 ?>
             </p>
@@ -202,7 +203,7 @@ $user_data = Yii::$app->memem->getUserData();
                         <td>{$itm['particular']}</td>
                         <td style='text-align:right'>" . number_format($itm['total_withdrawal'] ?? 0, 2) . "</td>
                     ";
-                    if (Yii::$app->user->can('super-user')) {
+                    if (Yii::$app->user->can('ro_accounting_admin')) {
 
                         $status = 'Remove';
                         $color = 'btn-danger';

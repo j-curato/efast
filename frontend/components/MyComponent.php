@@ -23,9 +23,9 @@ class MyComponent extends Component
     {
 
         return  User::find()
+            ->joinWith('employee')
             ->joinWith('divisionName')
             ->joinWith('office')
-            ->joinWith('employee')
             ->where('user.id = :id', ['id' => Yii::$app->user->identity->id])
             ->one();
     }
@@ -575,12 +575,12 @@ class MyComponent extends Component
             :txnPrItmId,
             :orsItmId,
             :orsTxnItmId)")
-                ->bindValue(':allotment_id', !empty($allotment_id)?$allotment_id:null)
-                ->bindValue(':prAllotmentId', !empty($prAllotmentId)?$prAllotmentId:null)
-                ->bindValue(':txnAllotmentId', !empty($txnAllotmentId)?$txnAllotmentId:null)
-                ->bindValue(':txnPrItmId', !empty($txnPrItmId)?$txnPrItmId:null)
-                ->bindValue(':orsItmId', !empty($orsItmId)?$orsItmId:null)
-                ->bindValue(':orsTxnItmId', !empty($orsTxnItmId)?$orsTxnItmId:null)
+                ->bindValue(':allotment_id', !empty($allotment_id) ? $allotment_id : null)
+                ->bindValue(':prAllotmentId', !empty($prAllotmentId) ? $prAllotmentId : null)
+                ->bindValue(':txnAllotmentId', !empty($txnAllotmentId) ? $txnAllotmentId : null)
+                ->bindValue(':txnPrItmId', !empty($txnPrItmId) ? $txnPrItmId : null)
+                ->bindValue(':orsItmId', !empty($orsItmId) ? $orsItmId : null)
+                ->bindValue(':orsTxnItmId', !empty($orsTxnItmId) ? $orsTxnItmId : null)
                 ->queryScalar();
             $cur_balance = floatval($balance) - floatval($amount);
 
@@ -725,9 +725,10 @@ class MyComponent extends Component
         $property_custodian_query->select(['employee_id', 'UPPER(employee_name) as employee_name'])
             ->from('employee_search_view')
             ->andWhere('property_custodian  = 1');
-        if (!Yii::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $property_custodian_query->andWhere('office_name =:office_name', ['office_name' => $user_data->office->office_name]);
+
+        $user_data = User::getUserDetails();
+        if (strtolower($user_data->employee->office->office_name !== 'ro')) {
+            $property_custodian_query->andWhere('office_name =:office_name', ['office_name' => $user_data->employee->office->office_name]);
         }
         $f_property_custodian_query = $property_custodian_query->all();
         return $f_property_custodian_query;

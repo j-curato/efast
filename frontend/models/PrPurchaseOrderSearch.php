@@ -2,10 +2,11 @@
 
 namespace app\models;
 
-use yii\base\Model;
-use yii\data\ActiveDataProvider;
-use app\models\PrPurchaseOrder;
 use Yii;
+use yii\base\Model;
+use common\models\User;
+use app\models\PrPurchaseOrder;
+use yii\data\ActiveDataProvider;
 
 /**
  * PrPurchaseOrderSearch represents the model behind the search form of `app\models\PrPurchaseOrder`.
@@ -42,11 +43,10 @@ class PrPurchaseOrderSearch extends PrPurchaseOrder
     public function search($params)
     {
         $query = PrPurchaseOrder::find();
-
         // add conditions that should always apply here
-        if (!Yii::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $query->where('pr_purchase_order.fk_office_id = :office_id', ['office_id' =>  $user_data->office->id]);
+        if (!Yii::$app->user->can('ro_procurement_admin')) {
+            $user_data = User::getUserDetails();
+            $query->where('pr_purchase_order.fk_office_id = :office_id', ['office_id' =>  $user_data->employee->office->id]);
         }
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

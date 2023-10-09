@@ -2,23 +2,24 @@
 
 namespace frontend\controllers;
 
-use app\components\helpers\MyHelper;
-use app\models\Office;
 use Yii;
-use app\models\SupplementalPpmp;
-use app\models\SupplementalPpmpCse;
-use app\models\SupplementalPpmpIndexSearch;
-use app\models\SupplementalPpmpNonCse;
-use app\models\SupplementalPpmpNonCseItems;
-use app\models\SupplementalPpmpSearch;
-use common\models\UploadForm;
 use ErrorException;
-use yii\filters\AccessControl;
+use app\models\Office;
+use common\models\User;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use yii\helpers\ArrayHelper;
 use yii\helpers\FileHelper;
+use yii\helpers\ArrayHelper;
+use common\models\UploadForm;
+use yii\filters\AccessControl;
+use app\models\SupplementalPpmp;
+use yii\web\NotFoundHttpException;
+use app\models\SupplementalPpmpCse;
+use app\components\helpers\MyHelper;
+use app\models\SupplementalPpmpNonCse;
+use app\models\SupplementalPpmpSearch;
+use app\models\SupplementalPpmpIndexSearch;
+use app\models\SupplementalPpmpNonCseItems;
 
 /**
  * SupplementalPpmpController implements the CRUD actions for SupplementalPpmp model.
@@ -406,9 +407,9 @@ class SupplementalPpmpController extends Controller
                     $model->fk_division_id = $_POST['fk_division_id'];
                     $model->fk_office_id = $_POST['fk_office_id'];
                 } else {
-                    $user_data = Yii::$app->memem->getUserData();
-                    $model->fk_office_id = $user_data->office->id;
-                    $model->fk_division_id =  $_POST['fk_division_id'] ?? $user_data->divisionName->id;
+                    $user_data = User::getUserDetails();
+                    $model->fk_office_id = $user_data->employee->office->id;
+                    $model->fk_division_id =  $_POST['fk_division_id'] ?? $user_data->employee->empDivision->id;
                 }
                 $model->serial_number = $this->serialNumber($model->budget_year, $model->cse_type, $model->fk_office_id);
                 $model->is_supplemental = 1;
@@ -474,9 +475,9 @@ class SupplementalPpmpController extends Controller
                     $model->fk_division_id = $_POST['fk_division_id'];
                     $model->fk_office_id = $_POST['fk_office_id'];
                 } else {
-                    $user_data = Yii::$app->memem->getUserData();
-                    $model->fk_office_id = $user_data->office->id;
-                    $model->fk_division_id =  $_POST['fk_division_id'] ?? $user_data->divisionName->id;
+                    $user_data = User::getUserDetails();
+                    $model->fk_office_id = $user_data->employee->office->id;
+                    $model->fk_division_id =  $_POST['fk_division_id'] ?? $user_data->employee->empDivision->id;
                 }
 
 

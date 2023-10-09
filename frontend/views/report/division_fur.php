@@ -69,7 +69,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 ?>
 
             </div>
-            <?php $user = Yii::$app->user->can('super-user');
+            <?php $user = Yii::$app->user->can('ro_budget_admin');
             if ($user) { ?>
                 <div class="col-sm-2">
                     <label for="division">Division</label>

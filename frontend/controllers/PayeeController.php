@@ -2,20 +2,21 @@
 
 namespace frontend\controllers;
 
-use app\components\SnowflakeIdGenerator;
 use Yii;
-use app\models\Payee;
-use app\models\PayeeSearch;
-use ErrorException;
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use PHPUnit\Util\Log\JSON;
-use yii\db\conditions\LikeCondition;
 use yii\db\Query;
-use yii\filters\AccessControl;
+use ErrorException;
+use app\models\Payee;
+use common\models\User;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
+use PHPUnit\Util\Log\JSON;
+use app\models\PayeeSearch;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
+use yii\web\NotFoundHttpException;
+use yii\db\conditions\LikeCondition;
 use yii\helpers\Json as HelpersJson;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use app\components\SnowflakeIdGenerator;
 
 /**
  * PayeeController implements the CRUD actions for Payee model.
@@ -145,6 +146,7 @@ class PayeeController extends Controller
 
         if ($model->load(Yii::$app->request->post())) {
             try {
+                // return json_encode($model->getDirtyAttributes());
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
@@ -285,11 +287,11 @@ class PayeeController extends Controller
                 ->from('payee')
                 ->where(['like', 'payee.registered_name', $q])
                 ->andWhere('payee.isEnable = 1');
-            $user_data = Yii::$app->memem->getUserData();
-            $office = strtolower($user_data->office->office_name);
+            $user_data = User::getUserDetails();
+            $office = strtolower($user_data->employee->office->office_name);
             // if (!Yii::$app->user->can('super-user')) {
             if (strtolower($office) !== 'ro') {
-                $query->andWhere('payee.fk_office_id= :office_id', ['office_id' => $user_data->office->id]);
+                $query->andWhere('payee.fk_office_id= :office_id', ['office_id' => $user_data->employee->office->id]);
             }
             if (!empty($page)) {
                 $query->offset($offset)

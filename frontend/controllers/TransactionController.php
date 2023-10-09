@@ -404,7 +404,7 @@ class TransactionController extends Controller
                     $iarItems[] = Yii::$app->request->post('single_iar');
                 }
 
-                if (!Yii::$app->user->can('super-user')) {
+                if (!Yii::$app->user->can('ro_accounting_admin')) {
                     $r_center = Yii::$app->db->createCommand("SELECT `id` FROM responsibility_center WHERE `name`=:division")
                         ->bindValue(':division', $division)
                         ->queryScalar();
@@ -468,7 +468,7 @@ class TransactionController extends Controller
                 $model->payee_id = Yii::$app->request->post('Transaction')['payee_id'];
                 $model->particular = Yii::$app->request->post('Transaction')['particular'];
                 $model->transaction_date = Yii::$app->request->post('Transaction')['transaction_date'];
-                if (Yii::$app->user->can('super-user')) {
+                if (Yii::$app->user->can('ro_accounting_admin')) {
                     $model->responsibility_center_id = Yii::$app->request->post('Transaction')['responsibility_center_id'];
                 }
                 $prItems = Yii::$app->request->post('prItems') ?? [];

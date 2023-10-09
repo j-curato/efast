@@ -196,7 +196,7 @@ class RequestForInspection extends \yii\db\ActiveRecord
      */
     public function attributeLabels()
     {
-        $userData = User::getUserData();
+        $userData = User::getUserDetails();
         $empOffice  = $userData->employee->office->office_name ?? '';
         $userOffice = Yii::$app->user->identity->office->office_name ?? '';
         $chairPersonLbl  = 'Inpection Officer';

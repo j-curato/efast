@@ -2,15 +2,16 @@
 
 namespace frontend\controllers;
 
-use app\models\Office;
 use Yii;
-use app\models\SsfSpNum;
-use app\models\SsfSpNumSearch;
 use yii\db\Query;
-use yii\filters\AccessControl;
+use app\models\Office;
+use common\models\User;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
+use app\models\SsfSpNum;
 use yii\filters\VerbFilter;
+use app\models\SsfSpNumSearch;
+use yii\filters\AccessControl;
+use yii\web\NotFoundHttpException;
 
 /**
  * SsfSpNumController implements the CRUD actions for SsfSpNum model.
@@ -102,9 +103,9 @@ class SsfSpNumController extends Controller
     {
         $model = new SsfSpNum();
 
-        if (!Yii::$app->user->can('super-user')) {
-            $user_data = Yii::$app->memem->getUserData();
-            $office_id = $user_data->office->id;
+        if (!Yii::$app->user->can('ro_property_admin')) {
+            $user_data = User::getUserDetails();
+            $office_id = $user_data->employee->office->id;
             $model->fk_office_id = $office_id;
         }
         $model->date = date('Y-m-d');
@@ -210,9 +211,9 @@ class SsfSpNumController extends Controller
             $query->select('ssf_sp_num.id, ssf_sp_num.serial_number AS text')
                 ->from('ssf_sp_num')
                 ->where(['like', 'ssf_sp_num.serial_number', $q]);
-            if (!Yii::$app->user->can('super-user')) {
-                $user_data = Yii::$app->memem->getUserData();
-                $office_id = $user_data->office->id;
+            if (!Yii::$app->user->can('ro_property_admin')) {
+                $user_data = User::getUserDetails();
+                $office_id = $user_data->employee->office->id;
                 $query->andWhere('fk_office_id = :ofc_id', ['ofc_id' => $office_id]);
             }
             $query->offset($offset)
