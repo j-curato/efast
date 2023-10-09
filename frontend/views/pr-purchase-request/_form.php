@@ -101,7 +101,7 @@ $user_data = User::getUserDetails();
             'id' => 'PurchaseRequestForm'
         ]); ?>
         <div class="row">
-            <?php if (Yii::$app->user->can('ro_procurement_admin')) { ?>
+            <?php if (Yii::$app->user->can('select_purchase_request_office')) { ?>
                 <div class="col-sm-2">
                     <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
                         'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
@@ -111,25 +111,18 @@ $user_data = User::getUserDetails();
 
                     ]) ?>
                 </div>
-
-
             <?php }
             if (Yii::$app->user->can('back_date')) {
             ?>
-                <!-- <div class="col-sm-2">
-                    <?= $form->field($model, 'back_date')->widget(DatePicker::class, [
-                        'pluginOptions' => [
-                            'format' => 'yyyy-mm-dd',
-                            'autoclose' => true
-                        ],
-
-                    ]) ?>
-                </div> -->
-
+                <?= $form->field($model, 'back_date')->widget(DatePicker::class, [
+                    'pluginOptions' => [
+                        'format' => 'yyyy-mm-dd',
+                        'autoclose' => true
+                    ],
+                ]) ?>
             <?php
             }
-
-            if (Yii::$app->user->can('ro_procurement_admin') || Yii::$app->user->can('po_procurement_admin')) { ?>
+            if (Yii::$app->user->can('select_purchase_request_division')) { ?>
                 <div class="col-sm-2">
                     <?= $form->field($model, 'fk_division_id')->widget(Select2::class, [
                         'data' => ArrayHelper::map(Divisions::find()->asArray()->all(), 'id', 'division'),
