@@ -2,29 +2,34 @@
 
 namespace frontend\controllers;
 
-use app\models\Event;
-use app\models\Password;
-use common\models\ChangePassword;
-use frontend\models\ResendVerificationEmailForm;
-use frontend\models\VerifyEmailForm;
 use Yii;
-use yii\base\InvalidArgumentException;
-use yii\web\BadRequestHttpException;
-use yii\web\Controller;
-use yii\filters\VerbFilter;
-use yii\filters\AccessControl;
-use common\models\LoginForm;
-use common\models\UploadImage;
-use common\models\User;
-use DateInterval;
 use DateTime;
-use frontend\models\PasswordResetRequestForm;
-use frontend\models\ResetPasswordForm;
+use DateInterval;
+use yii\helpers\Url;
+use app\models\Event;
+use common\models\User;
+use yii\web\Controller;
+use app\models\Password;
+use yii\bootstrap4\Toast;
+use yii\web\UploadedFile;
+use yii\filters\VerbFilter;
+use yii\helpers\FileHelper;
+use common\models\LoginForm;
+use yii\bootstrap\ActiveForm;
+use common\models\UploadImage;
+use yii\filters\AccessControl;
 use frontend\models\SignupForm;
 use frontend\models\ContactForm;
-use yii\helpers\FileHelper;
-use yii\helpers\Url;
-use yii\web\UploadedFile;
+use common\models\ChangePassword;
+use ErrorException;
+use frontend\models\VerifyEmailForm;
+use yii\web\BadRequestHttpException;
+use frontend\models\ResetPasswordForm;
+use yii\base\InvalidArgumentException;
+use lavrentiev\widgets\toastr\Notification;
+use frontend\models\PasswordResetRequestForm;
+use frontend\models\ResendVerificationEmailForm;
+use yii\web\Response;
 
 /**
  * Site controller
@@ -134,38 +139,47 @@ class SiteController extends Controller
     }
     public function actionProfile()
     {
+
         $changePassModel = new ChangePassword();
-        if ($changePassModel->load(Yii::$app->request->post()) && $changePassModel->updatePassword()) {
-            // if (!$changePassModel->updatePassword()) {
-            //     return json_encode(['errors' => $changePassModel->errors]);
-            // }
-            // Yii::$app->session->setFlash('success', 'Form submitted successfully!');
-            // return $this->refresh();
+        if ($changePassModel->load(Yii::$app->request->post())) {
 
-            // return $this->goBack();
-
-            // return $this->redirect('');
-        }
-        $createAcc = new SignupForm();
-        if (Yii::$app->user->can('super-user')) {
-
-            if ($createAcc->load(Yii::$app->request->post())) {
-                if (!$createAcc->validate()) {
-                    return json_encode($createAcc->errors);
+            try {
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                $validate = ActiveForm::validate($changePassModel);
+                if (!empty($validate)) {
+                    return $validate;
                 }
-                if ($createAcc->signup()) {
+                if (!$changePassModel->updatePassword()) {
+                    throw new ErrorException('Change Pass Failed');
                 }
-                // Yii::$app->session->setFlash(
-                //     'success',
-                //     'Thank you for registration. Please check your inbox for verification email.'
-                // );
-                return $this->goHome();
+                return ['success' => true];
+            } catch (ErrorException $e) {
+                return $e->getMessage();
             }
+
+            Yii::$app->session->setFlash(
+                'success',
+                'Thank you for registration. Please check your inbox for verification email.'
+            );
         }
+
+        // $createAcc = new SignupForm();
+        // if (Yii::$app->user->can('super-user')) {
+
+        //     if ($createAcc->load(Yii::$app->request->post())) {
+        //         if (!$createAcc->validate()) {
+        //             return json_encode($createAcc->errors);
+        //         }
+        //         if ($createAcc->signup()) {
+        //         }
+
+        //         return $this->goHome();
+        //     }
+        // }
 
         return $this->render('profile', [
             'changePassModel' => $changePassModel,
-            'createAcc' => $createAcc,
+
         ]);
     }
     public function actionLogin()

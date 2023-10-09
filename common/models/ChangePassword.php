@@ -2,10 +2,12 @@
 
 namespace common\models;
 
+use ErrorException;
 use Yii;
 use yii\base\Model;
 use kartik\password\StrengthValidator;
 use lavrentiev\widgets\toastr\Notification;
+use yii\bootstrap4\Toast;
 
 /**
  * Change password form
@@ -85,31 +87,20 @@ class ChangePassword extends Model
      */
     public function updatePassword()
     {
-        if ($this->validate()) {
+
+        try {
             $user = $this->getUser();
             $user->setPassword($this->new_password);
-            if ($user->save(false)) {
-                $this->old_password = '';
-                $this->new_password = '';
-                $this->repeat_password = '';
-                Notification::widget([
-                    'type' => 'success',
-                    'title' => 'Successfully',
-                    'message' => 'Changed Password.'
-                ]);
-                return true;
+            if (!$user->save(false)) {
+                throw new ErrorException('Change Pass Failed');
             }
-        } else {
-
-            Notification::widget([
-                'type' => 'error',
-                'title' => 'Failed',
-                'message' => 'Changed Password.'
-            ]);
-            Yii::$app->session->setFlash('error-change-pass', true);
+            $this->old_password = '';
+            $this->new_password = '';
+            $this->repeat_password = '';
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
         }
-
-        return false;
     }
 
     /**
@@ -123,5 +114,18 @@ class ChangePassword extends Model
             $this->_user = User::findByUsername(Yii::$app->user->identity->username);
         }
         return $this->_user;
+    }
+    public static function resetPassword($username)
+    {
+        try {
+            $user =  User::findByUsername($username);
+            $user->setPassword('abcde54321');
+            if (!$user->save(false)) {
+                throw new ErrorException('Change Pass Failed');
+            }
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
     }
 }

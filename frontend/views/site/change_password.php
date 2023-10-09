@@ -26,8 +26,8 @@ $fieldOptions2 = [
 
     <?php $form = ActiveForm::begin([
         'id' => 'changePass',
-        // 'enableAjaxValidation' => true,
-        // 'enableClientValidation' => false,
+        'enableAjaxValidation' => true,
+        'enableClientValidation' => false,
     ]); ?>
 
     <div class="row">
@@ -68,63 +68,39 @@ $fieldOptions2 = [
 
 
 </div>
-
 <?php
-// SweetAlertAsset::register($this);
-// $js = <<< JS
-// $("#changePass").on("beforeSubmit", function (event) {
-//     event.preventDefault();
-//     var form = $(this);
-//     var inputIds = $('#changePass :input').map(function() {
-//         if (this.id){
-//         return this.id;
-//         }
-//         }).get();
-
-//     $.ajax({
-//         url: form.attr("action"),
-//         type: form.attr("method"),
-//         data: form.serialize(),
-//         success: function (data) {
-//             const response = JSON.parse(data)
-//             // console.log(inputIds)
-//             if (response.success) {
-//                     // success
-//             } else {
-//                 // console.log(response.errors)
-//                 $.each(inputIds,(key,val)=>{
-
-//                     const error =  response.errors[val.split('-').slice(1).join('-')]? response.errors[val.split('-').slice(1).join('-')]:''
-//                     // console.log(response.errors[val])
-//                   if (error[0]){
-//                     $('#'+val).parent().find('.help-block').text(error)
-//                     $('#'+val).parent().find('.help-block').css('color','red')
-//                     $('#'+val).parent().find('.control-label').css('color','red')
-//                     $('#'+val).parent().find('.glyphicon').css('color','red')
-//                     $('#'+val).css('border','1px solid red')
-//                   }
-
-
-//                 })
-
-//             }
-//             // let res = JSON.parse(data)
-//             // console.log(res)
-//             // swal({
-//             //     icon: 'error',
-//             //     title: res.error,
-//             //     type: "error",
-//             //     timer: 3000,
-//             //     closeOnConfirm: false,
-//             //     closeOnCancel: false
-//             // })
-//         },
-//         error: function (data) {
-
-//         }
-//     });
-//     return false;
-// });
-// JS;
-// $this->registerJs($js);
+SweetAlertAsset::register($this);
+$js = <<< JS
+$('#changePass').on('submit', function(e) {
+        e.preventDefault()
+        var form = $(this);
+        $.ajax({
+            url: form.attr('action'),
+            type: 'post',
+            data: form.serialize(),
+            success: function(data) {
+                console.log(data)
+                console.log(data.success)
+                if (data.success) {
+                    // Form submitted successfully, you can redirect or perform other actions here.
+                    form[0].reset();
+                    swal({
+                        icon: 'success',
+                        title: 'Success',
+                        type: "success",
+                        timer: 3000,
+                        closeOnConfirm: false,
+                        closeOnCancel: false
+                    }).then(function(){
+                        location.reload(true)
+                    })
+                } else {
+                    form.yiiActiveForm('updateMessages', data);
+                }
+            }
+        });
+        return false;
+    });
+JS;
+$this->registerJs($js);
 ?>
