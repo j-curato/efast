@@ -55,3 +55,27 @@ use yii\helpers\ArrayHelper;
     <?php ActiveForm::end(); ?>
 
 </div>
+<style>
+    .select2-container .select2-selection--multiple .select2-selection__rendered {
+        /* display: inline-grid; */
+        list-style: none;
+        padding: 0;
+    }
+
+    :not(.form-floating)>.input-sm.select2-container--krajee-bs4 .select2-selection--multiple .select2-selection__choice,
+    :not(.form-floating)>.input-group-sm .select2-container--krajee-bs4 .select2-selection--multiple .select2-selection__choice {
+        font-size: 0.8rem;
+        margin: 0.3rem 0 0.2rem 0.2rem;
+        padding: 0.05rem 0.05rem 0.05rem 0.2rem;
+        max-width: fit-content;
+        float: left;
+        height: inherit;
+    }
+
+    :not(.form-floating)>.input-sm.select2-container--krajee-bs4 .select2-selection--multiple,
+    :not(.form-floating)>.input-group-sm .select2-container--krajee-bs4 .select2-selection--multiple {
+        min-height: calc(1.875rem - 1px);
+        display: inline-block;
+        width: 100%;
+    }
+</style>
