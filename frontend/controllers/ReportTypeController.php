@@ -37,14 +37,29 @@ class ReportTypeController extends Controller
                     [
                         'actions' => [
                             'view',
-                            'create',
-                            'delete',
-                            'update',
                             'index',
 
                         ],
                         'allow' => true,
-                        'roles' => ['report_type']
+                        'roles' => ['view_report_type']
+                    ],
+
+                    [
+                        'actions' => [
+
+                            'update',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_report_type']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_report_type']
                     ],
 
 

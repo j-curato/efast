@@ -37,16 +37,26 @@ class CashFlowController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'update',
-                            'delete',
-                            'create',
                         ],
                         'allow' => true,
-                        'roles' => ['cash_flow']
+                        'roles' => ['view_cash_flow']
                     ],
                     [
                         'actions' => [
-
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_cash_flow']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_cash_flow']
+                    ],
+                    [
+                        'actions' => [
                             'get-all-cashflow'
                         ],
                         'allow' => true,

@@ -37,27 +37,36 @@ class DocumentRecieveController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'create',
-                            'update',
-                            'delete',
-                            'get-document-recieves',
-                            'find-document',
+
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['view_document_receive']
                     ],
                     [
                         'actions' => [
-                            'index',
-                            'view',
-                            'create',
+
                             'update',
-                            'delete',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_document_receive']
+                    ],
+                    [
+                        'actions' => [
+
+                            'create',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_document_receive']
+                    ],
+                    [
+                        'actions' => [
                             'get-document-recieves',
                             'find-document',
                         ],
                         'allow' => true,
-                        'roles' => ['document_receive']
+                        'roles' => ['@']
                     ]
                 ]
             ],

@@ -34,17 +34,27 @@ class ResponsibilityCenterController extends Controller
                     'create',
                 ],
                 'rules' => [
-
                     [
                         'actions' => [
                             'index',
                             'view',
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_ro_responsibility_center',]
+                    ],
+                    [
+                        'actions' => [
                             'update',
-                            'delete',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_ro_responsibility_center',]
+                    ],
+                    [
+                        'actions' => [
                             'create',
                         ],
                         'allow' => true,
-                        'roles' => ['ro_responsibility_center',]
+                        'roles' => ['create_ro_responsibility_center',]
                     ],
                     [
                         'actions' => [

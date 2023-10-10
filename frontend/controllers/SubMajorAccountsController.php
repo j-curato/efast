@@ -33,14 +33,33 @@ class SubMajorAccountsController extends Controller
                 'rules' => [
                     [
                         'actions' => [
-                            'delete',
-                            'update',
-                            'create',
                             'view',
                             'index',
                         ],
                         'allow' => true,
-                        'roles' => ['sub_major_account']
+                        'roles' => ['view_sub_major_account']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_sub_major_account']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_sub_major_account']
+                    ],
+                    [
+                        'actions' => [
+                            'delete',
+                        ],
+                        'allow' => true,
+                        'roles' => ['super-user']
                     ],
 
                 ]

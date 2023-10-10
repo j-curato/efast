@@ -13,17 +13,10 @@ $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="sub-accounts1-view">
-
-
-
-
-
     <div class="container card" style="padding: 2rem;">
-
         <p>
-            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonCreate']) ?>
-            <?= Html::a('<i class="fa fa-plus"></i> Create Sub Account 2', ['sub-accounts2/create', 'subAcc1Id' => $model->id], ['class' => 'btn btn-success modalButtonCreate']) ?>
-
+            <?= Yii::$app->user->can('update_sub_account_1') ?  Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate']) : ''; ?>
+            <?= Yii::$app->user->can('create_sub_account_2') ?  Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate']) : ''; ?>
         </p>
         <?= DetailView::widget([
             'model' => $model,

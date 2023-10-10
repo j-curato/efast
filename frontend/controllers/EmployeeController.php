@@ -236,7 +236,6 @@ class EmployeeController extends Controller
     public function actionSearchEmployee($q = null, $id = null, $province = null)
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        // $user_province = strtolower(Yii::$app->user->identity->province);
         $out = ['results' => ['id' => '', 'text' => '']];
         if (!is_null($q)) {
             $query = new Query();

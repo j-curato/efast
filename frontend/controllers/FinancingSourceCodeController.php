@@ -32,18 +32,35 @@ class FinancingSourceCodeController extends Controller
                     'get-financing-source-codes'
                 ],
                 'rules' => [
-     
                     [
                         'actions' => [
                             'index',
-                            'update',
-                            'delete',
-                            'create',
                             'view',
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_financing_source_code']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_financing_source_code']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_financing_source_code']
+                    ],
+                    [
+                        'actions' => [
                             'get-financing-source-codes'
                         ],
                         'allow' => true,
-                        'roles' => ['financing_source_code']
+                        'roles' => ['@']
                     ],
                 ]
             ],

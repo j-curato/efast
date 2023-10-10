@@ -165,7 +165,9 @@ class PrAoqController extends Controller
     public function actionCreate()
     {
         $model = new PrAoq();
-        $model->fk_office_id = Yii::$app->user->identity->fk_office_id ?? null;
+        $user_data = User::getUserDetails();
+        
+        $model->fk_office_id = $user_data->employee->office->id;
 
         if ($model->load(Yii::$app->request->post())) {
             try {

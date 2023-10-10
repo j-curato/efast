@@ -28,14 +28,25 @@ class MajorAccountsController extends Controller
                     [
                         'actions' => [
                             'index',
-                            'create',
-                            'update',
-                            'delete',
                             'view'
                         ],
                         'allow' => true,
-                        'roles' => ['major_account']
-                    ]
+                        'roles' => ['view_major_account']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_major_account']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_major_account']
+                    ],
                 ]
             ],
             'verbs' => [

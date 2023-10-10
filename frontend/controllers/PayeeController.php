@@ -43,28 +43,36 @@ class PayeeController extends Controller
                 ],
                 'rules' => [
                     [
-
-                        'actions' => [
-                            'index',
-                            'create',
-                            'update',
-                            'import',
-                            'view',
-                        ],
-                        'allow' => true,
-                        'roles' => ['accounting', 'super-user', 'payee']
-                    ],
-                    [
-
                         'actions' => [
                             'get-payee',
                             'search-payee',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_payee']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_payee']
+                    ],
+                    [
+                        'actions' => [
                             'index',
                             'view',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
-                    ]
+                        'roles' => ['view_payee']
+                    ],
+
                 ]
             ],
             'verbs' => [
@@ -112,7 +120,8 @@ class PayeeController extends Controller
     public function actionCreate()
     {
         $model = new Payee();
-        $model->fk_office_id = Yii::$app->user->identity->fk_office_id ?? '';
+        $user_data = User::getUserDetails();
+        $model->fk_office_id = $user_data->employee->office->id;
         if ($model->load(Yii::$app->request->post())) {
 
             try {

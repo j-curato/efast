@@ -37,13 +37,23 @@ class DivisionsController extends Controller
                         'actions' => [
                             'view',
                             'index',
-                            'create',
-                            'delete',
-                            'update',
-                            'search-division'
                         ],
                         'allow' => true,
-                        'roles' => ['division']
+                        'roles' => ['view_division']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_division']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_division']
                     ],
                     [
                         'actions' => [
@@ -164,7 +174,6 @@ class DivisionsController extends Controller
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        $user_province = strtolower(Yii::$app->user->identity->province);
 
         $out = ['results' => ['id' => '', 'text' => '']];
         if ($id > 0) {

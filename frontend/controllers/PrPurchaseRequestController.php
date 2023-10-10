@@ -486,8 +486,9 @@ class PrPurchaseRequestController extends Controller
     public function actionCreate()
     {
         $model = new PrPurchaseRequest();
-        $model->fk_office_id =  Yii::$app->user->identity->fk_office_id ?? '';
-        $model->fk_division_id =  Yii::$app->user->identity->fk_division_id ?? '';
+        $user_data = User::getUserDetails();
+        $model->fk_office_id =  $user_data->employee->office->id ?? '';
+        $model->fk_division_id =  $user_data->employee->empDivision->id ?? '';
 
 
         if ($model->load(Yii::$app->request->post())) {

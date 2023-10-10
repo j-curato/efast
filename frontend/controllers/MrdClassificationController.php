@@ -36,13 +36,24 @@ class MrdClassificationController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'delete',
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_mrd_classification']
+                    ],
+                    [
+                        'actions' => [
                             'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_mrd_classification']
+                    ],
+                    [
+                        'actions' => [
                             'create',
 
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['create_mrd_classification']
                     ],
                     [
                         'actions' => [

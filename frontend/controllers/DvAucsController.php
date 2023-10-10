@@ -136,8 +136,6 @@ class DvAucsController extends Controller
                         'allow' => true,
                         'roles' => ['ro_turn_arround_time']
                     ],
-
-
                     [
                         'actions' => [
                             'index',

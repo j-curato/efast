@@ -18,11 +18,6 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="sub-accounts2-index">
 
 
-    <!-- <p>
-        <?= Html::a('Create Sub Accounts2', ['create'], ['class' => 'btn btn-success']) ?>
-    </p> -->
-
-
     <p>
         <?php
         // Html::a('Create Sub Accounts1', ['create'], ['class' => 'btn btn-success']) 
@@ -30,7 +25,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ?>
         <!-- <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload</button> -->
     </p>
-    <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <!-- <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -81,7 +76,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -95,23 +90,16 @@ $this->params['breadcrumbs'][] = $this->title;
             'position' => 'absolute',
         ],
         'columns' => [
-
-
             'object_code',
             'name',
-
-
             [
                 'label' => 'Actions',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return
-
-                        Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id])
-                        . ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate']);
+                    $updateBtn = Yii::$app->user->can('update_sub_account_2') ? Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate']) : '';
+                    return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id]) . ' ' . $updateBtn;
                 }
             ]
-
         ],
     ]); ?>
 

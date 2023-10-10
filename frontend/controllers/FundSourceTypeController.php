@@ -38,19 +38,33 @@ class FundSourceTypeController extends Controller
                 'rules' => [
                     [
                         'actions' => [
-                            'update',
-                            'delete',
                             'view',
                             'index',
-                            'create',
-                            'all-fund-source-type'
+
                         ],
                         'allow' => true,
-                        'roles' => ['fund_source_type']
+                        'roles' => ['view_fund_source_type']
                     ],
                     [
                         'actions' => [
-                            'search'
+                            'update',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_fund_source_type']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_fund_source_type']
+                    ],
+                    [
+                        'actions' => [
+                            'search',
+                            'all-fund-source-type'
                         ],
                         'allow' => true,
                         'roles' => ['@']
@@ -178,7 +192,6 @@ class FundSourceTypeController extends Controller
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        $user_province = strtolower(Yii::$app->user->identity->province);
 
         $out = ['results' => ['id' => '', 'text' => '']];
         if (!is_null($q)) {

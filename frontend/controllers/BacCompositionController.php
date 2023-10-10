@@ -6,6 +6,7 @@ use Yii;
 use app\models\BacComposition;
 use app\models\BacCompositionMember;
 use app\models\BacCompositionnSearch;
+use common\models\User;
 use ErrorException;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -117,7 +118,8 @@ class BacCompositionController extends Controller
     {
         $model = new BacComposition();
         if (!Yii::$app->user->can('ro_procurement_admin')) {
-            $model->fk_office_id = Yii::$app->user->identity->fk_office_id;
+            $user_data = User::getUserDetails();
+            $model->fk_office_id = $user_data->employee->office->id;
         }
         if ($model->load(Yii::$app->request->post())) {
             try {

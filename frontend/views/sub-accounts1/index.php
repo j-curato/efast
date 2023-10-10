@@ -21,9 +21,9 @@ $this->params['breadcrumbs'][] = $this->title;
         // Html::a('Create Sub Accounts1', ['create'], ['class' => 'btn btn-success']) 
 
         ?>
-        <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload</button>
+        <!-- <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload</button> -->
     </p>
-    <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <!-- <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -70,7 +70,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
     ?>
 
@@ -101,12 +101,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Actions',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return
-                        Html::a('<i class="fa fa-plus"></i>', ['sub-accounts2/create', 'subAcc1Id' => $model->id], ['class' => 'btn-xs btn-success modalButtonUpdate'])
-                        . ' ' .
+                    $updateBtn  = Yii::$app->user->can('update_sub_account_1') ?  Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate']) : '';
+                    $createSubAccount2Btn  = Yii::$app->user->can('create_sub_account_2') ?  Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate']) : '';
+                    return $createSubAccount2Btn . ' ' .
                         Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id])
-                        . ' ' .
-                        Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate']);
+                        . ' ' . $updateBtn;
                 }
             ]
         ],

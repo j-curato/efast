@@ -13,17 +13,9 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="nature-of-transaction-view">
 
-    <h3><?= Html::encode($this->title) ?></h3>
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
+        <?= Yii::$app->user->can('update_nature_of_transaction') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']) : '' ?>
     </p>
 
     <?= DetailView::widget([
@@ -35,3 +27,4 @@ $this->params['breadcrumbs'][] = $this->title;
     ]) ?>
 
 </div>
+<?php $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [\yii\web\JqueryAsset::class]]) ?>

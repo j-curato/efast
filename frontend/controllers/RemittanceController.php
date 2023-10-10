@@ -343,7 +343,6 @@ class RemittanceController extends Controller
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        $user_province = strtolower(Yii::$app->user->identity->province);
 
         $out = ['results' => ['id' => '', 'text' => '']];
         if ($id > 0) {
@@ -364,7 +363,6 @@ class RemittanceController extends Controller
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        $user_province = strtolower(Yii::$app->user->identity->province);
 
         $out = ['results' => ['id' => '', 'text' => '']];
         if ($id > 0) {

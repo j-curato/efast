@@ -38,12 +38,23 @@ class OfficeController extends Controller
                         'actions' => [
                             'index',
                             'view',
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_office']
+                    ],
+                    [
+                        'actions' => [
                             'update',
-                            'delete',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_office']
+                    ],
+                    [
+                        'actions' => [
                             'create',
                         ],
                         'allow' => true,
-                        'roles' => ['office']
+                        'roles' => ['create_office']
                     ],
                     [
                         'actions' => [

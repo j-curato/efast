@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="container card" style="padding:2rem">
 
         <p>
-            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']) ?>
+            <?= Yii::$app->user->can('update_fund_source_type') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']) : '' ?>
 
         </p>
 

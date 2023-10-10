@@ -15,7 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Html::button('<i class="fa fa-pencil-alt"></i> Add New', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=financing-source-code/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
+        <?= Yii::$app->user->can('create_financing_source_code') ? Html::a('<i class="fa fa-plus"></i> Create ', ['create'], ['class' => 'btn btn-success modalButtonCreate']) : '' ?>
     </p>
 
 
@@ -42,9 +42,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Actions',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    $t = yii::$app->request->baseUrl . '/index.php?r=financing-source-code/update&id=' . $model->id;
-
-                    return ' ' . Html::button('<span class="fa fa-pencil-square-o"></span>', ['value' => Url::to($t), 'class' => 'btn btn-primary btn-xs modalButtonedit']);
+                    $updateBtn = Yii::$app->user->can('update_financing_source_code') ? Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate']) : '';
+                    return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id]) . ' ' . $updateBtn;
                 }
             ]
 

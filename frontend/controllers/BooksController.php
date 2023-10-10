@@ -35,14 +35,25 @@ class BooksController extends Controller
                     [
                         'actions' => [
                             'index',
-                            'create',
-                            'update',
                             'view',
-                            'delete',
-                            'get-books'
                         ],
                         'allow' => true,
-                        'roles' => ['book']
+                        'roles' => ['view_books']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_books']
+                    ],
+                    [
+                        'actions' => [
+
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_books']
                     ],
                     [
                         'actions' => [

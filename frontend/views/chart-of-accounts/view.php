@@ -23,9 +23,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="container" style="background-color: white;">
         <p>
-            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']) ?>
-            <?= Html::a('Create Sub Account 1', ['sub-accounts1/create', 'chartOfAccountId' => $model->id], ['class' => 'btn btn-success modalButtonCreate']) ?>
-
+            <?= Yii::$app->user->can('update_chart_of_account') ? Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']) : '' ?>
+            <?= Yii::$app->user->can('create_sub_account_1') ? Html::a('Create Sub Account 1', ['sub-accounts1/create', 'chartOfAccountId' => $model->id], ['class' => 'btn btn-success modalButtonCreate']) : '' ?>
         </p>
 
         <?= DetailView::widget([

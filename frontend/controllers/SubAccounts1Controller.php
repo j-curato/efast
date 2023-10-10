@@ -36,24 +36,40 @@ class SubAccounts1Controller extends Controller
                     'create',
                     'create-sub-account',
                     'import',
-
                     'get-all-sub-account1',
                 ],
                 'rules' => [
                     [
                         'actions' => [
                             'index',
-                            'update',
-                            'delete',
                             'view',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_sub_account_1']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_sub_account_1']
+                    ],
+                    [
+                        'actions' => [
+
                             'create',
-                            'create-sub-account',
-                            'import',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_sub_account_1']
+                    ],
+                    [
+                        'actions' => [
                             'get-all-sub-account1',
                         ],
                         'allow' => true,
-                        'roles' => ['sub_account_1']
-                    ]
+                        'roles' => ['@']
+                    ],
                 ]
             ],
             'verbs' => [

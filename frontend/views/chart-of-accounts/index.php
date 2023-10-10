@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Html::a('<i class="fa fa-plus"></i> Create ', ['create'], ['class' => 'btn btn-success lrgModal']) ?>
+        <?= Yii::$app->user->can('create_chart_of_account') ? Html::a('<i class="fa fa-plus"></i> Create ', ['create'], ['class' => 'btn btn-success lrgModal']) : ''; ?>
         <!-- <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button> -->
     </p>
 
@@ -220,17 +220,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Action',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    // return Html::button('<i class="fa fa-plus"></i>', [
-                    //     'data-toggle' => "modal", 'class' => 'add-sub',
-                    //     'data-toggle' => "modal", 'data-target' => "#myModal",
-                    //     'value' => $model->id,
-                    // ])
-                    //     . '' .
-                    return  Html::a('<i class="fa fa-plus"></i>', ['sub-accounts1/create', 'chartOfAccountId' => $model->id], ['class' => 'btn-xs btn-success modalButtonCreate']) .
-                        ' ' .
-                        Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id])
-                        . ' ' .
-                        Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate']);
+                    $createSubAccount1Btn  = Yii::$app->user->can('create_sub_account_1') ? Html::a('<i class="fa fa-plus"></i>', ['sub-accounts1/create', 'chartOfAccountId' => $model->id], ['class' => 'btn-xs btn-success modalButtonCreate']) : '';
+                    $updateBtn = Yii::$app->user->can('update_chart_of_account') ? Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => 'lrgModal']) : '';
+
+                    return  $createSubAccount1Btn . ' ' . Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id]) . ' ' . $updateBtn;
                 },
                 'options' => [
                     'style' => 'width:5%;'

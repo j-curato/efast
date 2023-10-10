@@ -32,20 +32,43 @@ class AuthorizationCodeController extends Controller
                     'get-authorization-codes'
                 ],
                 'rules' => [
-        
+
                     [
 
                         'actions' => [
                             'index',
-                            'create',
                             'view',
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_authorization_code']
+                    ],
+
+                    [
+
+                        'actions' => [
+
                             'update',
-                            'delete',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_authorization_code']
+                    ],
+
+                    [
+
+                        'actions' => [
+                            'create',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_authorization_code']
+                    ],
+                    [
+                        'actions' => [
                             'get-authorization-codes'
                         ],
                         'allow' => true,
-                        'roles' => ['authorization_code']
-                    ]
+                        'roles' => ['@']
+                    ],
 
                 ]
             ],

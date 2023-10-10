@@ -15,7 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Html::a('Create Cash Flow', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
+        <?= Yii::$app->user->can('create_cash_flow') ? Html::a('Create Cash Flow', ['create'], ['class' => 'btn btn-success modalButtonCreate']) : '' ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
@@ -37,7 +37,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Action',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return MyHelper::gridDefaultAction($model->id);
+                    $updateBtn = Yii::$app->user->can('update_cash_flow') ? Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate']) : '';
+                    return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id]) . ' ' . $updateBtn;
                 }
             ]
         ],

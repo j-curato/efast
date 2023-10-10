@@ -542,7 +542,6 @@ LEFT JOIN  (SELECT
             $province = 'adn';
 
 
-            // $province = strtolower(Yii::$app->user->identity->province);
             $q = (new \yii\db\Query())
                 ->select(["*",])
                 ->from('liquidation_entries_view')
@@ -668,7 +667,6 @@ LEFT JOIN  (SELECT
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
-        $user_province = strtolower(Yii::$app->user->identity->province);
 
         $out = ['results' => ['id' => '', 'text' => '']];
         if ($id > 0) {

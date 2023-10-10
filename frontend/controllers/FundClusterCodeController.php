@@ -32,18 +32,29 @@ class FundClusterCodeController extends Controller
                     'get-all-cluster'
                 ],
                 'rules' => [
-     
+
                     [
                         'actions' => [
                             'index',
-                            'update',
                             'view',
-                            'create',
-                            'delete',
-                            'get-all-cluster'
                         ],
                         'allow' => true,
-                        'roles' => ['fund_cluster_code']
+                        'roles' => ['view_fund_cluster_code']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_fund_cluster_code']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_fund_cluster_code']
                     ],
                 ]
             ],

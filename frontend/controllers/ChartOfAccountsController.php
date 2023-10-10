@@ -51,23 +51,9 @@ class ChartOfAccountsController extends Controller
                 'rules' => [
                     [
                         'actions' => [
-                            'index',
-                            'view',
-                            'create',
-                            'update',
-                            'delete',
-                            'import',
                             'create-sub-account',
-                            'get-all-account',
                             'sample-index',
                             'get-general-ledger',
-                            'chart-of-accounts',
-                            'search-liquidation-accounting-code',
-                            'search-accounting-code',
-                            'accounting-codes',
-                            'accounting-codes-dv',
-                            'search-chart-of-accounts',
-                            'get-chart-info',
 
                         ],
                         'allow' => true,
@@ -75,7 +61,6 @@ class ChartOfAccountsController extends Controller
                     ],
                     [
                         'actions' => [
-
                             'get-all-account',
                             'chart-of-accounts',
                             'accounting-codes',
@@ -88,7 +73,30 @@ class ChartOfAccountsController extends Controller
                         ],
                         'allow' => true,
                         'roles' => ['@']
-                    ]
+                    ],
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_chart_of_account']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_chart_of_account']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_chart_of_account']
+                    ],
+
                 ]
             ],
             'verbs' => [

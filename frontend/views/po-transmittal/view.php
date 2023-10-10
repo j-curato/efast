@@ -52,7 +52,6 @@ $user_data = User::getUserDetails();
                         ],
                     ]);
                 }
-
                 $prov = '';
                 $provinces = [
                     'adn' => 'Agusan Del Norte',

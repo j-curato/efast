@@ -140,7 +140,9 @@ class PrRfqController extends Controller
     {
 
         $model = new PrRfq();
-        $model->fk_office_id  = Yii::$app->user->identity->fk_office_id ?? '';
+
+        $user_data = User::getUserDetails();
+        $model->fk_office_id  = $user_data->employee->office->id;
         if ($model->load(Yii::$app->request->post())) {
             $items = Yii::$app->request->post('items');
             try {

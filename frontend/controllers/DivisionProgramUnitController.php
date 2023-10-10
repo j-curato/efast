@@ -36,13 +36,26 @@ class DivisionProgramUnitController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'create',
-                            'update',
-                            'delete'
                         ],
                         'allow' => true,
-                        'roles' => ['division_program_unit']
-                    ]
+                        'roles' => ['view_division_program_unit']
+                    ],
+
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_division_program_unit']
+                    ],
+
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_division_program_unit']
+                    ],
                 ]
             ],
             'verbs' => [

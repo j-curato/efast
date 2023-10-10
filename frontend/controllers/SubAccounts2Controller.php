@@ -38,15 +38,25 @@ class SubAccounts2Controller extends Controller
                     [
                         'actions' => [
                             'index',
-                            'create',
-                            'delete',
-                            'update',
                             'view',
-                            'import',
                         ],
                         'allow' => true,
-                        'roles' => ['sub_account_2']
-                    ]
+                        'roles' => ['view_sub_account_2']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_sub_account_2']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_sub_account_2']
+                    ],
                 ]
             ],
             'verbs' => [
