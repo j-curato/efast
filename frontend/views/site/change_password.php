@@ -22,12 +22,12 @@ $fieldOptions2 = [
 ?>
 
 
-<div class="" style="">
+<div class="">
 
     <?php $form = ActiveForm::begin([
         'id' => 'changePass',
-        'enableAjaxValidation' => true,
-        'enableClientValidation' => false,
+        // 'enableAjaxValidation' => true,
+        // 'enableClientValidation' => false,
     ]); ?>
 
     <div class="row">
@@ -71,36 +71,45 @@ $fieldOptions2 = [
 <?php
 SweetAlertAsset::register($this);
 $js = <<< JS
-$('#changePass').on('submit', function(e) {
-        e.preventDefault()
-        var form = $(this);
-        $.ajax({
-            url: form.attr('action'),
-            type: 'post',
-            data: form.serialize(),
-            success: function(data) {
-                console.log(data)
-                console.log(data.success)
-                if (data.success) {
-                    // Form submitted successfully, you can redirect or perform other actions here.
-                    form[0].reset();
-                    swal({
-                        icon: 'success',
-                        title: 'Success',
-                        type: "success",
-                        timer: 3000,
-                        closeOnConfirm: false,
-                        closeOnCancel: false
-                    }).then(function(){
-                        location.reload(true)
-                    })
-                } else {
-                    form.yiiActiveForm('updateMessages', data);
-                }
+    $(document).ready(function(){
+
+        $('#changePass').on('beforeSubmit', function(e) {
+            e.preventDefault();
+            var isAjaxRequestInProgress = false;
+            var form = $(this);
+            if (!isAjaxRequestInProgress) { // Check if an AJAX request is not already in progress.
+                isAjaxRequestInProgress = true;
+                $.ajax({
+                    url: form.attr('action'),
+                    type: 'post',
+                    data: form.serialize(),
+                    success: function(data) {
+                        console.log(data)
+                        console.log(data.success)
+                        if (data.success) {
+                            // Form submitted successfully, you can redirect or perform other actions here.
+                            form[0].reset();
+                            swal({
+                                icon: 'success',
+                                title: 'Success',
+                                type: "success",
+                                timer: 3000,
+                                closeOnConfirm: false,
+                                closeOnCancel: false
+                            }).then(function(){
+                                location.reload(true)
+                            })
+                        } else {
+                            form.yiiActiveForm('updateMessages', data);
+                        }
+                    }
+                });
+                isAjaxRequestInProgress = false;
             }
+            return false;
         });
-        return false;
-    });
+    })
+
 JS;
 $this->registerJs($js);
 ?>
