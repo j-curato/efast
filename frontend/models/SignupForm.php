@@ -69,7 +69,7 @@ class SignupForm extends Model
         }
 
         $user = new User();
-        $user->id = Yii::$app->db->createCommand('SELECT UUID_SHORT()')->queryScalar();
+        $user->id = Yii::$app->db->createCommand('SELECT UUID_SHORT() % 9223372036854775807')->queryScalar();
         $user->username = $this->username;
         $user->email = $this->email;
         $user->province = $this->province;
