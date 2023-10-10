@@ -913,12 +913,11 @@ class PrPurchaseRequestController extends Controller
         $offset = ($page - 1) * $limit;
         $out = ['results' => ['id' => '', 'text' => '']];
 
+        $user_data = User::getUserDetails();
         if (!Yii::$app->user->can('ro_procurement_admin')) {
-            $user_data = User::getUserDetails();
             $office_id = $user_data->employee->office->id;
-            $division_id = $division_id ?? $user_data->employee->empDivision->id;
         }
-
+        $division_id = $division_id ?? $user_data->employee->empDivision->id;
         if (!is_null($q)) {
             $query = new Query();
             $query->select(["  CAST(id as CHAR(50)) as id, UPPER(`stock_or_act_name`) as text"])

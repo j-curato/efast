@@ -132,6 +132,7 @@ class EmployeeController extends Controller
                 $sign_up->fk_office_id = $model->fk_office_id;
                 $sign_up->fk_division_id = $model->fk_division_id;
                 $sign_up->fk_employee_id = $model->employee_id;
+                
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }

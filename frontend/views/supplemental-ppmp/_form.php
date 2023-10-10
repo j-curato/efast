@@ -131,7 +131,7 @@ $cse_type_data = [
             <?php
             }
 
-            if (Yii::$app->user->can('ro_procurement_admin') || Yii::$app->user->can('po_procurement_admin')) {
+            if (Yii::$app->user->can('select_ppmp_division')) {
 
             ?>
                 <div class="col-sm-2">
