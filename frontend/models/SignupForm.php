@@ -75,7 +75,7 @@ class SignupForm extends Model
         $user->province = $this->province;
         $user->fk_office_id = $this->fk_office_id;
         $user->fk_employee_id = $this->fk_employee_id;
-        $user->status = 10;
+        $user->status = 9;
         $user->setPassword($this->password);
         $user->generateAuthKey();
         $user->generateEmailVerificationToken();
