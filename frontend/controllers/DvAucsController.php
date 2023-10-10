@@ -103,7 +103,7 @@ class DvAucsController extends Controller
                             'get-object-code'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['ro_accounting_admin']
                     ],
                     [
                         'actions' => [
