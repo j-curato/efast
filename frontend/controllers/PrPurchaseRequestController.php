@@ -826,7 +826,7 @@ class PrPurchaseRequestController extends Controller
             if (!Yii::$app->user->can('ro_procurement_admin')) {
                 $user_data = User::getUserDetails();
                 $query->andWhere('fk_office_id = :fk_office_id', ['fk_office_id' =>  $user_data->employee->office->id]);
-                if (!Yii::$app->user->can('po_procurement_admin') && !YIi::$app->user->can('ro_procurement_admin')) {
+                if (!Yii::$app->user->can('po_procurement_admin') && !YIi::$app->user->can('ro_procurement_admin') && !YIi::$app->user->can('select_purchase_request_division')) {
                     $query->andWhere('fk_division_id = :fk_division_id', ['fk_division_id' => $user_data->employee->empDivision->id]);
                 }
             }
