@@ -23,7 +23,7 @@ class AppAsset extends AssetBundle
         // 'js/select2.min.js',
         // 'js/scripts.js',
         // 'manifest.webmanifest',
-        'js/vue.js',
+        // 'js/vue.js',
         'js/axios.min.js'
 
 
