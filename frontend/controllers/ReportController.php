@@ -121,10 +121,10 @@ class ReportController extends \yii\web\Controller
                             'province-fund-source-balance',
                             'liquidation-report-annex',
                             'dv-time-monitoring-export',
-                            'dv-transmittal-summary',
+
                             'set-cookie',
                             'show-cookie',
-                            'detailed-transmittal-summary',
+
                             'po-transmittal-summary',
                             'pr-summary',
                             'roc-summary',
@@ -134,6 +134,7 @@ class ReportController extends \yii\web\Controller
                         'allow' => true,
                         'roles' => ['super-user']
                     ],
+
 
                     [
                         'actions' => [
@@ -146,7 +147,8 @@ class ReportController extends \yii\web\Controller
                             'get-cash',
                             'tax-remittance',
 
-
+                            'dv-transmittal-summary',
+                            'detailed-transmittal-summary',
 
                             'git-pull',
                             'cadadr',
