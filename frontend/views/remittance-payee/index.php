@@ -1,9 +1,10 @@
 <?php
 
-use app\components\helpers\MyHelper;
-use yii\helpers\Html;
-use kartik\grid\GridView;
 use yii\helpers\Url;
+use yii\helpers\Html;
+use yii\web\JqueryAsset;
+use kartik\grid\GridView;
+use app\components\helpers\MyHelper;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\RemittancePayeeSearch */
@@ -56,3 +57,13 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 </div>
+<?php
+
+$this->registerJsFile(
+    '@web/frontend/web/js/globalFunctions.js',
+    [
+        'depends' => [JqueryAsset::class]
+    ]
+);
+
+?>
