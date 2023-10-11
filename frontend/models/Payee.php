@@ -67,10 +67,10 @@ class Payee extends \yii\db\ActiveRecord
                     $this->id = Yii::$app->snowflake->generateId();
                 }
             } else {
-                var_dump($this->getDirtyAttributes()['fk_office_id']);
-                var_dump($this->getOldAttribute('fk_office_id'));
-                var_dump($this->getDirtyAttributes()['fk_office_id'] ==$this->getOldAttribute('fk_office_id'));
-                die();
+                // var_dump($this->getDirtyAttributes()['fk_office_id']);
+                // var_dump($this->getOldAttribute('fk_office_id'));
+                // var_dump($this->getDirtyAttributes()['fk_office_id'] ==$this->getOldAttribute('fk_office_id'));
+                // die();
             }
             return true;
         }
