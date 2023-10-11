@@ -126,13 +126,13 @@ class EmployeeController extends Controller
                     throw new ErrorException('Model Save Failed');
                 }
                 $sign_up = new SignupForm();
-                $sign_up->username = explode(' ', $model->f_name)[0] . '.' . $model->l_name;
+                $sign_up->username = strtolower(str_replace(' ', '', $model->f_name)) . '.' . strtolower($model->l_name);
                 $sign_up->email = $sign_up->username . '@gmail.com';
                 $sign_up->password = 'abcde54321';
                 $sign_up->fk_office_id = $model->fk_office_id;
                 $sign_up->fk_division_id = $model->fk_division_id;
                 $sign_up->fk_employee_id = $model->employee_id;
-                
+
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
@@ -176,9 +176,8 @@ class EmployeeController extends Controller
                 // $qry = Yii::$app->db->createCommand("SELECT * FROM `user` WHERE fk_employee_id = :id")->bindValue(':id', $model->employee_id)->queryOne();
                 // return var_dump($model->employee_id);
                 if (empty($model->user->id)) {
-
                     $sign_up = new SignupForm();
-                    $sign_up->username = explode(' ', $model->f_name)[0] . '.' . $model->l_name;
+                    $sign_up->username =  strtolower(str_replace(' ', '', $model->f_name)) . '.' . strtolower($model->l_name);
                     $sign_up->email = $sign_up->username . '@gmail.com';
                     $sign_up->password = 'abcde54321';
                     $sign_up->fk_office_id = $model->fk_office_id;
