@@ -14,6 +14,12 @@ class m231012_003353_add_constraints_in_other_property_details_table extends Mig
     {
         $this->createIndex('idx-other-pty-dtls-fk_property_id', 'other_property_details', 'fk_property_id');
         $this->addForeignKey('fk-other-pty-dtls-fk_property_id', 'other_property_details', 'fk_property_id', 'property', 'id', 'RESTRICT', 'CASCADE');
+
+        $this->createIndex('idx-other-pty-dtls-fk_sub_account1_id', 'other_property_details', 'fk_sub_account1_id');
+        $this->addForeignKey('fk-other-pty-dtls-fk_sub_account1_id', 'other_property_details', 'fk_sub_account1_id', 'sub_accounts1', 'id', 'RESTRICT', 'CASCADE');
+
+        $this->createIndex('idx-other-pty-dtls-fk_depreciation_sub_account1_id', 'other_property_details', 'fk_depreciation_sub_account1_id');
+        $this->addForeignKey('fk-other-pty-dtls-fk_depreciation_sub_account1_id', 'other_property_details', 'fk_depreciation_sub_account1_id', 'sub_accounts1', 'id', 'RESTRICT', 'CASCADE');
     }
 
     /**
@@ -24,6 +30,12 @@ class m231012_003353_add_constraints_in_other_property_details_table extends Mig
 
         $this->dropForeignKey('fk-other-pty-dtls-fk_property_id', 'other_property_details');
         $this->dropIndex('idx-other-pty-dtls-fk_property_id', 'other_property_details');
+
+        $this->dropForeignKey('fk-other-pty-dtls-fk_sub_account1_id', 'other_property_details');
+        $this->dropIndex('idx-other-pty-dtls-fk_sub_account1_id', 'other_property_details');
+
+        $this->dropForeignKey('fk-other-pty-dtls-fk_depreciation_sub_account1_id', 'other_property_details');
+        $this->dropIndex('idx-other-pty-dtls-fk_depreciation_sub_account1_id', 'other_property_details');
     }
 
     /*
