@@ -287,7 +287,7 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
             ];
             $itMasterRecords = [];
             $itTransactions = [
-                Yii::$app->user->can('super-user') ?     ['label' => 'IT Maintenance Request', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/it-maintenance-request/index'],] : null,
+                Yii::$app->user->can('view_it_maintenance_request') ?     ['label' => 'IT Maintenance Request', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/it-maintenance-request/index'],] : null,
             ];
             $itReports = [];
             $reports = [
