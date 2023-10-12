@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Yii::$app->user->can('create_it_maintenance_request') ? Html::a('Create', ['create'], ['class' => 'btn btn-success modalButtonCreate']) : '' ?>
+        <?= Yii::$app->user->can('create_it_maintenance_request') ? Html::a('Create', ['create'], ['class' => 'btn btn-success lrgModal']) : '' ?>
     </p>
 
     <?= GridView::widget([
@@ -41,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Actions',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    $updateBtn = Yii::$app->user->can('update_it_maintenance_request') ? Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate']) : '';
+                    $updateBtn = Yii::$app->user->can('update_it_maintenance_request') ? Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => 'lrgModal']) : '';
                     return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id]) . ' ' . $updateBtn;
                 }
             ],
