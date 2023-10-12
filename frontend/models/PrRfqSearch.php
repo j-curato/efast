@@ -70,6 +70,7 @@ class PrRfqSearch extends PrRfq
             // $query->where('0=1');
             return $dataProvider;
         }
+        $query->joinWith('purchaseRequest');
 
         // grid filtering conditions
         $query->andFilterWhere([
