@@ -1,12 +1,13 @@
 <?php
 
 use yii\helpers\Html;
+use yii\web\JqueryAsset;
 use kartik\grid\GridView;
-use aryelds\sweetalert\SweetAlertAsset;
-use kartik\widgets\ActiveForm;
-use kartik\widgets\FileInput;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
+use kartik\widgets\FileInput;
+use kartik\widgets\ActiveForm;
+use aryelds\sweetalert\SweetAlertAsset;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\SubAccounts2Search */
@@ -110,7 +111,7 @@ $this->params['breadcrumbs'][] = $this->title;
 $this->registerJsFile(
     '@web/frontend/web/js/globalFunctions.js',
     [
-        'depends' => [\yii\web\JqueryAsset::class]
+        'depends' => [JqueryAsset::class]
     ]
 );
 

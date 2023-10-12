@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\web\JqueryAsset;
 use yii\widgets\DetailView;
 use aryelds\sweetalert\SweetAlertAsset;
 
@@ -29,4 +30,4 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
 </div>
-<?php $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [\yii\web\JqueryAsset::class]]) ?>
+<?php $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [JqueryAsset::class]]) ?>

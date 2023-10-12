@@ -1,10 +1,11 @@
 <?php
 
 use yii\helpers\Html;
+use yii\web\JqueryAsset;
 use kartik\grid\GridView;
-use aryelds\sweetalert\SweetAlertAsset;
-use kartik\widgets\ActiveForm;
 use kartik\widgets\FileInput;
+use kartik\widgets\ActiveForm;
+use aryelds\sweetalert\SweetAlertAsset;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\SubAccounts1Search */
@@ -16,63 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="sub-accounts1-index">
 
 
-    <p>
-        <?php
-        // Html::a('Create Sub Accounts1', ['create'], ['class' => 'btn btn-success']) 
 
-        ?>
-        <!-- <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload</button> -->
-    </p>
-    <!-- <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">UPLOAD WFP</h4>
-                </div>
-                <div class='modal-body'>
-                    <center><a href="sub_account1/sub_account1_format.xlsx">Download Template Here to avoid error during Upload.</a></center>
-                    <hr>
-                    <label for="ledger"> SELECT GENERAL LEDGER</label>
-                    <?php
-                    $ledger = Yii::$app->db->createCommand("SELECT chart_of_accounts.id, CONCAT(chart_of_accounts.uacs,' - ',chart_of_accounts.general_ledger) as name FROM chart_of_accounts")->queryAll();
-                    ?>
-                    <?php
-                    $form = ActiveForm::begin([
-                        'action' => ['sub-accounts1/import'],
-                        'method' => 'POST',
-                        'id' => 'formupload',
-                        'options' => [
-                            'enctype' => 'multipart/form-data',
-                        ], // important
-                    ]);
-
-                    // echo '<input type="file">';
-                    echo "<br>";
-                    echo FileInput::widget([
-                        'name' => 'file',
-                        // 'options' => ['multiple' => true],
-                        'id' => 'fileupload',
-                        'pluginOptions' => [
-                            'showPreview' => true,
-                            'showCaption' => true,
-                            'showRemove' => true,
-                            'showUpload' => true,
-                        ]
-                    ]);
-
-
-                    ActiveForm::end();
-
-
-                    ?>
-
-                </div>
-            </div>
-        </div>
-    </div> -->
-    <?php // echo $this->render('_search', ['model' => $searchModel]); 
-    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -117,7 +62,7 @@ $this->params['breadcrumbs'][] = $this->title;
 $this->registerJsFile(
     '@web/frontend/web/js/globalFunctions.js',
     [
-        'depends' => [\yii\web\JqueryAsset::class]
+        'depends' => [JqueryAsset::class]
     ]
 )
 ?>
