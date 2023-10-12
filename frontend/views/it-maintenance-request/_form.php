@@ -117,7 +117,7 @@ use yii\bootstrap4\ActiveForm;
     <div class="row">
         <div class="col-sm-6">
             <?= $form->field($model, 'fk_approved_by')->widget(Select2::class, [
-                'data' => ArrayHelper::map(MyHelper::getEmployee($model->fk_worked_by, 'all'), 'employee_id', 'employee_name'),
+                'data' => ArrayHelper::map(MyHelper::getEmployee($model->fk_approved_by, 'all'), 'employee_id', 'employee_name'),
                 'options' => ['placeholder' => 'Search for a Employee ...'],
                 'pluginOptions' => [
                     'allowClear' => true,
