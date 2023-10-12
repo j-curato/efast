@@ -5,6 +5,8 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\ItMaintenanceRequest;
+use common\models\User;
+use Yii;
 
 /**
  * ItMaintenanceRequestSearch represents the model behind the search form of `app\models\ItMaintenanceRequest`.
@@ -43,6 +45,11 @@ class ItMaintenanceRequestSearch extends ItMaintenanceRequest
         $query = ItMaintenanceRequest::find();
 
         // add conditions that should always apply here
+        if (Yii::$app->user->can('super-user')) {
+            $user_data = User::getUserDetails();
+
+            $query->andWhere('fk_division_id =:division_id', ['division_id' => $user_data->employee->empDivision->id]);
+        }
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
