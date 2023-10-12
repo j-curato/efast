@@ -45,9 +45,8 @@ class ItMaintenanceRequestSearch extends ItMaintenanceRequest
         $query = ItMaintenanceRequest::find();
 
         // add conditions that should always apply here
-        if (Yii::$app->user->can('super-user')) {
+        if (!Yii::$app->user->can('super-user')) {
             $user_data = User::getUserDetails();
-
             $query->andWhere('fk_division_id =:division_id', ['division_id' => $user_data->employee->empDivision->id]);
         }
 
