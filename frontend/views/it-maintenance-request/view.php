@@ -99,9 +99,9 @@ $approvedBy = MyHelper::getEmployee($model->fk_approved_by, 'one');
                 </td>
                 <td colspan="2" class="ctr" style="border:0 ;border-left:0;">
                     <br>
-                    <b><u><?= strtoupper($actnd_by['employee_name']) ?? '' ?></u></b>
+                    <b><u><?= !empty($actnd_by['employee_name']) ? strtoupper($actnd_by['employee_name']) : '' ?></u></b>
                     <br>
-                    <span><?= $actnd_by['position'] ?? '' ?></span>
+                    <span><?= !empty($actnd_by['position']) ? $actnd_by['position'] : '' ?></span>
                     <br>
                     <br>
                 </td>
@@ -112,9 +112,9 @@ $approvedBy = MyHelper::getEmployee($model->fk_approved_by, 'one');
             <tr>
                 <td colspan="2" class="ctr" style="border:0;">
                     <br>
-                    <b><u><?= strtoupper($approvedBy['employee_name']) ?? '' ?></u></b>
+                    <b><u><?= !empty($approvedBy['employee_name']) ? strtoupper($approvedBy['employee_name']) : '' ?></u></b>
                     <br>
-                    <span><?= $approvedBy['position'] ?? '' ?></span>
+                    <span><?= !empty($approvedBy['position']) ? $approvedBy['position'] : '' ?></span>
                     <br>
                     <br>
                 </td>
