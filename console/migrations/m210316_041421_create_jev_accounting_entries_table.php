@@ -48,7 +48,7 @@ class m210316_041421_create_jev_accounting_entries_table extends Migration
             'jev_preparation_id',
             '{{%jev_preparation}}',
             'id',
-            'NO ACTION'
+            'CASCADE'
         );
 
         // creates index for column `cashflow_id`
