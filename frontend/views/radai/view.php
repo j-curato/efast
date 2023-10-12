@@ -141,10 +141,5 @@ $this->params['breadcrumbs'][] = $this->title;
             display: none;
         }
 
-        th,
-        td {
-            font-size: 10px;
-            padding: 3px;
-        }
     }
 </style>
