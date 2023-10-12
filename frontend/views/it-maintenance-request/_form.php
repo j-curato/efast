@@ -112,6 +112,32 @@ use yii\bootstrap4\ActiveForm;
                 ],
             ]) ?>
         </div>
+
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <?= $form->field($model, 'fk_approved_by')->widget(Select2::class, [
+                'data' => ArrayHelper::map(MyHelper::getEmployee($model->fk_worked_by, 'all'), 'employee_id', 'employee_name'),
+                'options' => ['placeholder' => 'Search for a Employee ...'],
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'minimumInputLength' => 1,
+                    'language' => [
+                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                    ],
+                    'ajax' => [
+                        'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                        'dataType' => 'json',
+                        'delay' => 250,
+                        'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                        'cache' => true
+                    ],
+                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                ],
+            ]) ?>
+        </div>
     </div>
 
     <?= $form->field($model, 'description')->textarea(['rows' => 6]) ?>

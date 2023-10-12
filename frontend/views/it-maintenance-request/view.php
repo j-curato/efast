@@ -13,6 +13,7 @@ $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 $rqstd_by = MyHelper::getEmployee($model->fk_requested_by, 'one');
 $actnd_by = MyHelper::getEmployee($model->fk_worked_by, 'one');
+$approvedBy = MyHelper::getEmployee($model->fk_approved_by, 'one');
 ?>
 <div class="it-maintenance-request-view container">
 
@@ -86,7 +87,7 @@ $actnd_by = MyHelper::getEmployee($model->fk_worked_by, 'one');
                 <th class="no-bdr" colspan="2">Actioned By</th>
             </tr>
             <tr>
-                <td colspan="2" class="ctr" style="border-top:0 ; border-right:0;">
+                <td colspan="2" class="ctr" style="border:0 ; border-right:0;">
                     <br>
                     <b><u><?= !empty($rqstd_by['employee_name']) ? strtoupper($rqstd_by['employee_name']) : '' ?></u></b>
                     <br>
@@ -96,11 +97,24 @@ $actnd_by = MyHelper::getEmployee($model->fk_worked_by, 'one');
 
 
                 </td>
-                <td colspan="2" class="ctr" style="border-top:0 ;border-left:0;">
+                <td colspan="2" class="ctr" style="border:0 ;border-left:0;">
                     <br>
                     <b><u><?= strtoupper($actnd_by['employee_name']) ?? '' ?></u></b>
                     <br>
                     <span><?= $actnd_by['position'] ?? '' ?></span>
+                    <br>
+                    <br>
+                </td>
+            </tr>
+            <tr>
+                <th class="no-bdr" colspan="2">Approved By</th>
+            </tr>
+            <tr>
+                <td colspan="2" class="ctr" style="border:0;">
+                    <br>
+                    <b><u><?= strtoupper($approvedBy['employee_name']) ?? '' ?></u></b>
+                    <br>
+                    <span><?= $approvedBy['position'] ?? '' ?></span>
                     <br>
                     <br>
                 </td>
@@ -131,7 +145,6 @@ $actnd_by = MyHelper::getEmployee($model->fk_worked_by, 'one');
         border: 1px solid black;
 
     }
-
 
     th,
     td {

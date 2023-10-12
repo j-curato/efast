@@ -38,8 +38,8 @@ class ItMaintenanceRequest extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'serial_number', 'date_requested', 'description', 'type', 'fk_division_id', 'fk_requested_by'], 'required'],
-            [['id', 'fk_requested_by', 'fk_worked_by', 'fk_division_id'], 'integer'],
+            [['id', 'serial_number', 'date_requested', 'description', 'type', 'fk_division_id', 'fk_requested_by',], 'required'],
+            [['id', 'fk_requested_by', 'fk_worked_by', 'fk_division_id', 'fk_approved_by'], 'integer'],
             [['date_requested', 'date_accomplished', 'created_at'], 'safe'],
             [['description', 'action_taken'], 'string'],
             [['serial_number', 'type'], 'string', 'max' => 255],
@@ -67,6 +67,7 @@ class ItMaintenanceRequest extends \yii\db\ActiveRecord
             'description' => 'Description',
             'action_taken' => 'Action Taken',
             'type' => 'Type',
+            'fk_approved_by' => 'Approved By',
             'created_at' => 'Created At',
         ];
     }
