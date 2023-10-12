@@ -44,7 +44,7 @@ class MafController extends \yii\web\Controller
                             'get-allotments'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user','maf']
+                        'roles' => ['super-user', 'maf']
                     ]
                 ]
             ],
@@ -161,7 +161,7 @@ class MafController extends \yii\web\Controller
     {
         $adjustmentItemsTtl = floatval(abs(array_sum(array_column($adjustmentItems, 'amount'))));
         $mafItemsTtl = floatval(array_sum(array_column($mafItems, 'amount')));
-        return $mafItemsTtl !== $adjustmentItemsTtl ? 'Not Equal' : true;
+        return number_format($mafItemsTtl, 2) !== number_format($adjustmentItemsTtl, 2) ? 'Not Equal' : true;
     }
     public function actionView($id)
     {
