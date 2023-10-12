@@ -13,29 +13,23 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 ?>
-<div class="jev-preparation-index">
-
-
-
+<div class="jev-preparation-index" id="main">
     <?php
-
     $generalLedger = Yii::$app->db->createCommand("SELECT object_code,account_title FROM accounting_codes WHERE object_code  = :object_code")
         ->bindValue(':object_code', $model->object_code)
         ->queryOne();
     ?>
 
-
     <div class="container card">
 
         <p>
-            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-
-            <button id="export" type='button' class="btn btn-success" style="margin:1rem;">Export</button>
-
+            <?= Yii::$app->user->can('update_general_ledger') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => ' btn btn-primary']) : '' ?>
+            <?= Yii::$app->user->can('export_general_ledger') ? Html::button('Export', ['id' => 'export', 'type' => 'button', 'class' => 'btn btn-success']) : '' ?>
+            <!-- <button id="export" type='button' class="btn btn-success" style="margin:1rem;">Export</button> -->
         </p>
         <div id='con'>
 
-            <table id="data_table" style="margin-top:30px">
+            <table id="data_table" style="margin-top:30px" v-show="showTable">
                 <thead>
 
 
@@ -119,6 +113,24 @@ $this->params['breadcrumbs'][] = $this->title;
                     ?>
                 </thead>
                 <tbody id="ledgerTable">
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td>Beginning Balance</td>
+                        <td></td>
+                        <td class='amt'>{{formatAmount(beginningBalances.debit)}}</td>
+                        <td class='amt'>{{formatAmount(beginningBalances.credit)}}</td>
+                        <td class='amt'>{{formatAmount(beginningBalances.balance)}}</td>
+                    </tr>
+                    <tr v-for="(item,index) in items" :key='index'>
+                        <td>{{item.reporting_period}}</td>
+                        <td>{{item.date}}</td>
+                        <td>{{item.particular}}</td>
+                        <td>{{item.jev_number}}</td>
+                        <td class='amt'>{{formatAmount(item.debit)}}</td>
+                        <td class='amt'>{{formatAmount(item.credit)}}</td>
+                        <td class='amt'>{{formatAmount(item.running_balance)}}</td>
+                    </tr>
 
                 </tbody>
             </table>
@@ -127,15 +139,16 @@ $this->params['breadcrumbs'][] = $this->title;
         </div>
 
     </div>
-    <div id="dots5" style="display:none">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-    </div>
+    <!-- <div class=" center-container" v-show='loading'>
+        <pulse-loader :loading="loading" :color="loaderColor" :size="loaderSize"></pulse-loader>
+    </div> -->
 </div>
 
 <style>
+    .amt {
+        text-align: right;
+    }
+
     table,
     th,
     td {
@@ -253,20 +266,12 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/generalLedgerJs.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $csrfToken = Yii::$app->request->csrfToken;
-$csrfParam = Yii::$app->request->csrfParam;
+$beginBalance =  $model->getBeginningBalance();
+$this->registerJsFile('@web/js/vue-spinner.min.js', ['position' => $this::POS_HEAD]);
 ?>
 <script>
+    var PulseLoader = VueSpinner.PulseLoader
     $(document).ready(function() {
-        const reporting_period = '<?= $model->reporting_period ?>';
-        const book_id = '<?= $model->book_id ?>';
-        const object_code = '<?= $model->object_code ?>';
-        $('#filter').submit(function(e) {
-            e.preventDefault()
-            $('#data_table tbody').html('')
-
-
-        })
-        query('<?php echo $csrfParam ?>', '<?php echo $csrfToken ?>', object_code, reporting_period, book_id)
         $('#export').click(function(e) {
             e.preventDefault();
             $.ajax({
@@ -285,6 +290,50 @@ $csrfParam = Yii::$app->request->csrfParam;
                 }
 
             })
+        })
+        new Vue({
+            el: '#main',
+            components: {
+                'PulseLoader': PulseLoader,
+            },
+            data: {
+                items: <?= json_encode($model->queryGeneralLedger()) ?>,
+                beginningBalances: <?= json_encode(!empty($beginBalance) ? $beginBalance : [])  ?>,
+                balance: <?= json_encode(!empty($beginBalance) ? $beginBalance['balance'] : [])  ?>,
+                endingBalance: 0,
+                loading: true,
+                loaderColor: '#03befc',
+                loaderSize: '20px',
+                showTable: true,
+            },
+            methods: {
+
+                calculateRunningBalance() {
+                    let index = 0
+                    let beginningBalance = this.balance
+                    for (const item of this.items) {
+                        beginningBalance = (parseFloat(beginningBalance) + parseFloat(item.debit)) - parseFloat(item.credit)
+                        this.items[index].running_balance = beginningBalance
+                        index++
+                    }
+                    this.items = this.items
+                },
+                formatAmount(amount) {
+                    amount = parseFloat(amount)
+                    if (typeof amount === 'number' && !isNaN(amount)) {
+                        return amount.toLocaleString(); // Formats with commas based on user's locale
+                    }
+                    return 0; // If unitCost is not a number, return it as is
+                },
+
+            },
+            created() {
+                this.calculateRunningBalance()
+            },
+
+            computed: {
+
+            },
         })
     })
 </script>
