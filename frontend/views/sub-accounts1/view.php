@@ -16,8 +16,8 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="sub-accounts1-view">
     <div class="container card" style="padding: 2rem;">
         <p>
-            <?= Yii::$app->user->can('update_sub_account_1') ?  Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate']) : ''; ?>
-            <?= Yii::$app->user->can('create_sub_account_2') ?  Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate']) : ''; ?>
+            <?= Yii::$app->user->can('update_sub_account_1') ?  Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate']) : ''; ?>
+            <?= Yii::$app->user->can('create_sub_account_2') ?  Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate']) : ''; ?>
         </p>
         <?= DetailView::widget([
             'model' => $model,

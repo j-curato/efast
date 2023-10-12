@@ -39,7 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'label' => 'Actions',
             'format' => 'raw',
             'value' => function ($model) {
-                return Html::a('<i class="fa fa-pencil"></i>', ['update-cancelled', 'id' => $model->id], ['class' => 'modalButtonUpdate']);
+                return Html::a('<i class="fa fa-pencil-alt"></i>', ['update-cancelled', 'id' => $model->id], ['class' => 'modalButtonUpdate']);
             },
             'hiddenFromExport' => true,
         ],

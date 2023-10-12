@@ -596,7 +596,7 @@ class MyComponent extends Component
     public static function gridDefaultAction($id, $class = 'modalButtonUpdate')
     {
         return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $id])
-            . ' ' . Html::a('<i class="fa fa-pencil"></i>', ['update', 'id' => $id], ['class' => $class]);
+            . ' ' . Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $id], ['class' => $class]);
     }
     public  static function getEmployee($id, $qry_type = 'all')
     {
