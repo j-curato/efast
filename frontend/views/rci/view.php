@@ -80,7 +80,7 @@ $this->params['breadcrumbs'][] = $this->title;
             }
             for ($i = count($items); $i < 10; $i++) {
                 echo "<tr>
-                    <td></td>
+                    <td><br></td>
                     <td></td>
                     <td></td>
                     <td></td>

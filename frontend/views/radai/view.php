@@ -143,7 +143,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         th,
         td {
-            padding: 3px;
+            padding: 5px;
         }
     }
 </style>
