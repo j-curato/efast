@@ -37,12 +37,24 @@ class ItMaintenanceRequestController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'create',
-                            'delete',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_it_maintenance_request']
+                    ],
+                    [
+                        'actions' => [
                             'update',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['update_it_maintenance_request']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_it_maintenance_request']
                     ]
                 ]
             ],

@@ -16,11 +16,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Html::a('Create', ['create'], ['class' => 'btn btn-success lrgModal']) ?>
+        <?= Yii::$app->user->can('create_it_maintenance_request') ? Html::a('Create Book', ['create'], ['class' => 'btn btn-success modalButtonCreate']) : '' ?>
     </p>
-
-    <?php // echo $this->render('_search', ['model' => $searchModel]); 
-    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -44,7 +41,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Actions',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return MyHelper::gridDefaultAction($model->id, 'lrgModal');
+                    $updateBtn = Yii::$app->user->can('update_it_maintenance_request') ? Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate']) : '';
+                    return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id]) . ' ' . $updateBtn;
                 }
             ],
         ],

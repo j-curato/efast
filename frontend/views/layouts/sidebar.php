@@ -90,7 +90,7 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                 Yii::$app->user->can('ro_transmittal') ? ['label' => 'Transmittal', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/transmittal/index'],] : null,
                 Yii::$app->user->can('super-user') ? ['label' => 'Document Tracking', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/document-tracker/index'],] : null,
                 Yii::$app->user->can('ro_jev_beginning_balance') ? ['label' => 'JEV Beginning Balance', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/jev-beginning-balance/index'],] : null,
-                Yii::$app->user->can('ro_remittance_payee') ? ['label' => 'Remittance Payee', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/remittance-payee/index'],] : null,
+                Yii::$app->user->can('view_ro_remittance_payee') ? ['label' => 'Remittance Payee', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/remittance-payee/index'],] : null,
                 Yii::$app->user->can('ro_payroll') ? ['label' => 'Payroll', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/payroll/index'],] : null,
                 Yii::$app->user->can('ro_remitttance') ? ['label' => 'Remittance', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/remittance/index'],] : null,
                 Yii::$app->user->can('ro_alphalist') ? ['label' => 'Alphalist', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/ro-alphalist/index'],] : null,
@@ -99,7 +99,7 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
             ];
             $accountingReports = [
                 // Yii::$app->user->can('super-user') ?   ['label' => 'DV w/o File Link', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/dv-aucs/no-file-link-dvs'],] : null,
-                Yii::$app->user->can('ro_general_ledger') ?   ['label' => 'General Ledger', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/general-ledger/index'],] : null,
+                Yii::$app->user->can('view_general_ledger') ?   ['label' => 'General Ledger', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/general-ledger/index'],] : null,
                 Yii::$app->user->can('ro_general_journal') ?   ['label' => 'General Journal', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/general-journal/index'],] : null,
                 Yii::$app->user->can('ro_adadj') ?   ['label' => 'ADADJ', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/jev-preparation/adadj'],] : null,
                 Yii::$app->user->can('ro_ckdj') ?   ['label' => 'CKDJ', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/jev-preparation/ckdj'],] : null,
@@ -127,10 +127,10 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                 Yii::$app->user->can('view_fund_cluster_code') ? ['label' => 'Fund Cluster Code', 'iconStyle' => 'far', 'icon' => 'dot-circle', 'url' => ['/fund-cluster-code/index'],] : null,
                 Yii::$app->user->can('view_financing_source_code') ? ['label' => 'Financing Source Code', 'iconStyle' => 'far', 'icon' => 'dot-circle', 'url' => ['/financing-source-code/index'],] : null,
                 Yii::$app->user->can('view_authorization_code') ? ['label' => 'Authorization Code', 'iconStyle' => 'far', 'icon' => 'dot-circle', 'url' => ['/authorization-code/index'],] : null,
-                Yii::$app->user->can('fund_classification_code') ? ['label' => 'Fund Classification Code', 'iconStyle' => 'far', 'icon' => 'dot-circle', 'url' => ['/fund-category-and-classification-code/index']] : null,
-                Yii::$app->user->can('mfo_pap_code') ? ['label' => 'MFO/PAP Codes', 'iconStyle' => 'far', 'icon' => 'dot-circle', 'url' => ['/mfo-pap-code/index'],] : null,
-                Yii::$app->user->can('fund_source') ? ['label' => 'Fund Source', 'iconStyle' => 'far', 'icon' => 'dot-circle', 'url' => ['/fund-source/index'],] : null,
-                Yii::$app->user->can('allotment_type') ? ['label' => 'Allotment Type', 'iconStyle' => 'far', 'icon' => 'dot-circle', 'url' => ['/allotment-type/index'],] : null,
+                Yii::$app->user->can('view_fund_classification_code') ? ['label' => 'Fund Classification Code', 'iconStyle' => 'far', 'icon' => 'dot-circle', 'url' => ['/fund-category-and-classification-code/index']] : null,
+                Yii::$app->user->can('view_mfo_pap_code') ? ['label' => 'MFO/PAP Codes', 'iconStyle' => 'far', 'icon' => 'dot-circle', 'url' => ['/mfo-pap-code/index'],] : null,
+                Yii::$app->user->can('view_fund_source') ? ['label' => 'Fund Source', 'iconStyle' => 'far', 'icon' => 'dot-circle', 'url' => ['/fund-source/index'],] : null,
+                Yii::$app->user->can('view_allotment_type') ? ['label' => 'Allotment Type', 'iconStyle' => 'far', 'icon' => 'dot-circle', 'url' => ['/allotment-type/index'],] : null,
             ];
             $budgetTransactions = [
                 Yii::$app->user->can('record_allotment') ? ['iconStyle' => 'far', 'label' => 'Record Allotments', 'icon' => 'dot-circle', 'url' => ['/record-allotments/index'],] : null,
@@ -153,9 +153,9 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
             ];
 
             $cashMasterRecords = [
-                Yii::$app->user->can('ro_check_range') ?     ['label' => 'Check Ranges', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/ro-check-ranges/index'],] : null,
-                Yii::$app->user->can('ro_mode_of_payment') ?     ['label' => 'Mode of Payments', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/mode-of-payments/index'],] : null,
-                Yii::$app->user->can('banks') ?     ['label' => 'Banks', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/banks/index'],] : null,
+                Yii::$app->user->can('view_ro_check_range') ?     ['label' => 'Check Ranges', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/ro-check-ranges/index'],] : null,
+                Yii::$app->user->can('view_ro_mode_of_payment') ?     ['label' => 'Mode of Payments', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/mode-of-payments/index'],] : null,
+                Yii::$app->user->can('view_banks') ?     ['label' => 'Banks', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/banks/index'],] : null,
             ];
 
             $cashTransactions = [
@@ -176,14 +176,14 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
             ];
 
             $propertyMasterRecords  = [
-                Yii::$app->user->can('ssf_sp_num') ?     ['label' => 'SSF SP No.', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/ssf-sp-num/index'],] : null,
-                Yii::$app->user->can('ssf_sp_status') ?     ['label' => 'SSF SP Status', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/ssf-sp-status/index'],] : null,
-                Yii::$app->user->can('locations') ?     ['label' => 'Locations', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/location/index'],] : null,
-                Yii::$app->user->can('unit_of_measure') ?     ['label' => 'Unit of Measure', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/unit-of-measure/index'],] : null,
-                Yii::$app->user->can('agency') ?     ['label' => 'Agency', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/agency/index'],] : null,
-                Yii::$app->user->can('transfer_type') ?     ['label' => 'Transfer Type', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/transfer-type/index'],] : null,
-                Yii::$app->user->can('property_articles') ?     ['label' => 'Property Articles', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/property-articles/index'],] : null,
-                Yii::$app->user->can('citymun') ? ['label' => 'City/Municipality', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/citymun/index'],] : null,
+                Yii::$app->user->can('view_ssf_sp_num') ?     ['label' => 'SSF SP No.', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/ssf-sp-num/index'],] : null,
+                Yii::$app->user->can('view_ssf_sp_status') ?     ['label' => 'SSF SP Status', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/ssf-sp-status/index'],] : null,
+                Yii::$app->user->can('view_locations') ?     ['label' => 'Locations', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/location/index'],] : null,
+                Yii::$app->user->can('view_unit_of_measure') ?     ['label' => 'Unit of Measure', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/unit-of-measure/index'],] : null,
+                Yii::$app->user->can('view_agency') ?     ['label' => 'Agency', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/agency/index'],] : null,
+                Yii::$app->user->can('view_transfer_type') ?     ['label' => 'Transfer Type', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/transfer-type/index'],] : null,
+                Yii::$app->user->can('view_property_articles') ?     ['label' => 'Property Articles', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/property-articles/index'],] : null,
+                Yii::$app->user->can('view_citymun') ? ['label' => 'City/Municipality', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/citymun/index'],] : null,
             ];
 
             $propertyTransactions = [
@@ -197,7 +197,6 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                 Yii::$app->user->can('iirup') ?     ['label' => 'IIRUP', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/iirup/index'],] : null,
                 Yii::$app->user->can('derecognition') ?     ['label' => 'Derecognition', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/derecognition/index'],] : null,
             ];
-
             $propertReports = [
                 Yii::$app->user->can('super-user') ?     ['label' => 'Print PC Stickers', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/property-card/print-pc'],] : null,
                 Yii::$app->user->can('property_database') ?  ['label' => 'Property Database', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/property/property-database'],] : null,
@@ -206,17 +205,15 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                 Yii::$app->user->can('property_accountabilities') ?     ['label' => 'Accountabilities', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/property-reports/user-properties'],] : null,
             ];
             $procurementMasterRecords = [
-                Yii::$app->user->can('contract_type') ?     ['label' => 'Contract Type', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/pr-contract-type/index'],] : null,
-                Yii::$app->user->can('mode_of_procurement') ?     ['label' => 'Mode of Procurement', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/pr-mode-of-procurement/index'],] : null,
+                Yii::$app->user->can('view_contract_type') ?     ['label' => 'Contract Type', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/pr-contract-type/index'],] : null,
+                Yii::$app->user->can('view_mode_of_procurement') ?     ['label' => 'Mode of Procurement', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/pr-mode-of-procurement/index'],] : null,
                 Yii::$app->user->can('super-user') ?     ['label' => 'Office/Section', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/pr-office/index'],] : null,
-                Yii::$app->user->can('stock') ?     ['label' => 'Stock/Property', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/pr-stock/index'],] : null,
-                Yii::$app->user->can('bac') ?     ['label' => 'BAC', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/bac-composition/index'],] : null,
-                Yii::$app->user->can('bac_position') ?     ['label' => 'BAC position', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/bac-position/index'],] : null,
-
+                Yii::$app->user->can('view_stock') ?     ['label' => 'Stock/Property', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/pr-stock/index'],] : null,
+                Yii::$app->user->can('view_bac') ?     ['label' => 'BAC', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/bac-composition/index'],] : null,
+                Yii::$app->user->can('view_bac_position') ?     ['label' => 'BAC position', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/bac-position/index'],] : null,
             ];
 
             $procurementTransactions = [
-
                 Yii::$app->user->can('ppmp') ?     ['label' => 'Supplemental PPMP', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/supplemental-ppmp/index'],] : null,
                 Yii::$app->user->can('purchase_request') ?     ['label' => 'Purchase Request', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/pr-purchase-request/index'],] : null,
                 Yii::$app->user->can('rfq') ?     ['label' => 'RFQ', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/pr-rfq/index'],] : null,

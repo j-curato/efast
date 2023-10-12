@@ -19,14 +19,14 @@ $approvedBy = MyHelper::getEmployee($model->fk_approved_by, 'one');
 
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary lrgModal']) ?>
+        <?= Yii::$app->user->can('update_it_maintenance_request') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
         <?php
-
-
-        if (!empty($model->helpdeskCsf->id)) {
-            echo Html::a('Update CSF', ['it-helpdesk-csf/update', 'id' => $model->helpdeskCsf->id], ['class' => 'btn btn-info lrgModal']);
-        } else {
-            echo Html::a('Add CSF', ['it-helpdesk-csf/create', 'fk_it_maintenance_request_id' => $model->id], ['class' => 'btn btn-info lrgModal']);
+        if (Yii::$app->user->can('super-user')) {
+            if (!empty($model->helpdeskCsf->id)) {
+                echo Html::a('Update CSF', ['it-helpdesk-csf/update', 'id' => $model->helpdeskCsf->id], ['class' => 'btn btn-info lrgModal']);
+            } else {
+                echo Html::a('Add CSF', ['it-helpdesk-csf/create', 'fk_it_maintenance_request_id' => $model->id], ['class' => 'btn btn-info lrgModal']);
+            }
         }
 
         ?>
