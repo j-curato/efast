@@ -136,4 +136,19 @@ class JevPreparation extends \yii\db\ActiveRecord
     {
         return $this->hasOne(DvAucs::class, ['id' => 'fk_dv_aucs_id']);
     }
+
+    public function getItems()
+    {
+        return Yii::$app->db->createCommand("SELECT 
+                jev_accounting_entries.id as item_id,
+                jev_accounting_entries.debit,
+                jev_accounting_entries.credit,
+                jev_accounting_entries.object_code,
+                accounting_codes.account_title
+            FROM
+            jev_accounting_entries 
+            LEFT JOIN accounting_codes ON jev_accounting_entries.object_code = accounting_codes.object_code WHERE jev_preparation_id =:id")
+            ->bindValue(':id', $this->id)
+            ->queryAll();
+    }
 }

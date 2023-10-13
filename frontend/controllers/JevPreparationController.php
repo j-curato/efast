@@ -110,7 +110,7 @@ class JevPreparationController extends Controller
                             'liquidation-report-to-jev',
                         ],
                         'allow' => true,
-                        'roles' => ['super-user'],
+                        'roles' => ['@'],
                     ],
                     [
                         'actions' => [
@@ -230,7 +230,7 @@ class JevPreparationController extends Controller
         $model =  $this->findModel($id);
         return $this->render('view', [
             'model' => $model,
-            'items' => $this->getItems($id),
+
             'check_number' => $this->getDvCeckNum($model->dvAucs->id ?? ''),
 
         ]);
@@ -791,7 +791,7 @@ class JevPreparationController extends Controller
 
         return $this->render('update', [
             'model' => $model,
-            'entries' => $this->getItems($id)
+            // 'entries' => $model->getItems()
 
         ]);
     }

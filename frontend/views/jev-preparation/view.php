@@ -140,10 +140,9 @@ Select2Asset::register($this);
 
 
                 <?php
-
                 $total_credit = 0;
                 $total_debit = 0;
-                foreach ($items as $itm) {
+                foreach ($model->getItems() as $itm) {
                     $total_credit += floatval($itm['debit']);
                     $total_debit += floatval($itm['debit']);
                     echo "<tr>
@@ -362,37 +361,11 @@ Select2Asset::register($this);
                 display: none;
             }
 
-            h5 {
-                /* font-size: 10px; */
-            }
-
-            td,
-            th {
-                /* font-size: 10px; */
-            }
-
-            h6 {
-                /* font-size: 10px; */
-            }
-
-            span {
-                /* font-size: 10px; */
-            }
-
-            /* 
-            .form-wrapper {
-                margin-top: 20px;
-                background-color: red;
-            } */
 
             .print {
                 display: none;
             }
 
-            /* @page {
-                margin-top: 20cm;
-                margin-bottom: 5cm;
-            } */
 
             .main-footer {
                 display: none;

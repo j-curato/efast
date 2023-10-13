@@ -209,7 +209,7 @@ if (!empty($model->fk_dv_aucs_id)) {
     <table class="table" id='entry_table'>
         <tbody>
             <?php
-            foreach ($entries as $val) {
+            foreach ($model->getItems() as $val) {
                 $debit = $val['debit'];
                 $credit = $val['credit'];
                 $object_code = $val['object_code'];
@@ -218,7 +218,6 @@ if (!empty($model->fk_dv_aucs_id)) {
                         <td style='width: 300px;max-width:300px'>";
                 echo !empty($val['item_id']) ? "  <input type='hidden' name='items[$entry_row][item_id]' value='{$val['item_id']}'>" : '';
                 echo   "
-                      
                             <div>
                                 <label for='chart-of-accounts'>UACS</label>
                                 <select required name='items[$entry_row][object_code]' class='chart-of-accounts' style='width: 100%'>
