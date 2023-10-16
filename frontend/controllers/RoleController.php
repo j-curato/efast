@@ -98,15 +98,17 @@ class RoleController extends Controller
                 $auth->add($role);
                 $permissions = Yii::$app->request->post('permissions');
                 $childrenRoles = Yii::$app->request->post('childrenRoles') ?? [];
-
                 foreach ($permissions as $permission) {
                     $permissionObject = $auth->getPermission($permission);
                     // $auth->add($permissionObject);
                     $auth->addChild($role, $permissionObject);
                 }
+
                 foreach ($childrenRoles as $child) {
-                    $auth->addChild($role, $child);
+                    $childRole = $auth->getRole($child);
+                    $auth->addChild($role, $childRole);
                 }
+
 
                 $txn->commit();
                 return $this->redirect(['view', 'id' => $model->name]);
