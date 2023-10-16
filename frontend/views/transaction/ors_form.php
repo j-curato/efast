@@ -18,10 +18,7 @@ $this->title =  $title;
 
 $this->params['breadcrumbs'][] = ['label' => 'Transactions', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $title;
-
 $iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number'));
-
-
 ?>
 <div class="jev-preparation-index" id='doc'>
 
@@ -29,10 +26,6 @@ $iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number
 
     $fund = Yii::$app->db->createCommand("SELECT fund_cluster_code.id,fund_cluster_code.name FROM fund_cluster_code")->queryAll();
     $books = Yii::$app->db->createCommand("SELECT books.id,books.name FROM books")->queryAll();
-
-
-
-
     $division = strtolower($model->responsibilityCenter->name);
     ?>
 
@@ -91,7 +84,7 @@ $iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number
                         Payee
                     </th>
                     <td colspan="6">
-                        <?php echo $model->payee->account_name; ?>
+                        <?php echo $model->payee->registered_name; ?>
                     </td>
                 </tr>
                 <tr>
@@ -169,12 +162,6 @@ $iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number
                     <td colspan="7" style="text-align: center;"><b>Total</b> </td>
                     <td style="text-align: right;"><?= number_format($total, 2) ?></td>
                 </tr>
-
-
-
-
-
-
                 <tr style="border-top:1px solid black">
                     <td class="" style="border-top:1px solid white ;
                     border-bottom:1px solid white ;

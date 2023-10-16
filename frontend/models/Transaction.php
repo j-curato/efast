@@ -115,13 +115,11 @@ class Transaction extends \yii\db\ActiveRecord
                     iar.iar_number
                 FROM transaction_iars 
                 JOIN iar ON transaction_iars.fk_iar_id = iar.id
-                WHERE 
-                transaction_iars.is_deleted = 0 
+                WHERE transaction_iars.is_deleted = 0 
                 AND transaction_iars.fk_transaction_id = :id")
             ->bindValue(':id', $this->id)
             ->queryAll();
     }
-
 
     private function deleteIarItems($iarsToRemove)
     {
@@ -175,5 +173,17 @@ class Transaction extends \yii\db\ActiveRecord
         } catch (ErrorException $e) {
             return $e->getMessage();
         }
+    }
+    public function getPrItems()
+    {
+        return YIi::$app->db->createCommand("CALL GetTransactionPrItems(:id)")
+            ->bindValue(':id', $this->id)
+            ->queryAll();
+    }
+    public function getItems()
+    {
+        return YIi::$app->db->createCommand("CALL GetTransactionAllotmentItems(:id)")
+            ->bindValue(':id', $this->id)
+            ->queryAll();
     }
 }

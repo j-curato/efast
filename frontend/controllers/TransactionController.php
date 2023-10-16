@@ -347,11 +347,10 @@ class TransactionController extends Controller
     public function actionView($id)
     {
 
-
+        $model = $this->findModel($id);
         return $this->render('ors_form', [
-            'model' => $this->findModel($id),
-            'items' => $this->getItems($id)
-
+            'model' => $model,
+            'items' => $model->getItems()
         ]);
     }
 
@@ -452,7 +451,7 @@ class TransactionController extends Controller
     {
         $model = $this->findModel($id);
         $oldModel = $this->findModel($id);
-        $items = $this->getItems($model->id);
+        $items = $model->getItems();
         if ((Yii::$app->request->post())) {
             try {
                 $transaction = Yii::$app->db->beginTransaction();
@@ -528,7 +527,7 @@ class TransactionController extends Controller
             'model' => $model,
             'items' => $items,
             'action' => 'update',
-            'transactionPrItems' => $this->getPrItems($model->id)
+            'transactionPrItems' => $model->getPrItems()
         ]);
     }
 
