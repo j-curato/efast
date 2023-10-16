@@ -18,11 +18,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Html::a('<i class="fa fa-pencil-alt"></i> Create', ['create'], ['class' => 'btn btn-success modalButtonCreate']); ?>
+        <?= Yii::$app->user->can('create_stock') ? Html::a('<i class="fa fa-plus"></i> Create ', ['create'], ['class' => 'btn btn-success modalButtonCreate']) : '' ?>
         <button class="btn btn-warning" type='button' id="update_cloud">Update Cloud</button>
         <!-- <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button> -->
     </p>
-    <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <!-- <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -64,7 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
 
@@ -84,8 +84,12 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
 
         [
-            'class' => 'kartik\grid\ActionColumn',
-            'deleteOptions' => ['style' => 'display:none']
+            'label' => 'Actions',
+            'format' => 'raw',
+            'value' => function ($model) {
+                $updateBtn = Yii::$app->user->can('update_stock') ? Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate']) : '';
+                return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id]) . ' ' . $updateBtn;
+            }
         ],
     ];
     ?>

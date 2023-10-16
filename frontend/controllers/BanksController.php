@@ -35,13 +35,24 @@ class BanksController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'create',
-                            'update',
-                            'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['banks']
-                    ]
+                        'roles' => ['view_banks']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_banks']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_banks']
+                    ],
                 ]
             ],
             'verbs' => [

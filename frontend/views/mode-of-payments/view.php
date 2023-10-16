@@ -15,8 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="mode-of-payment-view">
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']) ?>
-
+        <?= Yii::$app->user->can('update_ro_mode_of_payment') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
     </p>
 
     <?= DetailView::widget([

@@ -32,18 +32,31 @@ class MfoPapCodeController extends Controller
                     'create'
                 ],
                 'rules' => [
-      
                     [
                         'actions' => [
                             'index',
                             'view',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_mfo_pap_code']
+                    ],
+                    [
+                        'actions' => [
+
                             'update',
-                            'delete',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_mfo_pap_code']
+                    ],
+                    [
+                        'actions' => [
                             'create'
                         ],
                         'allow' => true,
-                        'roles' => ['mfo_pap_code']
-                    ]
+                        'roles' => ['create_mfo_pap_code']
+                    ],
                 ]
             ],
             'verbs' => [

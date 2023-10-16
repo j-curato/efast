@@ -33,27 +33,30 @@ class RemittancePayeeController extends Controller
                     'delete',
                 ],
                 'rules' => [
+
                     [
                         'actions' => [
                             'index',
                             'view',
-                            'create',
-                            'update',
-                            'delete',
+
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['view_ro_remittance_payee']
                     ],
                     [
                         'actions' => [
-                            'index',
-                            'view',
-                            'create',
+
                             'update',
-                            'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['ro_remittance_payee']
+                        'roles' => ['update_ro_remittance_payee']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_ro_remittance_payee']
                     ]
                 ]
             ],

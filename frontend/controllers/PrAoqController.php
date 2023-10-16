@@ -166,14 +166,17 @@ class PrAoqController extends Controller
     {
         $model = new PrAoq();
         $user_data = User::getUserDetails();
-        
+
         $model->fk_office_id = $user_data->employee->office->id;
 
         if ($model->load(Yii::$app->request->post())) {
             try {
                 $transaction  = Yii::$app->db->beginTransaction();
                 $items  = Yii::$app->request->post('items') ?? [];
-                $aoqDeadline =  DateTime::createFromFormat('Y-m-d H:i:s', $model->rfq->deadline)->format('Y-m-d');
+                // return $model->rfq->getNopToDate();
+                $nopToDate = $model->rfq->getNopToDate();
+                $aoqDeadline =  !empty($nopToDate) ? DateTime::createFromFormat('Y-m-d H:i:s', $nopToDate)->format('Y-m-d')
+                    : DateTime::createFromFormat('Y-m-d H:i:s', $model->rfq->deadline)->format('Y-m-d');
                 $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()  % 9223372036854775807")->queryScalar();
                 $model->aoq_number = $this->aoqNumberGenerator($aoqDeadline, $model->fk_office_id);
                 $model->pr_date = $aoqDeadline;

@@ -38,13 +38,25 @@ class RoCheckRangesController extends Controller
                         'actions' => [
                             'view',
                             'index',
-                            'create',
-                            'delete',
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_ro_check_range']
+                    ],
+                    [
+                        'actions' => [
+
                             'update',
                         ],
                         'allow' => true,
-                        'roles' => ['ro_check_range']
-                    ]
+                        'roles' => ['update_ro_check_range']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_ro_check_range']
+                    ],
                 ]
             ],
             'verbs' => [

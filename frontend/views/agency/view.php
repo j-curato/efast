@@ -13,11 +13,8 @@ $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="agency-view container card">
-
-    <h3><?= Html::encode($this->title) ?></h3>
-
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']) ?>
+        <?= Yii::$app->user->can('update_agency') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
     </p>
 
     <?= DetailView::widget([

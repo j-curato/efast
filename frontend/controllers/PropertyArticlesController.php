@@ -39,12 +39,25 @@ class PropertyArticlesController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'create',
-                            'update',
-                            'delete',
+
                         ],
                         'allow' => true,
-                        'roles' => ['property_articles']
+                        'roles' => ['view_property_articles']
+                    ],
+                    [
+                        'actions' => [
+
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_property_articles']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_property_articles']
                     ],
                     [
                         'actions' => [

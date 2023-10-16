@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use app\models\NoticeOfPostponement;
 use app\models\NoticeOfPostponementSearch;
+use DateTime;
 use ErrorException;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -26,18 +27,40 @@ class NoticeOfPostponementController extends Controller
             'access' => [
                 'class' => AccessControl::class,
                 'rules' => [
-
                     [
                         'actions' => [
                             'index',
                             'view',
-                            'create',
-                            'update',
-                            'delete',
+
                         ],
                         'allow' => true,
-                        'roles' => ['notice_of_postponement']
-                    ]
+                        'roles' => ['view_notice_of_postponement']
+                    ],
+
+                    [
+                        'actions' => [
+
+                            'update',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_notice_of_postponement']
+                    ],
+
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_notice_of_postponement']
+                    ],
+                    [
+                        'actions' => [
+                            'final',
+                        ],
+                        'allow' => true,
+                        'roles' => ['final_notice_of_postponement']
+                    ],
                 ]
             ],
             'verbs' => [
@@ -123,11 +146,15 @@ class NoticeOfPostponementController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
 
+        $model = $this->findModel($id);
+        if ($model->is_final) {
+            return $this->redirect(['index']);
+        }
         if ($model->load(Yii::$app->request->post()) || Yii::$app->request->post()) {
 
             try {
+
                 $txn = Yii::$app->db->beginTransaction();
                 $items = Yii::$app->request->post('items') ?? [];
                 if (!$model->validate()) {
@@ -181,5 +208,23 @@ class NoticeOfPostponementController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+    public function actionFinal($id)
+    {
+        if (Yii::$app->request->post()) {
+            try {
+
+                $model = $this->findModel($id);
+                $model->is_final =  $model->is_final ? 0 : 1;
+                $model->final_at = date('Y-m-d H:i:s');
+
+                if (!$model->save(false)) {
+                    throw new ErrorException('Save Failed');
+                }
+                return json_encode(['error' => false, 'message' => 'Successfuly Save']);
+            } catch (ErrorException $e) {
+                return json_encode(['error' => true, 'message' => $e->getMessage()]);
+            }
+        }
     }
 }

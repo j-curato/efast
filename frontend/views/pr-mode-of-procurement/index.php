@@ -1,9 +1,10 @@
 <?php
 
-use app\components\helpers\MyHelper;
-use yii\helpers\Html;
-use kartik\grid\GridView;
 use yii\helpers\Url;
+use yii\helpers\Html;
+use yii\web\JqueryAsset;
+use kartik\grid\GridView;
+use app\components\helpers\MyHelper;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\PrModeOfProcurementSearch */
@@ -16,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Html::a('<i class="fa fa-pencil-alt"></i> Create', ['create'], ['class' => 'btn btn-success modalButtonCreate']); ?>
+        <?= Yii::$app->user->can('create_mode_of_procurement') ? Html::a('<i class="fa fa-plus"></i> Create ', ['create'], ['class' => 'btn btn-success modalButtonCreate']) : '' ?>
 
     </p>
 
@@ -39,7 +40,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Actions',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return MyHelper::gridDefaultAction($model->id);
+                    $updateBtn = Yii::$app->user->can('update_mode_of_procurement') ? Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate']) : '';
+                    return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id]) . ' ' . $updateBtn;
                 }
             ],
         ],
@@ -48,15 +50,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
 </div>
 <?php
-$script = <<<JS
 
-        $('a[title=Update]').click(function(e){
-            e.preventDefault();
-            
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
-        });
+$this->registerJsFile(
+    '@web/frontend/web/js/globalFunctions.js',
+    [
+        'depends' => [JqueryAsset::class]
+    ]
+);
 
-        
-JS;
-$this->registerJs($script);
 ?>

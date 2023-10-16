@@ -37,7 +37,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Actions',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return MyHelper::gridDefaultAction($model->id, '');
+                    $updateBtn = '';
+                    if ($model->is_final != 1 ) {
+                        $updateBtn = Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => '']);
+                    }
+                    // return MyHelper::gridDefaultAction($model->id, '');
+                    return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id]) . ' ' . $updateBtn;
                 }
             ],
         ],

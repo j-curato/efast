@@ -38,13 +38,26 @@ class UnitOfMeasureController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'create',
-                            'update',
-                            'delete',
 
                         ],
                         'allow' => true,
-                        'roles' => ['unit_of_measure']
+                        'roles' => ['view_unit_of_measure']
+                    ],
+                    [
+                        'actions' => [
+
+                            'update',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_unit_of_measure']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_unit_of_measure']
                     ],
                     [
                         'actions' => [

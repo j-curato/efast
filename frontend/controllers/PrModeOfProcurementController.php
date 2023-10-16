@@ -36,15 +36,23 @@ class PrModeOfProcurementController extends Controller
                         'actions' => [
                             'view',
                             'index',
-                            'update',
-                            'delete',
-                            'create',
-
-
-
                         ],
                         'allow' => true,
-                        'roles' => ['mode_of_procurement']
+                        'roles' => ['view_mode_of_procurement']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_mode_of_procurement']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_mode_of_procurement']
                     ],
                     [
                         'actions' => [

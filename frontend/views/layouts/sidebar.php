@@ -219,6 +219,7 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                 Yii::$app->user->can('rfq') ?     ['label' => 'RFQ', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/pr-rfq/index'],] : null,
                 Yii::$app->user->can('aoq') ?     ['label' => 'AOQ', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/pr-aoq/index'],] : null,
                 Yii::$app->user->can('purchase_order') ?     ['label' => 'Purchase Order', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/pr-purchase-order/index'],] : null,
+                Yii::$app->user->can('view_notice_of_postponement') ?     ['label' => 'NOP', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/notice-of-postponement/index'],] : null,
                 Yii::$app->user->can('purchase_order_transmittal') ?     ['label' => 'Transmittal', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/purchase-order-transmittal/index'],] : null,
             ];
 

@@ -34,15 +34,28 @@ class AgencyController extends Controller
                 'rules' => [
                     [
                         'actions' => [
-                            'index',
                             'view',
-                            'create',
-                            'update',
-                            'delete',
-                            'get-agency'
+                            'index',
                         ],
                         'allow' => true,
-                        'roles' => ['agency']
+                        'roles' => ['view_agency']
+                    ],
+                    [
+                        'actions' => [
+
+                            'update',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_agency']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_agency']
                     ],
                     [
                         'actions' => [

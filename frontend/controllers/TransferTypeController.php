@@ -35,12 +35,23 @@ class TransferTypeController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'create',
-                            'update',
-                            'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['transfer_type']
+                        'roles' => ['view_transfer_type']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_transfer_type']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_transfer_type']
                     ],
 
 

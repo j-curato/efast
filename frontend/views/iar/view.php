@@ -91,7 +91,6 @@ $date_generated = !empty($model->date_generated) ? DateTime::createFromFormat('Y
         </p>
 
         <table class="iar">
-
             <tbody>
                 <tr>
                     <th colspan="4" class='center'> INSPECTION AND ACCEPTANCE REPORT</th>
@@ -101,7 +100,7 @@ $date_generated = !empty($model->date_generated) ? DateTime::createFromFormat('Y
                         <span>Entity Name:</span>
                     </th>
                     <th colspan="2">
-                        <span>Fund CLuster:</span>
+                        <span>Fund Cluster:</span>
                     </th>
                 </tr>
                 <tr>

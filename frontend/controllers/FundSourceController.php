@@ -38,14 +38,26 @@ class FundSourceController extends Controller
                     [
                         'actions' => [
                             'index',
-                            'update',
-                            'create',
                             'view',
-                            'delete',
-                            'get-fund-sources'
+
                         ],
                         'allow' => true,
-                        'roles' => ['fund_source']
+                        'roles' => ['view_fund_source']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_fund_source']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_fund_source']
                     ],
                     [
                         'actions' => [

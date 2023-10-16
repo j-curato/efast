@@ -31,18 +31,32 @@ class FundCategoryAndClassificationCodeController extends Controller
                     'delete'
                 ],
                 'rules' => [
-         
+
                     [
                         'actions' => [
                             'index',
-                            'create',
                             'view',
-                            'update',
-                            'delete'
                         ],
                         'allow' => true,
-                        'roles' => ['fund_classification_code']
-                    ]
+                        'roles' => ['view_fund_classification_code']
+                    ],
+                    [
+                        'actions' => [
+
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_fund_classification_code']
+                    ],
+                    [
+                        'actions' => [
+
+                            'create',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_fund_classification_code']
+                    ],
                 ]
             ],
             'verbs' => [

@@ -21,7 +21,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="container card">
 
         <p>
-            <?= Html::button('<i class="glyphicon glyphicon-pencil"></i> Update', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=pr-stock/update&id=' . $model->id), 'id' => 'modalButtoncreate', 'class' => 'btn btn-primary', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
+
+            <?= Yii::$app->user->can('update_stock') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
             <?php
 
             if (Yii::$app->user->can('ro_procurement_admin')) {

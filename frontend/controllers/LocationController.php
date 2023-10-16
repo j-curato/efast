@@ -38,17 +38,29 @@ class LocationController extends Controller
 
                         'actions' => [
                             'index',
-                            'create',
-                            'delete',
-                            'update',
                             'view',
-                            'search-location'
                         ],
                         'allow' => true,
-                        'roles' => ['locations']
+                        'roles' => ['view_locations']
                     ],
                     [
 
+                        'actions' => [
+                            'update',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_locations']
+                    ],
+                    [
+
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_locations']
+                    ],
+                    [
                         'actions' => [
 
                             'search-location'

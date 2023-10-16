@@ -41,13 +41,26 @@ class BacCompositionController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'create',
-                            'update',
-                            'delete',
+
                         ],
                         'allow' => true,
-                        'roles' => ['bac']
-                    ]
+                        'roles' => ['view_bac']
+                    ],
+                    [
+                        'actions' => [
+
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_bac']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_bac']
+                    ],
                 ]
             ],
             'verbs' => [

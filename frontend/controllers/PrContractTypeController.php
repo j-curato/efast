@@ -35,14 +35,24 @@ class PrContractTypeController extends Controller
                         'actions' => [
                             'view',
                             'index',
-                            'create',
-                            'update',
-                            'delete',
-
                         ],
                         'allow' => true,
-                        'roles' => ['contract_type']
-                    ]
+                        'roles' => ['view_contract_type']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_contract_type']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_contract_type']
+                    ],
                 ]
             ],
             'verbs' => [

@@ -374,4 +374,27 @@ class PrRfqController extends Controller
             ]);
         }
     }
+    public function actionSearchNopRfq($q = null, $id = null, $province = null)
+    {
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if (!is_null($q)) {
+            $query = new Query();
+
+            $query->select([" CAST(id as CHAR(50)) as id, `rfq_number` as text"])
+                ->from('pr_rfq')
+                ->where(['like', 'rfq_number', $q])
+                ->andWhere("NOT EXISTS (SELECT fk_rfq_id FROM notice_of_postponement_items 
+                    WHERE notice_of_postponement_items.is_deleted = 0 
+                    AND notice_of_postponement_items.fk_rfq_id = pr_rfq.id)");
+            if (!Yii::$app->user->can('ro_procurement_admin')) {
+                $user_data = User::getUserDetails();
+                $query->andWhere('fk_office_id = :fk_office_id', ['fk_office_id' =>  $user_data->employee->office->id]);
+            }
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+        }
+        return $out;
+    }
 }

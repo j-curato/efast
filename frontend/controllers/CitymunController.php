@@ -33,15 +33,28 @@ class CitymunController extends Controller
                 'rules' => [
                     [
                         'actions' => [
-                            'update',
-                            'create',
+
                             'index',
                             'view',
-                            'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['citymun']
-                    ]
+                        'roles' => ['view_citymun']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_citymun']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_citymun']
+                    ],
                 ]
             ],
             'verbs' => [

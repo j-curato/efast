@@ -37,13 +37,26 @@ class BacPositionController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'create',
-                            'update',
-                            'delete',
-                            'get-position',
+
                         ],
                         'allow' => true,
-                        'roles' => ['bac_position']
+                        'roles' => ['view_bac_position']
+                    ],
+                    [
+                        'actions' => [
+
+                            'update',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_bac_position']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_bac_position']
                     ],
                     [
                         'actions' => [

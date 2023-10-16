@@ -38,15 +38,26 @@ class SsfSpNumController extends Controller
                 'rules' => [
                     [
                         'actions' => [
-                            'update',
                             'index',
                             'view',
-                            'create',
-                            'delete',
-                            'search-SsfSp'
+
                         ],
                         'allow' => true,
-                        'roles' => ['ssf_sp_num']
+                        'roles' => ['view_ssf_sp_num']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_ssf_sp_num']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_ssf_sp_num']
                     ],
                     [
                         'actions' => [

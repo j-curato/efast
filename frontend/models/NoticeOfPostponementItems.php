@@ -34,7 +34,7 @@ class NoticeOfPostponementItems extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['fk_rfq_id', 'fk_notice_of_postponement_id', 'from_date', 'to_date',], 'required'],
+            [['fk_rfq_id', 'fk_notice_of_postponement_id', 'from_date',], 'required'],
             [['id',  'fk_notice_of_postponement_id', 'is_deleted'], 'integer'],
             [['from_date', 'to_date', 'created_at'], 'safe'],
             [['id'], 'unique'],
@@ -74,7 +74,7 @@ class NoticeOfPostponementItems extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getFkRfq()
+    public function getRfq()
     {
         return $this->hasOne(PrRfq::class, ['id' => 'fk_rfq_id']);
     }

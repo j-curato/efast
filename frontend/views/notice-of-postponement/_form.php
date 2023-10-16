@@ -1,9 +1,15 @@
 <?php
 
 use yii\helpers\Html;
-use yii\widgets\ActiveForm;
+use yii\web\JsExpression;
+use kartik\widgets\Select2;
+use yii\helpers\ArrayHelper;
+use kartik\widgets\DatePicker;
+use yii\bootstrap4\ActiveForm;
 use kartik\select2\Select2Asset;
+use app\components\helpers\MyHelper;
 use aryelds\sweetalert\SweetAlertAsset;
+use kartik\widgets\DateTimePicker;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\NoticeOfPostponement */
@@ -16,15 +22,59 @@ use aryelds\sweetalert\SweetAlertAsset;
         'id' => $model->formName()
     ]); ?>
 
-    <div class="container card">
+    <div class="container card p-4">
 
 
-        <button type="button" class="btn btn-success" @click='addItem()'>Add</button>
+        <div class="row">
+            <div class="col-sm-3">
+                <?= $form->field($model, 'to_date')->widget(DateTimePicker::class, [
+                    'pluginOptions' => [
+                        'format' => 'yyyy-mm-dd hh:ii ',
+                        'autoclose' => true
+                    ]
+                ]) ?>
+            </div>
+            <div class="col-sm-3">
+                <?= $form->field($model, 'type')->dropDownList(['1' => 'NON-QUORUM', '2' => 'SHORT_PERIOD_OF_TIME'], [
+                    'prompt' => 'Select Type',
+                ]) ?>
+            </div>
+            <div class="col-sm-6">
+                <?= $form->field($model, 'fk_approved_by')->widget(Select2::class, [
+                    'data' => ArrayHelper::map(MyHelper::getEmployee($model->fk_approved_by, 'all'), 'employee_id', 'employee_name'),
+                    'options' => ['placeholder' => 'Search for a Employee ...'],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                        'minimumInputLength' => 1,
+                        'language' => [
+                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                        ],
+                        'ajax' => [
+                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                            'dataType' => 'json',
+                            'delay' => 250,
+                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                            'cache' => true
+                        ],
+                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                    ],
+                ]) ?>
+            </div>
+        </div>
+
+        <div class="row justify-content-end">
+            <div class="form-group col-sm-2">
+                <button type="button" class="btn btn-success" @click='addItem()'><i class="fa fa-plus"></i> Add</button>
+            </div>
+        </div>
         <table class="table">
             <thead>
-                <th>AOQ Number</th>
+                <th>RFQ Number</th>
                 <th>From Date</th>
                 <th>to Date</th>
+                <td></td>
             </thead>
             <tbody>
                 <tr v-for="(item,idx) in items" :key='idx'>
@@ -38,14 +88,20 @@ use aryelds\sweetalert\SweetAlertAsset;
                     <td>
                         <input type="date" :name="'items['+idx+'][from_date]'" class="form-control" v-model="item.from_date">
                     </td>
-                    <td>
+                    <!-- <td>
                         <input type="date" :name="'items['+idx+'][to_date]'" class="form-control" v-model="item.to_date">
+                    </td> -->
+                    <td>
+                        <button type="button" @click='removeRow(idx)' class=" btn-xs btn-danger"><i class="fa fa-times"></i></button>
                     </td>
                 </tr>
             </tbody>
         </table>
-        <div class="form-group">
-            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        <div class="row justify-content-center">
+
+            <div class="form-group col-sm-2">
+                <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
+            </div>
         </div>
     </div>
 
@@ -54,14 +110,13 @@ use aryelds\sweetalert\SweetAlertAsset;
 </div>
 <?php
 $csrfToken = Yii::$app->request->csrfToken;
-$this->registerJsFile("https://unpkg.com/vuejs-datepicker", ['position' => $this::POS_HEAD]);
 Select2Asset::register($this);
 ?>
 <script>
     function RfqSelect() {
         $(".rfq-select").select2({
             ajax: {
-                url: window.location.pathname + "?r=pr-rfq/search-rfq",
+                url: window.location.pathname + "?r=pr-rfq/search-nop-rfq",
                 dataType: "json",
                 data: function(params) {
                     return {
@@ -96,9 +151,7 @@ Select2Asset::register($this);
 
             },
             mounted() {},
-            computed: {
-
-            },
+            computed: {},
             updated() {
                 RfqSelect()
             },
@@ -108,12 +161,16 @@ Select2Asset::register($this);
                     const defaultFromDate = new Date('2021-10-10');
                     this.items.push({
                         rfq_id: null,
-                        from_date: defaultFromDate.toISOString().substr(0, 10),
+                        // from_date: defaultFromDate.toISOString().substr(0, 10),
+                        from_date: '',
                         to_date: '',
 
                     })
-                    console.log(this.items)
                 },
+                removeRow(index) {
+
+                    this.items.splice(index, 1)
+                }
 
             },
             filters: {

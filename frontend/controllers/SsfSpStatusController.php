@@ -33,15 +33,28 @@ class SsfSpStatusController extends Controller
                 'rules' => [
                     [
                         'actions' => [
-                            'update',
                             'index',
                             'view',
-                            'create',
-                            'delete',
+
                         ],
                         'allow' => true,
-                        'roles' => ['ssf_sp_status']
-                    ]
+                        'roles' => ['view_ssf_sp_status']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_ssf_sp_status']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_ssf_sp_status']
+                    ],
                 ]
             ],
             'verbs' => [

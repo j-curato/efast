@@ -36,12 +36,24 @@ class ModeOfPaymentsController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'create',
-                            'update',
-                            'delete',
+
                         ],
                         'allow' => true,
-                        'roles' => ['ro_mode_of_payment']
+                        'roles' => ['view_ro_mode_of_payment']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_ro_mode_of_payment']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_ro_mode_of_payment']
                     ]
                 ]
             ],
@@ -128,12 +140,12 @@ class ModeOfPaymentsController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
+    // public function actionDelete($id)
+    // {
+    //     $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
-    }
+    //     return $this->redirect(['index']);
+    // }
 
     /**
      * Finds the ModeOfPayments model based on its primary key value.

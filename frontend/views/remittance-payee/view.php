@@ -17,27 +17,18 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Html::button('<i class="fa fa-pencil-alt"></i> Update', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=remittance-payee/update&id=' . $model->id), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
-
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
+        <?= Yii::$app->user->can('update_ro_remittance_payee') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
     </p>
 
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
-            'id',
             'payee.account_name',
             [
-                'label'=>'General Ledger',
-                'attribute'=>'generalLedger.general_ledger'
+                'label' => 'General Ledger',
+                'attribute' => 'generalLedger.general_ledger'
             ],
-            'objec_code'
+            'object_code'
         ],
     ]) ?>
 

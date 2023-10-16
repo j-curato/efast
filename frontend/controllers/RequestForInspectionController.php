@@ -244,6 +244,34 @@ class RequestForInspectionController extends Controller
             ->bindValue(':id', $po_itm_id)
             ->queryScalar();
 
+        // $q = Yii::$app->db->createCommand("WITH cte_qtyInRfq as (
+        //         SELECT 
+        //         request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id,
+        //         SUM(request_for_inspection_items.quantity) as totalRfiQty
+        //         FROM request_for_inspection_items
+        //         WHERE request_for_inspection_items.is_deleted = 0
+        //         $sql
+        //         GROUP BY request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id
+        //         )
+
+        //         SELECT 
+        //         pr_purchase_order_items_aoq_items.id,
+        //         (COALESCE(pr_aoq_entries.amount,0) *
+        //         COALESCE(pr_purchase_request_item.quantity,0))
+        //         - 
+        //         (COALESCE(pr_aoq_entries.amount,0) *
+        //         COALESCE(cte_qtyInRfq.totalRfiQty,0)) as balanceAmount
+        //         FROM
+        //         pr_purchase_order_items_aoq_items
+        //         LEFT JOIN pr_aoq_entries ON pr_purchase_order_items_aoq_items.fk_aoq_entries_id = pr_aoq_entries.id
+        //         LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
+        //         LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
+        //         LEFT JOIN cte_qtyInRfq ON pr_purchase_order_items_aoq_items.id = cte_qtyInRfq.fk_pr_purchase_order_items_aoq_item_id
+        //         WHERE
+        //         pr_purchase_order_items_aoq_items.id  = :id", $params)
+        //     ->bindValue(':id', $po_itm_id)
+        //     ->bindValue(':qty', $qty)
+        //     ->queryScalar();
         if (intval($qty) > intval($q)) {
             return "Quantity should not be greater than {$q} ";
         }

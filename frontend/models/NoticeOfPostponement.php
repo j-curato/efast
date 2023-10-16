@@ -16,6 +16,9 @@ use Yii;
  */
 class NoticeOfPostponement extends \yii\db\ActiveRecord
 {
+    const NON_QUORUM = 1;
+    const SHORT_PERIOD_OF_TIME = 2;
+
     /**
      * {@inheritdoc}
      */
@@ -30,11 +33,13 @@ class NoticeOfPostponement extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id'], 'integer'],
-            [['created_at'], 'safe'],
+            [['id', 'fk_approved_by', 'type', 'is_final'], 'integer'],
+            [['to_date', 'fk_approved_by', 'type'], 'required'],
+            [['created_at', 'to_date', 'final_at'], 'safe'],
             [['serial_number'], 'string', 'max' => 255],
             [['serial_number'], 'unique'],
             [['id'], 'unique'],
+
         ];
     }
 
@@ -47,6 +52,11 @@ class NoticeOfPostponement extends \yii\db\ActiveRecord
             'id' => 'ID',
             'serial_number' => 'Serial Number',
             'created_at' => 'Created At',
+            'to_date' => 'To Date',
+            'type' => 'Type',
+            'fk_approved_by' => 'Approved By',
+            'is_final' => 'is Final',
+            'final_at' => 'Final At',
         ];
     }
 
@@ -98,10 +108,10 @@ class NoticeOfPostponement extends \yii\db\ActiveRecord
                 $sql  = ' AND ';
                 $sql .= Yii::$app->db->queryBuilder->buildCondition(['NOT IN', 'id', $ids], $params);
             }
-            Yii::$app->db->createCommand("UPDATE 
-                SET .is_deleted = 1 
-                WHERE .record_allotment_id = :id
-                AND .is_deleted= 0
+            Yii::$app->db->createCommand("UPDATE notice_of_postponement_items
+                SET notice_of_postponement_items.is_deleted = 1 
+                WHERE notice_of_postponement_items.fk_notice_of_postponement_id = :id
+                AND notice_of_postponement_items.is_deleted= 0
                 $sql", $params)
                 ->bindValue(':id', $this->id)
                 ->execute();
@@ -134,11 +144,13 @@ class NoticeOfPostponement extends \yii\db\ActiveRecord
             notice_of_postponement_items.from_date,
             notice_of_postponement_items.to_date,
             notice_of_postponement_items.fk_rfq_id,
-            pr_rfq.rfq_number
+            pr_rfq.rfq_number,
+            pr_purchase_request.purpose
             FROM notice_of_postponement_items
             JOIN pr_rfq ON notice_of_postponement_items.fk_rfq_id = pr_rfq.id
+            LEFT JOIN pr_purchase_request ON pr_rfq.pr_purchase_request_id = pr_purchase_request.id
             WHERE 
-            notice_of_postponement_items.fk_notice_of_postponement_id = 100516645214093401
+            notice_of_postponement_items.fk_notice_of_postponement_id = :id
             AND
             notice_of_postponement_items.is_deleted = 0")
             ->bindValue(':id', $this->id)

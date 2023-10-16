@@ -143,4 +143,21 @@ class PrRfq extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Office::class, ['id' => 'fk_office_id']);
     }
+    public function getNoticeOfPostponement()
+    {
+        return $this->hasOne(NoticeOfPostponementItems::class, ['fk_rfq_id' => 'id']);
+    }
+    public function getNopToDate()
+    {
+        return Yii::$app->db->createCommand("SELECT 
+                    notice_of_postponement.to_date
+                    FROM notice_of_postponement
+                    JOIN notice_of_postponement_items ON notice_of_postponement.id = notice_of_postponement_items.fk_notice_of_postponement_id
+                    WHERE 
+                    notice_of_postponement.is_final = 1
+                    AND notice_of_postponement_items.is_deleted = 0
+                    AND notice_of_postponement_items.fk_rfq_id = :id")
+            ->bindValue(':id', $this->id)
+            ->queryScalar();
+    }
 }

@@ -158,14 +158,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
                     <th colspan="<?= $header_count ?>" style='padding:0;border:none;'>
                         <?php
-                        $date = DateTime::createFromFormat('Y-m-d H:i:s', $model->rfq->deadline);
+                        $nopToDate = $model->rfq->getNopToDate();
+                        $unformatDate =  !empty($nopToDate) ? $nopToDate : $model->rfq->deadline;
+                        $date =   DateTime::createFromFormat('Y-m-d H:i:s', $unformatDate);
                         echo $date->format('F d, Y');
-
                         ?>
                         <span style="float: right;">
-                            <?php
-                            echo $model->aoq_number;
-                            ?>
+                            <?= $model->aoq_number ?>
                         </span>
                     </th>
                 </tr>

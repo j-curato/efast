@@ -35,13 +35,24 @@ class AllotmentTypeController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'create',
-                            'update',
-                            'delete'
                         ],
                         'allow' => true,
-                        'roles' => ['allotment_type']
-                    ]
+                        'roles' => ['view_allotment_type']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_allotment_type']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_allotment_type']
+                    ],
                 ]
             ],
             'verbs' => [

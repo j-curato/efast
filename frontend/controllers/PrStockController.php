@@ -44,19 +44,43 @@ class PrStockController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'create',
-                            'update',
-                            'delete',
-                            'search-stock',
-                            'stock-info',
-                            'import',
-                            'get-part',
-                            'search-paginated-stock',
-                            'final'
+
                         ],
                         'allow' => true,
-                        'roles' => ['stock']
+                        'roles' => ['view_stock']
                     ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_stock']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                   
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_stock']
+                    ],
+                    // [
+                    //     'actions' => [
+                    //         'index',
+                    //         'view',
+                    //         'create',
+                    //         'update',
+                    //         'delete',
+                    //         'search-stock',
+                    //         'stock-info',
+                    //         'import',
+                    //         'get-part',
+                    //         'search-paginated-stock',
+                    //         'final'
+                    //     ],
+                    //     'allow' => true,
+                    //     'roles' => ['stock']
+                    // ],
                     [
                         'actions' => [
                             'search-stock',

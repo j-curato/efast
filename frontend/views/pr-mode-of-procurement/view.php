@@ -1,7 +1,8 @@
 <?php
 
-use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\helpers\Html;
+use yii\web\JqueryAsset;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
@@ -18,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="container card" style="padding: 1rem;">
 
         <p>
-            <?= Html::a('<i class="fa fa-pencil-alt"></i> Create', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']); ?>
+            <?= Yii::$app->user->can('update_mode_of_procurement') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
 
         </p>
 
@@ -32,3 +33,13 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
 </div>
+<?php
+
+$this->registerJsFile(
+    '@web/frontend/web/js/globalFunctions.js',
+    [
+        'depends' => [JqueryAsset::class]
+    ]
+);
+
+?>

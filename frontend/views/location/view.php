@@ -17,8 +17,7 @@ $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => J
 
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonCreate']) ?>
-
+        <?= Yii::$app->user->can('update_locations') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
     </p>
 
     <?= DetailView::widget([
