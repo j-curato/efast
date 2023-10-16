@@ -2,7 +2,10 @@
 
 namespace app\models;
 
+use app\components\helpers\MyHelper;
+use ErrorException;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "transaction".
@@ -99,5 +102,78 @@ class Transaction extends \yii\db\ActiveRecord
     public function getBook()
     {
         return $this->hasOne(Books::class, ['id' => 'fk_book_id']);
+    }
+    public function getIarItemsA()
+    {
+        return $this->queryIars();
+    }
+    private function queryIars()
+    {
+        return Yii::$app->db->createCommand("SELECT 
+                    transaction_iars.id as item_id,
+                    transaction_iars.fk_iar_id,
+                    iar.iar_number
+                FROM transaction_iars 
+                JOIN iar ON transaction_iars.fk_iar_id = iar.id
+                WHERE 
+                transaction_iars.is_deleted = 0 
+                AND transaction_iars.fk_transaction_id = :id")
+            ->bindValue(':id', $this->id)
+            ->queryAll();
+    }
+
+
+    private function deleteIarItems($iarsToRemove)
+    {
+        try {
+            $generatedParams = MyHelper::generateParams($iarsToRemove);
+            $generatedParamName = $generatedParams['paramNames'];
+            $iarItemsIdsToRemove =  Yii::$app->db->createCommand("SELECT 
+                    transaction_iars.id    
+                    FROM  transaction_iars
+                    WHERE transaction_iars.fk_transaction_id = :id
+                    AND transaction_iars.is_deleted= 0
+                    AND transaction_iars.fk_iar_id IN ($generatedParamName)", $generatedParams['params'])
+                ->bindValue(':id', $this->id)
+                ->queryAll();
+            foreach ($iarItemsIdsToRemove as $item) {
+                $item = TransactionIars::findOne($item);
+                $item->is_deleted = 1;
+                if (!$item->save(false)) {
+                    throw new ErrorException('Delete IAR Failed');
+                }
+            }
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
+    }
+    public function insertIarItems($iars = [])
+    {
+        try {
+            $oldIars = ArrayHelper::getColumn($this->queryIars(), 'fk_iar_id');
+            $iarsToRemove = array_diff($oldIars, $iars);
+            if (!empty($iarsToRemove)) {
+                $delete = $this->deleteIarItems($iarsToRemove);
+                if ($delete !== true) {
+                    throw new ErrorException($delete);
+                }
+            }
+            $iarsToInsert  = array_diff($iars, $oldIars);
+            foreach ($iarsToInsert as $val) {
+                $item = new TransactionIars();
+                $item->fk_transaction_id = $this->id;
+                $item->fk_iar_id = $val;
+                if (!$item->validate()) {
+                    throw new ErrorException(json_encode($item->errors));
+                }
+                if (!$item->save(false)) {
+                    throw new ErrorException('Transaction IARS Save Error');
+                }
+            }
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
     }
 }

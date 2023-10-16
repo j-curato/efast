@@ -4,16 +4,13 @@ use app\components\helpers\MyHelper;
 use app\models\Books;
 use app\models\RecordAllotmentDetailedSearch;
 use app\models\PurchaseRequestIndexSearch;
-use app\models\RecordAllotmentsViewSearch;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\date\DatePicker;
 use kartik\grid\GridView;
 use kartik\icons\Icon;
-use kartik\money\MaskMoney;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\bootstrap4\ActiveForm;
-
 use kartik\select2\Select2;
 use yii\helpers\Url;
 use yii\web\JsExpression;
@@ -44,7 +41,9 @@ if ($model->type == 'single' || $model->type == 'multiple') {
         }
     }
 }
+
 $payee = !empty($model->payee_id) ? ArrayHelper::map(MyHelper::getPayee($model->payee_id), 'id', 'account_name') : [];
+$iarItems = $model->getIarItemsA();
 ?>
 
 
@@ -99,8 +98,8 @@ $payee = !empty($model->payee_id) ? ArrayHelper::map(MyHelper::getPayee($model->
             <?php
             echo Select2::widget([
                 'name' => 'multiple_iar',
-                'data' => $iar_data,
-                'value' => $iar_val,
+                'data' => ArrayHelper::map($iarItems, 'fk_iar_id', 'iar_number'),
+                'value' => ArrayHelper::getColumn($iarItems, 'fk_iar_id'),
                 'options' => ['placeholder' => 'Select IARs...', 'multiple' => true],
                 'pluginOptions' => [
                     'allowClear' => true,
@@ -497,8 +496,6 @@ $payee = !empty($model->payee_id) ? ArrayHelper::map(MyHelper::getPayee($model->
                 'hAlign' => 'right',
 
             ]
-
-
         ],
     ]); ?>
     <?php

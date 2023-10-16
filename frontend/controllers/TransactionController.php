@@ -347,17 +347,9 @@ class TransactionController extends Controller
     public function actionView($id)
     {
 
-        $iars_query  = Yii::$app->db->createCommand("SELECT iar.iar_number FROM `transaction` 
-        INNER JOIN transaction_iars ON `transaction`.id = transaction_iars.fk_transaction_id
-        INNER JOIN iar ON transaction_iars.fk_iar_id = iar.id
-        WHERE `transaction`.id = :id")
-            ->bindValue(':id', $id)
-            ->queryAll();
-        $iars =    !empty($iars_query) ? 'IAR#:(' . implode(',', array_column($iars_query, 'iar_number')) . ')' : '';
-        // return json_encode($iars);
+
         return $this->render('ors_form', [
             'model' => $this->findModel($id),
-            'iars' => $iars,
             'items' => $this->getItems($id)
 
         ]);
@@ -393,17 +385,18 @@ class TransactionController extends Controller
                 $division = strtolower($user_data->employee->empDivision->division);
                 $iarItems = [];
                 if ($model->type === 'multiple') {
-                    if (empty(Yii::$app->request->post('multiple_iar'))) {
+                    $multipleIar = Yii::$app->request->post('multiple_iar') ?? [];
+                    if (empty($multipleIar)) {
                         throw new ErrorException('IAR is Required');
                     }
-                    $iarItems = Yii::$app->request->post('multiple_iar');
+                    $iarItems = $multipleIar;
                 } else if ($model->type === 'single') {
-                    if (empty(Yii::$app->request->post('single_iar'))) {
+                    $singleIar = Yii::$app->request->post('single_iar') ?? [];
+                    if (empty($singleIar)) {
                         throw new ErrorException('IAR is Required');
                     }
-                    $iarItems[] = Yii::$app->request->post('single_iar');
+                    $iarItems[] = $singleIar;
                 }
-
                 if (!Yii::$app->user->can('ro_accounting_admin')) {
                     $r_center = Yii::$app->db->createCommand("SELECT `id` FROM responsibility_center WHERE `name`=:division")
                         ->bindValue(':division', $division)
@@ -429,7 +422,7 @@ class TransactionController extends Controller
                 if ($isItms !== true) {
                     throw new ErrorException($isItms);
                 }
-                $insIar = $this->InsertTransactionIar($model->id, $iarItems);
+                $insIar = $model->insertIarItems($iarItems);
                 if ($insIar !== true) {
                     throw new ErrorException($insIar);
                 }
@@ -485,19 +478,19 @@ class TransactionController extends Controller
                     throw new ErrorException('Allotment and Gross Amount is Required');
                 }
                 $iarItems = [];
+
                 if ($model->type === 'multiple') {
-                    if (empty(Yii::$app->request->post('multiple_iar'))) {
+                    $multipleIar = Yii::$app->request->post('multiple_iar') ?? [];
+                    if (empty($multipleIar)) {
                         throw new ErrorException('IAR is Required');
                     }
-                    $iarItems = Yii::$app->request->post('multiple_iar');
+                    $iarItems = $multipleIar;
                 } else if ($model->type === 'single') {
-
-                    if (empty(Yii::$app->request->post('single_iar'))) {
+                    $singleIar = Yii::$app->request->post('single_iar') ?? [];
+                    if (empty($singleIar)) {
                         throw new ErrorException('IAR is Required');
                     }
-                    $iarItems[] = Yii::$app->request->post('single_iar');
-                    // throw new ErrorException(json_encode());
-
+                    $iarItems[] = $singleIar;
                 }
 
                 if ($model->type != 'no-iar'  && empty($prItems)) {
@@ -518,11 +511,11 @@ class TransactionController extends Controller
                 if ($insertItems !== true) {
                     throw new ErrorException($insertItems);
                 }
-                $insIar = $this->InsertTransactionIar($model->id, $iarItems);
+                // $insIar = $this->InsertTransactionIar($model->id, $iarItems);
+                $insIar = $model->insertIarItems($iarItems);
                 if ($insIar !== true) {
                     throw new ErrorException($insIar);
                 }
-
                 $transaction->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {

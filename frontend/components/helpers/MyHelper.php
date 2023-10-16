@@ -35,7 +35,7 @@ class MyHelper extends BaseObject
     ) {
         $cur_balance = 0;
         try {
-            
+
             $balance = Yii::$app->db->createCommand("CALL
             GetAllotmentBalance(
             :allotment_id,
@@ -247,5 +247,18 @@ class MyHelper extends BaseObject
         $snowflakeId = ($timestamp << 22) | ($machineId << 12) | $sequence;
 
         return $snowflakeId;
+    }
+    public  static function generateParams($arr)
+    {
+        $params = [];
+        $paramNames = [];
+        foreach ($arr as $i => $val) {
+            $params[':qop' . $i] = $val;
+            $paramNames[] = ':qop' . $i;
+        }
+        return [
+            'params' => $params,
+            'paramNames' => implode(',', $paramNames),
+        ];
     }
 }

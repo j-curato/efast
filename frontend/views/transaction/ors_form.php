@@ -5,6 +5,7 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\widgets\Pjax;
 use aryelds\sweetalert\SweetAlertAsset;
+use yii\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\JevPreparationSearch */
@@ -17,6 +18,10 @@ $this->title =  $title;
 
 $this->params['breadcrumbs'][] = ['label' => 'Transactions', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $title;
+
+$iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number'));
+
+
 ?>
 <div class="jev-preparation-index" id='doc'>
 
@@ -131,7 +136,9 @@ $this->params['breadcrumbs'][] = $title;
                     </td>
                     <td colspan='2' rowspan="<?= $row_cnt ?>" style="padding-bottom: 10rem;max-width:250px">
                         <?php
-                        echo $model->particular . ' ' . $iars;
+                        echo $model->particular . ' ';
+                        echo !empty($iars) ? 'IAR#: ' : '';
+                        echo $iars;
                         ?>
                     </td>
                 </tr>
@@ -425,7 +432,10 @@ $this->params['breadcrumbs'][] = $title;
                 <tr>
 
                     <td colspan='2' rowspan="<?= $row_cnt ?>" style='padding-bottom:10rem'>
-                        <?php echo $model->particular . ' ' . $iars; ?>
+                        <?php echo $model->particular . ' ';
+                        echo !empty($iars) ? 'IAR#: ' : '';
+                        echo $iars;
+                        ?>
                     </td>
 
                 </tr>
