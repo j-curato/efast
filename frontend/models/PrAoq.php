@@ -46,6 +46,7 @@ class PrAoq extends \yii\db\ActiveRecord
         $qry = Yii::$app->db->createCommand("SELECT 
                         pr_rfq_item.id as rfq_item_id,
                         pr_purchase_request_item.quantity,
+                        pr_purchase_request_item.unit_cost,
                         pr_stock.stock_title as `description`,
                         REPLACE(pr_purchase_request_item.specification,'[n]','<br>') as specification,
                         IFNULL(payee.registered_name,payee.account_name) as payee,

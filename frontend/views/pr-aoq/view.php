@@ -43,7 +43,7 @@ $this->params['breadcrumbs'][] = $this->title;
             return $element['rfq_item_id'];
         }]);
         $aoq_items_array  = ArrayHelper::index($aoq_items_query, 'payee');
-        $header_count = count($aoq_items_array) * 2 + 5;
+        $header_count = count($aoq_items_array) * 2 + 6;
 
 
 
@@ -173,6 +173,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th rowspan="2" class="center">Qty</th>
                     <th rowspan="2" class="center">Unit</th>
                     <th rowspan="2" class="center">Description</th>
+                    <th rowspan="2" class="center">Unit Cost</th>
+
                     <th v-for="payee in payees" colspan="2" class="center">
                         {{payee}}
                     </th>
@@ -192,6 +194,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <td>{{item.quantity}}</td>
                 <td>{{item.unit_of_measure}}</td>
                 <td> <b>{{item.description}} </b><br> {{item.specification}}</td>
+                <td>{{formatAmount(item.unit_cost)}}</td>
                 <template v-for="payee in payees">
                     <td class="center">
                         <p v-if="getPayeeAmtPerItem(item,payee)!=0">
@@ -219,6 +222,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th colspan=""></th>
                 <th colspan=""></th>
                 <th colspan=""></th>
+                <th colspan=""></th>
                 <th colspan="" class="center">
                     Total
                 </th>
@@ -233,7 +237,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <td></td>
             </tr>
             <tr>
-                <td colspan="4">
+                <td colspan="5">
 
                 </td>
                 <template v-for="payee in payees">
@@ -752,6 +756,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
             },
             mounted() {
                 this.reformatItems()
+                console.log(this.items)
             },
             methods: {
 
@@ -775,6 +780,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
                             specification: this.items[item][payeeKeys[0]].specification.replace(/<br\s*\/?>/g, '\n'),
                             quantity: this.items[item][payeeKeys[0]].quantity,
                             unit_of_measure: this.items[item][payeeKeys[0]].unit_of_measure,
+                            unit_cost: this.items[item][payeeKeys[0]].unit_cost,
 
                             lowests: lowests
                         }
