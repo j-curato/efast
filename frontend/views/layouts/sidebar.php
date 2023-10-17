@@ -100,7 +100,7 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
             $accountingReports = [
                 // Yii::$app->user->can('super-user') ?   ['label' => 'DV w/o File Link', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/dv-aucs/no-file-link-dvs'],] : null,
                 Yii::$app->user->can('view_general_ledger') ?   ['label' => 'General Ledger', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/general-ledger/index'],] : null,
-                Yii::$app->user->can('ro_general_journal') ?   ['label' => 'General Journal', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/general-journal/index'],] : null,
+                Yii::$app->user->can('view_ro_general_journal') ?   ['label' => 'General Journal', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/general-journal/index'],] : null,
                 Yii::$app->user->can('ro_adadj') ?   ['label' => 'ADADJ', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/jev-preparation/adadj'],] : null,
                 Yii::$app->user->can('ro_ckdj') ?   ['label' => 'CKDJ', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/jev-preparation/ckdj'],] : null,
                 Yii::$app->user->can('ro_trial_balance') ?   ['label' => 'Trial Balance', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/trial-balance/index'],] : null,
@@ -246,7 +246,7 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
 
             $inspectionMasterRecords = [];
             $inspectionTransactions = [
-                Yii::$app->user->can('request_for_inspection') ?     ['label' => 'Request for Inspection', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/request-for-inspection/index'],] : null,
+                Yii::$app->user->can('view_request_for_inspection') ?     ['label' => 'Request for Inspection', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/request-for-inspection/index'],] : null,
                 Yii::$app->user->can('inspection_report') ?     ['label' => 'Inspection Report', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/inspection-report/index'],] : null,
                 Yii::$app->user->can('iar') ?     ['label' => 'IAR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/iar/index'],] : null,
                 Yii::$app->user->can('iar_transmittal') ?     ['label' => 'IAR Transmittal', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/iar-transmittal/index'],] : null,
@@ -304,7 +304,7 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                 Yii::$app->user->can('super-user') ?     ['label' => 'RAAF', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/raaf'],] : null,
                 Yii::$app->user->can('super-user') ?     ['label' => 'CDJ', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/cdj'],] : null,
                 Yii::$app->user->can('super-user') ?     ['label' => 'Transaction Tracking', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/transaction-tracking'],] : null,
-                Yii::$app->user->can('super-user') ?     ['label' => 'DV Time Monitoring', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/dv-time-monitoring'],] : null,
+                Yii::$app->user->can('ro_accounting_admin') ?     ['label' => 'DV Time Monitoring', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/dv-time-monitoring'],] : null,
                 Yii::$app->user->can('super-user') ?     ['label' => 'DV Time Monitoring Summary', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/dv-time-monitoring-summary'],] : null,
                 Yii::$app->user->can('super-user') ?     ['label' => 'Holidays', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/holidays'],] : null,
             ];

@@ -68,6 +68,28 @@ class RequestForInspectionController extends Controller
                         ],
                         'allow' => true,
                         'roles' => ['request_for_inspection']
+                    ],
+                    [
+                        'actions' => [
+                            'view',
+                            'index',
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_request_for_inspection']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_request_for_inspection']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_request_for_inspection']
                     ]
                 ]
             ],

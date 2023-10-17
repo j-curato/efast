@@ -28,10 +28,6 @@ class InspectionReportController extends Controller
                     'update',
                     'view',
                     'index',
-                    'delete',
-                    'create',
-
-
                 ],
                 'rules' => [
                     [

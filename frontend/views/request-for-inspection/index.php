@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="request-for-inspection-index">
 
     <p>
-        <?= Html::a('Create Request For Inspection', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Yii::$app->user->can('create_request_for_inspection') ? Html::a('<i class="fa fa-plus"></i >Create ', ['create'], ['class' => 'btn btn-success modalButtonCreate']) : '' ?>
     </p>
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
     ?>
@@ -82,7 +82,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 'value' => function ($model) {
                     $btns = Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id], []);
-                    if (!$model->is_final) {
+                    if (!$model->is_final && Yii::$app->user->can('update_request_for_inspection')) {
                         $btns .= ' ' . Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], []);
                     }
                     return  $btns;

@@ -31,22 +31,17 @@ $isProvincialOffice = strtolower($officeName)  === 'ro' ? false : true;
         </h5>
         <p>
             <?php
-            if (!$model->is_final) {
-                echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) . ' ';
-
-                if (Yii::$app->user->can('ro_inspection_admin') || Yii::$app->user->can('po_inspection_admin')) {
-                    echo Html::a('Final', ['final', 'id' => $model->id], [
-                        'class' => 'btn btn-danger',
-                        'data' => [
-                            'confirm' => 'Are you sure you want to final this item?',
-                            'method' => 'post',
-                        ],
-                    ]);
-                }
-            } else {
-                if (Yii::$app->user->can('ro_inspection_admin')) {
-                    echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) . ' ';
-                }
+            // if (!$model->is_final && Yii::$app->user->can('update_request_for_inspection')) {
+            echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) . ' ';
+            // }
+            if (Yii::$app->user->can('final_request_for_inspection')) {
+                echo Html::a('Final', ['final', 'id' => $model->id], [
+                    'class' => 'btn btn-danger',
+                    'data' => [
+                        'confirm' => 'Are you sure you want to final this item?',
+                        'method' => 'post',
+                    ],
+                ]);
             }
             ?>
         </p>
@@ -65,9 +60,7 @@ $isProvincialOffice = strtolower($officeName)  === 'ro' ? false : true;
 
                         <span> Date:</span>
                         <?php
-
                         if (!empty($model->date)) {
-
                             echo   DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y');
                         } ?>
                     </td>
