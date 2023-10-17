@@ -23,18 +23,6 @@ class TransactionSearch extends Transaction
             [['id',], 'integer'],
             [['responsibility_center_id', 'particular', 'tracking_number', 'earmark_no', 'payroll_number', 'transaction_date', 'transaction_time', 'payee_id'], 'safe'],
             [['gross_amount'], 'number'],
-
-            [[
-                'responsibility_center_id',
-                'particular',
-                'tracking_number',
-                'earmark_no',
-                'payroll_number',
-                'transaction_date',
-                'transaction_time',
-                'payee_id',
-                'gross_amount',
-            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
 

@@ -39,25 +39,6 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
 
         'columns' => [
-            // ['class' => 'yii\grid\SerialColumn'],
-            // [
-            //     'class' => 'kartik\grid\ExpandRowColumn',
-            //     'width' => '50px',
-            //     'value' => function ($model, $key, $index, $column) {
-            //         return GridView::ROW_COLLAPSED;
-            //     },
-            //     // uncomment below and comment detail if you need to render via ajax
-            //     // 'detailUrl' => Url::to([ '/index.php?r=transaction/sample&id='.$model->id]),
-            //     'detail' => function ($model, $key, $index, $column) {
-            //         $q=SubAccounts1::findOne(2602);
-            //         return Yii::$app->controller->renderPartial('view_sample', ['model' => $q]);
-            //     },
-            //     'headerOptions' => ['class' => 'kartik-sheet-style'],
-            //     'expandOneOnly' => true
-            // ],
-
-            // 'id',
-
             [
                 'label' => 'Responsibility Center',
                 'attribute' => 'responsibility_center_id',
@@ -66,25 +47,15 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'tracking_number',
 
-            // 'payee_id',
-            // [
-
-            // ],
             [
                 'label' => 'Payee',
                 'attribute' => 'payee_id',
                 'value' => 'payee.account_name'
             ],
             'particular',
-            // 'gross_amount',
-            [
-                'attribute' => 'gross_amount',
-                'format' => ['decimal', 2],
-            ],
             'earmark_no',
             'payroll_number',
             'transaction_date',
-            //'transaction_time',
 
             [
                 'class' => '\kartik\grid\ActionColumn',
