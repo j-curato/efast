@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = ['label' => 'Pr Aoqs', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="pr-aoq-view" id="app">
+<div class="pr-aoq-view">
 
     <div class="card" style="background-color: white;padding:1rem">
 
@@ -48,9 +48,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
         ?>
+        <div id="app">
 
-        <table>
-            <!-- <thead>
+            <table>
+                <!-- <thead>
                 <tr>
                     <th colspan="<?= $header_count ?>" style='text-align:center;border:none;'>
                         <span>
@@ -131,214 +132,217 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
             </tbody> -->
-            <thead>
-                <tr>
-                    <th colspan="<?= $header_count ?>" style='text-align:center;border:none;'>
-                        <span>
-                            Department of Trade and Industry - Caraga
-                        </span>
-                        <br>
-                        <span>
-                            Regional Office XIII
-                        </span>
-                        <br>
-                        <span>
-                            Butuan City
-                        </span>
+                <thead>
+                    <tr>
+                        <th colspan="<?= $header_count ?>" style='text-align:center;border:none;'>
+                            <span>
+                                Department of Trade and Industry - Caraga
+                            </span>
+                            <br>
+                            <span>
+                                Regional Office XIII
+                            </span>
+                            <br>
+                            <span>
+                                Butuan City
+                            </span>
 
-                    </th>
-                </tr>
-                <tr>
-                    <th colspan="<?= $header_count ?>" style='text-align:center;border:none;'>
-                        <span>
-                            ABSTRACT OF CANVASS AND ACTION OF AWARDS
-                        </span>
-                    </th>
-                </tr>
-                <tr>
-                    <th colspan="<?= $header_count ?>" style='padding:0;border:none;'>
-                        <?php
-                        $nopToDate = $model->rfq->getNopToDate();
-                        $unformatDate =  !empty($nopToDate) ? $nopToDate : $model->rfq->deadline;
-                        $date =   DateTime::createFromFormat('Y-m-d H:i:s', $unformatDate);
-                        echo $date->format('F d, Y');
-                        ?>
-                        <span style="float: right;">
-                            <?= $model->aoq_number ?>
-                        </span>
-                    </th>
-                </tr>
-                <tr>
-                    <th rowspan="2" class="center">Item No.</th>
-                    <th rowspan="2" class="center">Qty</th>
-                    <th rowspan="2" class="center">Unit</th>
-                    <th rowspan="2" class="center">Description</th>
-                    <th rowspan="2" class="center">Unit Cost</th>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th colspan="<?= $header_count ?>" style='text-align:center;border:none;'>
+                            <span>
+                                ABSTRACT OF CANVASS AND ACTION OF AWARDS
+                            </span>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th colspan="<?= $header_count ?>" style='padding:0;border:none;'>
+                            <?php
+                            $nopToDate = $model->rfq->getNopToDate();
+                            $unformatDate =  !empty($nopToDate) ? $nopToDate : $model->rfq->deadline;
+                            $date =   DateTime::createFromFormat('Y-m-d H:i:s', $unformatDate);
+                            echo $date->format('F d, Y');
+                            ?>
+                            <span style="float: right;">
+                                <?= $model->aoq_number ?>
+                            </span>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th rowspan="2" class="center">Item No.</th>
+                        <th rowspan="2" class="center">Qty</th>
+                        <th rowspan="2" class="center">Unit</th>
+                        <th rowspan="2" class="center">Description</th>
+                        <th rowspan="2" class="center">Unit Cost</th>
 
-                    <th v-for="payee in payees" colspan="2" class="center">
-                        {{payee}}
-                    </th>
-                    <th>Lowest</th>
-                </tr>
-                <tr>
+                        <th v-for="payee in payees" colspan="2" class="center">
+                            {{payee}}
+                        </th>
+                        <th>Lowest</th>
+                    </tr>
+                    <tr>
+                        <template v-for="payee in payees">
+                            <th class='center'>Unit Cost</th>
+                            <th class='center'>Gross Amount</th>
+                        </template>
+                        <td></td>
+                    </tr>
+                </thead>
+                <tr v-for="(item,idx) in displayItems">
+
+                    <td>{{idx +1}}</td>
+                    <td>{{item.quantity}}</td>
+                    <td>{{item.unit_of_measure}}</td>
+                    <td> <b>{{item.description}} </b><br> {{item.specification}}</td>
+                    <td>{{formatAmount(item.unit_cost)}}</td>
                     <template v-for="payee in payees">
-                        <th class='center'>Unit Cost</th>
-                        <th class='center'>Gross Amount</th>
+                        <td class="center">
+                            <p v-if="getPayeeAmtPerItem(item,payee)!=0">
+                                {{formatAmount(getPayeeAmtPerItem(item,payee))}}
+                            </p>
+                            <p v-else=>-</p>
+                        </td>
+                        <td class="center">
+                            <p v-if="getPayeeAmtPerItem(item,payee)!=0">
+                                {{formatAmount(getPayeeAmtPerItem(item,payee) *item.quantity)}}
+                            </p>
+                            <p v-else=>-</p>
+                        </td>
+                    </template>
+
+                    <td>
+                        <p v-for="rm in item.lowests">
+
+                            {{rm}}
+                        </p>
+                    </td>
+
+                </tr>
+                <tr>
+                    <th colspan=""></th>
+                    <th colspan=""></th>
+                    <th colspan=""></th>
+                    <th colspan=""></th>
+                    <th colspan="" class="center">
+                        Total
+                    </th>
+                    <template v-for="payee in payees">
+                        <td class="center">
+                            <!-- {{payee}} -->
+                        </td>
+                        <td class="center">
+                            {{ formatAmount(calculatePayeeGrossTotal(payee))}}
+                        </td>
                     </template>
                     <td></td>
                 </tr>
-            </thead>
-            <tr v-for="(item,idx) in displayItems">
-
-                <td>{{idx +1}}</td>
-                <td>{{item.quantity}}</td>
-                <td>{{item.unit_of_measure}}</td>
-                <td> <b>{{item.description}} </b><br> {{item.specification}}</td>
-                <td>{{formatAmount(item.unit_cost)}}</td>
-                <template v-for="payee in payees">
-                    <td class="center">
-                        <p v-if="getPayeeAmtPerItem(item,payee)!=0">
-                            {{formatAmount(getPayeeAmtPerItem(item,payee))}}
-                        </p>
-                        <p v-else=>-</p>
-                    </td>
-                    <td class="center">
-                        <p v-if="getPayeeAmtPerItem(item,payee)!=0">
-                            {{formatAmount(getPayeeAmtPerItem(item,payee) *item.quantity)}}
-                        </p>
-                        <p v-else=>-</p>
-                    </td>
-                </template>
-
-                <td>
-                    <p v-for="rm in item.lowests">
-
-                        {{rm}}
-                    </p>
-                </td>
-
-            </tr>
-            <tr>
-                <th colspan=""></th>
-                <th colspan=""></th>
-                <th colspan=""></th>
-                <th colspan=""></th>
-                <th colspan="" class="center">
-                    Total
-                </th>
-                <template v-for="payee in payees">
-                    <td class="center">
-                        <!-- {{payee}} -->
-                    </td>
-                    <td class="center">
-                        {{ formatAmount(calculatePayeeGrossTotal(payee))}}
-                    </td>
-                </template>
-                <td></td>
-            </tr>
-            <tr>
-                <td colspan="5">
-
-                </td>
-                <template v-for="payee in payees">
-                    <td colspan="2" class="center">
-                        <span v-for="itm in getPayeeRemarks(payee)">{{itm}} <br></span>
-                    </td>
-                </template>
-                <td></td>
-
-            </tr>
-            <tr>
-                <td colspan="<?= $header_count ?>" style='padding:6px'> <?= $model->rfq->purchaseRequest->purpose ?? ''; ?></td>
-            </tr>
-            <tfoot>
                 <tr>
-                    <td colspan="<?= $header_count ?>" style='border:none;padding-top:0'>
-                        Based on the above abstract of canvass, it is recommended that the award be made to the Lowest Calculated and Responsive Bidder,
+                    <td colspan="5">
+
                     </td>
+                    <template v-for="payee in payees">
+                        <td colspan="2" class="center">
+                            <span v-for="itm in getPayeeRemarks(payee)">{{itm}} <br></span>
+                        </td>
+                    </template>
+                    <td></td>
+
                 </tr>
                 <tr>
-                    <td colspan="<?= $header_count ?>" class='no-border' style='padding-top:2em'>
+                    <td colspan="<?= $header_count ?>" style='padding:6px'> <?= $model->rfq->purchaseRequest->purpose ?? ''; ?></td>
+                </tr>
+                <tfoot>
+                    <tr>
+                        <td colspan="<?= $header_count ?>" style='border:none;padding-top:0'>
+                            Based on the above abstract of canvass, it is recommended that the award be made to the Lowest Calculated and Responsive Bidder,
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="<?= $header_count ?>" class='no-border' style='padding-top:2em'>
 
-                        <div class="bac-members">
+                            <div class="bac-members">
 
-                            <?php
-                            $i = 1;
-                            foreach ($bac_compositions as $val) {
+                                <?php
+                                $i = 1;
+                                foreach ($bac_compositions as $val) {
 
-                                if (strtolower($val['position']) === 'member') {
+                                    if (strtolower($val['position']) === 'member') {
 
-                                    $member_name =  strtoupper($val['employee_name']);
-                                    $member_position = ucwords($val['position']);
-                                    echo "<div style='text-align:center'>
+                                        $member_name =  strtoupper($val['employee_name']);
+                                        $member_position = ucwords($val['position']);
+                                        echo "<div style='text-align:center'>
                                             <span style='text-decoration:underline;font-weight:bold'>$member_name</span>
                                             <br>
                                             <span >$member_position</span>
                                     </div>";
-                                }
-                            };
-                            ?>
-                        </div>
-                    </td>
+                                    }
+                                };
+                                ?>
+                            </div>
+                        </td>
 
-                </tr>
-                <tr>
-                    <td colspan="<?= $header_count  ?>" class='no-border'>
-                        <div style="float: left;margin-left:20%;text-align:center;margin-top:2em">
-                            <?php
-                            $search_vice =   array_search('vice-chairperson', array_column($bac_compositions, 'position'));;
-                            // var_dump($bac_compositions);
-                            // var_dump($search_vice);
-                            // $vice_chairperson = '';
-                            // if (!empty($search_vice)) {
-                            //     $vice_chairperson =   strtoupper($bac_compositions[$search_vice]['employee_name']);
-                            // }
-                            $vice_chairperson =   strtoupper($bac_compositions[$search_vice]['employee_name'] ?? '');
-                            echo  "<span style='text-decoration:underline;font-weight:bold'>{$vice_chairperson}</span>";
-                            echo '<br>';
-                            echo 'Vice-Chairperson';
-                            ?>
-                        </div>
-                        <div style="float: right;margin-right:20%;text-align:center;margin-top:2em">
-                            <?php
-                            $search_chairperson =  array_search('chairperson', array_column($bac_compositions, 'position'));
-                            $chairperson =  '';
-                            // var_dump(array_column($bac_compositions, 'position'));
-                            // var_dump($search_chairperson);
+                    </tr>
+                    <tr>
+                        <td colspan="<?= $header_count  ?>" class='no-border'>
+                            <div style="float: left;margin-left:20%;text-align:center;margin-top:2em">
+                                <?php
+                                $search_vice =   array_search('vice-chairperson', array_column($bac_compositions, 'position'));;
+                                // var_dump($bac_compositions);
+                                // var_dump($search_vice);
+                                // $vice_chairperson = '';
+                                // if (!empty($search_vice)) {
+                                //     $vice_chairperson =   strtoupper($bac_compositions[$search_vice]['employee_name']);
+                                // }
+                                $vice_chairperson =   strtoupper($bac_compositions[$search_vice]['employee_name'] ?? '');
+                                echo  "<span style='text-decoration:underline;font-weight:bold'>{$vice_chairperson}</span>";
+                                echo '<br>';
+                                echo 'Vice-Chairperson';
+                                ?>
+                            </div>
+                            <div style="float: right;margin-right:20%;text-align:center;margin-top:2em">
+                                <?php
+                                $search_chairperson =  array_search('chairperson', array_column($bac_compositions, 'position'));
+                                $chairperson =  '';
+                                // var_dump(array_column($bac_compositions, 'position'));
+                                // var_dump($search_chairperson);
 
-                            // if (!empty($search_chairperson)) {
-                            $chairperson =   strtoupper($bac_compositions[$search_chairperson]['employee_name'] ?? '');
-                            // }
-                            echo  "<span style='text-decoration:underline;font-weight:bold'>{$chairperson}</span>";
-                            echo '<br>';
-                            echo 'Chairperson';
-                            ?>
-                        </div>
+                                // if (!empty($search_chairperson)) {
+                                $chairperson =   strtoupper($bac_compositions[$search_chairperson]['employee_name'] ?? '');
+                                // }
+                                echo  "<span style='text-decoration:underline;font-weight:bold'>{$chairperson}</span>";
+                                echo '<br>';
+                                echo 'Chairperson';
+                                ?>
+                            </div>
 
-                    </td>
-                </tr>
-            </tfoot>
+                        </td>
+                    </tr>
+                </tfoot>
 
-        </table>
-        <table class="links_table table table-stripe">
-            <tbody>
-                <tr class="danger">
-                    <th colspan="3" style="text-align: center;">PO Links</th>
-                </tr>
-                <?php
-                foreach ($model->getPoLinks() as $val) {
-                    $isCancelled = $val['is_cancelled'] ? 'Cancelled' : '';
-                    echo "<tr>
+            </table>
+            <table class="links_table table table-stripe">
+                <tbody>
+                    <tr class="danger">
+                        <th colspan="3" style="text-align: center;">PO Links</th>
+                    </tr>
+                    <?php
+                    foreach ($model->getPoLinks() as $val) {
+                        $isCancelled = $val['is_cancelled'] ? 'Cancelled' : '';
+                        echo "<tr>
                         <td>{$val['po_number']}</td>
                         <td>" . Html::a('PO Link ', ['pr-purchase-order/view', 'id' => $val['id']], ['class' => 'btn btn-link ', 'style' => 'margin:3px']) . "</td>
                         <td>$isCancelled</td>
                    </tr>";
-                }
-                ?>
+                    }
+                    ?>
 
 
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+
+
+        </div>
         <!-- <table class="">
             <thead>
                 <tr>
@@ -521,7 +525,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-
 ?>
 <script>
     $(document).ready(function() {
