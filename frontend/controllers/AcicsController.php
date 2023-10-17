@@ -338,9 +338,9 @@ class AcicsController extends Controller
             ->queryAll();
         return $qry;
     }
-    private function insCancelledItems($model_id, $items, $is_update = false)
+    private function insCancelledItems($model_id, $items, $date)
     {
-
+        $reporting_period = DateTime::createFromFormat('Y-m-d', $date)->format('Y-m');
 
 
         try {
@@ -377,7 +377,7 @@ class AcicsController extends Controller
                 :new_id,
                 book_id,
                 dv_aucs_id,
-                reporting_period,
+                :reporting_period,
                 mode_of_payment,
                 check_or_ada_no,
                 1 as is_cancelled,
@@ -391,7 +391,7 @@ class AcicsController extends Controller
                 FROM cash_disbursement
                 WHERE id  = :cash_id")
                     ->bindValue(':cash_id', $cash_id)
-                    ->bindValue(':new_id', $new_id)
+                    ->bindValue(':reporting_period', $reporting_period)
                     ->execute();
                 Yii::$app->db->createCommand("INSERT INTO cash_disbursement_items (fk_cash_disbursement_id,
                     fk_chart_of_account_id,
@@ -535,7 +535,7 @@ class AcicsController extends Controller
 
                     throw new ErrorException($insCashRcvItms);
                 }
-                $inCnclItms = $this->insCancelledItems($model->id, $uniqueCancelledItems);
+                $inCnclItms = $this->insCancelledItems($model->id, $uniqueCancelledItems, $model->date_issued);
                 if ($inCnclItms !== true) {
                     throw new ErrorException($inCnclItms);
                 }
@@ -602,7 +602,7 @@ class AcicsController extends Controller
 
                     throw new ErrorException($insCashRcvItms);
                 }
-                $inCnclItms = $this->insCancelledItems($model->id, $uniqueCancelledItems, true);
+                $inCnclItms = $this->insCancelledItems($model->id, $uniqueCancelledItems, $model->date_issued);
                 if ($inCnclItms !== true) {
                     throw new ErrorException($inCnclItms);
                 }
