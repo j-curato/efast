@@ -693,6 +693,7 @@ class ProcessOrsController extends Controller
 
 
             $headers = [
+
                 'ORS No.',
                 'Reporting Period',
                 'Date',
@@ -705,6 +706,7 @@ class ProcessOrsController extends Controller
                 'Allotment Amount',
                 'Fund Source Name',
                 'MFO/PAP Code',
+                'isCancelled',
             ];
             foreach ($headers as $key => $head) {
                 $sheet->setCellValue([$key + 1, 2], $head);
@@ -759,6 +761,10 @@ class ProcessOrsController extends Controller
                 $sheet->setCellValue(
                     [12, $row],
                     $val['mfo_name']
+                );
+                $sheet->setCellValue(
+                    [13, $row],
+                    $val['is_cancelled']
                 );
                 $row++;
             }
