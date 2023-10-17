@@ -45,7 +45,7 @@ class RoFurSearch extends RoFur
         $user = Yii::$app->user->can('ro_budget_admin');
         $user_division = Yii::$app->user->identity->division;
         if (!$user) {
-            $query->andWere('division = :division', ['division' => $user_division]);
+            $query->andWhere('division = :division', ['division' => $user_division]);
         }
         // add conditions that should always apply here
 
