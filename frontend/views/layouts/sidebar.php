@@ -108,7 +108,7 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                 Yii::$app->user->can('ro_sub_trial_balance') ?   ['iconStyle' => 'far', 'label' => 'Sub Trial Balance', 'icon' => 'dot-circle', 'url' => ['/sub-trial-balance/index'],] : null,
                 Yii::$app->user->can('ro_conso_sub_trial_balance') ?   ['iconStyle' => 'far', 'label' => 'Conso Sub Trial Balance', 'icon' => 'dot-circle', 'url' => ['/conso-sub-trial-balance/index'],] : null,
                 Yii::$app->user->can('ro_subsidiary_ledger') ?   ['iconStyle' => 'far', 'label' => 'Subsidiary Ledger', 'icon' => 'dot-circle', 'url' => ['/jev-preparation/get-subsidiary-ledger'],] : null,
-
+                Yii::$app->user->can('ro_accounting_admin') ?     ['label' => 'DV Time Monitoring', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/dv-time-monitoring'],] : null,
 
                 Yii::$app->user->can('super-user') ?   ['iconStyle' => 'far', 'label' => 'Detailed Financial Position', 'icon' => 'dot-circle', 'url' => ['/report/detailed-financial-position'],] : null,
                 Yii::$app->user->can('super-user') ?   ['iconStyle' => 'far', 'label' => 'Conso Financial Position', 'icon' => 'dot-circle', 'url' => ['/jev-preparation/consolidated-financial-position'],] : null,
@@ -304,7 +304,7 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                 Yii::$app->user->can('super-user') ?     ['label' => 'RAAF', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/raaf'],] : null,
                 Yii::$app->user->can('super-user') ?     ['label' => 'CDJ', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/cdj'],] : null,
                 Yii::$app->user->can('super-user') ?     ['label' => 'Transaction Tracking', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/transaction-tracking'],] : null,
-                Yii::$app->user->can('ro_accounting_admin') ?     ['label' => 'DV Time Monitoring', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/dv-time-monitoring'],] : null,
+
                 Yii::$app->user->can('super-user') ?     ['label' => 'DV Time Monitoring Summary', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/dv-time-monitoring-summary'],] : null,
                 Yii::$app->user->can('super-user') ?     ['label' => 'Holidays', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/holidays'],] : null,
             ];
