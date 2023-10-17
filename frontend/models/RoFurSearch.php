@@ -5,6 +5,7 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\RoFur;
+use common\models\User;
 use Yii;
 
 /**
@@ -43,7 +44,8 @@ class RoFurSearch extends RoFur
     {
         $query = RoFur::find();
         $user = Yii::$app->user->can('ro_budget_admin');
-        $user_division = Yii::$app->user->identity->division;
+        $user_data = User::getUserDetails();
+        $user_division = $user_data->employee->empDivision->division;
         if (!$user) {
             $query->andWhere('division = :division', ['division' => $user_division]);
         }
