@@ -366,11 +366,14 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['dep
             formatDate(date) {
                 const dte = new Date(date)
                 const options = {
+                    timeZone: 'Asia/Manila',
                     year: 'numeric',
                     month: 'long',
-                    day: 'numeric'
+                    day: '2-digit',
                 };
-                return new Intl.DateTimeFormat('en-US', options).format(dte);
+                // return new Intl.DateTimeFormat('en-PH', options).format(dte);
+                return dte.toLocaleString('en-PH', options);
+
             },
             formatSpecs(specs) {
                 return specs.replace(/\[n\]/g, '\n');
