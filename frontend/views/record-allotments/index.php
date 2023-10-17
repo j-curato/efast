@@ -308,6 +308,10 @@ $this->params['breadcrumbs'][] = $this->title;
             'format' => ['decimal', 2]
         ],
         [
+            'attribute' => 'ttlAdjustment',
+            'format' => ['decimal', 2]
+        ],
+        [
             'attribute' => 'balance',
             'format' => ['decimal', 2]
         ],
