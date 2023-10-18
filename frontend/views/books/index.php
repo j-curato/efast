@@ -15,7 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Yii::$app->user->can('create_books') ? Html::a('Create Book', ['create'], ['class' => 'btn btn-success modalButtonCreate']) : '' ?>
+        <?= Yii::$app->user->can('create_books') ? Html::a('<i class="fa fa-plus"></i >Create ', ['create'], ['class' => 'btn btn-success modalButtonCreate']) : '' ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 

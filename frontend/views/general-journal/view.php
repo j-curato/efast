@@ -1,11 +1,6 @@
 <?php
 
-use app\models\Books;
-use kartik\date\DatePicker;
-use kartik\form\ActiveForm;
 use yii\helpers\Html;
-use yii\helpers\ArrayHelper;
-use kartik\select2\Select2;
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -17,28 +12,23 @@ $this->params['breadcrumbs'][] = ['label' => 'General Journals', 'url' => ['inde
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
-<div class="jev-preparation-index">
-
-
+<div class="jev-preparation-index" id="main">
     <div class="container card">
         <p>
-            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-            <button id="export" type='button' class="btn btn btn-success" style="margin:1rem;">Export</button>
+            <?= Yii::$app->user->can('update_ro_general_journal') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
+            <button @click="exportFile" type='button' class="btn btn btn-success" style="margin:1rem;">Export</button>
         </p>
         <div id="con">
-            <table class="table " style="margin-top:30px" id='data-table'>
+            <table style="margin-top:30px" id='data-table'>
                 <thead>
                     <tr>
-                        <th colspan="6" style="border-bottom: 1px solid black " class="header1">
-                            <h5>GENERAL JOURNAL</h5>
-                            <h6><?php if (!empty($reporting_period)) {
-                                    echo date("F Y", strtotime($reporting_period));
-                                }
-                                ?></h6>
+                        <th colspan="6" class="text-center">
+                            <h5 class="font-weight-bold">GENERAL JOURNAL</h5>
+                            <h6><?= !empty($model->reporting_period) ? date("F Y", strtotime($model->reporting_period)) : '' ?></h6>
                         </th>
                     </tr>
-                    <tr class="header" style="border: none;">
-                        <th colspan="3" style="border:1px solid black;">
+                    <tr>
+                        <th colspan="3">
                             <span>
                                 Entity Name:
                             </span>
@@ -46,87 +36,56 @@ $this->params['breadcrumbs'][] = $this->title;
                                 DEPARTMENT OF TRADE AND INDUSTRY - CARAGA
                             </span>
                         </th>
-
-                        <th colspan="3" style="border-bottom:1px solid black">
+                        <th colspan="3">
                             <span>
                                 Book:
                             </span>
-                            <span id="fund_cluster" style="text-align: center;">
-
-                                <?php if (!empty($book_name)) {
-                                    echo $book_name;
-                                }
-                                ?>
+                            <span>
+                                <?= $model->book->name ?>
                             </span>
                         </th>
 
-
                     </tr>
 
-
-                    <tr style="border-top:1px solid black;border-bottom:1px solid black " ">
-                    <th  rowspan=" 2" class="header2" style="border-top:1px solid black;border-bottom:1px solid black">
-                        Date
-                        </th>
-                        <th rowspan="2" class="header2" style="border-bottom: 1px solid black;">
-                            JEV No.
-                        </th>
-                        <th rowspan="2" class="header2" style="border-bottom: 1px solid black;">
-                            Particulars
-                        </th>
-                        <th rowspan="2" class="header2" style="border-bottom: 1px solid black;">
-                            UACS Object Code
-                        </th>
-                        <th colspan="3" class="header2" style="border-bottom: 1px solid black;">
-                            Amount
-                        </th>
-
-
+                    <tr>
+                        <th rowspan=" 2" class="text-center">Date</th>
+                        <th rowspan="2" class="text-center">JEV No.</th>
+                        <th rowspan="2" class="text-center">Particulars</th>
+                        <th rowspan="2" class="text-center">UACS Object Code</th>
+                        <th colspan="3" class="text-center">Amount</th>
                     </tr>
                     <tr>
-                        <td style="border-top:1px solid black">
-                            Debit
-                        </td>
-                        <td style="border-top:1px solid black">
-                            Credit
-                        </td>
+                        <th class='text-center'>Debit</th>
+                        <th class='text-center'>Credit</th>
                     </tr>
                 </thead>
-
-                <tbody id="ledgerTable">
-
-
+                <tbody>
+                    <template v-for="(item,index) in formattedItems">
+                        <tr>
+                            <td>{{item.date}}</td>
+                            <td>{{item.jevNum}}</td>
+                            <td>{{item.particular}}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr v-for="subItem in item.subItems">
+                            <td></td>
+                            <td></td>
+                            <td>{{subItem.account_title}}</td>
+                            <td>{{subItem.object_code}}</td>
+                            <td class="text-right">{{formatAmount(subItem.debit)}}</td>
+                            <td class="text-right">{{formatAmount(subItem.credit)}}</td>
+                        </tr>
+                    </template>
                 </tbody>
-
-                <!-- <tr class="footer1" style="border:0;">
-                        <td colspan="3" class="br"></td>
-                        <td colspan='2' class="br" style="padding-top:2em">
-                            CERTIFIED CORRECT:
-                        </td>
-                        <td></td>
-                    </tr>
-                    <tr class="footer2">
-                        <td colspan="3" class="br"></td>
-
-                        <td colspan='3' style="text-align: center;font-weight:bold;padding-top:4rem"> -->
-
-                <?php
-                // $reporting_period = DateTime::createFromFormat('Y-m', $model->reporting_period)->format('Y-m');
-                // if ($reporting_period < '2022-03') {
-                //     echo "<span style='font-weight: bold;text-decoration:underline'>JOHN VOLTAIRE S. ANCLA, CPA</span>";
-                //     echo "<br>";
-                //     echo " <span>Accountant III</span>";
-                // } else {
-
-                //     echo "<span style='font-weight: bold;text-decoration:underline'>CHARLIE C. DECHOS, CPA</span>";
-                //     echo "<br>";
-                //     echo " <span>OIC Accountant III </span>";
-                // }
-
-                ?>
-
-                <!-- </td>
-                    </tr> -->
+                <tr>
+                    <td colspan="3" class="border-0 "></td>
+                    <td colspan="3" class="text-center pt-5 border-0">
+                        <u> <b class="text-uppercase mt-1">CHARLIE C. DECHOS, CPA</b></u>
+                        <p>Accountant III</p>
+                    </td>
+                </tr>
             </table>
 
         </div>
@@ -135,79 +94,12 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
 </div>
-<div id="dots5" style="display:none">
-    <span></span>
-    <span></span>
 
-    <span></span>
-    <span></span>
-</div>
 <style>
-    #reporting_period {
-        background-color: white;
-        border-radius: 3px;
-    }
-
-    .amount {
-        text-align: right;
-    }
-
-
-    .header1 {
-        text-align: center;
-        border-bottom: 1px solid black;
-    }
-
-    .header1>h5 {
-        font-weight: bold;
-    }
-
-    /* tfoot>tr>td {
-            border: 1px solid white;
-        }
- */
-
-
-    .header2 {
-        border-bottom: 1px solid black;
-        text-align: center;
-    }
-
-
-    .footer1>.br {
-        border-bottom: 1px solid white;
-        border-right: 1px solid white;
-    }
-
-    .footer1>td {
-        border-bottom: 1px solid white;
-        margin: 0;
-
-    }
-
-    .footer2>.br {
-        border-right: 1px solid white;
-        text-align: center;
-    }
-
-
-
-    .footer2>td>h5 {
-        font-weight: bold;
-    }
-
-
-    .table {
-        position: relative;
-        margin-top: 20px;
-    }
-
-    table,
     th,
     td {
-        border: 1px solid black;
         padding: 12px;
-        background-color: white;
+        border: 1px solid black;
     }
 
 
@@ -223,86 +115,22 @@ $this->params['breadcrumbs'][] = $this->title;
 
     }
 
-    thead>tr>td {
-        border: 1px solid black;
-        padding: 10px;
-        font-weight: bold;
-    }
 
-    #fund {
-        display: none;
-    }
 
     @media print {
-        .actions {
-            display: none;
-        }
-
-        /* tfoot{
-                display: inline;
-            } */
-        .br>h5 {
-            font-size: 10px;
-            color: red;
-            margin: 0;
-        }
-
-
-
-        @page {
-            size: auto;
-            margin: 0;
-            margin-top: 0.5cm;
-            margin-bottom: 0.5cm;
-        }
-
-
-
-        .container {
-            margin: 0;
-            top: 0;
-        }
-
-        .entity_name {
-            font-size: 5pt;
-        }
 
         table,
         th,
         td {
-            border: 1px solid black;
-            padding: 5px;
+            padding: 8px;
             background-color: white;
-            font-size: 10px;
         }
-
-        .container {
-
-            border: none;
-        }
-
 
         table {
-            page-break-after: auto
+            margin-top: 0px;
         }
 
-        tr {
-            page-break-inside: avoid;
-            page-break-after: auto
-        }
-
-        td {
-            page-break-inside: avoid;
-            page-break-after: auto
-        }
-
-        /* thead {
-                display: table-header-group
-            } */
-        .btn {
-            display: none;
-        }
-
+        .btn,
         .main-footer {
             display: none;
         }
@@ -312,36 +140,71 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 <?php
-$this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css", ['depends' => [\yii\web\JqueryAsset::class]]);
-$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/generalJournalJs.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $csrfToken = Yii::$app->request->csrfToken;
+$items = $model->getItems();
 ?>
 <script>
     $(document).ready(function() {
-
-
-
-        const book_id = '<?= $model->book_id ?>';
-        const reporting_period = '<?= $model->reporting_period ?>';
-        query('<?= $csrfToken ?>', book_id, reporting_period)
-        $('#export').click(function(e) {
-            e.preventDefault();
-            $.ajax({
-                container: "#employee",
-                type: 'POST',
-                url: window.location.pathname + '?r=general-journal/export',
-                data: {
-                    reporting_period: reporting_period,
-                    book_id: book_id,
+        var PulseLoader = VueSpinner.PulseLoader
+        new Vue({
+            el: '#main',
+            components: {
+                'PulseLoader': PulseLoader,
+            },
+            data: {
+                items: <?= !empty($items) ? json_encode($items) : [] ?>,
+            },
+            mounted() {},
+            computed: {
+                formattedItems() {
+                    return this.formatItems()
+                }
+            },
+            methods: {
+                formatItems() {
+                    console.log(this.items)
+                    return Object.keys(this.items).map((key) => {
+                        let obj = this.items[key]
+                        let particular = ''
+                        let jevNum = ''
+                        let date = ''
+                        if (obj.length > 0) {
+                            particular = obj[0].explaination
+                            jevNum = obj[0].jev_number
+                            date = obj[0].date
+                        }
+                        return {
+                            particular: particular,
+                            jevNum: jevNum,
+                            date: date,
+                            subItems: obj
+                        }
+                    })
                 },
-                success: function(data) {
-                    var res = JSON.parse(data)
-                    console.log(res)
-                    window.open(res)
+                formatAmount(amount) {
+                    amount = parseFloat(amount)
+                    if (typeof amount === 'number' && !isNaN(amount)) {
+                        return amount.toLocaleString()
+                    }
+                    return 0;
+                },
+                exportFile() {
+                    const apiUrl = window.location.pathname + '?r=general-journal/export'
+                    const data = {
+                        _csrf: '<?= $csrfToken ?>',
+                        id: <?= $model->id ?>
+                    }
+                    axios.post(apiUrl, data)
+                        .then(response => {
+                            window.open(response.data)
+                        })
+                        .catch(error => {
+                            console.log(error)
+                        })
                 }
 
-            })
+            },
+
         })
     })
 </script>

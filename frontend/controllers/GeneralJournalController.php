@@ -7,6 +7,7 @@ use Yii;
 use app\models\GeneralJournal;
 use app\models\GeneralJournalSearch;
 use DateTime;
+use ErrorException;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -31,7 +32,6 @@ class GeneralJournalController extends Controller
                     'view',
                     'create',
                     'update',
-                    'delete',
                     'generate',
                     'export'
                 ],
@@ -40,27 +40,33 @@ class GeneralJournalController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'delete',
-                            'update',
-                            'create',
-                            'generate',
-                            'export'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user']
+                        'roles' => ['view_ro_general_journal']
                     ],
                     [
                         'actions' => [
-                            'index',
-                            'view',
-                            'delete',
+
                             'update',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_ro_general_journal']
+                    ],
+                    [
+                        'actions' => [
                             'create',
                             'generate',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_ro_general_journal']
+                    ],
+                    [
+                        'actions' => [
                             'export'
                         ],
                         'allow' => true,
-                        'roles' => ['ro_general_journal']
+                        'roles' => ['export_ro_general_journal']
                     ]
                 ]
             ],
@@ -111,18 +117,17 @@ class GeneralJournalController extends Controller
         $model = new GeneralJournal();
 
         if ($model->load(Yii::$app->request->post())) {
-
-            $id = Yii::$app->db->createCommand('SELECT id FROM general_journal WHERE 
+            $checkIfPeriodExists = Yii::$app->db->createCommand('SELECT id FROM general_journal WHERE 
             reporting_period = :reporting_period
-            AND book_id = :book_id
-            ')
+            AND book_id = :book_id')
                 ->bindValue(':book_id', $model->book_id)
                 ->bindValue(':reporting_period', $model->reporting_period)
                 ->queryScalar();
             if (empty($id)) {
-                if ($model->save(false)) {
-                    $id = $model->id;
+                if (!$model->save(false)) {
+                    throw new ErrorException("Model Save Failed");
                 }
+                $id = $model->id;
             }
             return $this->redirect(['view', 'id' => $id]);
         }
@@ -167,7 +172,7 @@ class GeneralJournalController extends Controller
 
     /**
      * Deletes an existing GeneralJournal model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
+     * If deletion is successful, the browser will be redirected to the 'index' page.banks
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -175,7 +180,6 @@ class GeneralJournalController extends Controller
     public function actionDelete($id)
     {
         $this->findModel($id)->delete();
-
         return $this->redirect(['index']);
     }
 
@@ -201,8 +205,8 @@ class GeneralJournalController extends Controller
         jev_preparation.date,
         jev_preparation.jev_number,
         jev_preparation.explaination,
-        jev_accounting_entries.debit,
-        jev_accounting_entries.credit,
+        COALESCE(jev_accounting_entries.debit,0) as debit,
+        COALESCE(jev_accounting_entries.credit,0) as credit,
         accounting_codes.object_code,
         accounting_codes.account_title
         FROM jev_preparation
@@ -220,24 +224,20 @@ class GeneralJournalController extends Controller
     }
     public function actionGenerate()
     {
-        if ($_POST) {
-            $reporting_period  = $_POST['reporting_period'];
-            $book_id = $_POST['book_id'];
-            $query = $this->query($book_id, $reporting_period);
-            return json_encode($query);
+        if (Yii::$app->request->post()) {
+            $reporting_period  = Yii::$app->request->post('reporting_period');
+            $book_id = Yii::$app->request->post('book_id');
+            return json_encode(GeneralJournal::generateGeneralJournal($book_id, $reporting_period));
         }
     }
     public function actionExport()
     {
 
-        if ($_POST) {
-            $reporting_period  = $_POST['reporting_period'];
-            $book_id = $_POST['book_id'];
-            $query = $this->query($book_id, $reporting_period);
-            $book_name = Books::findOne($book_id)->name;
-            $month = DateTime::createFromFormat('Y-m', $reporting_period)->format('F Y');
-
-
+        if (Yii::$app->request->post()) {
+            $model = GeneralJournal::findOne(Yii::$app->request->post('id'));
+            $query = $model->getItems();
+            $book_name = $model->book->name;
+            $reporting_period = $model->reporting_period;
             $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
             // header
@@ -250,7 +250,6 @@ class GeneralJournalController extends Controller
 
             $sheet->mergeCells('D2:F2');
             $sheet->setCellValue('D2', "Book: $book_name ");
-
             $sheet->setCellValue('A3', "Date");
             $sheet->setCellValue('B3', "JEV No.");
             $sheet->setCellValue('C3', "Particulars");
@@ -259,21 +258,20 @@ class GeneralJournalController extends Controller
             $sheet->setCellValue('F3', "Credit");
 
 
-
             $row = 4;
 
             foreach ($query  as $jev_number => $val) {
                 $date = $val[0]['date'];
                 $particular = $val[0]['explaination'];
-                $sheet->setCellValueByColumnAndRow(1, $row, $date);
-                $sheet->setCellValueByColumnAndRow(2, $row, $jev_number);
-                $sheet->setCellValueByColumnAndRow(3, $row, $particular);
+                $sheet->setCellValue([1, $row], $date);
+                $sheet->setCellValue([2, $row], $jev_number);
+                $sheet->setCellValue([3, $row], $particular);
                 $row++;
                 foreach ($val  as $val2) {
-                    $sheet->setCellValueByColumnAndRow(3, $row, $val2['account_title']);
-                    $sheet->setCellValueByColumnAndRow(4, $row, $val2['object_code']);
-                    $sheet->setCellValueByColumnAndRow(5, $row, $val2['debit']);
-                    $sheet->setCellValueByColumnAndRow(6, $row, $val2['credit']);
+                    $sheet->setCellValue([3, $row], $val2['account_title']);
+                    $sheet->setCellValue([4, $row], $val2['object_code']);
+                    $sheet->setCellValue([5, $row], $val2['debit']);
+                    $sheet->setCellValue([6, $row], $val2['credit']);
                     $row++;
                 }
             }
@@ -294,7 +292,6 @@ class GeneralJournalController extends Controller
             header('Content-Type: application/octet-stream');
             header("Content-Transfer-Encoding: Binary");
             header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
-
             return json_encode($file2);
 
 

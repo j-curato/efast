@@ -64,7 +64,7 @@ class TransactionSearch extends Transaction
             $q->joinWith('responsibilityCenter')
                 ->where('responsibility_center.name LIKE :division', ['division' => $division]);
         }
-        $query = $q->orderBy("id DESC");;
+        $query = $q->orderBy("id DESC");
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
