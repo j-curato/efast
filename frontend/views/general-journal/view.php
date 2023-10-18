@@ -137,8 +137,6 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 </style>
 
-
-
 <?php
 $csrfToken = Yii::$app->request->csrfToken;
 $items = $model->getItems();
