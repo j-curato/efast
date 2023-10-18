@@ -5,8 +5,8 @@ use yii\helpers\Html;
 /* @var $searchModel app\models\JevPreparationSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$month = DateTime::createFromFormat('Y-m', $model->reporting_period)->format('F Y');
-$this->title = 'General Journal ' . $model->book->name . ' As of ' . $month;
+$period = DateTime::createFromFormat('Y-m', $model->reporting_period)->format('F Y');
+$this->title = 'General Journal ' . $model->book->name . ' As of ' . $period;
 
 $this->params['breadcrumbs'][] = ['label' => 'General Journals', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
@@ -24,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <tr>
                         <th colspan="6" class="text-center">
                             <h5 class="font-weight-bold">GENERAL JOURNAL</h5>
-                            <h6><?= !empty($model->reporting_period) ? date("F Y", strtotime($model->reporting_period)) : '' ?></h6>
+                            <h6><?= !empty($period) ? $period : '' ?></h6>
                         </th>
                     </tr>
                     <tr>
@@ -46,7 +46,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         </th>
 
                     </tr>
-
                     <tr>
                         <th rowspan=" 2" class="text-center">Date</th>
                         <th rowspan="2" class="text-center">JEV No.</th>
