@@ -36,13 +36,27 @@ class TripTicketController extends Controller
                         'actions' => [
                             'view',
                             'index',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_trip_ticket']
+                    ],
+                    [
+                        'actions' => [
+
                             'update',
-                            'delete',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_trip_ticket']
+                    ],
+                    [
+                        'actions' => [
                             'create',
                         ],
                         'allow' => true,
-                        'roles' => ['trip_ticket']
-                    ]
+                        'roles' => ['create_trip_ticket']
+                    ],
                 ]
             ],
             'verbs' => [

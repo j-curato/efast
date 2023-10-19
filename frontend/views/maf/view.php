@@ -26,7 +26,7 @@ var_dump(Yii::$app->snowflake->generateId());
 
     <div class="container" style="background-color:white;padding:20px">
         <p>
-            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+            <?= Yii::$app->user->can('update_maf') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => ' btn btn-primary']) : '' ?>
         </p>
         <table>
             <tr>

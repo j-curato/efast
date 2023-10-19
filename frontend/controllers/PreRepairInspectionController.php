@@ -35,14 +35,25 @@ class PreRepairInspectionController extends Controller
                     [
                         'actions' => [
                             'view',
-                            'index',
-                            'create',
-                            'update',
-                            'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['pre_repair_inspection']
-                    ]
+                        'roles' => ['view_pre_repair_inspection']
+                    ],
+                    [
+                        'actions' => [
+
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_pre_repair_inspection']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_pre_repair_inspection']
+                    ],
                 ]
             ],
             'verbs' => [

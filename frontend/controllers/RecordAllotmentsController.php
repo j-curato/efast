@@ -44,17 +44,28 @@ class RecordAllotmentsController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'update',
-                            'delete',
-                            'create',
-                            'create-record-allotments',
-                            'update-record-allotment',
-                            'import',
 
                         ],
                         'allow' => true,
-                        'roles' => ['record_allotment']
-                    ]
+                        'roles' => ['view_record_allotment']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                            'update-record-allotment',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_record_allotment']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                            'create-record-allotments',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_record_allotment']
+                    ],
                 ]
             ],
             'verbs' => [

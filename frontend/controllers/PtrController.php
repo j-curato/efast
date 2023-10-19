@@ -45,13 +45,31 @@ class PtrController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'create',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_ptr']
+                    ],
+                    [
+                        'actions' => [
                             'update',
-                            'delete',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_ptr']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_ptr']
+                    ],
+                    [
+                        'actions' => [
                             'get-property-details'
                         ],
                         'allow' => true,
-                        'roles' => ['ptr']
+                        'roles' => ['@']
                     ],
                 ]
             ],

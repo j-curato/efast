@@ -45,7 +45,7 @@ class AccountingReportsController extends \yii\web\Controller
             ORDER BY object_code ) row_num,
             accounting_entries.date,
             accounting_entries.particular,
-            accounting_entries.jev_number,
+            accounting_entries.jev_number, 
             IFNULL(accounting_entries.debit,0) as debit,
             IFNULL(accounting_entries.credit,0) as credit,
             accounting_entries.object_code,

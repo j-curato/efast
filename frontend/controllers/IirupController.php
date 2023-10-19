@@ -46,13 +46,24 @@ class IirupController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'create',
-                            'update',
-                            'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['iirup']
-                    ]
+                        'roles' => ['view_iirup']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_iirup']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_iirup']
+                    ],
                 ]
             ],
             'verbs' => [

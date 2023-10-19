@@ -33,20 +33,31 @@ class IarTransmittalController extends Controller
                     'update',
                     'create',
                     'delete',
-                    
+
                 ],
                 'rules' => [
                     [
                         'actions' => [
                             'view',
                             'index',
-                            'update',
-                            'create',
-                            'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['iar_transmittal']
-                    ]
+                        'roles' => ['view_iar_transmittal']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_iar_transmittal']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_iar_transmittal']
+                    ],
                 ]
             ],
             'verbs' => [

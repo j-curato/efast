@@ -15,11 +15,9 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="rpcppe-index">
     <p>
-        <?= Html::a('Create Rpcppe', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Yii::$app->user->can('create_rpcppe') ? Html::a('<i class="fa fa-plus"></i> Create', ['create'], ['class' => 'btn btn-success ']) : '' ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); 
-    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,

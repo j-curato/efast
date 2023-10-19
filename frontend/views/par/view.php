@@ -6,9 +6,7 @@ use app\models\PropertyArticles;
 use barcode\barcode\BarcodeGenerator;
 use Da\QrCode\QrCode;
 use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\web\JqueryAsset;
-use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Par */
@@ -80,9 +78,7 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
 
     <div class="container">
         <p class=''>
-
-            <?= Yii::$app->user->can('ro_property_admin') ? Html::a('<i class="glyphicon glyphicon-pencil"></i>  Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary lrgModal']) : '' ?>
-
+            <?= Yii::$app->user->can('update_par') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'lrgModal btn btn-primary']) : '' ?>
             <?= Html::button('<i class="fa fa-print"></i> Print Form', ['id' => 'print_form', 'class' => 'btn btn-warning']) ?>
             <?= Html::a('Property', ['property/view', 'id' => $model->fk_property_id], ['class' => 'btn btn-link']) ?>
             <?= Html::a('PC', ['property-card/view', 'id' => $model->pc->id], ['class' => 'btn btn-link']) ?>

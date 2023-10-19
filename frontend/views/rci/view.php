@@ -18,8 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="container">
         <p>
-            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-
+            <?= Yii::$app->user->can('update_rci') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
         </p>
         <table>
             <thead>

@@ -47,17 +47,36 @@ class OtherPropertyDetailsController extends Controller
                         'actions' => [
                             'view',
                             'index',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_other_property_details']
+                    ],
+                    [
+                        'actions' => [
                             'update',
-                            'delete',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_other_property_details']
+                    ],
+                    [
+                        'actions' => [
                             'create',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_other_property_details']
+                    ],
+                    [
+                        'actions' => [
                             'search-chart-of-accounts',
                             'items',
                             'property-details',
                             'get-frt-mth-dep',
                         ],
                         'allow' => true,
-                        'roles' => ['other_property_details']
-                    ]
+                        'roles' => ['@']
+                    ],
                 ]
             ],
             'verbs' => [

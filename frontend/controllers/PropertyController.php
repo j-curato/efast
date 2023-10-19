@@ -53,10 +53,8 @@ class PropertyController extends Controller
                             'view',
                             'create',
                             'update',
-                            'delete',
                             'search-property',
                             'get-property',
-                            'import',
                             'blank-sticker',
                             'search-ssf-category',
                             'create-blank',
@@ -70,6 +68,37 @@ class PropertyController extends Controller
                         ],
                         'allow' => true,
                         'roles' => ['property_database']
+                    ],
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_property']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_property']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_property']
+                    ],
+                    [
+                        'actions' => [
+                            'search-property',
+                            'get-property',
+                            'search-ssf-category',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
                     ],
 
 

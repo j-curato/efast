@@ -78,7 +78,42 @@ class ProcessOrsController extends Controller
                         ],
                         'allow' => true,
                         'roles' => ['process_ors']
-                    ]
+                    ],
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'search-ors',
+                            'burs-index',
+                            'search-ors',
+                            'get-txn-allotments',
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_process_ors']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_process_ors']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                            'insert-process-ors',
+                            'create-burs',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_process_ors']
+                    ],
+                    [
+                        'actions' => [
+                            'export',
+                        ],
+                        'allow' => true,
+                        'roles' => ['export_process_ors']
+                    ],
                 ]
             ],
             'verbs' => [

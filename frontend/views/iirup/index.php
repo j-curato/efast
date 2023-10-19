@@ -15,11 +15,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Html::a('Create IIRUP', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+        <?= Yii::$app->user->can('create_iirup') ? Html::a('<i class="fa fa-plus"></i> Create', ['create'], ['class' => 'btn btn-success ']) : '' ?>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); 
-    ?>
+    </p>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -28,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'type' => 'primary',
             'heading' => 'IIRUPs'
         ],
-        'pjax'=>true,
+        'pjax' => true,
         'columns' => [
 
             'serial_number',
@@ -40,7 +38,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Actions',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return MyHelper::gridDefaultAction($model->id, 'none');
+
+                    $updateBtn = Yii::$app->user->can('update_iirup') ? Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => '']) : '';
+                    return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id]) . ' ' . $updateBtn;
                 }
             ],
         ],

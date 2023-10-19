@@ -19,20 +19,10 @@ $book_name = $model->book->name;
 
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
+        <?= Yii::$app->user->can('update_rpcppe') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => ' btn btn-primary']) : '' ?>
     </p>
     <div id="con">
-
-
     </div>
-
 </div>
 <style>
     #con {
@@ -92,6 +82,6 @@ $this->registerJsFile("@web/frontend/views/rpcppe/rpcppeScript.js", ['depends' =
 ?>
 <script>
     $(document).ready(() => {
-        display(<?= json_encode($res); ?>, '<?= $uacs; ?>', '<?= $period; ?>', '<?=$book_name?>')
+        display(<?= json_encode($res); ?>, '<?= $uacs; ?>', '<?= $period; ?>', '<?= $book_name ?>')
     })
 </script>

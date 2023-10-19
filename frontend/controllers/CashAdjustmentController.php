@@ -37,13 +37,24 @@ class CashAdjustmentController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'create',
-                            'update',
-                            'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['laps_amounts']
-                    ]
+                        'roles' => ['view_laps_amounts']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_laps_amounts']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_laps_amounts']
+                    ],
                 ]
             ],
             'verbs' => [

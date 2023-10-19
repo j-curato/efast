@@ -42,14 +42,26 @@ class RpcppeController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_rpcppe']
+                    ],
+                    [
+                        'actions' => [
                             'update',
-                            'delete',
+                            'generate'
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_rpcppe']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
                             'generate'
 
                         ],
                         'allow' => true,
-                        'roles' => ['rpcppe']
+                        'roles' => ['create_rpcppe']
                     ],
 
 

@@ -40,15 +40,15 @@ class PropertyCardController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'create',
-                            'update',
-                            'delete',
-                            'property-details',
+                            // 'create',
+                            // 'update',
+                            // 'delete',
+                            // 'property-details',
                             'print-pc',
 
                         ],
                         'allow' => true,
-                        'roles' => ['property_card']
+                        'roles' => ['view_property_card']
                     ],
 
 

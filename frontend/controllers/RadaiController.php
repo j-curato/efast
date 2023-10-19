@@ -38,13 +38,25 @@ class RadaiController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'create',
-                            'delete',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_radai']
+                    ],
+                    [
+                        'actions' => [
                             'update',
                         ],
                         'allow' => true,
-                        'roles' => ['radai']
-                    ]
+                        'roles' => ['update_radai']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_radai']
+                    ],
                 ]
             ],
             'verbs' => [

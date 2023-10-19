@@ -1,10 +1,8 @@
 <?php
 
-use app\components\helpers\MyHelper;
 use kartik\export\ExportMenu;
 use yii\helpers\Html;
 use kartik\grid\GridView;
-use yii\helpers\Url;
 use yii\web\JqueryAsset;
 
 /* @var $this yii\web\View */
@@ -38,7 +36,7 @@ $columns = [
         'hiddenFromExport' => true,
         'value' => function ($model) {
             // return MyHelper::gridDefaultAction($model->id, 'lrgModal');
-            return Html::a('<i class="fa fa-eye"></i>',['view','id'=>$model->id],['class'=>'']);
+            return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id], ['class' => '']);
         }
     ],
 
@@ -48,8 +46,7 @@ $columns = [
 
 
     <p>
-        <?= Html::a('<i class="fa fa-pencil-alt"></i>  Create PAR/PC', ['create'], ['class' => 'btn btn-success lrgModal']) ?>
-
+        <?= Yii::$app->user->can('create_par') ? Html::a('<i class="fa fa-plus"></i> Create', ['create'], ['class' => 'btn btn-success lrgModal']) : '' ?>
     </p>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -61,7 +58,7 @@ $columns = [
         'export' => [
             'fontAwesome' => true
         ],
-        'pjax'=>true,
+        'pjax' => true,
         'toolbar' => [
             [
                 'content' => ExportMenu::widget([

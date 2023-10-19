@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="container card" style="padding: 1rem;">
 
         <p>
-            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary lrgModal']) ?>
+            <?= Yii::$app->user->can('update_cash_receive') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
         </p>
 
         <?= DetailView::widget([

@@ -44,14 +44,31 @@ class RlsddpController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_rlsddp']
+                    ],
+                    [
+                        'actions' => [
                             'update',
-                            'delete',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_rlsddp']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_rlsddp']
+                    ],
+                    [
+                        'actions' => [
                             'get-pars',
                         ],
                         'allow' => true,
-                        'roles' => ['rlsddp']
-                    ]
+                        'roles' => ['@']
+                    ],
                 ]
             ],
             'verbs' => [

@@ -20,8 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
     <div class="row">
         <div class="col-sm-1">
-            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-
+            <?= Yii::$app->user->can('update_derecognition') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => ' btn btn-primary']) : '' ?>
         </div>
         <div class="col-sm-2">
             <?= Select2::widget([

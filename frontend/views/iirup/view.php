@@ -20,7 +20,7 @@ $approved_by = MyHelper::getEmployee($model->fk_approved_by, 'one');
 <div class="iirup-view panel">
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?= Yii::$app->user->can('update_iirup') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
     </p>
 
     <table>

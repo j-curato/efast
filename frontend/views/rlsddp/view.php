@@ -18,7 +18,7 @@ $spvr =   MyHelper::getEmployee($model->fk_supvr, 'one');
 
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?= Yii::$app->user->can('update_rlsddp') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => ' btn btn-primary']) : '' ?>
     </p>
 
 

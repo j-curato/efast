@@ -38,13 +38,25 @@ class RciController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'update',
-                            'create',
-                            'delete',
+
                         ],
                         'allow' => true,
-                        'roles' => ['rci']
-                    ]
+                        'roles' => ['view_rci']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_rci']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_rci']
+                    ],
                 ]
             ],
             'verbs' => [

@@ -34,14 +34,25 @@ class MaintenanceJobRequestController extends Controller
                     [
                         'actions' => [
                             'index',
-                            'update',
-                            'delete',
                             'view',
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_maintenance_job_request']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_maintenance_job_request']
+                    ],
+                    [
+                        'actions' => [
                             'create',
                         ],
                         'allow' => true,
-                        'roles' => ['maintenance_job_request']
-                    ]
+                        'roles' => ['create_maintenance_job_request']
+                    ],
                 ]
             ],
             'verbs' => [

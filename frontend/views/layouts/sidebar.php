@@ -133,10 +133,10 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                 Yii::$app->user->can('view_allotment_type') ? ['label' => 'Allotment Type', 'iconStyle' => 'far', 'icon' => 'dot-circle', 'url' => ['/allotment-type/index'],] : null,
             ];
             $budgetTransactions = [
-                Yii::$app->user->can('record_allotment') ? ['iconStyle' => 'far', 'label' => 'Record Allotments', 'icon' => 'dot-circle', 'url' => ['/record-allotments/index'],] : null,
+                Yii::$app->user->can('view_record_allotment') ? ['iconStyle' => 'far', 'label' => 'Record Allotments', 'icon' => 'dot-circle', 'url' => ['/record-allotments/index'],] : null,
                 Yii::$app->user->can('process_ors') ? ['iconStyle' => 'far', 'label' => 'Process Ors', 'icon' => 'dot-circle', 'url' => ['/process-ors/index'],] : null,
                 Yii::$app->user->can('process_ors') ? ['iconStyle' => 'far', 'label' => 'Process BURS', 'icon' => 'dot-circle', 'url' => ['/process-ors/burs-index'],] : null,
-                Yii::$app->user->can('maf') ? ['iconStyle' => 'far', 'label' => 'MAF', 'icon' => 'dot-circle', 'url' => ['/maf/index'],] : null,
+                Yii::$app->user->can('view_maf') ? ['iconStyle' => 'far', 'label' => 'MAF', 'icon' => 'dot-circle', 'url' => ['/maf/index'],] : null,
             ];
 
             $budgetReports = [
@@ -162,12 +162,12 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                 Yii::$app->user->can('cash_disbursement') ? ['label' => 'Cash Disbursement', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/cash-disbursement/index'],] : null,
                 Yii::$app->user->can('sliie') ? ['label' => 'SLIIE`s', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/sliies/index'],] : null,
                 Yii::$app->user->can('lddap_ada') ? ['label' => 'LDDAP-ADA`s', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/lddap-adas/index'],] : null,
-                Yii::$app->user->can('acic') ? ['label' => 'ACIC`s', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/acics/index'],] : null,
-                Yii::$app->user->can('acic_in_bank') ? ['label' => 'ACIC in Bank', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/acic-in-bank/index'],] : null,
-                Yii::$app->user->can('rci') ? ['label' => 'RCI', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rci/index'],] : null,
-                Yii::$app->user->can('radai') ? ['label' => 'RADAI', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/radai/index'],] : null,
-                Yii::$app->user->can('cash_receive') ? ['label' => 'Cash Received', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/cash-received/index'],] : null,
-                Yii::$app->user->can('laps_amounts') ? ['label' => 'Laps Amounts', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/cash-adjustment/index'],] : null,
+                Yii::$app->user->can('view_acic') ? ['label' => 'ACIC`s', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/acics/index'],] : null,
+                Yii::$app->user->can('view_acic_in_bank') ? ['label' => 'ACIC in Bank', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/acic-in-bank/index'],] : null,
+                Yii::$app->user->can('view_rci') ? ['label' => 'RCI', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rci/index'],] : null,
+                Yii::$app->user->can('view_radai') ? ['label' => 'RADAI', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/radai/index'],] : null,
+                Yii::$app->user->can('view_cash_receive') ? ['label' => 'Cash Received', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/cash-received/index'],] : null,
+                Yii::$app->user->can('view_laps_amounts') ? ['label' => 'Laps Amounts', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/cash-adjustment/index'],] : null,
                 Yii::$app->user->can('cash_disbursement') ? ['label' => 'Cancel Disbursement', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/cash-disbursement/cancel-disbursement-index'],] : null,
             ];
             $cashReports = [
@@ -187,20 +187,20 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
             ];
 
             $propertyTransactions = [
-                Yii::$app->user->can('property') ?     ['label' => 'Property', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/property/index'],] : null,
-                Yii::$app->user->can('ptr') ?     ['label' => 'PTR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/ptr/index'],] : null,
-                Yii::$app->user->can('par') ?     ['label' => 'PAR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/par/index'],] : null,
-                Yii::$app->user->can('property_card') ?     ['label' => 'Property Card', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/property-card/index'],] : null,
-                Yii::$app->user->can('other_property_details') ?     ['label' => 'Other Property Details', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/other-property-details/index'],] : null,
+                Yii::$app->user->can('view_property') ?     ['label' => 'Property', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/property/index'],] : null,
+                Yii::$app->user->can('view_ptr') ?     ['label' => 'PTR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/ptr/index'],] : null,
+                Yii::$app->user->can('view_par') ?     ['label' => 'PAR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/par/index'],] : null,
+                Yii::$app->user->can('view_property_card') ?     ['label' => 'Property Card', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/property-card/index'],] : null,
+                Yii::$app->user->can('view_other_property_details') ?     ['label' => 'Other Property Details', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/other-property-details/index'],] : null,
                 Yii::$app->user->can('depreciation_schedule') ?     ['label' => 'Depreciation Schedule', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/depreciation-schedule/index'],] : null,
-                Yii::$app->user->can('rlsddp') ?     ['label' => 'RLSDDP', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rlsddp/index'],] : null,
-                Yii::$app->user->can('iirup') ?     ['label' => 'IIRUP', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/iirup/index'],] : null,
-                Yii::$app->user->can('derecognition') ?     ['label' => 'Derecognition', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/derecognition/index'],] : null,
+                Yii::$app->user->can('view_rlsddp') ?     ['label' => 'RLSDDP', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rlsddp/index'],] : null,
+                Yii::$app->user->can('view_iirup') ?     ['label' => 'IIRUP', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/iirup/index'],] : null,
+                Yii::$app->user->can('view_derecognition') ?     ['label' => 'Derecognition', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/derecognition/index'],] : null,
             ];
             $propertReports = [
                 Yii::$app->user->can('super-user') ?     ['label' => 'Print PC Stickers', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/property-card/print-pc'],] : null,
                 Yii::$app->user->can('property_database') ?  ['label' => 'Property Database', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/property/property-database'],] : null,
-                Yii::$app->user->can('rpcppe') ?     ['label' => 'RPCPPE', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rpcppe/index'],] : null,
+                Yii::$app->user->can('view_rpcppe') ?     ['label' => 'RPCPPE', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rpcppe/index'],] : null,
                 Yii::$app->user->can('ppelc') ?     ['label' => 'PPELC', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/property-reports/ppelc'],] : null,
                 Yii::$app->user->can('property_accountabilities') ?     ['label' => 'Accountabilities', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/property-reports/user-properties'],] : null,
             ];
@@ -220,7 +220,7 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                 Yii::$app->user->can('aoq') ?     ['label' => 'AOQ', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/pr-aoq/index'],] : null,
                 Yii::$app->user->can('purchase_order') ?     ['label' => 'Purchase Order', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/pr-purchase-order/index'],] : null,
                 Yii::$app->user->can('view_notice_of_postponement') ?     ['label' => 'NOP', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/notice-of-postponement/index'],] : null,
-                Yii::$app->user->can('purchase_order_transmittal') ?     ['label' => 'Transmittal', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/purchase-order-transmittal/index'],] : null,
+                Yii::$app->user->can('view_purchase_order_transmittal') ?     ['label' => 'Transmittal', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/purchase-order-transmittal/index'],] : null,
             ];
 
             $procurementReports = [
@@ -236,20 +236,19 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
             ];
             $generalServiceTransactions = [
 
-                Yii::$app->user->can('maintenance_job_request') ?     ['label' => 'Job Request', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/maintenance-job-request/index'],] : null,
-                Yii::$app->user->can('pre_repair_inspection') ?     ['label' => 'Pre-Repair Inspection', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/pre-repair-inspection/index'],] : null,
-                Yii::$app->user->can('trip_ticket') ?     ['label' => 'Trip Ticket', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/trip-ticket/index'],] : null,
+                Yii::$app->user->can('view_maintenance_job_request') ?     ['label' => 'Job Request', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/maintenance-job-request/index'],] : null,
+                Yii::$app->user->can('view_pre_repair_inspection') ?     ['label' => 'Pre-Repair Inspection', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/pre-repair-inspection/index'],] : null,
+                Yii::$app->user->can('view_trip_ticket') ?     ['label' => 'Trip Ticket', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/trip-ticket/index'],] : null,
 
             ];
 
             $generalServiceReports = [];
-
             $inspectionMasterRecords = [];
             $inspectionTransactions = [
                 Yii::$app->user->can('view_request_for_inspection') ?     ['label' => 'Request for Inspection', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/request-for-inspection/index'],] : null,
                 Yii::$app->user->can('inspection_report') ?     ['label' => 'Inspection Report', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/inspection-report/index'],] : null,
                 Yii::$app->user->can('iar') ?     ['label' => 'IAR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/iar/index'],] : null,
-                Yii::$app->user->can('iar_transmittal') ?     ['label' => 'IAR Transmittal', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/iar-transmittal/index'],] : null,
+                Yii::$app->user->can('view_iar_transmittal') ?     ['label' => 'IAR Transmittal', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/iar-transmittal/index'],] : null,
             ];
             $inspectionReports = [];
 
@@ -622,25 +621,24 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                     'label' => 'Property',
                     'icon' => 'fa fa-building',
                     'items' => [
-
                         [
                             'label' => 'Transaction',
                             'iconStyle' => 'far text-info',
                             'items' => removeNull([
-                                Yii::$app->user->can('property') ?     ['label' => 'Property', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/property/index'],] : null,
-                                Yii::$app->user->can('ptr') ?     ['label' => 'PTR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/ptr/index'],] : null,
-                                Yii::$app->user->can('par') ?     ['label' => 'PAR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/par/index'],] : null,
-                                Yii::$app->user->can('property_card') ?     ['label' => 'Property Card', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/property-card/index'],] : null,
-                                Yii::$app->user->can('rlsddp') ?     ['label' => 'RLSDDP', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rlsddp/index'],] : null,
-                                Yii::$app->user->can('iirup') ?     ['label' => 'IIRUP', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/iirup/index'],] : null,
+                                Yii::$app->user->can('view_property') ?     ['label' => 'Property', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/property/index'],] : null,
+                                Yii::$app->user->can('view_ptr') ?     ['label' => 'PTR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/ptr/index'],] : null,
+                                Yii::$app->user->can('view_par') ?     ['label' => 'PAR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/par/index'],] : null,
+                                Yii::$app->user->can('view_property_card') ?     ['label' => 'Property Card', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/property-card/index'],] : null,
+                                Yii::$app->user->can('view_rlsddp') ?     ['label' => 'RLSDDP', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rlsddp/index'],] : null,
+                                Yii::$app->user->can('view_iirup') ?     ['label' => 'IIRUP', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/iirup/index'],] : null,
                             ]),
                         ],
                         [
                             'label' => 'Reports',
                             'iconStyle' => 'far text-info',
                             'items' => removeNull([
-                                Yii::$app->user->can('property') ?  ['label' => 'Property Database', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/property/property-database'],] : null,
-                                Yii::$app->user->can('rpcppe') ?     ['label' => 'RPCPPE', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rpcppe/index'],] : null,
+                                Yii::$app->user->can('property_database') ?  ['label' => 'Property Database', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/property/property-database'],] : null,
+                                Yii::$app->user->can('view_rpcppe') ?     ['label' => 'RPCPPE', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rpcppe/index'],] : null,
                                 Yii::$app->user->can('ppelc') ?     ['label' => 'PPELC', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/ppelc'],] : null,
                                 Yii::$app->user->can('property_accountabilities') ?     ['label' => 'Accountabilities', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/user-properties'],] : null,
                             ]),

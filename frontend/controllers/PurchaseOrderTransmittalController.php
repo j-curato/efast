@@ -39,13 +39,24 @@ class PurchaseOrderTransmittalController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'create',
-                            'update',
-                            'delete',
                         ],
                         'allow' => true,
-                        'roles' => ['purchase_order_transmittal']
-                    ]
+                        'roles' => ['view_purchase_order_transmittal']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_purchase_order_transmittal']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_purchase_order_transmittal']
+                    ],
                 ]
             ],
             'verbs' => [

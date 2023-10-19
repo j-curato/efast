@@ -42,16 +42,33 @@ class DerecognitionController extends Controller
                     [
                         'actions' => [
                             'view',
-                            'update',
                             'index',
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_derecognition']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_derecognition']
+                    ],
+                    [
+                        'actions' => [
                             'create',
-                            'delete',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_derecognition']
+                    ],
+                    [
+                        'actions' => [
                             'get-iirup-items',
                             'get-property-details'
                         ],
                         'allow' => true,
-                        'roles' => ['derecognition']
-                    ]
+                        'roles' => ['@']
+                    ],
                 ]
             ],
             'verbs' => [

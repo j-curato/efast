@@ -22,9 +22,7 @@ $requested_by = Yii::$app->db->createCommand("SELECT employee_name,position FROM
 
     <div class="container">
         <p>
-
-            <?= Html::a('Update', ['update', 'id' =>  $model->id,], ['class' => 'btn btn-primary lrgModal']); ?>
-
+            <?= Yii::$app->user->can('update_pre_repair_inspection') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
         </p>
         <table>
 

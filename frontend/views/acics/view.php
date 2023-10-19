@@ -1,8 +1,6 @@
 <?php
 
-use app\components\helpers\MyHelper;
 use yii\helpers\Html;
-use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Acics */
@@ -14,13 +12,9 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="accics-view">
     <div class="container">
-
-
         <p>
-            <?= Html::a('Create', ['create'], ['class' => 'btn btn-success']) ?>
-            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-
-
+            <?= Yii::$app->user->can('create_acic') ? Html::a('<i class="fa fa-plus"></i> Create', ['create'], ['class' => 'btn btn-success ']) : '' ?>
+            <?= Yii::$app->user->can('update_acic') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
             <?php
             if (!empty($acicInBankId)) {
                 echo Html::a('ACIC in Bank Link', ['acic-in-bank/view', 'id' => $acicInBankId], ['class' => 'btn btn-link']);

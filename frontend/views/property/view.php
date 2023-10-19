@@ -37,8 +37,7 @@ $qrcode_filename = Yii::$app->request->baseurl . "/frontend/views/property/qrcod
 
     <div class="container">
         <p>
-            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary lrgModal']) ?>
-
+            <?= Yii::$app->user->can('update_property') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'lrgModal btn btn-primary']) : '' ?>
         </p>
         <!-- <div class="cut_line">
 

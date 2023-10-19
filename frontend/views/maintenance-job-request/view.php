@@ -1,8 +1,7 @@
 <?php
 
 use yii\helpers\Html;
-use yii\helpers\Url;
-use yii\widgets\DetailView;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\MaintenanceJobRequest */
@@ -29,7 +28,8 @@ if (!empty($model->fk_approved_by)) {
 
     <div class="container card">
         <p>
-            <?= Html::a('Update', ['update', 'id' => $model->id,], ['class' => 'btn btn-primary lrgModal']); ?>
+
+            <?= Yii::$app->user->can('update_maintenance_job_request') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
         </p>
         <table>
 

@@ -38,7 +38,6 @@ class ParController extends Controller
                     'create',
                     'update',
                     'delete',
-
                     'search-par',
                     'par-details',
                     'get-par',
@@ -50,17 +49,34 @@ class ParController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'create',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_par']
+                    ],
+                    [
+                        'actions' => [
                             'update',
-                            'delete',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_par']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_par']
+                    ],
+                    [
+                        'actions' => [
                             'search-par',
                             'par-details',
                             'get-par',
                             'blank-sticker'
-
                         ],
                         'allow' => true,
-                        'roles' => ['par']
+                        'roles' => ['@']
                     ],
 
                 ]

@@ -35,14 +35,26 @@ class CashReceivedController extends Controller
                     [
                         'actions' => [
                             'index',
-                            'create',
-                            'update',
-                            'delete',
                             'view',
                         ],
                         'allow' => true,
-                        'roles' => ['cash_receive']
-                    ]
+                        'roles' => ['view_cash_receive']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_cash_receive']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_cash_receive']
+                    ],
                 ]
             ],
             'verbs' => [

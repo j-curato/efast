@@ -1,11 +1,7 @@
 <?php
 
-use app\components\helpers\MyHelper;
 use app\models\PropertyArticles;
-use frontend\components\MyComponent;
 use kartik\export\ExportMenu;
-use kartik\file\FileInput;
-use kartik\form\ActiveForm;
 use kartik\grid\GridView;
 use yii\helpers\Html;
 use yii\web\JqueryAsset;
@@ -19,13 +15,11 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="property-index">
 
-
     <p>
-        <?= Html::a('Create Property', ['create'], ['class' => 'btn btn-success lrgModal']) ?>
+        <?= Yii::$app->user->can('create_property') ? Html::a('<i class="fa fa-plus"></i> Create', ['create'], ['class' => 'btn btn-success lrgModal']) : '' ?>
     </p>
 
-
-    <?php // echo $this->render('_search', ['model' => $searchModel]); 
+    <?php
     $cols =  [
 
         'property_number',
@@ -81,8 +75,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'label' => 'Actions',
             'format' => 'raw',
             'value' => function ($model) {
-                // return MyComponent::gridDefaultAction($model->id, 'lrgModal');
-                return \app\components\helpers\MyHelper::gridDefaultAction($model->id, 'lrgModal');
+                $updateBtn = Yii::$app->user->can('update_property') ? Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => 'lrgModal']) : '';
+                return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id]) . ' ' . $updateBtn;
             }
         ],
     ];
@@ -98,7 +92,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'export' => [
             'fontAwesome' => true
         ],
-        'pjax'=>true,
+        'pjax' => true,
         'toolbar' => [
 
 

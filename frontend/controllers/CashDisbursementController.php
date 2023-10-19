@@ -83,6 +83,28 @@ class CashDisbursementController extends Controller
                         'allow' => true,
                         'roles' => ['cash_disbursement']
                     ],
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_cash_disbursement']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_view_cash_disbursement']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_view_cash_disbursement']
+                    ],
                 ]
             ],
             'verbs' => [
@@ -627,115 +649,115 @@ class CashDisbursementController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
-    public function actionInsertCashDisbursement()
-    {
+    // public function actionInsertCashDisbursement()
+    // {
 
-        if ($_POST) {
+    //     if ($_POST) {
 
-            $reporting_period = $_POST["reporting_period"];
-            $book_id = $_POST["book"];
-            $check_ada_no = $_POST["check_ada_no"];
-            $good_cancelled = empty($_POST["good_cancelled"]) ? $_POST['good_cancelled'] : 0;
-            $issuance_date = $_POST["issuance_date"];
-            $mode_of_payment = $_POST["mode_of_payment"];
-            $ada_number = $_POST["ada_number"];
-            $selected_items = !empty($_POST['selection']) ? $_POST['selection'] : '';
-            $out_time = date('H:i:s', strtotime($_POST['out_time']));
-            $begin_time = date('H:i:s', strtotime($_POST['begin_time']));
+    //         $reporting_period = $_POST["reporting_period"];
+    //         $book_id = $_POST["book"];
+    //         $check_ada_no = $_POST["check_ada_no"];
+    //         $good_cancelled = empty($_POST["good_cancelled"]) ? $_POST['good_cancelled'] : 0;
+    //         $issuance_date = $_POST["issuance_date"];
+    //         $mode_of_payment = $_POST["mode_of_payment"];
+    //         $ada_number = $_POST["ada_number"];
+    //         $selected_items = !empty($_POST['selection']) ? $_POST['selection'] : '';
+    //         $out_time = date('H:i:s', strtotime($_POST['out_time']));
+    //         $begin_time = date('H:i:s', strtotime($_POST['begin_time']));
 
-            // return json_encode(["isSuccess" => false,'error'=>$begin_time]);
-            // if (!empty(count($_POST['selection'])) > 1) {
-            //     return json_encode(["error" => "Selected Dv is More Than 1"]);
-            // } else {
+    //         // return json_encode(["isSuccess" => false,'error'=>$begin_time]);
+    //         // if (!empty(count($_POST['selection'])) > 1) {
+    //         //     return json_encode(["error" => "Selected Dv is More Than 1"]);
+    //         // } else {
 
-            if (!empty($_POST['update_id'])) {
-                $cd = CashDisbursement::findOne($_POST['update_id']);
-            } else {
-                $cd = new CashDisbursement();
-            }
-            if ($good_cancelled == 0) {
-                if (empty($selected_items)) {
-                    return json_encode(['isSuccess' => false, "error" => "Select DV"]);
-                    die();
-                }
-                if (count($selected_items) > 1) {
-                    return json_encode(["error" => "Selected Dv is More Than 1"]);
-                    die();
-                } else {
+    //         if (!empty($_POST['update_id'])) {
+    //             $cd = CashDisbursement::findOne($_POST['update_id']);
+    //         } else {
+    //             $cd = new CashDisbursement();
+    //         }
+    //         if ($good_cancelled == 0) {
+    //             if (empty($selected_items)) {
+    //                 return json_encode(['isSuccess' => false, "error" => "Select DV"]);
+    //                 die();
+    //             }
+    //             if (count($selected_items) > 1) {
+    //                 return json_encode(["error" => "Selected Dv is More Than 1"]);
+    //                 die();
+    //             } else {
 
 
-                    $check_accounting_in_out = Yii::$app->db->createCommand("SELECT dv_aucs.in_timestamp, dv_aucs.out_timestamp FROM dv_aucs WHERE dv_aucs.id = :id")->bindValue(':id', $_POST['selection'][0])->queryOne();
+    //                 $check_accounting_in_out = Yii::$app->db->createCommand("SELECT dv_aucs.in_timestamp, dv_aucs.out_timestamp FROM dv_aucs WHERE dv_aucs.id = :id")->bindValue(':id', $_POST['selection'][0])->queryOne();
 
-                    if (empty($check_accounting_in_out['in_timestamp']) || empty($check_accounting_in_out['out_timestamp'])) {
-                        return json_encode(['isSuccess' => false, "error" => "There is no time in and time out for DV selected."]);
-                        die();
-                    }
-                }
+    //                 if (empty($check_accounting_in_out['in_timestamp']) || empty($check_accounting_in_out['out_timestamp'])) {
+    //                     return json_encode(['isSuccess' => false, "error" => "There is no time in and time out for DV selected."]);
+    //                     die();
+    //                 }
+    //             }
 
-                $cd->dv_aucs_id = $_POST['selection'][0];
-            } else if ($good_cancelled == 1) {
-                if (!empty($selected_items)) {
-                    return json_encode(["error" => "Select Type is Cancelled "]);
-                    die();
-                }
-            } else if (empty($good_cancelled)) {
-                return json_encode(["error" => "Good/Cancelled is Required "]);
-                die();
-            }
-            // SELECT * FROM `cash_disbursement` WHERE cash_disbursement.dv_aucs_id=6697;
-            if (empty($_POST['update_id'])) {
-                $query = (new \yii\db\Query)
-                    ->select("cash_disbursement.id")
-                    ->from("cash_disbursement")
-                    ->where("cash_disbursement.dv_aucs_id = :dv_aucs_id", ['dv_aucs_id' => $selected_items[0]])
-                    ->andWhere("cash_disbursement.is_cancelled=0")
-                    ->one();
-                if (!empty($query)) {
-                    return json_encode(['isSuccess' => 'exist', 'id' => $query['id']]);
-                }
-            }
+    //             $cd->dv_aucs_id = $_POST['selection'][0];
+    //         } else if ($good_cancelled == 1) {
+    //             if (!empty($selected_items)) {
+    //                 return json_encode(["error" => "Select Type is Cancelled "]);
+    //                 die();
+    //             }
+    //         } else if (empty($good_cancelled)) {
+    //             return json_encode(["error" => "Good/Cancelled is Required "]);
+    //             die();
+    //         }
+    //         // SELECT * FROM `cash_disbursement` WHERE cash_disbursement.dv_aucs_id=6697;
+    //         if (empty($_POST['update_id'])) {
+    //             $query = (new \yii\db\Query)
+    //                 ->select("cash_disbursement.id")
+    //                 ->from("cash_disbursement")
+    //                 ->where("cash_disbursement.dv_aucs_id = :dv_aucs_id", ['dv_aucs_id' => $selected_items[0]])
+    //                 ->andWhere("cash_disbursement.is_cancelled=0")
+    //                 ->one();
+    //             if (!empty($query)) {
+    //                 return json_encode(['isSuccess' => 'exist', 'id' => $query['id']]);
+    //             }
+    //         }
 
-            if (empty($good_cancelled)) {
-                $good_cancelled = 0;
-            }
+    //         if (empty($good_cancelled)) {
+    //             $good_cancelled = 0;
+    //         }
 
-            $cd->book_id = $book_id;
-            $cd->reporting_period = $reporting_period;
-            $cd->mode_of_payment = $mode_of_payment;
-            $cd->check_or_ada_no = $check_ada_no;
-            $cd->is_cancelled = $good_cancelled;
-            $cd->issuance_date = $issuance_date;
-            $cd->ada_number = $ada_number;
-            $cd->begin_time = $begin_time;
-            $cd->out_time = $out_time;
+    //         $cd->book_id = $book_id;
+    //         $cd->reporting_period = $reporting_period;
+    //         $cd->mode_of_payment = $mode_of_payment;
+    //         $cd->check_or_ada_no = $check_ada_no;
+    //         $cd->is_cancelled = $good_cancelled;
+    //         $cd->issuance_date = $issuance_date;
+    //         $cd->ada_number = $ada_number;
+    //         $cd->begin_time = $begin_time;
+    //         $cd->out_time = $out_time;
 
-            if ($cd->validate()) {
-                if ($cd->save()) {
+    //         if ($cd->validate()) {
+    //             if ($cd->save()) {
 
-                    $q = Yii::$app->db->createCommand("UPDATE advances_entries 
-            LEFT JOIN advances ON advances_entries.advances_id  = advances.id
-            SET advances_entries.is_deleted = 0,
-            advances_entries.cash_disbursement_id = :cash_id
-            WHERE 
-            advances.dv_aucs_id = :dv_id
-            AND advances_entries.is_deleted = 9
-            ")
-                        ->bindValue(':dv_id', $cd->dv_aucs_id)
-                        ->bindValue(':cash_id', $cd->id)
-                        ->execute();
-                    return json_encode(["isSuccess" => true, 'id' => $cd->id]);
-                }
-            } else {
+    //                 $q = Yii::$app->db->createCommand("UPDATE advances_entries 
+    //         LEFT JOIN advances ON advances_entries.advances_id  = advances.id
+    //         SET advances_entries.is_deleted = 0,
+    //         advances_entries.cash_disbursement_id = :cash_id
+    //         WHERE 
+    //         advances.dv_aucs_id = :dv_id
+    //         AND advances_entries.is_deleted = 9
+    //         ")
+    //                     ->bindValue(':dv_id', $cd->dv_aucs_id)
+    //                     ->bindValue(':cash_id', $cd->id)
+    //                     ->execute();
+    //                 return json_encode(["isSuccess" => true, 'id' => $cd->id]);
+    //             }
+    //         } else {
 
-                // echo"<pre>";
-                // var_dump($q);
-                // echo"</pre>";
-                // die();
-                return json_encode(["isSuccess" => false, "error" => $cd->errors]);
-            }
-            // }
-        }
-    }
+    //             // echo"<pre>";
+    //             // var_dump($q);
+    //             // echo"</pre>";
+    //             // die();
+    //             return json_encode(["isSuccess" => false, "error" => $cd->errors]);
+    //         }
+    //         // }
+    //     }
+    // }
     public function actionImport()
     {
         if (!empty($_POST)) {
@@ -1073,7 +1095,6 @@ class CashDisbursementController extends Controller
             $query = new Query();
             $query->select(["chart_of_accounts.id, CONCAT (chart_of_accounts.uacs ,'-',chart_of_accounts.general_ledger) as text"])
                 ->from('chart_of_accounts')
-
                 ->andWhere(
                     [
                         'or',

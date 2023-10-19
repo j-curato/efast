@@ -37,15 +37,36 @@ class MafController extends \yii\web\Controller
                     [
                         'actions' => [
                             'index',
-                            'update',
                             'view',
-                            'create',
-                            'search-chart-of-accounts',
-                            'get-allotments'
+
                         ],
                         'allow' => true,
-                        'roles' => ['super-user', 'maf']
-                    ]
+                        'roles' => ['view_maf']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_maf']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_maf']
+                    ],
+                    [
+                        'actions' => [
+                            'search-chart-of-accounts',
+                            'get-allotments'
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ],
                 ]
             ],
             'verbs' => [

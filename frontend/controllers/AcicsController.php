@@ -42,13 +42,27 @@ class AcicsController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'create',
-                            'update',
-                            'delete',
+
                         ],
                         'allow' => true,
-                        'roles' => ['@']
-                    ]
+                        'roles' => ['view_acic']
+                    ],
+                    [
+                        'actions' => [
+
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_acic']
+                    ],
+                    [
+                        'actions' => [
+
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_acic']
+                    ],
                 ]
             ],
             'verbs' => [

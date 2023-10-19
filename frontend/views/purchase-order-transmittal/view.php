@@ -22,10 +22,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="container card" style="padding: 1rem;">
         <h5><?= Html::encode($this->title) ?></h5>
-
         <p>
-            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-
+            <?= Yii::$app->user->can('update_purchase_order_transmittal') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
         </p>
 
         <div class="row" style="float:right">
@@ -254,13 +252,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", []);
             border: 1px solid white;
         }
 
-        select {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            text-indent: 1px;
-            text-overflow: '';
-            border: none;
-        }
+
 
         th,
         td {

@@ -1,6 +1,5 @@
 <?php
 
-use app\components\helpers\MyHelper;
 use kartik\grid\GridView;
 use yii\helpers\Html;
 use yii\web\JqueryAsset;
@@ -16,12 +15,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Html::a('Create Ptr', ['create'], ['class' => 'btn btn-success lrgModal']) ?>
+        <?= Yii::$app->user->can('create_ptr') ? Html::a('<i class="fa fa-plus"></i> Create', ['create'], ['class' => 'btn btn-success lrgModal']) : '' ?>
     </p>
-
-    <?php // echo $this->render('_search', ['model' => $searchModel]); 
-    ?>
-
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
@@ -29,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'type' => GridView::TYPE_PRIMARY,
             'heading' => 'PTRs'
         ],
-        'pjax'=>true,
+        'pjax' => true,
         'columns' => [
 
             'office_name',
@@ -44,7 +39,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Actions',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return MyHelper::gridDefaultAction($model->id, 'lrgModal');
+                    $updateBtn = Yii::$app->user->can('update_ptr') ? Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => 'lrgModal']) : '';
+                    return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id]) . ' ' . $updateBtn;
                 }
             ]
 

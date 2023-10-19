@@ -38,13 +38,26 @@ class AcicInBankController extends Controller
                         'actions' => [
                             'view',
                             'index',
-                            'delete',
-                            'create',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_acic_in_bank']
+                    ],
+                    [
+                        'actions' => [
+
                             'update',
                         ],
                         'allow' => true,
-                        'roles' => ['acic_in_bank']
-                    ]
+                        'roles' => ['update_acic_in_bank']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_acic_in_bank']
+                    ],
                 ]
             ],
             'verbs' => [
@@ -224,7 +237,7 @@ class AcicInBankController extends Controller
                 if (!$model->save(false)) {
                     throw new ErrorException('Model Save Failed');
                 }
-                $insItems = $this->insItems($model->id, $uniqueItems,true);
+                $insItems = $this->insItems($model->id, $uniqueItems, true);
                 if ($insItems !== true) {
                     throw new ErrorException($insItems);
                 }

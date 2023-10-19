@@ -18,7 +18,7 @@ $first_month =  $propertyDetails['date'];
 ?>
 <div class="other-property-details-view card" style="padding:1rem">
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+        <?= Yii::$app->user->can('update_other_property_details') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
     </p>
     <div>
 
