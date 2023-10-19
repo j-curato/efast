@@ -36,18 +36,38 @@ class ConsoSubTrialBalanceController extends Controller
                 'rules' => [
                     [
                         'actions' => [
-                            'generate',
-                            'export',
                             'index',
-                            'create',
                             'view',
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_ro_conso_sub_trial_balance']
+                    ],
+                    [
+                        'actions' => [
+
                             'update',
-                            'delete',
 
                         ],
                         'allow' => true,
-                        'roles' => ['super-user', 'ro_conso_sub_trial_balance']
-                    ]
+                        'roles' => ['update_ro_conso_sub_trial_balance']
+                    ],
+                    [
+                        'actions' => [
+
+                            'create',
+
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_ro_conso_sub_trial_balance']
+                    ],
+                    [
+                        'actions' => [
+                            'export',
+                        ],
+                        'allow' => true,
+                        'roles' => ['export_ro_conso_sub_trial_balance']
+                    ],
                 ]
             ],
             'verbs' => [

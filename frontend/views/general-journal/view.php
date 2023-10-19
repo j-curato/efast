@@ -159,7 +159,6 @@ $items = $model->getItems();
             },
             methods: {
                 formatItems() {
-                    console.log(this.items)
                     return Object.keys(this.items).map((key) => {
                         let obj = this.items[key]
                         let particular = ''

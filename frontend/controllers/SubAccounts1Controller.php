@@ -7,6 +7,7 @@ use Yii;
 use app\models\SubAccounts1;
 use app\models\SubAccounts1Search;
 use app\models\SubAccounts2;
+use app\models\UacsObjectCodes;
 use ErrorException;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -124,8 +125,12 @@ class SubAccounts1Controller extends Controller
             $uacs = ChartOfAccounts::findOne($model->chart_of_account_id)->uacs;
             $zero = strlen($last_id) < 5 ? str_repeat('0',  5 - strlen($last_id)) : '';
             $model->object_code = $uacs . '_' . $zero . $last_id;
-
             try {
+                $uacsObjectCode = new UacsObjectCodes();
+                $uacsObjectCode->object_code = $model->object_code;
+                if (!$uacsObjectCode->save(false)) {
+                    throw new ErrorException('Uacs Model Save Failed');
+                }
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }

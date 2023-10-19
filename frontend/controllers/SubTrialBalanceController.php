@@ -38,17 +38,35 @@ class SubTrialBalanceController extends Controller
                 'rules' => [
                     [
                         'actions' => [
-                            'update',
                             'view',
-                            'delete',
                             'index',
-                            'create',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_ro_sub_trial_balance']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_ro_sub_trial_balance']
+                    ],
+                    [
+                        'actions' => [
                             'generate-sub-trial-balance',
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_ro_sub_trial_balance']
+                    ],
+                    [
+                        'actions' => [
                             'export'
                         ],
                         'allow' => true,
-                        'roles' => ['super-user','ro_sub_trial_balance']
-                    ]
+                        'roles' => ['export_ro_sub_trial_balance']
+                    ],
                 ]
             ],
             'verbs' => [

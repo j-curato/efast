@@ -81,13 +81,17 @@ class ProcurementReportsController extends \yii\web\Controller
             'bidGrossAmount',
             'po_number',
             'po_is_cancelled',
+            'poTransmittalNumber',
+            'poTransmittalDate',
             'rfi_number',
             'rfi_date',
             'inspection_from',
             'inspection_to',
             'inspected_quantity',
             'ir_number',
-            'iar_number'
+            'iar_number',
+            'iarTransmittalNumber',
+            'iarTransmittalDate',
         ];
         $model = new VwProcurementToIarTracking();
         $modelAttributeLabels = $model->attributeLabels();
@@ -106,14 +110,12 @@ class ProcurementReportsController extends \yii\web\Controller
         }
 
         date_default_timezone_set('Asia/Manila');
-        $date = date('Y-m-d h-s A');
         $file_name = "detailed_dv_$year.xlsx";
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
         $fileSaveLoc =  "exports\\" . $file_name;
         $path = Yii::getAlias('@webroot') . '/exports';
         $file = $path . "/$file_name";
         $writer->save($file);
-        // return ob_get_clean();
         header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
         header('Content-Transfer-Encoding: binary');
         header("Cache-Control: must-revalidate, post-check=0, pre-check=0");

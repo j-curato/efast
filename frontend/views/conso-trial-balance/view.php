@@ -1,9 +1,7 @@
 <?php
 
-use kartik\date\DatePicker;
 use yii\helpers\Html;
 
-use kartik\select2\Select2;
 
 
 /* @var $this yii\web\View */
@@ -24,8 +22,8 @@ $this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' 
     ?>
     <div class="container card">
         <p>
-            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 
+            <?= Yii::$app->user->can('update_ro_conso_trial_balance') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
             <button id="export" type='button' class="btn btn-success" style="margin:1rem;"><i class="glyphicon glyphicon-export"> </i> Export</button>
 
         </p>

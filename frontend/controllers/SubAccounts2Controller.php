@@ -2,16 +2,17 @@
 
 namespace frontend\controllers;
 
-use app\models\SubAccounts1;
 use Yii;
-use app\models\SubAccounts2;
-use app\models\SubAccounts2Search;
 use ErrorException;
-use PHPUnit\Util\Log\JSON;
-use yii\filters\AccessControl;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
+use PHPUnit\Util\Log\JSON;
 use yii\filters\VerbFilter;
+use app\models\SubAccounts1;
+use app\models\SubAccounts2;
+use yii\filters\AccessControl;
+use app\models\UacsObjectCodes;
+use app\models\SubAccounts2Search;
+use yii\web\NotFoundHttpException;
 
 /**
  * SubAccounts2Controller implements the CRUD actions for SubAccounts2 model.
@@ -112,6 +113,11 @@ class SubAccounts2Controller extends Controller
             $zero = strlen($last_id) < 5 ? str_repeat('0', 5 - strlen($last_id)) : '';
             $model->object_code = $sub_acc1_ojc_code . '_' . $zero . $last_id;
             try {
+                $uacsObjectCode = new UacsObjectCodes();
+                $uacsObjectCode->object_code = $model->object_code;
+                if (!$uacsObjectCode->save(false)) {
+                    throw new ErrorException('Uacs Model Save Failed');
+                }
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }

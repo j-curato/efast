@@ -49,6 +49,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'bidGrossAmount',
             'po_number',
             'po_is_cancelled',
+            'poTransmittalNumber',
+            'poTransmittalDate',
             'rfi_number',
             'date',
             'inspection_from',
@@ -56,6 +58,8 @@ $this->params['breadcrumbs'][] = $this->title;
             'inspected_quantity',
             'ir_number',
             'iar_number',
+            'iarTransmittalNumber',
+            'iarTransmittalDate',
         ],
     ]); ?>
 

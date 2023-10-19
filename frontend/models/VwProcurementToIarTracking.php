@@ -92,6 +92,8 @@ class VwProcurementToIarTracking extends \yii\db\ActiveRecord
             'bidGrossAmount' => 'Bid Gross Amount',
             'po_number' => 'PO No.',
             'po_is_cancelled' => 'PO  Good/Cancelled',
+            'poTransmittalNumber' => 'PO Transmittal No.',
+            'poTransmittalDate' => 'PO Transmittal Date',
             'rfi_number' => 'RFI No.',
             'rfi_date' => 'RFI Date',
             'inspection_from' => 'Inspection From',
@@ -100,6 +102,8 @@ class VwProcurementToIarTracking extends \yii\db\ActiveRecord
             'ir_number' => 'IR No.',
             'iar_number' => 'IAR No.',
             'pr_date' => 'PR Date',
+            'iarTransmittalNumber' => 'IAR Transmittal No.',
+            'iarTransmittalDate' => 'IAR Transmittal Date',
         ];
     }
 }

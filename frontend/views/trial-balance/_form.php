@@ -42,7 +42,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     'name' => 'reporting_period',
                     'type' => DatePicker::TYPE_INPUT,
                     'readonly' => true,
-
                     'pluginOptions' => [
                         'autoclose' => true,
                         'format' => 'yyyy-mm',
@@ -315,12 +314,12 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
             entry_type != '' &&
             book_id != ''
         ) {
-            
+
             $('.container').hide()
             $('#dots5').show()
             setTimeout(() => {
                 query('<?= Yii::$app->request->csrfToken ?>', reporting_period, book_id, entry_type)
-            },1300)
+            }, 1300)
         }
         $("#generate").click(function(e) {
             e.preventDefault()
@@ -332,7 +331,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
             $('#dots5').show()
             setTimeout(() => {
                 query('<?= Yii::$app->request->csrfToken ?>', reporting_period, book_id, entry_type)
-            },1300)
+            }, 1300)
         })
     })
 </script>

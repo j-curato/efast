@@ -263,76 +263,7 @@ $entry_row = 1;
 
 
 
-        <tbody>
 
-            <?php
-
-            if (!empty($entries)) {
-                foreach ($entries as $val) {
-                    $id = '';
-                    if (!empty($val['id'])) {
-                        $id = $val['id'];
-                    }
-                    $debit = $val['debit'];
-                    $credit = $val['credit'];
-                    $object_code = $val['object_code'];
-                    $account_title = $val['account_title'];
-
-                    echo "<tr>
-                        <td style='width: 300px;max-width:300px'>
-                            <div>
-                                <label for='chart-of-accounts'>UACS</label>
-                                <select required name='object_code[$entry_row]' class='chart-of-accounts' style='width: 100%'>
-                                    <option value='$object_code' selected>$object_code - $account_title</option>
-                                </select>
-                            </div>
-                        </td>
-                        <td style='width: 150px;'>
-                        <label for='debit'>Debit</label>
-                            <input type='text' class='  mask-amount' placeholder='Debit' value='$debit'>
-                            <input type='hidden' name='debit[$entry_row]' class='debit main_amount' placeholder='Debit' value='$debit'>
-                        </td>
-                        <td style='width: 150px;'>
-                        <label for='credit'>Credit</label>
-                            <input type='text' class='  mask-amount' placeholder='Credit' value='$credit'>
-                            <input type='hidden' name='credit[$entry_row]' class='credit main_amount' placeholder='Credit' value='$credit'>
-                        </td>
-                        <td style='width: 50px;'>
-                            <button type='button' class='remove btn btn-danger btn-xs' style=' text-align: center; float:right;'><i class='fa fa-times'></i></button>
-                            <button type='button' class='add btn btn-success btn-xs' style=' text-align: center; float:right;margin-right:5px'><i class='fa fa-pencil-alt'></i></button> 
-                        </td>
-                    </tr>";
-                    $entry_row++;
-                }
-            } else {
-
-            ?>
-                <tr>
-                    <td style="width: 300px;max-width:300px">
-                        <div>
-                            <label for="chart-of-accounts">UACS</label>
-                            <select required name="object_code[0]" class="chart-of-accounts" style="width: 100%">
-                                <option></option>
-                            </select>
-                        </div>
-                    </td>
-                    <td style="width: 150px;">
-                        <label for="debit">Debit</label>
-                        <input type="text" class="  mask-amount" placeholder="Debit">
-                        <input type="hidden" name="debit[0]" class="debit main_amount" placeholder="Debit">
-                    </td>
-                    <td style="width: 150px;">
-                        <label for="credit">Credit</label>
-                        <input type="text" class="  mask-amount" placeholder="Credit">
-                        <input type="hidden" name="credit[0]" class="credit main_amount" placeholder="Credit">
-                    </td>
-                    <td style="width: 50px;">
-                        <button type="button" class='remove btn btn-danger btn-xs' style=" text-align: center; float:right;"><i class="fa fa-times"></i></button>
-                        <button type="button" class='add btn btn-success btn-xs' style=" text-align: center; float:right;margin-right:5px"><i class="fa fa-pencil-alt"></i></button>
-                    </td>
-                </tr>
-            <?php } ?>
-        </tbody>
         <tfoot>
 
             <tr>

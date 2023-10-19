@@ -3,18 +3,20 @@
 namespace frontend\controllers;
 
 use Yii;
-use app\models\ChartOfAccounts;
-use app\models\ChartOfAccountsSearch;
-use app\models\MajorAccounts;
-use app\models\SubAccounts1;
-use app\models\SubMajorAccounts;
-use app\models\SubMajorAccounts2;
 use Exception;
 use yii\db\Query;
-use yii\filters\AccessControl;
+use ErrorException;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\models\SubAccounts1;
+use app\models\MajorAccounts;
+use yii\filters\AccessControl;
+use app\models\ChartOfAccounts;
+use app\models\UacsObjectCodes;
+use app\models\SubMajorAccounts;
+use app\models\SubMajorAccounts2;
+use yii\web\NotFoundHttpException;
+use app\models\ChartOfAccountsSearch;
 
 /**
  * ChartOfAccountsController implements the CRUD actions for ChartOfAccounts model.
@@ -151,7 +153,11 @@ class ChartOfAccountsController extends Controller
         $model = new ChartOfAccounts();
 
         if ($model->load(Yii::$app->request->post())) {
-
+            $uacsObjectCode = new UacsObjectCodes();
+            $uacsObjectCode->object_code = $model->uacs;
+            if (!$uacsObjectCode->save(false)) {
+                throw new ErrorException('Uacs Model Save Failed');
+            }
             if ($model->save(false)) {
 
                 return $this->redirect(['view', 'id' => $model->id]);
