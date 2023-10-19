@@ -344,7 +344,7 @@ class RlsddpController extends Controller
         if (Yii::$app->request->post()) {
             $emp_id = Yii::$app->request->post('id');
             $qry = YIi::$app->db->createCommand("SELECT 
-            par.id,
+                 CAST(par.id AS CHAR(50)) as id,
                      par.par_number,
                      par.date as par_date,
                    
