@@ -14,7 +14,8 @@ class AppAsset extends AssetBundle
     public $css = [
         'css/site.css',
         // '/web/css/styles.css',
-        'css/select2.min.css'
+        'css/select2.min.css',
+        'css/web.css'
     ];
     public $js = [
         // 'js/jquery.min.js',
