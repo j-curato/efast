@@ -2675,6 +2675,6 @@ class DvAucsController extends Controller
 
             exit();
         }
-        return $this->render('detailed_dvs');
+        return $this->render('export_detailed_dvs');
     }
 }
