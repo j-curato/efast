@@ -1,5 +1,6 @@
 <?php
 
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
@@ -9,6 +10,7 @@ $this->title = $model->serial_number;
 $this->params['breadcrumbs'][] = ['label' => 'Radais', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
+$checkNumbers = implode(',', ArrayHelper::getColumn($model->getRadaiItemsCheckNumbers(), 'check_or_ada_no'));
 ?>
 <div class="radai-view ">
     <p>
@@ -28,14 +30,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 <span>Entiti Name:</span><br>
                 <span>Fund Cluster:</span><br>
                 <span>Bank Name/Account No.:</span><br>
+                <span>Check No/s. :</span><br>
             </th>
             <th colspan="3" class="no-bdr">
 
                 <u>DEPARTMENT OF TRADE AND INDUSTRY</u><br>
                 <u> &emsp;<?= $model->book->name ?? '' ?> &emsp;</u><br>
-                <u> &emsp;<?php
-                            // echo $model->book->account_name ?? '';
-                            echo $model->book->account_number ?? ''; ?> &emsp;</u>
+                <u> &emsp;<?= $model->book->account_number ?? ''; ?> &emsp;</u><br>
+                <u><?= $checkNumbers ?></u>
             </th>
             <th colspan="3" class="no-bdr">
                 <span>Report No.: <u>&emsp; <?= $model->serial_number ?> &emsp;</u></span><br>
@@ -44,6 +46,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
         </tr>
+
         <tr>
             <th class="ctr" colspan="2">ADA</th>
             <th class="ctr" rowspan="2">DV/Payroll No.</th>
@@ -61,7 +64,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <?php
         $total = 0;
-        foreach ($items as $itm) {
+        foreach ($model->getItemsPerDv() as $itm) {
             echo "<tr>
                 <td>{$itm['check_date']}</td>
                 <td>{$itm['lddap_ada_number']}</td>
