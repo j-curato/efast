@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Yii::$app->user->can('create_routing_slip') ? Html::a('<i class="fa fa-plus"></i> Create', ['create'], ['class' => 'btn btn-success ']) : '' ?>
+        <?= Yii::$app->user->can('create_routing_slip') ? Html::a('<i class="fa fa-plus"></i> Create', ['create-routing'], ['class' => 'btn btn-success ']) : '' ?>
     </p>
 
     <?php
@@ -78,7 +78,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'raw',
                 'value' => function ($model) {
 
-                    $updateBtn = Yii::$app->user->can('update_routing_slip') ? Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => '']) : '';
+                    $updateBtn = Yii::$app->user->can('update_routing_slip') ? Html::a('<i class="fa fa-pencil-alt"></i>', ['update-routing', 'id' => $model->id], ['class' => '']) : '';
                     $view = yii::$app->request->baseUrl . "/index.php?r=dv-aucs/routing-slip-view&id=$model->id";
                     return ' ' . Html::a('', $view, ['class' => ' fa fa-eye'])
                         . ' ' . $updateBtn;

@@ -233,7 +233,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ];
     ?>
-    <?= $this->render('/dv-aucs/export_detailed_dvs') ?>
+    <?= $this->render('/dv-aucs/detailed_dvs') ?>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,

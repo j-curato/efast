@@ -99,6 +99,7 @@ class DvAucsController extends Controller
                     [
                         'actions' => [
                             'create-routing',
+                            'create',
                         ],
                         'allow' => true,
                         'roles' => ['create_routing_slip']
