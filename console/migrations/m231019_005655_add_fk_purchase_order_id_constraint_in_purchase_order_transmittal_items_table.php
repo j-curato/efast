@@ -14,7 +14,7 @@ class m231019_005655_add_fk_purchase_order_id_constraint_in_purchase_order_trans
     {
         Yii::$app->db->createCommand('SET FOREIGN_KEY_CHECKS = 0')->query();
         $this->createIndex('idx-po-trasmittal-fk_purchase_order_item_id', 'purchase_order_transmittal_items', 'fk_purchase_order_item_id');
-        $this->addForeignKey('fk-po-trasmittal-fk_purchase_order_item_id', 'purchase_order_transmittal_items', 'fk_purchase_order_item_id', 'pr_purchase_order', 'id');
+        $this->addForeignKey('fk-po-trasmittal-fk_purchase_order_item_id', 'purchase_order_transmittal_items', 'fk_purchase_order_item_id', 'pr_purchase_order_item', 'id');
     }
 
     /**

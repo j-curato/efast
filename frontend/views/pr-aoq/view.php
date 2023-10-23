@@ -174,7 +174,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <th rowspan="2" class="center">Qty</th>
                         <th rowspan="2" class="center">Unit</th>
                         <th rowspan="2" class="center">Description</th>
-                        <th rowspan="2" class="center">Unit Cost</th>
+                        <th rowspan="2" class="center">Abc</th>
 
                         <th v-for="payee in payees" colspan="2" class="center">
                             {{payee}}
