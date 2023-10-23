@@ -77,7 +77,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <p>
             <?= Html::a('Print', ['dv-form', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
-            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
             <?= Yii::$app->user->can('update_dv_aucs') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => ' btn btn-primary']) : '' ?>
             <?php
 
