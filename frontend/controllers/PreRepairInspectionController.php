@@ -35,6 +35,7 @@ class PreRepairInspectionController extends Controller
                     [
                         'actions' => [
                             'view',
+                            'index',
                         ],
                         'allow' => true,
                         'roles' => ['view_pre_repair_inspection']
