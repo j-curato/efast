@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\web\JqueryAsset;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
@@ -15,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-    <?= Yii::$app->user->can('update_mfo_pap_code') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
+        <?= Yii::$app->user->can('update_mfo_pap_code') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
 
     </p>
 
@@ -30,3 +31,13 @@ $this->params['breadcrumbs'][] = $this->title;
     ]) ?>
 
 </div>
+<?php
+
+$this->registerJsFile(
+    '@web/frontend/web/js/globalFunctions.js',
+    [
+        'depends' => [JqueryAsset::class]
+    ]
+);
+
+?>
