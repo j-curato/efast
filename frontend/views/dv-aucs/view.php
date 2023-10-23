@@ -59,7 +59,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         <th>Link</th>
                     </tr>
                     <?php foreach ($cashIds as $itm) {
-
                         echo "<tr>
                             <td class='ctr'>{$itm['check_or_ada_no']}</td>
                             <td class='ctr'>";
