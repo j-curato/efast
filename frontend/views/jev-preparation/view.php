@@ -143,7 +143,7 @@ Select2Asset::register($this);
                 $total_credit = 0;
                 $total_debit = 0;
                 foreach ($model->getItems() as $itm) {
-                    $total_credit += floatval($itm['debit']);
+                    $total_credit += floatval($itm['credit']);
                     $total_debit += floatval($itm['debit']);
                     echo "<tr>
                             <td></td>
