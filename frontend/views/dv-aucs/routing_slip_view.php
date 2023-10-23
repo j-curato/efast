@@ -166,9 +166,9 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="container">
 
         <p>
-            <?= Html::a('Update', ['update-routing', 'id' => $model->id], ['class' => 'btn btn-primary', 'id' => 'update']) ?>
-            <?= Html::a('Create', ['create-tracking'], ['class' => 'btn btn-success']) ?>
 
+            <?= Yii::$app->user->can('update_routing_slip') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
+            <?= Yii::$app->user->can('create_routing_slip') ? Html::a('<i class="fa fa-plus"></i> Create', ['create'], ['class' => 'btn btn-success ']) : '' ?>
         </p>
         <table id="page">
 

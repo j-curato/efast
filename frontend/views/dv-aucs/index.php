@@ -6,7 +6,6 @@ use kartik\export\ExportMenu;
 use kartik\file\FileInput;
 use kartik\form\ActiveForm;
 use kartik\grid\GridView;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
@@ -234,7 +233,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ];
     ?>
-    <?= $this->render('/dv-aucs/detailed_dvs') ?>
+    <?= $this->render('/dv-aucs/export_detailed_dvs') ?>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,

@@ -6,34 +6,25 @@ use Yii;
 use DateTime;
 use yii\db\Query;
 use ErrorException;
-use yii\helpers\Url;
 use app\models\Books;
-
 use app\models\DvAucs;
 use yii\web\Controller;
 use app\models\Advances;
 use app\models\DvAucsFile;
-
-use PHPUnit\Util\Log\JSON;
 use yii\filters\VerbFilter;
 use yii\helpers\FileHelper;
 use app\models\DvAucsSearch;
-use app\models\SubAccounts2;
-use yii\helpers\ArrayHelper;
 use app\models\DvAucsEntries;
 use common\models\UploadForm;
-use yii\validators\Validator;
 use yii\filters\AccessControl;
 use app\models\AdvancesEntries;
 use app\models\ProcessOrsSearch;
 use app\models\DvAucsIndexSearch;
 use app\models\DvTransactionType;
-use app\models\ProcessOrsEntries;
 use yii\web\NotFoundHttpException;
 use app\models\DvAccountingEntries;
 use app\models\VwNoFileLinkDvsSearch;
 use app\models\TrackingSheetIndexSearch;
-use phpDocumentor\Reflection\PseudoTypes\False_;
 
 /**
  * DvAucsController implements the CRUD actions for DvAucs model.
@@ -61,10 +52,6 @@ class DvAucsController extends Controller
                     'cancel',
                     'dv-form',
                     'is-payable',
-                    'create-tracking',
-                    'tracking-view',
-                    'tracking-update',
-                    'tracking-index',
                     'add-link',
                     'turnarround-time',
                     'return',
@@ -73,76 +60,96 @@ class DvAucsController extends Controller
                     'turnarround-view',
                     'get-object-code',
                     'create-routing',
-                    'update-routing',
+                    'create-routing',
+                    'routing-slip-index',
+                    'routing-slip-view',
                 ],
                 'rules' => [
                     [
                         'actions' => [
-                            'index',
-                            'create',
-                            'update',
-                            'delete',
-                            'view',
                             'get-dv',
-                            'insert-dv',
-                            'update-dv',
-                            'import',
-                            'cancel',
-                            'dv-form',
-                            'is-payable',
-                            'create-tracking',
-                            'tracking-view',
-                            'tracking-update',
-                            'tracking-index',
-                            'add-link',
-                            'turnarround-time',
-                            'return',
-                            'in',
-                            'out',
-                            'turnarround-view',
                             'get-object-code'
                         ],
                         'allow' => true,
-                        'roles' => ['ro_accounting_admin']
+                        'roles' => ['@']
                     ],
                     [
                         'actions' => [
-                            'tracking-index',
-                            'create-routing',
-                            'tracking-view',
-                            'update-routing',
-
-                        ],
-                        'allow' => true,
-                        'roles' => ['ro_routing_slip']
-                    ],
-                    [
-                        'actions' => [
-                            'index',
-                            'update',
-                            'view',
-                            'cancel',
                             'add-link',
                         ],
                         'allow' => true,
-                        'roles' => ['ro_process_dv']
+                        'roles' => ['add_ro_process_dv_link']
                     ],
                     [
                         'actions' => [
                             'turnarround-time',
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_ro_turn_arround_time']
+                    ],
+                    [
+                        'actions' => [
                             'in',
                             'out',
                         ],
                         'allow' => true,
-                        'roles' => ['ro_turn_arround_time']
+                        'roles' => ['add_ro_turn_arround_time']
+                    ],
+                    // ROUTING SLIP
+                    [
+                        'actions' => [
+                            'create-routing',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_routing_slip']
                     ],
                     [
                         'actions' => [
-                            'index',
+                            'update-routing',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
-                    ]
+                        'roles' => ['update_routing_slip']
+                    ],
+                    [
+                        'actions' => [
+                            'routing-slip-index',
+                            'routing-slip-view',
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_routing_slip']
+                    ],
+                    // END
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                            'dv-form',
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_dv_aucs']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                            'is-payable',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_dv_aucs']
+                    ],
+                    [
+                        'actions' => [
+                            'export-detailed-dv',
+                        ],
+                        'allow' => true,
+                        'roles' => ['export_detailed_dv_aucs']
+                    ],
+                    [
+                        'actions' => [
+                            'cancel',
+                        ],
+                        'allow' => true,
+                        'roles' => ['cancel_dv_aucs']
+                    ],
                 ]
             ],
             'verbs' => [
@@ -2184,9 +2191,9 @@ class DvAucsController extends Controller
             'update_id' => '',
         ]);
     }
-    public function actionTrackingView($id)
+    public function actionRoutingSlipView($id)
     {
-        return $this->render('tracking_view', [
+        return $this->render('routing_slip_view', [
             'model' => $this->findModel($id),
         ]);
     }
@@ -2356,12 +2363,12 @@ class DvAucsController extends Controller
             'model' => $model
         ]);
     }
-    public function actionTrackingIndex()
+    public function actionRoutingSlipIndex()
     {
         $searchModel = new TrackingSheetIndexSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
-        return $this->render('tracking_index', [
+        return $this->render('routing_slip_index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
@@ -2524,7 +2531,7 @@ class DvAucsController extends Controller
         }
         return $out;
     }
-    public function actionDetailedDv()
+    public function actionExportDetailedDv()
     {
 
         if (Yii::$app->request->post()) {

@@ -76,7 +76,7 @@ $this->registerJsFile('@web/js/vue-spinner.min.js', ['position' => $this::POS_HE
                 exportDvs() {
                     this.loading = true
                     this.showTable = false
-                    const url = window.location.pathname + '?r=dv-aucs/detailed-dv'
+                    const url = window.location.pathname + '?r=dv-aucs/export-detailed-dv'
                     const data = {
                         year: $("#year").val(),
                         _csrf: '<?= $csrf ?>'

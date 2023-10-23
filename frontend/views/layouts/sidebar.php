@@ -83,8 +83,8 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
             ];
             $accountingTransactions = [
                 Yii::$app->user->can('ro_transaction') ? ['label' => 'Transaction', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/transaction/index'],] : null,
-                Yii::$app->user->can('ro_routing_slip') ? ['label' => 'Routing Slip', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/dv-aucs/tracking-index'],] : null,
-                Yii::$app->user->can('ro_process_dv') ? ['label' => 'Process Dv', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/dv-aucs/index'],] : null,
+                Yii::$app->user->can('view_routing_slip') ? ['label' => 'Routing Slip', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/dv-aucs/routing-slip-index'],] : null,
+                Yii::$app->user->can('view_dv_aucs') ? ['label' => 'Process Dv', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/dv-aucs/index'],] : null,
                 Yii::$app->user->can('ro_jev') ?  ['label' => 'Jev', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/jev-preparation/index'],] : null,
                 Yii::$app->user->can('ro_turn_arround_time') ? ['label' => 'Turn Arround Time', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/dv-aucs/turnarround-time'],] : null,
                 Yii::$app->user->can('ro_transmittal') ? ['label' => 'Transmittal', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/transmittal/index'],] : null,

@@ -1,10 +1,5 @@
 <?php
 
-use app\models\DvAucsEntriesSearch;
-use app\models\TrackingSheetIndexSearch;
-use kartik\export\ExportMenu;
-use kartik\file\FileInput;
-use kartik\form\ActiveForm;
 use kartik\grid\GridView;
 use yii\helpers\Html;
 
@@ -19,7 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Html::a('Create Routing Slip', ['create-routing'], ['class' => 'btn btn-success']) ?>
+        <?= Yii::$app->user->can('create_routing_slip') ? Html::a('<i class="fa fa-plus"></i> Create', ['create'], ['class' => 'btn btn-success ']) : '' ?>
     </p>
 
     <?php
@@ -82,10 +77,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Actions',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    $update = yii::$app->request->baseUrl . "/index.php?r=dv-aucs/update-routing&id=$model->id";
-                    $view = yii::$app->request->baseUrl . "/index.php?r=dv-aucs/tracking-view&id=$model->id";
-                    return ' ' . Html::a('', $view, ['class' => 'btn-xs btn-primary fa fa-eye'])
-                        . ' ' . Html::a('', $update, ['class' => 'btn-xs btn-success fa fa-pencil-alt']);
+
+                    $updateBtn = Yii::$app->user->can('update_routing_slip') ? Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => '']) : '';
+                    $view = yii::$app->request->baseUrl . "/index.php?r=dv-aucs/routing-slip-view&id=$model->id";
+                    return ' ' . Html::a('', $view, ['class' => ' fa fa-eye'])
+                        . ' ' . $updateBtn;
                 },
                 'hiddenFromExport' => true
             ],
