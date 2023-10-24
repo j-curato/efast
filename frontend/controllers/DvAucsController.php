@@ -491,7 +491,7 @@ class DvAucsController extends Controller
             } catch (ErrorException $e) {
                 return json_encode(['error' => $e->getMessage()]);
             }
-            return $this->redirect(['tracking-view', 'id' => $model->id]);
+            return $this->redirect(['routing-slip-view', 'id' => $model->id]);
         }
 
 
@@ -555,7 +555,7 @@ class DvAucsController extends Controller
                 $transaction->rollBack();
                 return json_encode(['error' => $e->getMessage()]);
             }
-            return $this->redirect(['tracking-view', 'id' => $model->id]);
+            return $this->redirect(['routing-slip-view', 'id' => $model->id]);
         }
 
 
