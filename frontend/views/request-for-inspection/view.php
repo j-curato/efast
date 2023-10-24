@@ -34,7 +34,7 @@ $isProvincialOffice = strtolower($officeName)  === 'ro' ? false : true;
             // if (!$model->is_final && Yii::$app->user->can('update_request_for_inspection')) {
             echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) . ' ';
             // }
-            if (Yii::$app->user->can('final_request_for_inspection' && !$model->is_final)) {
+            if (Yii::$app->user->can('final_request_for_inspection') && !$model->is_final) {
                 echo Html::a('Final', ['final', 'id' => $model->id], [
                     'class' => 'btn btn-danger',
                     'data' => [
