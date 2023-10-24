@@ -195,7 +195,7 @@ class LocationController extends Controller
                 ->limit($limit);
             if (!Yii::$app->user->can('ro_property_admin')) {
                 $user_data = User::getUserDetails();
-                $office_id = $user_data->employee->office->office->id;
+                $office_id = $user_data->employee->office->id;
                 $query->andWhere('fk_office_id = :ofc_id', ['ofc_id' => $office_id]);
             }
             $command = $query->createCommand();
