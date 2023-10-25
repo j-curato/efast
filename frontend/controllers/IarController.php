@@ -362,7 +362,7 @@ class IarController extends Controller
         if ($id > 0) {
         } else if (!is_null($q)) {
             $query = new Query();
-            $query->select('iar_index.id, iar_index.iar_number AS text')
+            $query->select('CAST(iar_index.id AS CHAR(50)) as id, iar_index.iar_number AS text')
                 ->from('iar_index')
                 ->where(['like', 'iar_index.iar_number', $q]);
 
