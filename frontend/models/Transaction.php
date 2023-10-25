@@ -77,9 +77,13 @@ class Transaction extends \yii\db\ActiveRecord
     }
     public function beforeSave($insert)
     {
-        if (parent::beforeSave($insert) && $this->isNewRecord) {
-            if (empty($this->id)) {
-                $this->id = Yii::$app->db->createCommand('SELECT UUID_SHORT() % 9223372036854775807')->queryScalar();
+        if (parent::beforeSave($insert)) {
+
+            if ($this->isNewRecord) {
+
+                if (empty($this->id)) {
+                    $this->id = Yii::$app->db->createCommand('SELECT UUID_SHORT() % 9223372036854775807')->queryScalar();
+                }
             }
             return true;
         }

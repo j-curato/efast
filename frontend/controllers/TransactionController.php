@@ -410,7 +410,7 @@ class TransactionController extends Controller
                 }
 
                 if (!$model->save(false)) {
-                    throw new ErrorException('Error saving model');
+                    throw new ErrorException('Model Save Failed');
                 }
                 $insPrs = $this->InsertPrs($model->id, $prItems);
                 if ($insPrs !== true) {
@@ -499,7 +499,7 @@ class TransactionController extends Controller
                     throw new ErrorException(json_encode($model->errors));
                 }
                 if (!$model->save(false)) {
-                    throw new ErrorException('Error saving model');
+                    throw new ErrorException('Model Save Failed');
                 }
                 $InsertPrs = $this->InsertPrs($model->id, $prItems, true);
                 if ($InsertPrs !== true) {
