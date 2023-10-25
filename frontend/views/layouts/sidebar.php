@@ -109,6 +109,7 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                 Yii::$app->user->can('view_ro_conso_sub_trial_balance') ?   ['iconStyle' => 'far', 'label' => 'Conso Sub Trial Balance', 'icon' => 'dot-circle', 'url' => ['/conso-sub-trial-balance/index'],] : null,
                 Yii::$app->user->can('ro_subsidiary_ledger') ?   ['iconStyle' => 'far', 'label' => 'Subsidiary Ledger', 'icon' => 'dot-circle', 'url' => ['/jev-preparation/get-subsidiary-ledger'],] : null,
                 Yii::$app->user->can('ro_accounting_admin') ?     ['label' => 'DV Time Monitoring', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/dv-time-monitoring'],] : null,
+                Yii::$app->user->can('view_transactions_tracking') ?     ['label' => 'Transactions Tracking', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/accounting-reports/transactions-tracking'],] : null,
 
                 Yii::$app->user->can('super-user') ?   ['iconStyle' => 'far', 'label' => 'Detailed Financial Position', 'icon' => 'dot-circle', 'url' => ['/report/detailed-financial-position'],] : null,
                 Yii::$app->user->can('super-user') ?   ['iconStyle' => 'far', 'label' => 'Conso Financial Position', 'icon' => 'dot-circle', 'url' => ['/jev-preparation/consolidated-financial-position'],] : null,

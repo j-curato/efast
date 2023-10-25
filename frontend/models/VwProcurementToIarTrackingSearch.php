@@ -5,6 +5,8 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\VwProcurementToIarTracking;
+use common\models\User;
+use Yii;
 
 /**
  * VwProcurementToIarTrackingSearch represents the model behind the search form of `app\models\VwProcurementToIarTracking`.
@@ -35,7 +37,7 @@ class VwProcurementToIarTrackingSearch extends VwProcurementToIarTracking
             ], 'string'],
             [['quantity', 'inspected_quantity'], 'integer'],
             [['unit_cost', 'bidAmount', 'bidGrossAmount'], 'number'],
-            [['rfq_date', 'rfq_deadline', 'rfi_date','pr_date', 'inspection_from', 'inspection_to'], 'safe'],
+            [['rfq_date', 'rfq_deadline', 'rfi_date', 'pr_date', 'inspection_from', 'inspection_to'], 'safe'],
             [['pr_is_cancelled', 'rfq_is_cancelled', 'aoq_is_cancelled', 'po_is_cancelled'], 'string', 'max' => 9],
 
         ];
@@ -65,7 +67,13 @@ class VwProcurementToIarTrackingSearch extends VwProcurementToIarTracking
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
-
+        $user_data = User::getUserDetails();
+        if (!Yii::$app->user->can('ro_procurement_admin')) {
+            $query->andWhere('office_name = :office', ['office' => $user_data->employee->office->office_name]);
+        }
+        if (!Yii::$app->user->can('po_procurement_admin')) {
+            $query->andWhere('division = :division', ['division' => $user_data->employee->empDivision->division]);
+        }
         $this->load($params);
 
         if (!$this->validate()) {
@@ -73,6 +81,7 @@ class VwProcurementToIarTrackingSearch extends VwProcurementToIarTracking
             // $query->where('0=1');
             return $dataProvider;
         }
+
 
         // grid filtering conditions
         $query->andFilterWhere([

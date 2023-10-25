@@ -4,6 +4,7 @@ namespace app\models;
 
 use app\components\helpers\MyHelper;
 use ErrorException;
+use ParentIterator;
 use Yii;
 use yii\helpers\ArrayHelper;
 
@@ -47,7 +48,6 @@ class Transaction extends \yii\db\ActiveRecord
             [['transaction_date'], 'string', 'max' => 50],
             [['transaction_time'], 'string', 'max' => 20],
             [['particular'], 'string',],
-
             [['payee_id'], 'exist', 'skipOnError' => true, 'targetClass' => Payee::class, 'targetAttribute' => ['payee_id' => 'id']],
             [['responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => ResponsibilityCenter::class, 'targetAttribute' => ['responsibility_center_id' => 'id']],
         ];
@@ -74,6 +74,16 @@ class Transaction extends \yii\db\ActiveRecord
             'is_local' => 'is Local',
             'fk_book_id' => 'Book',
         ];
+    }
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert) && $this->isNewRecord) {
+            if (empty($this->id)) {
+                $this->id = Yii::$app->db->createCommand('SELECT UUID_SHORT() % 9223372036854775807')->queryScalar();
+            }
+            return true;
+        }
+        return false;
     }
 
     /**

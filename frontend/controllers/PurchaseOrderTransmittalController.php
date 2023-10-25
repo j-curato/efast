@@ -127,7 +127,7 @@ class PurchaseOrderTransmittalController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         if (Yii::$app->request->isPost) {
             $items  = !empty($_POST['pr_purchase_order_item_ids']) ? array_unique($_POST['pr_purchase_order_item_ids']) : [];
-            $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+            $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT() % 9223372036854775807")->queryScalar();
             $model->date = $_POST['date'];
             $model->serial_number = $this->serialNumber($model->date);
             $transaction = YIi::$app->db->beginTransaction();

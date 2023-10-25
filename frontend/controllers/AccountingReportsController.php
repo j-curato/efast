@@ -4,15 +4,42 @@ namespace frontend\controllers;
 
 use Yii;
 use DateTime;
+use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
+use yii\filters\AccessControl;
+use app\models\VwTransactionstrackingSearch;
 
 class AccountingReportsController extends \yii\web\Controller
 {
-    public function actionIndex()
+    public function behaviors()
     {
-        return $this->render('index');
-    }
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'only' => [
+                    'transactions-tracking',
 
+                ],
+                'rules' => [
+                    [
+                        'actions' => [
+                            'transactions-tracking',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_transactions_tracking']
+                    ],
+
+                ]
+            ],
+            'verbs' => [
+                'class' => VerbFilter::class,
+                'actions' => [
+                    'delete' => ['POST'],
+                ],
+            ],
+        ];
+    }
 
     public function actionGetSubsidiaryLedger()
     {
@@ -107,5 +134,15 @@ class AccountingReportsController extends \yii\web\Controller
             ->queryAll();
 
         return $query;
+    }
+    public function actionTransactionsTracking()
+    {
+        $searchModel = new VwTransactionstrackingSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('transaction_tracking', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
     }
 }

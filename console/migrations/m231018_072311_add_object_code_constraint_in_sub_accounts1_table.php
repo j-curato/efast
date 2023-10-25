@@ -13,7 +13,8 @@ class m231018_072311_add_object_code_constraint_in_sub_accounts1_table extends M
     public function safeUp()
     {
         Yii::$app->db->createCommand("SET FOREIGN_KEY_CHECKS=0")->query();
-        $this->addForeignKey('fk-sub_accounts1-object_code', 'sub_accounts1', 'object_code', 'uacs_object_code', 'object_code', 'RESTRICT');
+
+        // $this->addForeignKey('fk-sub_accounts1-object_code', 'sub_accounts1', 'object_code', 'uacs_object_code', 'object_code', 'RESTRICT');
     }
 
     /**

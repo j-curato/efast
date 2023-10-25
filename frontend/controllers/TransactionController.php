@@ -367,7 +367,6 @@ class TransactionController extends Controller
         if (Yii::$app->request->post()) {
             try {
                 $txn = Yii::$app->db->beginTransaction();
-                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
                 $model->type = Yii::$app->request->post('Transaction')['type'];
                 $model->fk_book_id = Yii::$app->request->post('Transaction')['fk_book_id'];
                 $model->payee_id = Yii::$app->request->post('Transaction')['payee_id'];

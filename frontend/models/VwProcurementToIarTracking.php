@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use common\models\User;
 use Yii;
 
 /**
@@ -63,7 +64,16 @@ class VwProcurementToIarTracking extends \yii\db\ActiveRecord
 
     public static function getItems($year)
     {
-        return VwProcurementToIarTracking::find()->where('pr_date LIKE :yr', ['yr' => $year . '%'])->asArray()->all();
+        $user_data = User::getUserDetails();
+        $query  =  VwProcurementToIarTracking::find()->where('pr_date LIKE :yr', ['yr' => $year . '%']);
+        if (!Yii::$app->user->can('ro_procurement_admin')) {
+            $query->andWhere('office_name = :office', ['office' => $user_data->employee->office->office_name]);
+        }
+        if (!Yii::$app->user->can('po_procurement_admin')) {
+            $query->andWhere('division = :division', ['division' => $user_data->employee->empDivision->division]);
+        }
+        $command = $query->asArray()->all();
+        return $command;
     }
 
     /**

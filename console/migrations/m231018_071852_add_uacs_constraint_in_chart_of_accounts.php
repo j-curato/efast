@@ -13,7 +13,7 @@ class m231018_071852_add_uacs_constraint_in_chart_of_accounts extends Migration
     public function safeUp()
     {
         Yii::$app->db->createCommand("SET FOREIGN_KEY_CHECKS=0")->query();
-        $this->addForeignKey('fk-chart-of-account-uacs', 'chart_of_accounts', 'uacs', 'uacs_object_code', 'object_code', 'RESTRICT');
+        // $this->addForeignKey('fk-chart-of-account-uacs', 'chart_of_accounts', 'uacs', 'uacs_object_code', 'object_code', 'RESTRICT');
     }
 
     /**
