@@ -35,8 +35,8 @@ class PoTransactionIarItems extends \yii\db\ActiveRecord
             [['fk_po_transaction_id', 'fk_iar_id'], 'required'],
             [['fk_po_transaction_id', 'fk_iar_id', 'is_deleted'], 'integer'],
             [['created_at'], 'safe'],
-            [['fk_iar_id'], 'exist', 'skipOnError' => true, 'targetClass' => Iar::className(), 'targetAttribute' => ['fk_iar_id' => 'id']],
-            [['fk_po_transaction_id'], 'exist', 'skipOnError' => true, 'targetClass' => PoTransaction::className(), 'targetAttribute' => ['fk_po_transaction_id' => 'id']],
+            [['fk_iar_id'], 'exist', 'skipOnError' => true, 'targetClass' => Iar::class, 'targetAttribute' => ['fk_iar_id' => 'id']],
+            [['fk_po_transaction_id'], 'exist', 'skipOnError' => true, 'targetClass' => PoTransaction::class, 'targetAttribute' => ['fk_po_transaction_id' => 'id']],
         ];
     }
 
@@ -47,8 +47,8 @@ class PoTransactionIarItems extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'fk_po_transaction_id' => 'Fk Po Transaction ID',
-            'fk_iar_id' => 'Fk Iar ID',
+            'fk_po_transaction_id' => ' PO Transaction ',
+            'fk_iar_id' => ' IAR ID',
             'is_deleted' => 'Is Deleted',
             'created_at' => 'Created At',
         ];
@@ -61,7 +61,7 @@ class PoTransactionIarItems extends \yii\db\ActiveRecord
      */
     public function getFkIar()
     {
-        return $this->hasOne(Iar::className(), ['id' => 'fk_iar_id']);
+        return $this->hasOne(Iar::class, ['id' => 'fk_iar_id']);
     }
 
     /**
@@ -71,6 +71,6 @@ class PoTransactionIarItems extends \yii\db\ActiveRecord
      */
     public function getFkPoTransaction()
     {
-        return $this->hasOne(PoTransaction::className(), ['id' => 'fk_po_transaction_id']);
+        return $this->hasOne(PoTransaction::class, ['id' => 'fk_po_transaction_id']);
     }
 }
