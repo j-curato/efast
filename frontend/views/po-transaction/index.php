@@ -66,7 +66,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         ExportMenu::FORMAT_CSV => false,
                         ExportMenu::FORMAT_TEXT => false,
                         ExportMenu::FORMAT_HTML => false,
-
                     ]
                 ]),
                 'options' => [
@@ -82,12 +81,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 <?php
-
 $this->registerJsFile(
     '@web/frontend/web/js/globalFunctions.js',
     [
         'depends' => [JqueryAsset::class]
     ]
 );
-
 ?>

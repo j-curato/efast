@@ -102,7 +102,7 @@ class PoTransactionController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             try {
                 $txn = Yii::$app->db->beginTransaction();
-                $iars = Yii::$app->request->post('iars');
+                $iars = Yii::$app->request->post('iars') ?? [];
                 $model->tracking_number = $this->getTrackingNumber($model->po_responsibility_center_id, $model->reporting_period);
 
                 if (!$model->validate()) {
