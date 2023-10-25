@@ -353,11 +353,11 @@ class IarController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function actionSearchIar($q = null, $id = null)
+    public function actionSearchIar($q = null, $id = null, $page = null)
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-
-
+        $limit = 5;
+        $offset = ($page - 1) * $limit;
         $out = ['results' => ['id' => '', 'text' => '']];
         if ($id > 0) {
         } else if (!is_null($q)) {
@@ -368,12 +368,21 @@ class IarController extends Controller
 
             $user_data = User::getUserDetails();
             if (!Yii::$app->user->can('ro_accounting_admin')) {
+                $query->andWhere('office_name = :office', ['office' => $user_data->employee->office->office_name]);
+            }
+            if (!Yii::$app->user->can('po_accounting_admin')) {
                 $query->andWhere('division = :division', ['division' => $user_data->employee->empDivision->division]);
             }
-
+            if (!empty($page)) {
+                $query->offset($offset)
+                    ->limit($limit);
+            }
             $command = $query->createCommand();
             $data = $command->queryAll();
             $out['results'] = array_values($data);
+            if (!empty($page)) {
+                $out['pagination'] = ['more' => !empty($data) ? true : false];
+            }
         }
         return $out;
     }

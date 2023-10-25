@@ -2,7 +2,10 @@
 
 namespace app\models;
 
+use app\components\helpers\MyHelper;
+use ErrorException;
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "po_transaction".
@@ -79,5 +82,75 @@ class PoTransaction extends \yii\db\ActiveRecord
     public function getPoResponsibilityCenter()
     {
         return $this->hasOne(PoResponsibilityCenter::class, ['id' => 'po_responsibility_center_id']);
+    }
+    public function insertIars($iars)
+    {
+        try {
+            $oldIars = ArrayHelper::getColumn($this->queryIars(), 'fk_iar_id');
+            $iarsToRemove = array_diff($oldIars, $iars);
+            if (!empty($iarsToRemove)) {
+                $delete = $this->deleteIarItems($iarsToRemove);
+                if ($delete !== true) {
+                    throw new ErrorException($delete);
+                }
+            }
+            $iarsToInsert  = array_diff($iars, $oldIars);
+            foreach ($iarsToInsert as $val) {
+                $item = new PoTransactionIarItems();
+                $item->fk_po_transaction_id = $this->id;
+                $item->fk_iar_id = $val;
+                if (!$item->validate()) {
+                    throw new ErrorException(json_encode($item->errors));
+                }
+                if (!$item->save(false)) {
+                    throw new ErrorException('Transaction IARS Save Error');
+                }
+            }
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
+    }
+    private function deleteIarItems($iarsToRemove)
+    {
+        try {
+            $generatedParams = MyHelper::generateParams($iarsToRemove);
+            $generatedParamName = $generatedParams['paramNames'];
+            $iarItemsIdsToRemove =  Yii::$app->db->createCommand("SELECT 
+                    po_transaction_iar_items.id    
+                    FROM  po_transaction_iar_items
+                    WHERE po_transaction_iar_items.fk_po_transaction_id = :id
+                    AND po_transaction_iar_items.is_deleted= 0
+                    AND po_transaction_iar_items.fk_iar_id IN ($generatedParamName)", $generatedParams['params'])
+                ->bindValue(':id', $this->id)
+                ->queryAll();
+            foreach ($iarItemsIdsToRemove as $item) {
+                $item = PoTransactionIarItems::findOne($item);
+                $item->is_deleted = 1;
+                if (!$item->save(false)) {
+                    throw new ErrorException('Delete IAR Failed');
+                }
+            }
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
+    }
+    private function queryIars()
+    {
+        return Yii::$app->db->createCommand("SELECT 
+                    po_transaction_iar_items.id as item_id,
+                    po_transaction_iar_items.fk_iar_id,
+                    iar.iar_number
+                FROM po_transaction_iar_items 
+                JOIN iar ON po_transaction_iar_items.fk_iar_id = iar.id
+                WHERE po_transaction_iar_items.is_deleted = 0 
+                AND po_transaction_iar_items.fk_po_transaction_id = :id")
+            ->bindValue(':id', $this->id)
+            ->queryAll();
+    }
+    public function getIarItemsA()
+    {
+        return $this->queryIars();
     }
 }

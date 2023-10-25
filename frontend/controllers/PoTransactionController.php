@@ -12,6 +12,7 @@ use app\models\PoTransaction;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 use app\models\PoTransactionSearch;
+use ErrorException;
 
 /**
  * PoTransactionController implements the CRUD actions for PoTransaction model.
@@ -94,15 +95,33 @@ class PoTransactionController extends Controller
     {
         $model = new PoTransaction();
 
-        if (!Yii::$app->user->can('ro_accounting_admin')) {
-            $user_data = User::getUserDetails();
-            $model->province = strtolower($user_data->employee->office->office_name);
-        }
+        // if (!Yii::$app->user->can('ro_accounting_admin')) {
+        $user_data = User::getUserDetails();
+        $model->province = strtolower($user_data->employee->office->office_name);
+        // }
         if ($model->load(Yii::$app->request->post())) {
-            $model->tracking_number = $this->getTrackingNumber($model->po_responsibility_center_id, $model->reporting_period);
-            if ($model->save(false)) {
+            try {
+                $txn = Yii::$app->db->beginTransaction();
+                $iars = Yii::$app->request->post('iars');
+                $model->tracking_number = $this->getTrackingNumber($model->po_responsibility_center_id, $model->reporting_period);
+
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save Failed');
+                }
+                $insertIars = $model->insertIars($iars);
+                if ($insertIars  !== true) {
+                    throw new ErrorException($insertIars);
+                }
+
+                $txn->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                $txn->rollBack();
+                return $e->getMessage();
             }
-            return $this->redirect(['view', 'id' => $model->id]);
         }
 
         return $this->renderAjax('create', [
@@ -122,17 +141,35 @@ class PoTransactionController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post())) {
-            $x = explode('-', $model->tracking_number);
-            $responsibility_center = (new \yii\db\Query())
-                ->select("name")
-                ->from('po_responsibility_center')
-                ->where("id =:id", ['id' => $model->po_responsibility_center_id])
-                ->one();
-            $x[1] = $responsibility_center['name'];
-            $model->tracking_number = implode('-', $x);
-            if ($model->save(false)) {
+            try {
+                $txn = Yii::$app->db->beginTransaction();
+                $x = explode('-', $model->tracking_number);
+                $responsibility_center = (new \yii\db\Query())
+                    ->select("name")
+                    ->from('po_responsibility_center')
+                    ->where("id =:id", ['id' => $model->po_responsibility_center_id])
+                    ->one();
+                $x[1] = $responsibility_center['name'];
+                $model->tracking_number = implode('-', $x);
+                $iars = Yii::$app->request->post('iars') ?? [];
+                $model->tracking_number = $this->getTrackingNumber($model->po_responsibility_center_id, $model->reporting_period);
 
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save Failed');
+                }
+                $insertIars = $model->insertIars($iars);
+                if ($insertIars  !== true) {
+                    throw new ErrorException($insertIars);
+                }
+
+                $txn->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                $txn->rollBack();
+                return $e->getMessage();
             }
         }
         return $this->renderAjax('update', [
@@ -180,10 +217,10 @@ class PoTransactionController extends Controller
             ->where("id =:id", ['id' => $responsibility_center_id])
             ->one();
 
-        if (!Yii::$app->user->can('ro_accounting_admin')) {
-            $user_data = User::getUserDetails();
-            $province = strtolower($user_data->employee->office->office_name);
-        }
+        // if (!Yii::$app->user->can('ro_accounting_admin')) {
+        $user_data = User::getUserDetails();
+        $province = strtolower($user_data->employee->office->office_name);
+        // }
         if ($reporting_period_year <= 2021) {
 
             $latest_tracking_no = Yii::$app->db->createCommand(

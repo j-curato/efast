@@ -1,9 +1,8 @@
 <?php
 
-use kartik\select2\Select2Asset;
 use yii\helpers\Html;
-use yii\helpers\Url;
-use yii\widgets\DetailView;
+use yii\web\JqueryAsset;
+use kartik\select2\Select2Asset;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\PoTransaction */
@@ -21,10 +20,7 @@ Select2Asset::register($this);
     <div class="container card">
 
         <p>
-            <?= Html::button('Update', [
-                'value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=po-transaction/update&id=' . $model->id),
-                'id' => 'modalButtoncreate', 'class' => 'btn btn-primary', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
-            ]); ?>
+            <?= Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary lrgModal']); ?>
         </p>
         <div style="float:right">
             <h6>
@@ -468,8 +464,7 @@ Select2Asset::register($this);
         }
 
         select {
-            -webkit-appearance: none;
-            -moz-appearance: none;
+
             text-indent: 1px;
             text-overflow: '';
             border: none;
@@ -531,7 +526,14 @@ Select2Asset::register($this);
         }
     }
 </style>
-
+<?php
+$this->registerJsFile(
+    '@web/frontend/web/js/globalFunctions.js',
+    [
+        'depends' => [JqueryAsset::class]
+    ]
+);
+?>
 
 <script>
     function setPosition(q, pos) {
@@ -569,19 +571,4 @@ Select2Asset::register($this);
 </script>
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-?>
-<?php
-$script = <<<JS
-    
-
-    
-         $('#modalButtoncreate').click(function(){
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-        });
-        $('.modalButtonedit').click(function(){
-            $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
-        });
-
-JS;
-$this->registerJs($script);
 ?>
