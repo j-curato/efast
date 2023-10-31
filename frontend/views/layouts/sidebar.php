@@ -684,7 +684,10 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                         [
                             'label' => 'Reports',
                             'iconStyle' => 'far text-info',
-                            'items' => removeNull([]),
+                            'items' => removeNull([
+                                Yii::$app->user->can('pr_to_iar_tracking') ?     ['label' => 'PR to IAR Tracking', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/procurement-reports/procurement-to-inspection-tracking'],] : null,
+
+                            ]),
                         ],
 
 
