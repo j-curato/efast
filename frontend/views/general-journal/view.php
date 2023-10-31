@@ -142,12 +142,9 @@ $items = $model->getItems();
 ?>
 <script>
     $(document).ready(function() {
-        var PulseLoader = VueSpinner.PulseLoader
         new Vue({
             el: '#main',
-            components: {
-                'PulseLoader': PulseLoader,
-            },
+
             data: {
                 items: <?= !empty($items) ? json_encode($items) : [] ?>,
             },
