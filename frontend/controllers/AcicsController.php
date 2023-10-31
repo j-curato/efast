@@ -369,7 +369,7 @@ class AcicsController extends Controller
                 if (intval($chkIfCanceled) === 1) {
                     throw new ErrorException('Check Already Cancelled');
                 }
-                $new_id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
+                $new_id = Yii::$app->db->createCommand("SELECT UUID_SHORT() % 9223372036854775807")->queryScalar();
                 Yii::$app->db->createCommand("INSERT INTO cash_disbursement
                 (
                    id,
@@ -406,6 +406,7 @@ class AcicsController extends Controller
                 WHERE id  = :cash_id")
                     ->bindValue(':cash_id', $cash_id)
                     ->bindValue(':reporting_period', $reporting_period)
+                    ->bindValue(':new_id', $new_id)
                     ->execute();
                 Yii::$app->db->createCommand("INSERT INTO cash_disbursement_items (fk_cash_disbursement_id,
                     fk_chart_of_account_id,
