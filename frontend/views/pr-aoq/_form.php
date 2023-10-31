@@ -236,7 +236,7 @@ $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [
 
                 changeMainAmount(event, item, index) {
                     // item.unit_cost = $(event.target).maskMoney('unmasked')[0]
-                    this.$set(item, 'unit_cost', $(event.target).maskMoney('unmasked')[0]);
+                    this.$set(item, 'unitCost', $(event.target).maskMoney('unmasked')[0]);
                     this.$set(item, 'maskedAmount', $(event.target).val());
 
                 },
@@ -259,8 +259,8 @@ $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [
                     if (item.bidders) {
                         item.bidders.push({
                             payeeId: '',
-                            unit_cost: '',
-                            specification: ''
+                            unitCost: '',
+                            remark: ''
                         })
                     } else {
                         this.$set(item, 'bidders', [{

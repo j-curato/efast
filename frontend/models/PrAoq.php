@@ -153,6 +153,10 @@ class PrAoq extends \yii\db\ActiveRecord
     {
         try {
             $itemModels = [];
+            $deleteItems = $this->deleteItems(ArrayHelper::getColumn($items, 'id'));
+            if ($deleteItems !== true) {
+                throw new ErrorException($deleteItems);
+            }
             foreach ($items as $item) {
                 $model = !empty($item['id']) ? PrAoqEntries::findOne($item['id']) : new PrAoqEntries();
                 $model->attributes = $item;
@@ -168,10 +172,7 @@ class PrAoq extends \yii\db\ActiveRecord
                     throw new ErrorException('Item Model Save Failed');
                 }
             };
-            $deleteItems = $this->deleteItems(ArrayHelper::getColumn($items, 'id'));
-            if ($deleteItems !== true) {
-                throw new ErrorException($deleteItems);
-            }
+
             return true;
         } catch (ErrorException $e) {
             return $e->getMessage();
