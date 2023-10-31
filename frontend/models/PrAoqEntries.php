@@ -31,6 +31,7 @@ class PrAoqEntries extends \yii\db\ActiveRecord
     {
         return [
             [['pr_aoq_id', 'payee_id', 'is_lowest', 'pr_rfq_item_id', 'is_deleted'], 'integer'],
+            [['pr_aoq_id', 'payee_id', 'is_lowest', 'pr_rfq_item_id',], 'required'],
             [['amount'], 'number'],
             [['remark'], 'string'],
         ];
@@ -61,5 +62,17 @@ class PrAoqEntries extends \yii\db\ActiveRecord
     public function getPrRfqItem()
     {
         return $this->hasOne(PrRfqItem::class, ['id' => 'pr_rfq_item_id']);
+    }
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            if ($this->isNewRecord) {
+                if (empty($this->id)) {
+                    $this->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()  % 9223372036854775807")->queryScalar();
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }

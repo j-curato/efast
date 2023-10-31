@@ -3,6 +3,8 @@
 namespace app\models;
 
 use Yii;
+use DateTime;
+use ErrorException;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -65,7 +67,8 @@ class PrAoq extends \yii\db\ActiveRecord
                         LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id  = pr_stock.id
                         LEFT JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id
                         LEFT JOIN pr_rfq ON pr_rfq_item.pr_rfq_id = pr_rfq.id
-                        WHERE pr_aoq_entries.pr_aoq_id = :id")
+                        WHERE pr_aoq_entries.pr_aoq_id = :id 
+                        AND pr_aoq_entries.is_deleted = 0")
             ->bindValue(':id', $this->id)
             ->queryAll();
         return $result = ArrayHelper::index($qry, 'payee', [function ($element) {
@@ -141,5 +144,98 @@ class PrAoq extends \yii\db\ActiveRecord
     public function getRfq()
     {
         return $this->hasOne(PrRfq::class, ['id' => 'pr_rfq_id']);
+    }
+    public function getOffice()
+    {
+        return $this->hasOne(Office::class, ['id' => 'fk_office_id']);
+    }
+    public function insertItems($items)
+    {
+        try {
+            $itemModels = [];
+            foreach ($items as $item) {
+                $model = !empty($item['id']) ? PrAoqEntries::findOne($item['id']) : new PrAoqEntries();
+                $model->attributes = $item;
+                $model->pr_aoq_id = $this->id;
+                $model->is_lowest = !empty($item['is_lowest']) ? 1 : 0;
+                $itemModels[] = $model;
+            }
+            foreach ($itemModels as $model) {
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Item Model Save Failed');
+                }
+            };
+            $deleteItems = $this->deleteItems(ArrayHelper::getColumn($items, 'id'));
+            if ($deleteItems !== true) {
+                throw new ErrorException($deleteItems);
+            }
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
+    }
+    private function deleteItems($items)
+    {
+        $queryItems  = Yii::$app->db->createCommand("SELECT pr_aoq_entries.id FROM pr_aoq_entries WHERE pr_aoq_id  = :id
+        AND is_deleted = 0")
+            ->bindValue(':id', $this->id)
+            ->queryAll();
+        $toDelete = array_diff(array_column($queryItems, 'id'), $items);
+        if (!empty($toDelete)) {
+            $params = [];
+            $sql  = ' AND ';
+            $sql .= Yii::$app->db->queryBuilder->buildCondition(['IN', 'id', $toDelete], $params);
+            Yii::$app->db->createCommand("UPDATE pr_aoq_entries
+                SET pr_aoq_entries.is_deleted = 1 
+                WHERE pr_aoq_entries.pr_aoq_id = :id
+                AND pr_aoq_entries.is_deleted= 0
+                $sql", $params)
+                ->bindValue(':id', $this->id)
+                ->execute();
+        }
+        return true;
+    }
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            if ($this->isNewRecord) {
+                if (empty($this->id)) {
+                    $this->id =  Yii::$app->db->createCommand("SELECT UUID_SHORT()  % 9223372036854775807")->queryScalar();
+                }
+                if (empty($this->aoq_number)) {
+                    $this->aoq_number = $this->generateSerialNumber();
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+    private function generateSerialNumber()
+    {
+        $date = DateTime::createFromFormat('Y-m-d', $this->pr_date);
+        $queryLastNumber  = Yii::$app->db->createCommand("SELECT CAST(substring_index(aoq_number,'-',-1) AS UNSIGNED)as last_id
+        FROM pr_aoq
+        WHERE fk_office_id = :office_id
+        AND pr_aoq.aoq_number LIKE :yr
+         ORDER BY last_id DESC LIMIT 1")
+            ->bindValue(':office_id', $this->fk_office_id)
+            ->bindValue(':yr', "%" . $date->format('Y') . '%')
+            ->queryScalar();
+        $lastNum  = !empty($queryLastNumber) ? intval($queryLastNumber) + 1 : 1;
+        return $this->office->office_name . '-' . $date->format('Y-m-d') . '-' . str_pad($lastNum, 4, '0', STR_PAD_LEFT);
+    }
+    public function getItemPayees()
+    {
+        return Yii::$app->db->createCommand("SELECT IFNULL(payee.registered_name,payee.account_name) as payee
+                FROM `pr_aoq_entries`
+                LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
+                WHERE pr_aoq_entries.pr_aoq_id = :id
+                AND pr_aoq_entries.is_deleted = 0
+                GROUP BY payee")
+            ->bindValue(':id', $this->id)
+            ->queryAll();
     }
 }

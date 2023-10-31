@@ -97,32 +97,32 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 </tr>
                 <?php
-                $payeeRow = "<tr>";
-                $payeeHeaderRow = "<tr>";
-                $payee_position = [];
-                $payee_count  = 5;
-                $payee_head_query = Yii::$app->db->createCommand("SELECT IFNULL(payee.registered_name,payee.account_name) as payee
-                    FROM `pr_aoq_entries`
-                    LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
-                    WHERE pr_aoq_entries.pr_aoq_id = :id
-                    GROUP BY payee
-                    ")
-                    ->bindValue(':id', $model->id)
-                    ->queryAll();
+                // $payeeRow = "<tr>";
+                // $payeeHeaderRow = "<tr>";
+                // $payee_position = [];
+                // $payee_count  = 5;
+                // $payee_head_query = Yii::$app->db->createCommand("SELECT IFNULL(payee.registered_name,payee.account_name) as payee
+                //     FROM `pr_aoq_entries`
+                //     LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
+                //     WHERE pr_aoq_entries.pr_aoq_id = :id
+                //     AND pr_aoq_entries.is_deleted = 0
+                //     GROUP BY payee")
+                //     ->bindValue(':id', $model->id)
+                //     ->queryAll();
 
-                foreach ($payee_head_query as $i => $val) {
+                // foreach ($payee_head_query as $i => $val) {
 
-                    $payee = $val['payee'];
-                    $payeeRow .= "<th style='text-align:center' colspan='2'>
-                                <span>$payee</span>
-                            </th>";
-                    $payeeHeaderRow .= "<th class='center'>Unit Cost</th><th class='center'>Gross Amount</th>";
-                    $payee_position[$payee_count] = $payee;
+                //     $payee = $val['payee'];
+                //     $payeeRow .= "<th style='text-align:center' colspan='2'>
+                //                 <span>$payee</span>
+                //             </th>";
+                //     $payeeHeaderRow .= "<th class='center'>Unit Cost</th><th class='center'>Gross Amount</th>";
+                //     $payee_position[$payee_count] = $payee;
 
-                    $payee_count += 2;
-                }
-                echo $payeeRow . "<th class='center'>Lowest</th>";
-                echo $payeeHeaderRow . "<th></th>";
+                //     $payee_count += 2;
+                // }
+                // echo $payeeRow . "<th class='center'>Lowest</th>";
+                // echo $payeeHeaderRow . "<th></th>";
                 ?>
 
 
@@ -315,7 +315,6 @@ $this->params['breadcrumbs'][] = $this->title;
                                 echo 'Chairperson';
                                 ?>
                             </div>
-
                         </td>
                     </tr>
                 </tfoot>
@@ -330,10 +329,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     foreach ($model->getPoLinks() as $val) {
                         $isCancelled = $val['is_cancelled'] ? 'Cancelled' : '';
                         echo "<tr>
-                        <td>{$val['po_number']}</td>
-                        <td>" . Html::a('PO Link ', ['pr-purchase-order/view', 'id' => $val['id']], ['class' => 'btn btn-link ', 'style' => 'margin:3px']) . "</td>
-                        <td>$isCancelled</td>
-                   </tr>";
+                                <td>{$val['po_number']}</td>
+                                <td>" . Html::a('PO Link ', ['pr-purchase-order/view', 'id' => $val['id']], ['class' => 'btn btn-link ', 'style' => 'margin:3px']) . "</td>
+                                <td>$isCancelled</td>
+                            </tr>";
                     }
                     ?>
 
@@ -582,7 +581,9 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
         });
         // const q = <?php echo json_encode($for_print) ?>;
         // console.log(q)
-        // const payee_position = JSON.parse(`<?php echo json_encode($payee_position) ?>`);
+        // const payee_position = JSON.parse(`<?php
+                                                // echo json_encode($payee_position)
+                                                ?>`);
         // let ttlAmtPerPayee = []
         // let row_number = 0
         // let purpose = ''
@@ -753,8 +754,8 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunc
         new Vue({
             el: "#app",
             data: {
-                items: <?php echo json_encode($model->getViewItems()) ?>,
-                payees: <?php echo json_encode($payee_position) ?>,
+                items: <?= json_encode($model->getViewItems()) ?>,
+                payees: <?= json_encode(ArrayHelper::getColumn($model->getItemPayees(), 'payee')) ?>,
                 displayItems: []
             },
             mounted() {

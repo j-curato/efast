@@ -140,7 +140,6 @@ class PrAoqController extends Controller
                         $aoq =  PrAoqEntries::findOne($val['item_id']);
                     } else {
                         $aoq = new PrAoqEntries();
-                        $aoq->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()  % 9223372036854775807")->queryScalar();
                     }
                     $aoq->payee_id = $val['payee_id'];
                     $aoq->pr_aoq_id = $model_id;
@@ -172,13 +171,10 @@ class PrAoqController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             try {
                 $transaction  = Yii::$app->db->beginTransaction();
-                $items  = Yii::$app->request->post('items') ?? [];
-                // return $model->rfq->getNopToDate();
+                $items = call_user_func_array('array_merge',  Yii::$app->request->post('items') ?? []);
                 $nopToDate = $model->rfq->getNopToDate();
                 $aoqDeadline =  !empty($nopToDate) ? DateTime::createFromFormat('Y-m-d H:i:s', $nopToDate)->format('Y-m-d')
                     : DateTime::createFromFormat('Y-m-d H:i:s', $model->rfq->deadline)->format('Y-m-d');
-                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()  % 9223372036854775807")->queryScalar();
-                $model->aoq_number = $this->aoqNumberGenerator($aoqDeadline, $model->fk_office_id);
                 $model->pr_date = $aoqDeadline;
                 if (empty($items)) {
                     throw new ErrorException('Please Insert an Item');
@@ -186,13 +182,12 @@ class PrAoqController extends Controller
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
+
                 if (!$model->save(false)) {
                     throw new ErrorException('Model save failed');
                 }
-                $insItems = $this->insertEntries(
-                    $model->id,
-                    $items
-                );
+
+                $insItems = $model->insertItems($items);
                 if ($insItems !== true) {
                     throw new ErrorException($insItems);
                 }
@@ -220,30 +215,23 @@ class PrAoqController extends Controller
     {
         $model = $this->findModel($id);
         $oldModel = $this->findModel($id);
-
         if ($model->load(Yii::$app->request->post()) || Yii::$app->request->post()) {
             try {
                 $transaction  = Yii::$app->db->beginTransaction();
-
-
+                $items = call_user_func_array('array_merge',  Yii::$app->request->post('items') ?? []);
                 if ($model->checkHasPo()) {
                     throw new ErrorException('Cannot Update AOQ has a PO');
                 }
                 if ($model->fk_office_id != $oldModel->fk_office_id) {
-                    $model->aoq_number = $this->aoqNumberGenerator($model->rfq->deadline, $model->fk_office_id);
+                    $model->aoq_number = $this->aoqNumberGenerator($model->pr_date, $model->fk_office_id);
                 }
-                $items  = Yii::$app->request->post('items') ?? [];
-
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
                 if (!$model->save(false)) {
                     throw new ErrorException('Model save failed');
                 }
-                $insItems = $this->insertEntries(
-                    $model->id,
-                    $items
-                );
+                $insItems = $model->insertItems($items);
                 if ($insItems !== true) {
                     throw new ErrorException($insItems);
                 }
@@ -256,8 +244,37 @@ class PrAoqController extends Controller
         }
         return $this->render('update', [
             'model' => $model,
-            'aoq_entries' => ArrayHelper::index($model->getItems(), null, 'rfq_item_id')
+            'items' => $this->formatUpdateItems(ArrayHelper::index($model->getItems(), null, 'rfq_item_id'))
         ]);
+    }
+    private function formatUpdateItems($modelItems)
+    {
+        $items = [];
+        foreach ($modelItems as $itm) {
+            $bidders = [];
+            foreach ($itm as $i) {
+                $bidders[] = [
+                    'id' => $i['item_id'],
+                    'unitCost' => $i['amount'],
+                    'maskedAmount' => number_format($i['amount'], 2),
+                    'payeeId' => $i['payee_id'],
+                    'remark' => $i['remark'],
+                    'isLowest' => intval($i['is_lowest']) === 1 ? true : false,
+                    'payeeName' => $i['payee'],
+
+                ];
+            }
+            $items[] = [
+                'bac_code' => $itm[0]['bac_code'],
+                'quantity' => $itm[0]['quantity'],
+                'specification' => $itm[0]['specification'],
+                'rfq_item_id' => $itm[0]['rfq_item_id'],
+                'stock_title' => $itm[0]['stock_title'],
+                'unit_of_measure' => $itm[0]['unit_of_measure'],
+                'bidders' => $bidders,
+            ];
+        }
+        return  $items;
     }
 
     /**
@@ -385,9 +402,8 @@ class PrAoqController extends Controller
     }
     public function actionGetRfqInfo()
     {
-        if ($_POST) {
-            $id = $_POST['id'];
-
+        if (Yii::$app->request->post()) {
+            $id = Yii::$app->request->post('id');
             return $this->rfqItemData($id);
         }
     }
