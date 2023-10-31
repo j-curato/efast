@@ -18,7 +18,7 @@ class m230323_030844_update_depreciations_procedure extends Migration
             BEGIN 
             SET  @is_notAll :=  '';
             IF book_id IS NOT NULL THEN
-            SET  @is_notAll :=  CONCAT(' AND books.id != ',book_id);
+            SET  @is_notAll :=  CONCAT(' AND books.id = ',book_id);
             END IF;
             SET @finalQuery = CONCAT("WITH q AS (SELECT 
             property.id,
