@@ -125,11 +125,27 @@ $csrfToken = Yii::$app->request->csrfToken;
                 formatItems() {
                     return Object.keys(this.items).map((key) => {
                         const obj = this.items[key]
+                        let debit = 0;
+                        let credit = 0
+                        if (obj.normal_balance.toLowerCase() == 'debit') {
+                            if (parseFloat(obj.total_debit_credit) < 0) {
+                                credit = Math.abs(obj.total_debit_credit)
+                            } else {
+                                debit = obj.total_debit_credit
+                            }
+                        }
+                        if (obj.normal_balance.toLowerCase() == 'credit') {
+                            if (parseFloat(obj.total_debit_credit) < 0) {
+                                debit = Math.abs(obj.total_debit_credit)
+                            } else {
+                                credit = obj.total_debit_credit
+                            }
+                        }
                         return {
                             account_title: obj.account_title,
                             object_code: obj.object_code,
-                            debit: obj.normal_balance.toLowerCase() == 'debit' ? obj.total_debit_credit : 0,
-                            credit: obj.normal_balance.toLowerCase() == 'credit' ? obj.total_debit_credit : 0,
+                            debit: debit,
+                            credit: credit,
                         }
                     })
 
