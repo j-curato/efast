@@ -221,7 +221,7 @@ $this->params['breadcrumbs'][] = $this->title;
                             //     ->where('raouds.process_ors_id = :process_ors_id', ['process_ors_id' =>  $val->process_ors_id])
                             //     ->one();
                             // $q = !empty($val->process_ors_id) ? $val->process_ors_id : '';
-                            $t = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/view&id=$val->process_ors_id";
+                            $t = yii::$app->request->baseUrl . "/index.php?r=process-ors/view&id=$val->process_ors_id";
                         }
 
                         echo "
