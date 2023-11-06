@@ -148,7 +148,7 @@ $row = 1;
                         <td> <button type='button' class='btn-xs btn-primary' @click='addPayee(rfqItem)'><i class='fa fa-plus'></i></button></td>
                         <td>{{rfqItem.bac_code}}</td>
                         <td>{{rfqItem.stock_title}}</td>
-                        <td>{{rfqItem.specification}}</td>
+                        <td>{{formatSpecification(rfqItem.specification)}}</td>
                         <td>{{rfqItem.unit_of_measure}}</td>
                         <td>{{rfqItem.quantity}}</td>
                     </tr>
@@ -273,6 +273,9 @@ $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [
                 },
                 removeItem(index, rfqItem) {
                     rfqItem.bidders.splice(index, 1)
+                },
+                formatSpecification(specs) {
+                    return specs.replace(/<br>/g, ' ')
                 }
             },
             updated() {
