@@ -38,13 +38,15 @@ class SupplementalPpmpNonCse extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['fk_supplemental_ppmp_id',  'early_procurement',
-            //  'fk_mode_of_procurement_id',
-             'fk_fund_source_id', 'is_deleted'], 'integer'],
+            [[
+                'fk_supplemental_ppmp_id',  'early_procurement',
+                //  'fk_mode_of_procurement_id',
+                'fk_fund_source_id', 'is_deleted'
+            ], 'integer'],
             [[
                 'type',
                 //  'fk_mode_of_procurement_id',
-                  'activity_name', 'fk_fund_source_id',
+                'activity_name', 'fk_fund_source_id',
                 // 'proc_act_sched'
             ], 'required'],
             [['activity_name'], 'string'],
@@ -85,5 +87,18 @@ class SupplementalPpmpNonCse extends \yii\db\ActiveRecord
     public function getFkSupplementalPpmp()
     {
         return $this->hasOne(SupplementalPpmp::class, ['id' => 'fk_supplemental_ppmp_id']);
+    }
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+
+            if ($this->isNewRecord) {
+                if (empty($this->id)) {
+                    $this->id = Yii::$app->db->createCommand("SELECT UUID_SHORT() % 9223372036854775807")->queryScalar();
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }

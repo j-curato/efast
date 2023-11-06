@@ -32,7 +32,7 @@ class SupplementalPpmpNonCseItems extends \yii\db\ActiveRecord
     {
         return [
             [['fk_supplemental_ppmp_non_cse_id', 'fk_pr_stock_id', 'is_deleted'], 'integer'],
-            [['amount', 'quantity'], 'required'],
+            [['amount', 'quantity', 'fk_pr_stock_id', 'fk_unit_of_measure_id'], 'required'],
             [['amount'], 'number'],
             [['description'], 'string'],
             [['deleted_at', 'created_at'], 'safe'],
@@ -54,6 +54,20 @@ class SupplementalPpmpNonCseItems extends \yii\db\ActiveRecord
             'is_deleted' => 'Is Deleted',
             'deleted_at' => 'Deleted At',
             'created_at' => 'Created At',
+            'fk_unit_of_measure_id' => 'Unit of Measure',
         ];
+    }
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+
+            if ($this->isNewRecord) {
+                if (empty($this->id)) {
+                    $this->id = Yii::$app->db->createCommand("SELECT UUID_SHORT() % 9223372036854775807")->queryScalar();
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }

@@ -113,4 +113,32 @@ class Par extends \yii\db\ActiveRecord
     {
         return $this->hasOne(PropertyCard::class, ['fk_par_id' => 'id']);
     }
+    public static function getEmployeeParsA($employeeId)
+    {
+        return Yii::$app->db->createCommand("SELECT 
+                    CAST(par.id AS CHAR(50)) as id,
+                    par.par_number,
+                    par.date as par_date,
+                    IFNULL(actual_user.employee_name,'') as actual_user,
+                    location.location,
+                    property.property_number,
+                    property.date as acquisition_date,
+                    property.acquisition_amount,
+                    property.description,
+                    property.serial_number,
+                    IFNULL(property_articles.article_name,property.article) as article,
+                    (CASE
+                    WHEN par.is_unserviceable =1 THEN 'UnServiceable'
+                    ELSE 'Serviceable' 
+                    END ) as is_unserviceable
+                FROM par 
+                JOIN property ON par.fk_property_id = property.id
+                LEFT JOIN property_articles ON property.fk_property_article_id = property_articles.id
+                LEFT JOIN employee_search_view as actual_user ON par.fk_actual_user = actual_user.employee_id
+                LEFT JOIN location ON par.fk_location_id = location.id
+                WHERE par.fk_received_by = :emp_id
+                AND par.is_current_user = 1")
+            ->bindValue(':emp_id', $employeeId)
+            ->queryAll();
+    }
 }
