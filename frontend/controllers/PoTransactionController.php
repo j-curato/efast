@@ -104,7 +104,7 @@ class PoTransactionController extends Controller
                 $txn = Yii::$app->db->beginTransaction();
                 $iars = Yii::$app->request->post('iars') ?? [];
                 $model->tracking_number = $this->getTrackingNumber($model->po_responsibility_center_id, $model->reporting_period);
-                    
+
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
@@ -152,8 +152,7 @@ class PoTransactionController extends Controller
                 $x[1] = $responsibility_center['name'];
                 $model->tracking_number = implode('-', $x);
                 $iars = Yii::$app->request->post('iars') ?? [];
-                $model->tracking_number = $this->getTrackingNumber($model->po_responsibility_center_id, $model->reporting_period);
-
+                // $model->tracking_number = $this->getTrackingNumber($model->po_responsibility_center_id, $model->reporting_period);
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
