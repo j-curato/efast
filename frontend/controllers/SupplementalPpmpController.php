@@ -41,7 +41,9 @@ class SupplementalPpmpController extends Controller
                     'update',
                     'delete',
                     'import',
-                    'get-stock-amount'
+                    'get-stock-amount',
+                    'import-cse',
+                    'import-non-cse'
                 ],
                 'rules' => [
                     [
@@ -62,6 +64,14 @@ class SupplementalPpmpController extends Controller
                         ],
                         'allow' => true,
                         'roles' => ['ppmp']
+                    ],
+                    [
+                        'actions' => [
+                            'import-cse',
+                            'import-non-cse'
+                        ],
+                        'allow' => true,
+                        'roles' => ['import_supplemental_ppmp']
                     ]
                 ]
             ],

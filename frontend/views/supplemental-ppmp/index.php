@@ -75,7 +75,11 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('Create Supplemental Ppmp', ['create'], ['class' => 'btn btn-success']) ?>
-        <button class="btn btn-warning" data-target="#uploadCsemodal" data-toggle="modal">Import</button>
+        <?= Yii::$app->user->can('import_supplemental_ppmp') ? Html::a('Import', ['create'], [
+            'class' => 'btn btn-warning',
+            'data-target' => "#uploadCsemodal", 'data-toggle' => "modal"
+        ]) : '' ?>
+
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
