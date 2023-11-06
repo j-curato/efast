@@ -74,7 +74,7 @@ class PrRfq extends \yii\db\ActiveRecord
     {
 
         return Yii::$app->db->createCommand("SELECT 
-            pr_rfq_item.id as item_id,
+            CAST(pr_rfq_item.id AS CHAR(50)) as item_id,
             pr_purchase_request_item.id as prItemId,
             pr_purchase_request_item.specification,
             pr_purchase_request_item.quantity,
