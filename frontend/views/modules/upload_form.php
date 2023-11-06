@@ -79,7 +79,8 @@ SweetAlertAsset::register($this);
                     processData: false,
                     success: function(data) {
                         var res = JSON.parse(data)
-                        console.log(data)
+                        console.log(res)
+                        console.log('qwe')
                         if (res.isSuccess) {
                             swal({
                                 icon: 'success',
@@ -92,7 +93,7 @@ SweetAlertAsset::register($this);
                                 location.reload();
                             })
                         } else {
-                            const error_message = res.error_message.file[0]
+                            const error_message = res.error_message
                             swal({
                                 icon: 'error',
                                 title: error_message,

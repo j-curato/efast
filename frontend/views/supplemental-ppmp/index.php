@@ -171,7 +171,7 @@ $script = <<<JS
                                     })
                                 }
                                 else{
-                                    const error_message = res.error_message.file[0]
+                                    const error_message = res.error_message
                                     swal( {
                                         icon: 'error',
                                         title: error_message,

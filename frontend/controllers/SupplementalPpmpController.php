@@ -724,7 +724,7 @@ class SupplementalPpmpController extends Controller
                 return json_encode(['isSuccess' => true]);
             } catch (ErrorException $e) {
                 $transaction->rollBack();
-                return $e->getMessage();
+                return json_encode(['isSuccess' => false, 'error_message' => $e->getMessage()]);
             }
         }
     }
