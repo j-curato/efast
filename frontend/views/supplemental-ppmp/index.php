@@ -194,10 +194,6 @@ $script = <<<JS
                 
             })
             var i=false;
-
-
-             
-        
 JS;
 $this->registerJs($script);
 ?>
