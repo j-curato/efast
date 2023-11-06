@@ -59,11 +59,10 @@ class AcicInBankSearch extends AcicInBank
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'date' => $this->date,
             'created_at' => $this->created_at,
         ]);
-
         $query->andFilterWhere(['like', 'serial_number', $this->serial_number]);
+        $query->andFilterWhere(['like', 'date', $this->date]);
 
         return $dataProvider;
     }
