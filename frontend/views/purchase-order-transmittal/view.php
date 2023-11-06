@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="container card" style="padding: 1rem;">
         <h5><?= Html::encode($this->title) ?></h5>
         <p>
-            <?= Yii::$app->user->can('update_purchase_order_transmittal') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
+            <?= Yii::$app->user->can('update_purchase_order_transmittal') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'mdModal btn btn-primary']) : '' ?>
         </p>
 
         <div class="row" style="float:right">

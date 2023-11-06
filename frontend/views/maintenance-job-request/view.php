@@ -29,7 +29,7 @@ if (!empty($model->fk_approved_by)) {
     <div class="container card">
         <p>
 
-            <?= Yii::$app->user->can('update_maintenance_job_request') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
+            <?= Yii::$app->user->can('update_maintenance_job_request') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'mdModal btn btn-primary']) : '' ?>
         </p>
         <table>
 
@@ -185,7 +185,7 @@ if (!empty($model->fk_approved_by)) {
 </style>
 <?php
 $script = <<<JS
-        $('.modalButtoncreate').click(function(){
+        $('.mdModal').click(function(){
             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
         });
 JS;

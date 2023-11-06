@@ -71,7 +71,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php
 SweetAlertAsset::register($this);
 $script = <<<JS
-        $('.modalButtoncreate').click(function(){
+        $('.mdModal').click(function(){
             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
         });
         $('.modalButtonedit').click(function(){

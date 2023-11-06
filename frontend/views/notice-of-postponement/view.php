@@ -37,7 +37,7 @@ $toDate = DateTime::createFromFormat('Y-m-d H:i:s', $model->to_date);
             <?php
             if (Yii::$app->user->can('update_notice_of_postponement')) {
                 if (!$model->is_final) {
-                    echo Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']);
+                    echo Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'mdModal btn btn-primary']);
                 }
             }
             ?>

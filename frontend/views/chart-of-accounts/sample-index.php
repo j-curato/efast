@@ -100,7 +100,7 @@ $this->registerJs($script);
 <?php
 
 $js = "
-        $('#modalButtoncreate').click(function(){
+        $('#mdModal').click(function(){
             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
         });
         $('.modalButtonedit').click(function(){

@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::button('<i class="fa fa-pencil-alt"></i> Create', [
-            'value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=tracking-sheet/create'), 'id' => 'modalButtoncreate',
+            'value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=tracking-sheet/create'), 'id' => 'mdModal',
             'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
         ]); ?>
     </p>
@@ -62,7 +62,7 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 <?php
 $script = <<< JS
-        $('#modalButtoncreate').click(function(){
+        $('#mdModal').click(function(){
             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
         });
         $('a[title=Update]').click(function(e){

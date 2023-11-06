@@ -3,15 +3,17 @@
 namespace frontend\controllers;
 
 use Yii;
-use app\models\PrStock;
-use app\models\PrStockSearch;
-use app\models\PrStockSpecification;
-use ErrorException;
 use yii\db\Query;
-use yii\filters\AccessControl;
+use ErrorException;
+use app\models\PrStock;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\FileHelper;
+use app\models\PrStockSearch;
+use common\models\UploadForm;
+use yii\filters\AccessControl;
+use yii\web\NotFoundHttpException;
+use app\models\PrStockSpecification;
 
 /**
  * PrStockController implements the CRUD actions for PrStock model.
@@ -59,10 +61,18 @@ class PrStockController extends Controller
                     [
                         'actions' => [
                             'create',
-                   
+
                         ],
                         'allow' => true,
                         'roles' => ['create_stock']
+                    ],
+                    [
+                        'actions' => [
+                            'import',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['import_stock']
                     ],
                     // [
                     //     'actions' => [
@@ -368,8 +378,11 @@ class PrStockController extends Controller
             $query->select(["CAST(id as CHAR(50)) as id, UPPER(`stock_title`) as text"])
                 ->from('pr_stock')
                 ->where(['like', 'stock_title', $q])
-                ->andwhere('pr_stock.budget_year = :budget_year', ['budget_year' => $budget_year])
+                ->andWhere('is_disabled = 0')
                 ->andwhere('pr_stock.cse_type = :cse_type', ['cse_type' => $cse_type]);
+            if ($cse_type === 'cse') {
+                $query->andwhere('pr_stock.budget_year = :budget_year', ['budget_year' => $budget_year]);
+            }
             $query->offset($offset)
                 ->limit($limit);
             $command = $query->createCommand();
@@ -377,7 +390,6 @@ class PrStockController extends Controller
             $out['results'] = array_values($data);
             $out['pagination'] = ['more' => !empty($data) ? true : false];
         }
-
         return $out;
     }
     public function actionStockInfo()
@@ -393,92 +405,80 @@ class PrStockController extends Controller
     }
     public function actionImport()
     {
-        if (!empty($_POST)) {
-            // $chart_id = $_POST['chart_id'];
-            $name = $_FILES["file"]["name"];
-            // var_dump($_FILES['file']);
-            // die();
-            $id = uniqid();
-            $file = "transaction/{$id}_{$name}";
-            if (move_uploaded_file($_FILES['file']['tmp_name'], $file)) {
-            } else {
-                return "ERROR 2: MOVING FILES FAILED.";
-                die();
-            }
-            $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file);
-            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
-            $excel = $reader->load($file);
-            $excel->setActiveSheetIndexByName('stocks');
-            $worksheet = $excel->getActiveSheet();
-
-            $data = [];
-            $transaction = YIi::$app->db->beginTransaction();
-            foreach ($worksheet->getRowIterator(2) as $key => $row) {
-                $cellIterator = $row->getCellIterator();
-                $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
-                $cells = [];
-                $y = 0;
-                foreach ($cellIterator as $x => $cell) {
-                    $q = '';
-                    if ($y === 7) {
-                        $cells[] = $cell->getFormattedValue();
+        if (Yii::$app->request->post()) {
+            try {
+                $transaction = YIi::$app->db->beginTransaction();
+                $model = new UploadForm();
+                $file_path = '';
+                if (isset($_FILES['file'])) {
+                    $id = uniqid();
+                    $file = $_FILES;
+                    $file = \yii\web\UploadedFile::getInstanceByName('file');
+                    $model->file = $file;
+                    $path =   Yii::$app->basePath . '\imports';
+                    FileHelper::createDirectory($path);
+                    if ($model->validate()) {
+                        $file_path =  $model->upload($path, "stocks_$id");
                     } else {
+                        return json_encode(['isSuccess' => false, 'error_message' => $model->errors]);
+                    }
+                }
+                $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file_path);
+                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+                $excel = $reader->load($file_path);
+                $excel->setActiveSheetIndexByName('stocks');
+                $worksheet = $excel->getActiveSheet();
+                foreach ($worksheet->getRowIterator(2) as $key => $row) {
+                    $cellIterator = $row->getCellIterator();
+                    $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+                    $cells = [];
+                    foreach ($cellIterator as $x => $cell) {
                         $cells[] =   $cell->getValue();
                     }
-                    $y++;
-                }
-                if (!empty($cells)) {
-
-
-                    $part = $cells[0];
-                    $type = $cells[1];
-                    $bac_code = $cells[2];
-                    $stock_title = $cells[3];
-                    $unit_of_measure = $cells[4];
-                    $unit_cost = $cells[5];
-                    $uacs = $cells[6];
-
-
-
-                    $unit_of_measure_id = Yii::$app->db->createCommand("SELECT id FROM unit_of_measure WHERE unit_of_measure = :unit_of_measure")
-                        ->bindValue(':unit_of_measure', $unit_of_measure)
-                        ->queryScalar();
-                    $chart_of_account_id = Yii::$app->db->createCommand("SELECT id FROM chart_of_accounts WHERE uacs = :uacs")
-                        ->bindValue(':uacs', $uacs)
-                        ->queryScalar();
-                    if (empty($unit_of_measure_id)) {
-                        return "UNIT OF MEASURE $key";
-                        $transaction->rollBack();
-                    }
-                    if (empty($chart_of_account_id)) {
-                        return "CHART OF  $key";
-                        $transaction->rollBack();
-                    }
-
-                    $model = new PrStock();
-                    $model->stock_title = $stock_title;
-                    $model->bac_code = $bac_code;
-                    $model->unit_of_measure_id = $unit_of_measure_id;
-                    $model->amount = $unit_cost;
-                    $model->chart_of_account_id = $chart_of_account_id;
-                    $model->part = $part;
-                    $model->type = $type;
-                    if ($model->save(false)) {
-                    } else {
-                        $transaction->rollBack();
+                    if (!empty($cells)) {
+                        $budget_year = $cells[0];
+                        $part = $cells[1];
+                        $type = $cells[2];
+                        $bac_code = $cells[3];
+                        $stock_title = $cells[4];
+                        $unit_of_measure = $cells[5];
+                        $unit_cost = $cells[6];
+                        $unit_of_measure_id = Yii::$app->db->createCommand("SELECT id FROM unit_of_measure WHERE unit_of_measure = :unit_of_measure")
+                            ->bindValue(':unit_of_measure', $unit_of_measure)
+                            ->queryScalar();
+                        if (empty($unit_of_measure_id)) {
+                            throw new ErrorException("UNIT OF MEASURE $key");
+                        }
+                        $pr_stock_type_id = Yii::$app->db->createCommand("SELECT * FROM `pr_stock_type`
+                                WHERE pr_stock_type.part = :part
+                                AND pr_stock_type.type = :stock_type ")
+                            ->bindValue(':stock_type', $type)
+                            ->bindValue(':part', $part)
+                            ->queryScalar();
+                        $model = new PrStock();
+                        $model->stock_title = $stock_title;
+                        $model->bac_code = $bac_code;
+                        $model->unit_of_measure_id = $unit_of_measure_id;
+                        $model->amount = $unit_cost;
+                        $model->part = $part;
+                        $model->type = $type;
+                        $model->cse_type = 'cse';
+                        $model->budget_year = $budget_year;
+                        $model->pr_stock_type_id = $pr_stock_type_id;
+                        if (!$model->validate()) {
+                            throw new ErrorException(json_encode($model->errors));
+                        }
+                        if (!$model->save(false)) {
+                            throw new ErrorException('Model save failed');
+                        }
                     }
                 }
+                $transaction->commit();
+                return json_encode(['isSuccess' => true]);
+            } catch (ErrorException $e) {
+                $transaction->rollBack();
+                return $e->getMessage();
             }
-            $transaction->commit();
-
-
-            // return $this->redirect(['index']);
-            // return json_encode(['isSuccess' => true]);
-            ob_clean();
-            echo "<pre>";
-            var_dump('success');
-            echo "</pre>";
-            return ob_get_clean();
         }
     }
     public function actionGetPart()

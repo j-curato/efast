@@ -74,7 +74,7 @@ $accounting_head = !empty($model->fk_accounting_head) ?  $accounting_head =  $em
 
     <div class="container ">
         <p>
-            <?= Html::a('<id class="fa fa-pencil-alt"></id> add Signatories', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']) ?>
+            <?= Html::a('<id class="fa fa-pencil-alt"></id> add Signatories', ['update', 'id' => $model->id], ['class' => 'btn btn-primary mdModal']) ?>
             <?= Html::a('Cash Disbursement', ['cash-disbursement/view', 'id' => $model->fk_cash_disbursement_id], ['class' => 'btn btn-link']) ?>
         </p>
         <table>

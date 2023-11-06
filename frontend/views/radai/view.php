@@ -14,7 +14,7 @@ $checkNumbers = implode(',', ArrayHelper::getColumn($model->getRadaiItemsCheckNu
 ?>
 <div class="radai-view ">
     <p>
-        <?= Yii::$app->user->can('update_radai') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
+        <?= Yii::$app->user->can('update_radai') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'mdModal btn btn-primary']) : '' ?>
     </p>
     <table>
         <tr>

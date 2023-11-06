@@ -15,7 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="jev-preparation-index" id="main">
     <div class="container card">
         <p>
-            <?= Yii::$app->user->can('update_ro_general_journal') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
+            <?= Yii::$app->user->can('update_ro_general_journal') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'mdModal btn btn-primary']) : '' ?>
             <button @click="exportFile" type='button' class="btn btn btn-success" style="margin:1rem;">Export</button>
         </p>
         <div id="con">

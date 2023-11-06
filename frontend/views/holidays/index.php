@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h3><?= Html::encode($this->title) ?></h3>
 
     <p>
-        <?= Html::button('<i class="fa fa-pencil-alt"></i> Create', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=holidays/create'), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
+        <?= Html::button('<i class="fa fa-pencil-alt"></i> Create', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=holidays/create'), 'id' => 'mdModal', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
 
     </p>
 
@@ -47,7 +47,7 @@ SweetAlertAsset::register($this);
 
 $script = <<<JS
             var i=false;
-        $('#modalButtoncreate').click(function(){
+        $('#mdModal').click(function(){
             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
         });
         $('a[title=Update]').click(function(e){

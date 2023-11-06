@@ -19,7 +19,7 @@ $approvedBy = MyHelper::getEmployee($model->fk_approved_by, 'one');
 
 
     <p>
-        <?= Yii::$app->user->can('update_it_maintenance_request') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
+        <?= Yii::$app->user->can('update_it_maintenance_request') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'mdModal btn btn-primary']) : '' ?>
         <?php
         if (Yii::$app->user->can('super-user')) {
             if (!empty($model->helpdeskCsf->id)) {

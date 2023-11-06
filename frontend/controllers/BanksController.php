@@ -3,12 +3,13 @@
 namespace frontend\controllers;
 
 use Yii;
+use yii\db\Query;
 use app\models\Banks;
-use app\models\BanksSearch;
-use yii\filters\AccessControl;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
+use app\models\BanksSearch;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
+use yii\web\NotFoundHttpException;
 
 /**
  * BanksController implements the CRUD actions for Banks model.
@@ -29,6 +30,7 @@ class BanksController extends Controller
                     'create',
                     'update',
                     'delete',
+                    'search-bank',
                 ],
                 'rules' => [
                     [
@@ -52,6 +54,13 @@ class BanksController extends Controller
                         ],
                         'allow' => true,
                         'roles' => ['create_banks']
+                    ],
+                    [
+                        'actions' => [
+                            'search-bank',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
                     ],
                 ]
             ],
@@ -158,5 +167,26 @@ class BanksController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+    public function actionSearchBank($page = null, $q = null, $id = null)
+    {
+        $limit = 5;
+        $offset = ($page - 1) * $limit;
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if ($id > 0) {
+        } else if (!is_null($q)) {
+            $query = new Query();
+            $query->select('banks.id, UPPER(banks.name) AS text')
+                ->from('banks')
+                ->where(['like', 'banks.name', $q])
+                ->offset($offset)
+                ->limit($limit);
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+            $out['pagination'] = ['more' => !empty($data) ? true : false];
+        }
+        return $out;
     }
 }

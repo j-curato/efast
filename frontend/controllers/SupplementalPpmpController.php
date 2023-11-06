@@ -411,7 +411,7 @@ class SupplementalPpmpController extends Controller
                     $model->fk_office_id = $user_data->employee->office->id;
                     $model->fk_division_id =  $_POST['fk_division_id'] ?? $user_data->employee->empDivision->id;
                 }
-                $model->serial_number = $this->serialNumber($model->budget_year, $model->cse_type, $model->fk_office_id);
+                // $model->serial_number = $this->serialNumber($model->budget_year, $model->cse_type, $model->fk_office_id);
                 $model->is_supplemental = 1;
 
                 if (!$model->validate()) {
@@ -420,7 +420,6 @@ class SupplementalPpmpController extends Controller
                 if (!$model->save(false)) {
                     throw new ErrorException('PPMP Save Failed');
                 }
-
                 if ($model->cse_type === 'cse') {
                     $insert_cse = $this->insertCseItems($model->id, $cse_items);
                     if ($insert_cse !== true) {
@@ -599,201 +598,272 @@ class SupplementalPpmpController extends Controller
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function actionImport()
+    public function actionImportCse()
     {
         if (Yii::$app->request->isPost) {
-            $model = new UploadForm();
-
-            $file_path = '';
-
-            // $q = $_FILES['file'];
-            if (isset($_FILES['file'])) {
-                $id = uniqid();
-                $dv_number =  "\imports";
-                $file = $_FILES;
-                $file = \yii\web\UploadedFile::getInstanceByName('file');
-                $model->file = $file;
-                $path =  Yii::$app->basePath . $dv_number;
-                FileHelper::createDirectory($path);
-                if ($model->validate()) {
-                    $file_path =  $model->upload($path, "ppmp_$id");
-                } else {
-                    return json_encode(['isSuccess' => false, 'error_message' => $model->errors]);
-                }
-            }
-
-
-
-
-
-
-            $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file_path);
-            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
-            $excel = $reader->load($file_path);
-
-            $excel->setActiveSheetIndexByName('noncse');
-            // $excel->setActiveSheetIndexByName('cse');
-            $worksheet = $excel->getActiveSheet();
-            // print_r($excel->getSheetNames());
-
-            $data = [];
-            $transaction = YIi::$app->db->beginTransaction();
-
-            foreach ($worksheet->getRowIterator(3) as $key => $row) {
-                $cellIterator = $row->getCellIterator();
-                $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
-                $cells = [];
-                $y = 0;
-                foreach ($cellIterator as $x => $cell) {
-
-                    $cells[] =   $cell->getValue();
-                }
-                // CSE
-                // $budget_year = $cells[0];
-                // $cse_type = $cells[1];
-                // $stock_name_or_activity_name = $cells[2];
-                // $office = $cells[3];
-                // $division = $cells[4];
-                // $division_program_unit = $cells[5];
-                // $unit_of_measure = $cells[6];
-                // $jan_qty = $cells[7];
-                // $feb_qty = $cells[8];
-                // $mar_qty = $cells[9];
-                // $apr_qty = $cells[10];
-                // $may_qty = $cells[11];
-                // $jun_qty = $cells[12];
-                // $jul_qty = $cells[13];
-                // $aug_qty = $cells[14];
-                // $sep_qty = $cells[15];
-                // $oct_qty = $cells[16];
-                // $nov_qty = $cells[17];
-                // $dec_qty = $cells[18];
-                // $total_amt = $cells[19];
-
-                // NON CSE
-                $cse_type = 'non_cse';
-                $budget_year = $cells[0];
-                $activity_name = $cells[1];
-                $type = $cells[2];
-                $stock_name_or_activity_name = $cells[3];
-                $description = $cells[4];
-                $office = $cells[5];
-                $division = $cells[6];
-                $division_program_unit = $cells[7];
-                $fund_source = $cells[8];
-                $amount = $cells[9];
-
-                $fund_source_id = Yii::$app->db->createCommand("SELECT id FROM fund_source WHERE fund_source.name = :fund_source")->bindValue(':fund_source', $fund_source)->queryScalar();
-                // if (empty($fund_source_id)) {
-                //     $transaction->rollBack();
-                //     return json_encode(['isSuccess' => false, 'error_message' => $fund_source . ' Fund Source Does not exists in line' . $key]);
-                // }
-                $office_id = Yii::$app->db->createCommand("SELECT id FROM office WHERE office.office_name = :office")->bindValue(':office', $office)->queryScalar();
-                if (empty($office_id)) {
-                    $transaction->rollBack();
-                    return json_encode(['isSuccess' => false, 'error_message' => $office . ' Office Does not exists in line' . $key]);
-                }
-                $division_id = Yii::$app->db->createCommand("SELECT id FROM divisions WHERE divisions.division = :division")->bindValue(':division', $division)->queryScalar();
-                if (empty($division_id)) {
-                    $transaction->rollBack();
-                    return json_encode(['isSuccess' => false, 'error_message' => $division . ' Division Does not exists in line' . $key]);
-                }
-                $division_program_unit_id = Yii::$app->db->createCommand("SELECT id FROM division_program_unit WHERE division_program_unit.name = :nme")->bindValue(':nme', $division_program_unit)->queryScalar();
-                if (empty($division_program_unit_id)) {
-                    $transaction->rollBack();
-                    return json_encode(['isSuccess' => false, 'error_message' => $division_program_unit . ' division_program_unit Does not exists in line' . $key]);
+            try {
+                $transaction = YIi::$app->db->beginTransaction();
+                $model = new UploadForm();
+                $file_path = '';
+                // $q = $_FILES['file'];
+                if (isset($_FILES['file'])) {
+                    $id = uniqid();
+                    $file = $_FILES;
+                    $file = \yii\web\UploadedFile::getInstanceByName('file');
+                    $model->file = $file;
+                    $path =  Yii::$app->basePath .  "\imports";
+                    FileHelper::createDirectory($path);
+                    if ($model->validate()) {
+                        $file_path =  $model->upload($path, "ppmp_$id");
+                    } else {
+                        return json_encode(['isSuccess' => false, 'error_message' => $model->errors]);
+                    }
                 }
 
-                $stock_id = Yii::$app->db->createCommand("SELECT id FROM pr_stock WHERE pr_stock.stock_title = :stock_name_or_activity_name")->bindValue(':stock_name_or_activity_name', $stock_name_or_activity_name)->queryScalar();
-                if (empty($stock_id)) {
-                    $transaction->rollBack();
-                    return json_encode(['isSuccess' => false, 'error_message' => $stock_name_or_activity_name . ' Does not exists in line' . $key]);
-                }
-                // $unit_of_measure_id = Yii::$app->db->createCommand("SELECT id FROM unit_of_measure WHERE unit_of_measure.unit_of_measure = :unit_of_measure")
-                //     ->bindValue(':unit_of_measure', $unit_of_measure)->queryScalar();
-                // if (empty($unit_of_measure_id)) {
-                //     $transaction->rollBack();
-                //     return json_encode(['isSuccess' => false, 'error_message' => $unit_of_measure . 'unit of measure Does not exists in line' . $key]);
-                // }
+                $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file_path);
+                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+                $excel = $reader->load($file_path);
+                $excel->setActiveSheetIndexByName('cse');
+                $worksheet = $excel->getActiveSheet();
+                foreach ($worksheet->getRowIterator(2) as $key => $row) {
+                    $cellIterator = $row->getCellIterator();
+                    $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+                    $cells = [];
+                    $y = 0;
+                    foreach ($cellIterator as $x => $cell) {
 
+                        $cells[] =   $cell->getValue();
+                    }
+                    // CSE
+                    $budget_year = $cells[0];
+                    $stock_name = $cells[1];
+                    $office = $cells[2];
+                    $division = $cells[3];
+                    $division_program_unit = $cells[4];
+                    $unit_of_measure = $cells[5];
+                    $jan_qty = $cells[6];
+                    $feb_qty = $cells[7];
+                    $mar_qty = $cells[8];
+                    $apr_qty = $cells[9];
+                    $may_qty = $cells[10];
+                    $jun_qty = $cells[11];
+                    $jul_qty = $cells[12];
+                    $aug_qty = $cells[13];
+                    $sep_qty = $cells[14];
+                    $oct_qty = $cells[15];
+                    $nov_qty = $cells[16];
+                    $dec_qty = $cells[17];
+                    $amount = $cells[18];
 
-                $exists_act = Yii::$app->db->createCommand("SELECT fk_supplemental_ppmp_id FROM supplemental_ppmp_non_cse WHERE supplemental_ppmp_non_cse.activity_name = :activity_name")
-                    ->bindValue(':activity_name', $activity_name)
-                    ->queryScalar();
-                if (empty($exists_act)) {
+                    $office_id = Yii::$app->db->createCommand("SELECT id FROM office WHERE office.office_name = :office")->bindValue(':office', $office)->queryScalar();
+                    if (empty($office_id)) {
+                        throw new ErrorException($office . ' Office Does not exists in line' . $key);
+                    }
+                    $division_id = Yii::$app->db->createCommand("SELECT id FROM divisions WHERE divisions.division = :division")->bindValue(':division', $division)->queryScalar();
+                    if (empty($division_id)) {
+                        throw new ErrorException($division . ' Division Does not exists in line' . $key);
+                    }
+                    $division_program_unit_id = Yii::$app->db->createCommand("SELECT id FROM division_program_unit WHERE division_program_unit.name = :nme")->bindValue(':nme', $division_program_unit)->queryScalar();
+                    if (empty($division_program_unit_id)) {
+                        throw new ErrorException($division_program_unit . ' division_program_unit Does not exists in line' . $key);
+                    }
+                    $stock_id = Yii::$app->db->createCommand("SELECT id FROM pr_stock WHERE pr_stock.stock_title = :stock_name
+                            AND cse_type= 'cse'
+                            AND budget_year = :budget_year")
+                        ->bindValue(':stock_name', $stock_name)
+                        ->bindValue(':budget_year', $budget_year)
+                        ->queryScalar();
+                    if (empty($stock_id)) {
+
+                        throw new ErrorException($stock_name . ' Does not exists in line' . $key);
+                    }
+                    $unit_of_measure_id = Yii::$app->db->createCommand("SELECT id FROM unit_of_measure WHERE unit_of_measure.unit_of_measure = :unit_of_measure")
+                        ->bindValue(':unit_of_measure', $unit_of_measure)->queryScalar();
+                    if (empty($unit_of_measure_id)) {
+
+                        throw new ErrorException($unit_of_measure . 'unit of measure Does not exists in line' . $key);
+                    }
                     $ppmp = new SupplementalPpmp();
-
-                    $ppmp->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-                    $ppmp->serial_number = $this->serialNumber($budget_year, $cse_type, '');
                     $ppmp->budget_year = $budget_year;
-                    $ppmp->cse_type = strtolower($cse_type);
+                    $ppmp->cse_type = 'cse';
                     $ppmp->fk_office_id = $office_id;
                     $ppmp->fk_division_id = $division_id;
                     $ppmp->is_supplemental = 0;
                     $ppmp->fk_division_program_unit_id = $division_program_unit_id;
-                    if ($ppmp->validate()) {
-                        if ($ppmp->save(false)) {
-                            // $ppmp_cse = new SupplementalPpmpCse();
-                            // $ppmp_cse->id = $x;
-                            // $ppmp_cse->fk_supplemental_ppmp_id = $ppmp->id;
-                            // $ppmp_cse->fk_pr_stock_id = $stock_id;
-                            // $ppmp_cse->fk_unit_of_measure_id = $unit_of_measure_id;
-                            // $ppmp_cse->amount = $total_amt;
-                            // $ppmp_cse->jan_qty = $jan_qty;
-                            // $ppmp_cse->feb_qty = $feb_qty;
-                            // $ppmp_cse->mar_qty = $mar_qty;
-                            // $ppmp_cse->apr_qty = $apr_qty;
-                            // $ppmp_cse->may_qty = $may_qty;
-                            // $ppmp_cse->jun_qty = $jun_qty;
-                            // $ppmp_cse->jul_qty = $jul_qty;
-                            // $ppmp_cse->aug_qty = $aug_qty;
-                            // $ppmp_cse->sep_qty = $sep_qty;
-                            // $ppmp_cse->oct_qty = $oct_qty;
-                            // $ppmp_cse->nov_qty = $nov_qty;
-                            // $ppmp_cse->dec_qty = $dec_qty;
-                            // if ($ppmp_cse->save(false)) {
-                            // }
-
-                            $ppmp_non_cse = new SupplementalPpmpNonCse();
-                            $ppmp_non_cse->fk_supplemental_ppmp_id = $ppmp->id;
-                            $ppmp_non_cse->type = $type;
-                            $ppmp_non_cse->early_procurement = 0;
-                            $ppmp_non_cse->fk_fund_source_id = $fund_source_id;
-                            $ppmp_non_cse->activity_name = $activity_name;
-                            // if ($ppmp_non_cse->type === 'fixed expenses') {
-                            //     $ppmp_non_cse->activity_name = 'fixed';
-                            // }
-                            if ($ppmp_non_cse->validate()) {
-                                if ($ppmp_non_cse->save(false)) {
-                                    $exists_act = $ppmp_non_cse->id;
-                                }
-                            } else {
-                                return json_encode(['isSuccess' => false, 'error_message' => $ppmp_non_cse->errors, 'key' => $key]);
-                            }
-                        }
-                    } else {
-                        return json_encode(['isSuccess' => false, 'error_message' => $ppmp->errors]);
+                    if (!$ppmp->validate()) {
+                        throw new ErrorException(json_encode($ppmp->errors));
+                    }
+                    if (!$ppmp->save(false)) {
+                        throw new ErrorException('PPMP Model Save Failed');
+                    }
+                    $ppmp_cse = new SupplementalPpmpCse();
+                    $ppmp_cse->fk_supplemental_ppmp_id = $ppmp->id;
+                    $ppmp_cse->fk_pr_stock_id = $stock_id;
+                    $ppmp_cse->fk_unit_of_measure_id = $unit_of_measure_id;
+                    $ppmp_cse->amount = $amount;
+                    $ppmp_cse->jan_qty = $jan_qty;
+                    $ppmp_cse->feb_qty = $feb_qty;
+                    $ppmp_cse->mar_qty = $mar_qty;
+                    $ppmp_cse->apr_qty = $apr_qty;
+                    $ppmp_cse->may_qty = $may_qty;
+                    $ppmp_cse->jun_qty = $jun_qty;
+                    $ppmp_cse->jul_qty = $jul_qty;
+                    $ppmp_cse->aug_qty = $aug_qty;
+                    $ppmp_cse->sep_qty = $sep_qty;
+                    $ppmp_cse->oct_qty = $oct_qty;
+                    $ppmp_cse->nov_qty = $nov_qty;
+                    $ppmp_cse->dec_qty = $dec_qty;
+                    if (!$ppmp_cse->validate()) {
+                        throw new ErrorException(json_encode($ppmp_cse->errors));
+                    }
+                    if (!$ppmp_cse->save(false)) {
+                        throw new ErrorException('PPMP CSE item Save Failed');
                     }
                 }
-
-                $ppmp_non_cse_item = new SupplementalPpmpNonCseItems();
-                $ppmp_non_cse_item->fk_supplemental_ppmp_non_cse_id = $ppmp_non_cse->id;
-                $ppmp_non_cse_item->amount = $amount;
-                $ppmp_non_cse_item->fk_pr_stock_id = $stock_id;
-                $ppmp_non_cse_item->description = $description;
-                $ppmp_non_cse_item->quantity = 0;
-                if ($ppmp_non_cse_item->validate()) {
-                    if ($ppmp_non_cse_item->save(false)) {
-                    }
-                } else {
-                    return json_encode([$ppmp_non_cse_item->errors, $key]);
-                }
+                $transaction->commit();
+                return json_encode(['isSuccess' => true]);
+            } catch (ErrorException $e) {
+                $transaction->rollBack();
+                return $e->getMessage();
             }
+        }
+    }
+    public function actionImportNonCse()
+    {
+        if (Yii::$app->request->post()) {
+            try {
+                $transaction = YIi::$app->db->beginTransaction();
+                $model = new UploadForm();
+                $file_path = '';
+                if (isset($_FILES['file'])) {
+                    $id = uniqid();
+                    $file = $_FILES;
+                    $file = \yii\web\UploadedFile::getInstanceByName('file');
+                    $model->file = $file;
+                    $path =  Yii::$app->basePath . "\imports";
+                    FileHelper::createDirectory($path);
+                    if ($model->validate()) {
+                        $file_path =  $model->upload($path, "ppmp_$id");
+                    } else {
+                        return json_encode(['isSuccess' => false, 'error_message' => $model->errors]);
+                    }
+                }
+
+                $inputFileType = \PhpOffice\PhpSpreadsheet\IOFactory::identify($file_path);
+                $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+                $excel = $reader->load($file_path);
+                $excel->setActiveSheetIndexByName('noncse');
+                $worksheet = $excel->getActiveSheet();
 
 
-            $transaction->commit();
-            // return $this->redirect(['index']);
-            return json_encode(['isSuccess' => true]);
+                foreach ($worksheet->getRowIterator(3) as $key => $row) {
+                    $cellIterator = $row->getCellIterator();
+                    $cellIterator->setIterateOnlyExistingCells(FALSE); // This loops through all cells,
+                    $cells = [];
+                    $y = 0;
+                    foreach ($cellIterator as $x => $cell) {
+
+                        $cells[] =   $cell->getValue();
+                    }
+
+                    // NON CSE
+                    $cse_type = 'non_cse';
+                    $budget_year = $cells[0];
+                    $activity_name = $cells[1];
+                    $type = $cells[2];
+                    $stock_name_or_activity_name = $cells[3];
+                    $description = $cells[4];
+                    $office = $cells[5];
+                    $division = $cells[6];
+                    $division_program_unit = $cells[7];
+                    $fund_source = $cells[8];
+                    $amount = $cells[9];
+
+                    $fund_source_id = Yii::$app->db->createCommand("SELECT id FROM fund_source WHERE fund_source.name = :fund_source")->bindValue(':fund_source', $fund_source)->queryScalar();
+                    // if (empty($fund_source_id)) {
+                    //     $transaction->rollBack();
+                    //     return json_encode(['isSuccess' => false, 'error_message' => $fund_source . ' Fund Source Does not exists in line' . $key]);
+                    // }
+                    $office_id = Yii::$app->db->createCommand("SELECT id FROM office WHERE office.office_name = :office")->bindValue(':office', $office)->queryScalar();
+                    if (empty($office_id)) {
+                        $transaction->rollBack();
+                        return json_encode(['isSuccess' => false, 'error_message' => $office . ' Office Does not exists in line' . $key]);
+                    }
+                    $division_id = Yii::$app->db->createCommand("SELECT id FROM divisions WHERE divisions.division = :division")->bindValue(':division', $division)->queryScalar();
+                    if (empty($division_id)) {
+                        $transaction->rollBack();
+                        return json_encode(['isSuccess' => false, 'error_message' => $division . ' Division Does not exists in line' . $key]);
+                    }
+                    $division_program_unit_id = Yii::$app->db->createCommand("SELECT id FROM division_program_unit WHERE division_program_unit.name = :nme")->bindValue(':nme', $division_program_unit)->queryScalar();
+                    if (empty($division_program_unit_id)) {
+                        $transaction->rollBack();
+                        return json_encode(['isSuccess' => false, 'error_message' => $division_program_unit . ' division_program_unit Does not exists in line' . $key]);
+                    }
+
+                    $stock_id = Yii::$app->db->createCommand("SELECT id FROM pr_stock WHERE pr_stock.stock_title = :stock_name_or_activity_name")->bindValue(':stock_name_or_activity_name', $stock_name_or_activity_name)->queryScalar();
+                    if (empty($stock_id)) {
+                        $transaction->rollBack();
+                        return json_encode(['isSuccess' => false, 'error_message' => $stock_name_or_activity_name . ' Does not exists in line' . $key]);
+                    }
+                    // $unit_of_measure_id = Yii::$app->db->createCommand("SELECT id FROM unit_of_measure WHERE unit_of_measure.unit_of_measure = :unit_of_measure")
+                    //     ->bindValue(':unit_of_measure', $unit_of_measure)->queryScalar();
+                    // if (empty($unit_of_measure_id)) {
+                    //     $transaction->rollBack();
+                    //     return json_encode(['isSuccess' => false, 'error_message' => $unit_of_measure . 'unit of measure Does not exists in line' . $key]);
+                    // }
+                    $exists_act = Yii::$app->db->createCommand("SELECT fk_supplemental_ppmp_id FROM supplemental_ppmp_non_cse WHERE supplemental_ppmp_non_cse.activity_name = :activity_name")
+                        ->bindValue(':activity_name', $activity_name)
+                        ->queryScalar();
+                    if (empty($exists_act)) {
+                        $ppmp = new SupplementalPpmp();
+                        $ppmp->budget_year = $budget_year;
+                        $ppmp->cse_type = strtolower($cse_type);
+                        $ppmp->fk_office_id = $office_id;
+                        $ppmp->fk_division_id = $division_id;
+                        $ppmp->is_supplemental = 0;
+                        $ppmp->fk_division_program_unit_id = $division_program_unit_id;
+                        if (!$ppmp->validate()) {
+                            throw new ErrorException(json_encode($ppmp->errors));
+                        }
+                        if (!$ppmp->save(false)) {
+                            throw new ErrorException('PPMP Model Save Failed');
+                        }
+                        $ppmp_non_cse = new SupplementalPpmpNonCse();
+                        $ppmp_non_cse->fk_supplemental_ppmp_id = $ppmp->id;
+                        $ppmp_non_cse->type = $type;
+                        $ppmp_non_cse->early_procurement = 0;
+                        $ppmp_non_cse->fk_fund_source_id = $fund_source_id;
+                        $ppmp_non_cse->activity_name = $activity_name;
+                        if (!$ppmp_non_cse->validate()) {
+                            throw new ErrorException(json_encode($ppmp_non_cse));
+                        }
+                        if (!$ppmp_non_cse->save(false)) {
+                            throw new ErrorException('PPMP NON CSE Model Save Failed');
+                        }
+                        $exists_act = $ppmp_non_cse->id;
+                    }
+
+                    $ppmp_non_cse_item = new SupplementalPpmpNonCseItems();
+                    $ppmp_non_cse_item->fk_supplemental_ppmp_non_cse_id = $ppmp_non_cse->id;
+                    $ppmp_non_cse_item->amount = $amount;
+                    $ppmp_non_cse_item->fk_pr_stock_id = $stock_id;
+                    $ppmp_non_cse_item->description = $description;
+                    $ppmp_non_cse_item->quantity = 0;
+                    if (!$ppmp_non_cse_item->validate()) {
+                        throw new ErrorException(json_encode($ppmp_non_cse_item->errors));
+                    }
+                    if (!$ppmp_non_cse_item->save(false)) {
+                        throw new ErrorException('ppmp_non_cse_item Model Save Failed');
+                    }
+                }
+
+
+                $transaction->commit();
+                return json_encode(['isSuccess' => true]);
+            } catch (ErrorException $e) {
+                $transaction->rollback();
+                return $e->getMessage();
+            }
         }
     }
     public function actionGetStockAmount()

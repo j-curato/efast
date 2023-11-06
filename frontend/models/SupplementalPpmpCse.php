@@ -56,7 +56,7 @@ class SupplementalPpmpCse extends \yii\db\ActiveRecord
 
 
         return Yii::$app->db->createCommand("CALL CalculatePpmpCseBalance(:prItemId,:id,:amount,:qty)")
-            ->bindValue(':prItemId', !empty($prItemId)?$prItemId:null)
+            ->bindValue(':prItemId', !empty($prItemId) ? $prItemId : null)
             ->bindValue(':id', $this->id)
             ->bindValue(':amount', $amount)
             ->bindValue(':qty', $qty)
@@ -99,5 +99,18 @@ class SupplementalPpmpCse extends \yii\db\ActiveRecord
     public function getFkSupplementalPpmp()
     {
         return $this->hasOne(SupplementalPpmp::class, ['id' => 'fk_supplemental_ppmp_id']);
+    }
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+
+            if ($this->isNewRecord) {
+                if (empty($this->id)) {
+                    $this->id = Yii::$app->db->createCommand("SELECT UUID_SHORT() % 9223372036854775807")->queryScalar();
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }

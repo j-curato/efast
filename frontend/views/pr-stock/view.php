@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <p>
 
-            <?= Yii::$app->user->can('update_stock') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
+            <?= Yii::$app->user->can('update_stock') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'mdModal btn btn-primary']) : '' ?>
             <?php
 
             if (Yii::$app->user->can('ro_procurement_admin')) {
@@ -183,7 +183,7 @@ SweetAlertAsset::register($this);
 <?php
 $script = <<<JS
             var i=false;
-        $('#modalButtoncreate').click(function(){
+        $('#mdModal').click(function(){
             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
         });
         $('a[title=Update]').click(function(e){

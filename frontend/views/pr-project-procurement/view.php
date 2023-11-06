@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
         <?= Html::button('Update', [
             'value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=pr-project-procurement/update&id=' . $model->id),
-            'id' => 'modalButtoncreate', 'class' => 'btn btn-primary', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
+            'id' => 'mdModal', 'class' => 'btn btn-primary', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
         ]); ?>
     </p>
 
@@ -59,7 +59,7 @@ $script = <<<JS
     
 
     
-         $('#modalButtoncreate').click(function(){
+         $('#mdModal').click(function(){
             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
         });
         $('.modalButtonedit').click(function(){

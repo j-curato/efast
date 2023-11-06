@@ -39,7 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'label' => 'Actions',
             'format' => 'raw',
             'value' => function ($model) {
-                // $updateBtn = Yii::$app->user->can('update_books') ? Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate']) : '';
+                // $updateBtn = Yii::$app->user->can('update_books') ? Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => 'mdModal']) : '';
                 $updateBtn = Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => 'lrgModal']);
                 return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id]) . ' ' . $updateBtn;
             }

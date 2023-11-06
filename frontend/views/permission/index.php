@@ -15,7 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="permission-index">
 
     <p>
-        <?= Html::a('Create Permission', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
+        <?= Html::a('Create Permission', ['create'], ['class' => 'btn btn-success mdModal']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 

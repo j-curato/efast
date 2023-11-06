@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Html::a('Create Property Status', ['create'], ['class' => 'btn btn-success modalButtonCreate']) ?>
+        <?= Html::a('Create Property Status', ['create'], ['class' => 'btn btn-success mdModal']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 

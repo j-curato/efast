@@ -37,7 +37,7 @@ class UploadForm extends Model
             $file_path = $path . "\\" . $newFileName;
             $external_file_path = 'E:\scanned_dvs\\' . $newFileName;
             $this->file->saveAs($file_path);
-            // return $file_path;
+            return $file_path;
             // $this->file->saveAs($file_path);
             // $dropbox_path = "G:\My Drive\qqwer\\" . $newFileName;
             // copy($external_file_path, $dropbox_path);

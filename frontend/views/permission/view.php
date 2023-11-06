@@ -16,8 +16,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Html::a('Create', ['create'], ['class' => 'btn btn-success modalButtonUpdate']) ?>
-        <?= Html::a('Update', ['update', 'id' => $model->name], ['class' => 'btn btn-primary modalButtonUpdate']) ?>
+        <?= Html::a('Create', ['create'], ['class' => 'btn btn-success mdModal']) ?>
+        <?= Html::a('Update', ['update', 'id' => $model->name], ['class' => 'btn btn-primary mdModal']) ?>
         <?= Html::a('Delete', ['delete', 'id' => $model->name], [
             'class' => 'btn btn-danger',
             'data' => [

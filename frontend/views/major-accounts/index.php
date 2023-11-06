@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Yii::$app->user->can('create_major_account') ? Html::a('Create Major Accounts', ['create'], ['class' => 'btn btn-success modalButtonCreate']) : '' ?>
+        <?= Yii::$app->user->can('create_major_account') ? Html::a('Create Major Accounts', ['create'], ['class' => 'btn btn-success mdModal']) : '' ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
@@ -35,7 +35,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'format' => 'raw',
                 'value' => function ($model) {
 
-                    $updateBtn = Yii::$app->user->can('update_major_account') ? Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate']) : '';
+                    $updateBtn = Yii::$app->user->can('update_major_account') ? Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => 'mdModal']) : '';
                     return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id])
                         . ' ' . $updateBtn;
                 }

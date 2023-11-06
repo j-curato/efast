@@ -25,7 +25,7 @@ if ($model->is_final === 1) {
     <p>
         <?= Html::button('<i class="fa fa-pencil-alt"></i> Update', [
             'value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=ro-rao/update&id=' . $model->id),
-            'id' => 'modalButtoncreate', 'class' => 'btn btn-primary', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
+            'id' => 'mdModal', 'class' => 'btn btn-primary', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
         ]); ?>
 
 

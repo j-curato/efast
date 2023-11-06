@@ -20,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
         <p>
-            <?= Yii::$app->user->can('update_contract_type') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
+            <?= Yii::$app->user->can('update_contract_type') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'mdModal btn btn-primary']) : '' ?>
         </p>
         <?= DetailView::widget([
             'model' => $model,

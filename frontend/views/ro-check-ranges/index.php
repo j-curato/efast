@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-    <?= Yii::$app->user->can('create_ro_check_range') ? Html::a('<i class="fa fa-plus"></i> Create ', ['create'], ['class' => 'btn btn-success modalButtonCreate']) : '' ?>
+    <?= Yii::$app->user->can('create_ro_check_range') ? Html::a('<i class="fa fa-plus"></i> Create ', ['create'], ['class' => 'btn btn-success mdModal']) : '' ?>
 
     </p>
 
@@ -43,7 +43,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Actions',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    $updateBtn = Yii::$app->user->can('update_ro_check_range') ? Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate']) : '';
+                    $updateBtn = Yii::$app->user->can('update_ro_check_range') ? Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => 'mdModal']) : '';
                     return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id]) . ' ' . $updateBtn;
                     
                     

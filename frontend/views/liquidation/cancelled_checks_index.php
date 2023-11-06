@@ -20,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
 
         <?php if (Yii::$app->user->can('liquidation')) {
-            echo Html::a('<i class="fa fa-pencil-alt"></i> Create ', ['create-cancelled'], ['class' => 'btn btn-success modalButtonCreate']);
+            echo Html::a('<i class="fa fa-pencil-alt"></i> Create ', ['create-cancelled'], ['class' => 'btn btn-success mdModal']);
         }
         ?>
     </p>
@@ -39,7 +39,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'label' => 'Actions',
             'format' => 'raw',
             'value' => function ($model) {
-                return Html::a('<i class="fa fa-pencil-alt"></i>', ['update-cancelled', 'id' => $model->id], ['class' => 'modalButtonUpdate']);
+                return Html::a('<i class="fa fa-pencil-alt"></i>', ['update-cancelled', 'id' => $model->id], ['class' => 'mdModal']);
             },
             'hiddenFromExport' => true,
         ],

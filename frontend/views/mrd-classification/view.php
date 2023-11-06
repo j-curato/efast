@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="mrd-classification-view">
 
     <p>
-        <?= Yii::$app->user->can('update_mrd_classification') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']) : '' ?>
+        <?= Yii::$app->user->can('update_mrd_classification') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary mdModal']) : '' ?>
     </p>
 
     <?= DetailView::widget([

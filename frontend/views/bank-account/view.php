@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="container card" style="padding: 1rem;">
         <p>
-            <?= Html::a('<i class="fa fa-pencil-alt"></i> update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']); ?>
+            <?= Html::a('<i class="fa fa-pencil-alt"></i> update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary mdModal']); ?>
         </p>
 
         <?= DetailView::widget([

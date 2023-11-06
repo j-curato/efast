@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Html::button('<i class="fa fa-pencil-alt"></i> Update', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=employee/update&id=' . $model->employee_id), 'id' => 'modalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
+        <?= Html::button('<i class="fa fa-pencil-alt"></i> Update', ['value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=employee/update&id=' . $model->employee_id), 'id' => 'mdModal', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector']); ?>
     </p>
 
     <?= DetailView::widget([
@@ -34,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <?php
 $script = <<<JS
             var i=false;
-        $('#modalButtoncreate').click(function(){
+        $('#mdModal').click(function(){
             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
         });
         $('a[title=Update]').click(function(e){

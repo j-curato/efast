@@ -46,8 +46,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Actions',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    $updateBtn  = Yii::$app->user->can('update_sub_account_1') ?  Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate']) : '';
-                    $createSubAccount2Btn  = Yii::$app->user->can('create_sub_account_2') ? Html::a('<i class="fa fa-plus"></i>', ['sub-accounts2/create', 'subAcc1Id' => $model->id], ['class' => 'btn-xs btn-success modalButtonCreate']) : '';
+                    $updateBtn  = Yii::$app->user->can('update_sub_account_1') ?  Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => 'mdModal']) : '';
+                    $createSubAccount2Btn  = Yii::$app->user->can('create_sub_account_2') ? Html::a('<i class="fa fa-plus"></i>', ['sub-accounts2/create', 'subAcc1Id' => $model->id], ['class' => 'btn-xs btn-success mdModal']) : '';
                     return $createSubAccount2Btn . ' ' .
                         Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id])
                         . ' ' . $updateBtn;

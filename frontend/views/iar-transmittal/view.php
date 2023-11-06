@@ -21,7 +21,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="container">
 
         <p>
-            <?= Yii::$app->user->can('update_iar_transmittal') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
+            <?= Yii::$app->user->can('update_iar_transmittal') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'mdModal btn btn-primary']) : '' ?>
         </p>
 
 

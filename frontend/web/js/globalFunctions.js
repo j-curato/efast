@@ -441,7 +441,7 @@ $.fn.digits = function () {
   });
 };
 
-$(".modalButtonCreate").click(function (e) {
+$(".mdModal").click(function (e) {
   e.preventDefault();
   $("#genericModal")
     .modal("show")
@@ -449,14 +449,14 @@ $(".modalButtonCreate").click(function (e) {
     .load($(this).attr("href"));
 });
 
-$(".modalButtonUpdate").click(function (e) {
-  e.preventDefault();
+// $(".mdModal").click(function (e) {
+//   e.preventDefault();
 
-  $("#genericModal")
-    .modal("show")
-    .find("#modalContent")
-    .load($(this).attr("href"));
-});
+//   $("#genericModal")
+//     .modal("show")
+//     .find("#modalContent")
+//     .load($(this).attr("href"));
+// });
 $(".lrgModal").click(function (e) {
   e.preventDefault();
   $("#lrgModal")

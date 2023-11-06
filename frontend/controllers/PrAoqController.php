@@ -17,6 +17,8 @@ use yii\helpers\ArrayHelper;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 use app\components\helpers\MyHelper;
+use app\models\PrRfq;
+use yii\helpers\VarDumper;
 
 /**
  * PrAoqController implements the CRUD actions for PrAoq model.
@@ -98,76 +100,47 @@ class PrAoqController extends Controller
             'bac_compositions' => MyHelper::getRbac($model->rfq->bac_composition_id),
         ]);
     }
-    private function getAoqItems($id)
-    {
-        return Yii::$app->db->createCommand("SELECT 
-            pr_rfq_item.id as rfq_item_id,
-            pr_purchase_request_item.quantity,
-            pr_stock.stock_title as `description`,
-            IFNULL(REPLACE(pr_purchase_request_item.specification,'[n]','<br>'),'') as specification,
-            IFNULL(payee.registered_name,payee.account_name) as payee,
-            IF(IFNULL(pr_aoq_entries.amount,0)!=0,pr_aoq_entries.amount,'-') as amount,
-            pr_purchase_request.purpose,
-            pr_aoq_entries.remark,
-            pr_aoq_entries.is_lowest,
-            unit_of_measure.unit_of_measure,
-            pr_rfq.bac_composition_id
-            FROM `pr_aoq_entries`
-            LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
-            LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
-            LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id= pr_purchase_request_item.id
-            LEFT JOIN unit_of_measure ON pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
-            LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id  = pr_stock.id
-            LEFT JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id
-            LEFT JOIN pr_rfq ON pr_rfq_item.pr_rfq_id = pr_rfq.id
-            WHERE pr_aoq_entries.pr_aoq_id = :id")
-
-            ->bindValue(':id', $id)
-            ->queryAll();
-    }
 
     /**
      * Creates a new PrAoq model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    public function insertEntries($model_id, $items)
-    {
-        try {
-            foreach ($items as $i => $itm) {
-                foreach ($itm as $val) {
-                    if (!empty($val['item_id'])) {
-                        $aoq =  PrAoqEntries::findOne($val['item_id']);
-                    } else {
-                        $aoq = new PrAoqEntries();
-                    }
-                    $aoq->payee_id = $val['payee_id'];
-                    $aoq->pr_aoq_id = $model_id;
-                    $aoq->amount = $val['unit_cost'];
-                    $aoq->remark = $val['remarks'];
-                    $aoq->pr_rfq_item_id = $i;
-                    $aoq->is_lowest = !empty($val['lowest']) && $val['lowest'] == 'on' ? 1 : 0;
-                    if (!$aoq->validate()) {
-                        throw new ErrorException(json_encode($aoq->errors));
-                    }
-                    if (!$aoq->save(false)) {
-                        throw new ErrorException('AOQ Item Model Save Failed');
-                    }
-                }
-            }
+    // public function insertEntries($model_id, $items)
+    // {
+    //     try {
+    //         foreach ($items as $i => $itm) {
+    //             foreach ($itm as $val) {
+    //                 if (!empty($val['item_id'])) {
+    //                     $aoq =  PrAoqEntries::findOne($val['item_id']);
+    //                 } else {
+    //                     $aoq = new PrAoqEntries();
+    //                 }
+    //                 $aoq->payee_id = $val['payee_id'];
+    //                 $aoq->pr_aoq_id = $model_id;
+    //                 $aoq->amount = $val['unit_cost'];
+    //                 $aoq->remark = $val['remarks'];
+    //                 $aoq->pr_rfq_item_id = $i;
+    //                 $aoq->is_lowest = !empty($val['lowest']) && $val['lowest'] == 'on' ? 1 : 0;
+    //                 if (!$aoq->validate()) {
+    //                     throw new ErrorException(json_encode($aoq->errors));
+    //                 }
+    //                 if (!$aoq->save(false)) {
+    //                     throw new ErrorException('AOQ Item Model Save Failed');
+    //                 }
+    //             }
+    //         }
 
-            return true;
-        } catch (ErrorException $e) {
-            return $e->getMessage();
-        }
-    }
+    //         return true;
+    //     } catch (ErrorException $e) {
+    //         return $e->getMessage();
+    //     }
+    // }
     public function actionCreate()
     {
         $model = new PrAoq();
         $user_data = User::getUserDetails();
-
         $model->fk_office_id = $user_data->employee->office->id;
-
         if ($model->load(Yii::$app->request->post())) {
             try {
                 $transaction  = Yii::$app->db->beginTransaction();
@@ -305,27 +278,27 @@ class PrAoqController extends Controller
         }
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function removeEntry($id, $aoq_items)
-    {
+    // public function removeEntry($id, $aoq_items)
+    // {
 
-        if (empty($aoq_items)) return;
+    //     if (empty($aoq_items)) return;
 
-        $params = [];
-        $and = '';
-        if (count($aoq_items) > 1) {
-            $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'pr_aoq_entries.id', $aoq_items], $params);
-            $and = 'AND';
-        } else if (count($aoq_items) === 1) {
-            $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['!=', 'pr_aoq_entries.id', $aoq_items[min(array_keys($aoq_items))]], $params);
-            $and = 'AND';
-        } else {
-            $sql = '';
-        }
-        $q = Yii::$app->db->createCommand("DELETE  FROM pr_aoq_entries 
-        WHERE pr_aoq_entries.pr_aoq_id = :id  $and $sql", $params)
-            ->bindValue(':id', $id)
-            ->execute();
-    }
+    //     $params = [];
+    //     $and = '';
+    //     if (count($aoq_items) > 1) {
+    //         $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'pr_aoq_entries.id', $aoq_items], $params);
+    //         $and = 'AND';
+    //     } else if (count($aoq_items) === 1) {
+    //         $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['!=', 'pr_aoq_entries.id', $aoq_items[min(array_keys($aoq_items))]], $params);
+    //         $and = 'AND';
+    //     } else {
+    //         $sql = '';
+    //     }
+    //     $q = Yii::$app->db->createCommand("DELETE  FROM pr_aoq_entries 
+    //     WHERE pr_aoq_entries.pr_aoq_id = :id  $and $sql", $params)
+    //         ->bindValue(':id', $id)
+    //         ->execute();
+    // }
 
     public function aoqNumberGenerator($aoq_date, $office_id)
     {
@@ -353,58 +326,62 @@ class PrAoqController extends Controller
 
         return $office->office_name . '-' . $date->format('Y-m-d') . '-' . $zero . $last_num;
     }
-    public function aoqEntriesData($pr_aoq_id = null)
-    {
-        if ($pr_aoq_id == null) return;
-        return $query = Yii::$app->db->createCommand("SELECT
-                pr_aoq_entries.id as item_id,
-                pr_rfq_item.id as rfq_item_id,
-                pr_stock.bac_code,
-                unit_of_measure.unit_of_measure,
-                pr_stock.stock_title,
-                IFNULL(REPLACE( pr_purchase_request_item.specification, '[n]', '<br>'),'') as specification,
-                pr_purchase_request_item.quantity,
-                payee.account_name as payee,
-                payee.id as payee_id,
-                pr_aoq_entries.amount,
-                pr_aoq_entries.remark,
-                pr_aoq_entries.is_lowest
-                FROM pr_aoq_entries
+    // public function aoqEntriesData($pr_aoq_id = null)
+    // {
+    //     if ($pr_aoq_id == null) return;
+    //     return $query = Yii::$app->db->createCommand("SELECT
+    //             pr_aoq_entries.id as item_id,
+    //             pr_rfq_item.id as rfq_item_id,
+    //             pr_stock.bac_code,
+    //             unit_of_measure.unit_of_measure,
+    //             pr_stock.stock_title,
+    //             IFNULL(REPLACE( pr_purchase_request_item.specification, '[n]', '<br>'),'') as specification,
+    //             pr_purchase_request_item.quantity,
+    //             payee.account_name as payee,
+    //             payee.id as payee_id,
+    //             pr_aoq_entries.amount,
+    //             pr_aoq_entries.remark,
+    //             pr_aoq_entries.is_lowest
+    //             FROM pr_aoq_entries
 
-                LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
-                LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
-                LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
-                LEFT JOIN unit_of_measure ON pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
-                LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
-                WHERE pr_aoq_entries.pr_aoq_id = :pr_aoq_id")
-            ->bindValue(':pr_aoq_id', $pr_aoq_id)
-            ->queryAll();
-    }
-    public function rfqItemData($id)
-    {
-        $query = Yii::$app->db->createCommand("SELECT
+    //             LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
+    //             LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
+    //             LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
+    //             LEFT JOIN unit_of_measure ON pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
+    //             LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
+    //             WHERE pr_aoq_entries.pr_aoq_id = :pr_aoq_id")
+    //         ->bindValue(':pr_aoq_id', $pr_aoq_id)
+    //         ->queryAll();
+    // }
+    // public function rfqItemData($id)
+    // {
+    //     $query = Yii::$app->db->createCommand("SELECT
 
-        CAST(pr_rfq_item.id as CHAR(50)) as rfq_item_id,
-        pr_stock.bac_code,
-        unit_of_measure.unit_of_measure,
-        pr_stock.stock_title,
-        IFNULL(REPLACE( pr_purchase_request_item.specification, '[n]', '<br>'),'') as specification,
-        pr_purchase_request_item.quantity
-         FROM pr_rfq_item
-        LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
-        LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
-        LEFT JOIN unit_of_measure ON pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
-        
-        WHERE pr_rfq_id = :id")
-            ->bindValue(':id', $id)
-            ->queryAll();
-        return json_encode($query);
-    }
+    //     CAST(pr_rfq_item.id as CHAR(50)) as rfq_item_id,
+    //     pr_stock.bac_code,
+    //     unit_of_measure.unit_of_measure,
+    //     pr_stock.stock_title,
+    //     IFNULL(REPLACE( pr_purchase_request_item.specification, '[n]', '<br>'),'') as specification,
+    //     pr_purchase_request_item.quantity
+    //      FROM pr_rfq_item
+    //     LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
+    //     LEFT JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
+    //     LEFT JOIN unit_of_measure ON pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
+
+    //     WHERE pr_rfq_id = :id")
+    //         ->bindValue(':id', $id)
+    //         ->queryAll();
+    //     return json_encode($query);
+    // }
     public function actionGetRfqInfo()
     {
         if (Yii::$app->request->post()) {
             $id = Yii::$app->request->post('id');
-            return $this->rfqItemData($id);
+            $rfqItems = PrRfq::findOne($id)->getItems();
+            foreach ($rfqItems as $index => $item) {
+                $rfqItems[$index]['rfq_item_id'] = $item['item_id'];
+            }
+            return json_encode($rfqItems);
         }
     }
 

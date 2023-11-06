@@ -317,7 +317,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $script = <<< JS
       
-      $('#modalButtoncreate').click(function(){
+      $('#mdModal').click(function(){
             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
         });
         $('.modalButtonedit').click(function(){

@@ -62,7 +62,7 @@ class MyHelper extends BaseObject
 
         return true;
     }
-    public static function gridDefaultAction($id, $class = 'modalButtonUpdate')
+    public static function gridDefaultAction($id, $class = 'mdModal')
     {
         return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $id])
             . ' ' . Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $id], ['class' => $class]);

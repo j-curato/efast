@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="container card">
 
         <p>
-            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']) ?>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary mdModal']) ?>
 
         </p>
 

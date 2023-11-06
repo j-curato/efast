@@ -38,7 +38,7 @@ class PrRfq extends \yii\db\ActiveRecord
                 'deadline',
                 'fk_office_id'
             ], 'required'],
-            [['id', 'pr_purchase_request_id', 'bac_composition_id', 'is_cancelled', 'fk_office_id'], 'integer'],
+            [['id', 'pr_purchase_request_id', 'bac_composition_id', 'is_cancelled', 'fk_office_id', 'is_deleted'], 'integer'],
             [['_date', 'created_at', 'deadline', 'project_location', 'cancelled_at'], 'safe'],
             [['rfq_number', 'employee_id', 'province'], 'string', 'max' => 255],
             [['rfq_number'], 'unique'],
@@ -123,7 +123,9 @@ class PrRfq extends \yii\db\ActiveRecord
             'project_location' => 'Location of Project',
             'cancelled_at' => 'Cancelled_at',
             'is_cancelled' => 'is Cancelled',
-            'fk_office_id' => 'Office'
+            'fk_office_id' => 'Office',
+            'is_deleted' => 'is Deleted',
+
 
         ];
     }

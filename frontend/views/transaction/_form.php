@@ -97,7 +97,7 @@ $iarItems = $model->getIarItemsA();
             <label for="multiple_iar"> Iar's</label>
             <?php
             echo Select2::widget([
-                'name' => 'multiple_iar',
+                'name' => 'iars',
                 'data' => ArrayHelper::map($iarItems, 'fk_iar_id', 'iar_number'),
                 'value' => ArrayHelper::getColumn($iarItems, 'fk_iar_id'),
                 'options' => ['placeholder' => 'Select IARs...', 'multiple' => true],

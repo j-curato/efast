@@ -25,7 +25,7 @@ $user_data = User::getUserDetails();
                 <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 
                 <?php
-                echo Html::a(empty($model->file_link) ? 'Add File Link' : 'Update File Link', ['add-file-link', 'id' => $model->transmittal_number], ['class' => 'btn btn-primary modalButtonUpdate']);
+                echo Html::a(empty($model->file_link) ? 'Add File Link' : 'Update File Link', ['add-file-link', 'id' => $model->transmittal_number], ['class' => 'btn btn-primary mdModal']);
                 if (!empty($model->file_link)) {
                     echo Html::a('DV Scanned Copy Link ', $model->file_link, ['class' => 'btn btn-link', 'target' => '_blank']);
                 }

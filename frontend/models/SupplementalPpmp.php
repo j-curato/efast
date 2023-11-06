@@ -41,7 +41,6 @@ class SupplementalPpmp extends \yii\db\ActiveRecord
     {
         return [
             [[
-                'id', 'serial_number',
                 'budget_year',
                 'cse_type',
                 'fk_office_id',
@@ -139,5 +138,38 @@ class SupplementalPpmp extends \yii\db\ActiveRecord
     public function getCertifiedFundsAvailableBy()
     {
         return $this->hasOne(Employee::class, ['employee_id' => 'fk_certified_funds_available_by']);
+    }
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+
+            if ($this->isNewRecord) {
+                if (empty($this->id)) {
+                    $this->id = Yii::$app->db->createCommand("SELECT UUID_SHORT() % 9223372036854775807")->queryScalar();
+                }
+                if (empty($this->serial_number)) {
+                    $this->serial_number = $this->generateSerialNum();
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+    private function generateSerialNum()
+    {
+        $latest_dv = Yii::$app->db->createCommand("SELECT CAST(substring_index(serial_number, '-', -1)AS UNSIGNED) as q 
+                from supplemental_ppmp
+                WHERE 
+                budget_year = :budget_year
+                AND
+               cse_type = :cse_type
+               AND fk_office_id = :office_id
+                ORDER BY q DESC  LIMIT 1")
+            ->bindValue(':budget_year', $this->budget_year)
+            ->bindValue(':office_id', $this->fk_office_id)
+            ->bindValue(':cse_type', $this->cse_type)
+            ->queryScalar();
+        $num = !empty($latest_dv) ? (int) $latest_dv + 1 : 1;
+        return strtoupper($this->office->office_name) . '-' . strtoupper(str_replace('_', '-', $this->cse_type)) . '-' . $this->budget_year . '-' . str_pad($num, 4, '0', STR_PAD_LEFT);
     }
 }

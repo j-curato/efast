@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="container card" style="padding:1rem">
         <p>
-            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']); ?>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'mdModal btn btn-primary']); ?>
         </p>
 
         <?= DetailView::widget([

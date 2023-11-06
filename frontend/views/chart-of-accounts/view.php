@@ -23,8 +23,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <div class="container" style="background-color: white;">
         <p>
-            <?= Yii::$app->user->can('update_chart_of_account') ? Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']) : '' ?>
-            <?= Yii::$app->user->can('create_sub_account_1') ? Html::a('Create Sub Account 1', ['sub-accounts1/create', 'chartOfAccountId' => $model->id], ['class' => 'btn btn-success modalButtonCreate']) : '' ?>
+            <?= Yii::$app->user->can('update_chart_of_account') ? Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary mdModal']) : '' ?>
+            <?= Yii::$app->user->can('create_sub_account_1') ? Html::a('Create Sub Account 1', ['sub-accounts1/create', 'chartOfAccountId' => $model->id], ['class' => 'btn btn-success mdModal']) : '' ?>
         </p>
 
         <?= DetailView::widget([
@@ -80,7 +80,7 @@ $this->params['breadcrumbs'][] = $this->title;
 $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [\yii\web\JqueryAsset::class]]);
 SweetAlertAsset::register($this);
 // $script = <<<JS
-//         $('.modalButtoncreate').click(function(){
+//         $('.mdModal').click(function(){
 //             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
 //         });
 //         $('.modalButtonedit').click(function(){

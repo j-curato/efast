@@ -119,7 +119,7 @@ $this->registerJsFile(
 </div>
 <script>
     // $(document).ready(() => {
-    //     $('.modalButtoncreate').click(function(e) {
+    //     $('.mdModal').click(function(e) {
     //         e.preventDefault()
     //         $('#genericModal').modal('show').find('#modalContent').load($(this).attr('href'));
     //     });

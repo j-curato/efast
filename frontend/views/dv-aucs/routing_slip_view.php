@@ -167,7 +167,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <p>
 
-            <?= Yii::$app->user->can('update_routing_slip') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update-routing', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
+            <?= Yii::$app->user->can('update_routing_slip') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update-routing', 'id' => $model->id], ['class' => 'mdModal btn btn-primary']) : '' ?>
             <?= Yii::$app->user->can('create_routing_slip') ? Html::a('<i class="fa fa-plus"></i> Create', ['create-routing'], ['class' => 'btn btn-success ']) : '' ?>
         </p>
         <table id="page">

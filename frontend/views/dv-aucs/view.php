@@ -126,7 +126,7 @@ $this->params['breadcrumbs'][] = $this->title;
             //     echo '<button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload Soft Copy</button>';
             // }
 
-            echo Html::a(empty($model->dv_link) ? 'Add File Link' : 'Update File Link', ['add-link', 'id' => $model->id], ['class' => 'btn btn-primary modalButtonUpdate']);
+            echo Html::a(empty($model->dv_link) ? 'Add File Link' : 'Update File Link', ['add-link', 'id' => $model->id], ['class' => 'btn btn-primary mdModal']);
             if (!empty($model->dv_link)) {
                 echo Html::a('DV Scanned Copy Link ', $model->dv_link, ['class' => 'btn btn-link', 'target' => '_blank']);
             }

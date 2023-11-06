@@ -29,7 +29,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'value' => function ($model) {
 
                 return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id], ['class' => 'btn'])
-                    . Html::a('<i class="fa fa-pencil "></i>', ['add-link', 'id' => $model->id], ['class' => 'btn modalButtonUpdate']);
+                    . Html::a('<i class="fa fa-pencil "></i>', ['add-link', 'id' => $model->id], ['class' => 'btn mdModal']);
             }
         ]
 

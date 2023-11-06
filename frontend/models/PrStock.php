@@ -34,7 +34,8 @@ class PrStock extends \yii\db\ActiveRecord
             [[
                 'unit_of_measure_id', 'chart_of_account_id', 'budget_year',
                 'pr_stock_type_id',
-                'budget_year'
+                'budget_year',
+                'is_disabled'
             ], 'integer'],
             [['amount'], 'number'],
             [['cse_type'], 'string', 'max' => 255],
@@ -70,6 +71,7 @@ class PrStock extends \yii\db\ActiveRecord
             'cse_type' => 'CSE Type',
             'pr_stock_type_id' => 'Stock Type',
             'budget_year' => 'Budget Year',
+            'is_disabled' => 'is Disabled',
 
         ];
     }
@@ -84,5 +86,17 @@ class PrStock extends \yii\db\ActiveRecord
     public function getChartOfAccount()
     {
         return $this->hasOne(ChartOfAccounts::class, ['id' => 'chart_of_account_id']);
+    }
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            if ($this->isNewRecord) {
+                if (empty($this->id)) {
+                    $this->id = Yii::$app->db->createCommand("SELECT UUID_SHORT() % 9223372036854775807")->queryScalar();
+                }
+            }
+            return true;
+        }
+        return false;
     }
 }

@@ -36,7 +36,7 @@ if (!empty($model->authorized_by)) {
 
     <div class="container card" style="padding: 1rem;">
         <p>
-            <?= Yii::$app->user->can('update_trip_ticket') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
+            <?= Yii::$app->user->can('update_trip_ticket') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'mdModal btn btn-primary']) : '' ?>
         </p>
         <table>
 

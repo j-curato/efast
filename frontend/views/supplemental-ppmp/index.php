@@ -1,9 +1,11 @@
 <?php
 
+use aryelds\sweetalert\SweetAlertAsset;
 use kartik\file\FileInput;
 use kartik\form\ActiveForm;
 use yii\helpers\Html;
 use kartik\grid\GridView;
+use kartik\select2\Select2;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\SupplementalPpmpSearch */
@@ -14,17 +16,18 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="supplemental-ppmp-index">
 
-    <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade" id="uploadCsemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">UPLOAD SCANNED COPY</h4>
+
                 </div>
                 <div class='modal-body'>
-
+                    <h4 class="modal-title" id="myModalLabel">IMPORT CSE/NON-CSE</h4>
+                    <center><a href="import_formats/cse_import_format.xlsx">Download Template for CSE Here to avoid error during Upload.</a></center>
+                    <center><a href="#">Download Template forNON-CSE Here to avoid error during Upload.</a></center>
                     <?php
-
                     $form = ActiveForm::begin([
                         // 'action' => ['transaction/import-transaction'],
                         // 'method' => 'POST',
@@ -33,8 +36,20 @@ $this->params['breadcrumbs'][] = $this->title;
                             'enctype' => 'multipart/form-data',
                         ], // important
                     ]);
-
+                    echo '<label> Select PPMP Type</label>';
+                    echo Select2::widget([
+                        'id' => 'supplemental_type',
+                        'name' => 'supplemental_type',
+                        'data' => [
+                            'import-cse' => 'CSE',
+                            'import-non-cse' => 'NON-CSE',
+                        ],
+                        'pluginOptions' => [
+                            'placeholder' => 'Select Type'
+                        ]
+                    ]);
                     // echo '<input type="file">';
+                    echo "<br>";
                     echo "<br>";
                     echo FileInput::widget([
                         'name' => 'file',
@@ -60,7 +75,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('Create Supplemental Ppmp', ['create'], ['class' => 'btn btn-success']) ?>
-        <!-- <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload Soft Copy</button> -->
+        <button class="btn btn-warning" data-target="#uploadCsemodal" data-toggle="modal">Import</button>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
@@ -125,20 +140,16 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 </style>
 <?php
+SweetAlertAsset::register($this);
 $script = <<<JS
             var i=false;
-            $('#import').on('beforeSubmit',function(e){
-                // $(this).unbind();
+            $('#import').on('submit',function(e){
                 e.preventDefault();
-                    
-                //  $("#employee").on("pjax:success", function(data) {
-                    //   console.log(data)
-                    // });
-                    
+               
                     if (!i){
                         i=true;
                         $.ajax({
-                            url: window.location.pathname + "?r=supplemental-ppmp/import",
+                            url: window.location.pathname + "?r=supplemental-ppmp/"+$('#supplemental_type').val(),
                             type:'POST',
                             data:  new FormData(this),
                             contentType: false,
@@ -146,10 +157,11 @@ $script = <<<JS
                             processData:false,
                             success:function(data){
                                 var res = JSON.parse(data)
+                                console.log(data)
                                 if (res.isSuccess){
                                     swal( {
                                         icon: 'success',
-                                        title: "Successfuly Added",
+                                        title: "Successfuly Imported",
                                         type: "success",
                                         timer:3000,
                                         closeOnConfirm: false,
@@ -181,6 +193,8 @@ $script = <<<JS
                 }
                 
             })
+            var i=false;
+
 
              
         

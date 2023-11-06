@@ -22,7 +22,7 @@ $requested_by = Yii::$app->db->createCommand("SELECT employee_name,position FROM
 
     <div class="container">
         <p>
-            <?= Yii::$app->user->can('update_pre_repair_inspection') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'modalButtonUpdate btn btn-primary']) : '' ?>
+            <?= Yii::$app->user->can('update_pre_repair_inspection') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'mdModal btn btn-primary']) : '' ?>
         </p>
         <table>
 
@@ -253,7 +253,7 @@ $requested_by = Yii::$app->db->createCommand("SELECT employee_name,position FROM
 </style>
 <?php
 $script = <<<JS
-        $('.modalButtoncreate').click(function(){
+        $('.mdModal').click(function(){
             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
         });
 JS;

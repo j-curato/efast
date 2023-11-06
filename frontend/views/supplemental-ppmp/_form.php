@@ -59,7 +59,7 @@ $cse_type_data = [
 <div class="supplemental-ppmp-form card" style="padding:1rem">
     <!-- <?= Html::button('<i class="fa fa-pencil-alt"></i> Create', [
                 'value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=supplemental-ppmp/index'),
-                'id' => 'lgModalButtoncreate', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
+                'id' => 'lgmdModal', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
             ]); ?> -->
     <?= Html::beginForm([$action, 'id' => $model->id], 'post', ['id' => 'SupplementalPpmp']); ?>
     <div class="card">
@@ -1110,7 +1110,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
 
 
 
-        $('#lgModalButtoncreate').click(function() {
+        $('#lgmdModal').click(function() {
             $('#lgModal').modal('show').find('#lgModalContent').load($(this).attr('value'));
         });
     })

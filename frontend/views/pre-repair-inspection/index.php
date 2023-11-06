@@ -80,7 +80,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $script = <<<JS
             var i=false;
-        $('#modalButtoncreate').click(function(){
+        $('#mdModal').click(function(){
             $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
         });
         $('a[title=Update]').click(function(e){

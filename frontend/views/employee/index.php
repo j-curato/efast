@@ -22,7 +22,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a(
             '<i class="fa fa-pencil-alt"></i> Create',
             ['create'],
-            ['class' => 'btn btn-success modalButtonCreate']
+            ['class' => 'btn btn-success mdModal']
         ); ?>
 
     </p>
@@ -61,7 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Actions',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return MyHelper::gridDefaultAction($model->employee_id, 'modalButtonUpdate');
+                    return MyHelper::gridDefaultAction($model->employee_id, 'mdModal');
                 }
             ],
         ],
@@ -79,7 +79,7 @@ $this->registerJsFile(
 <?php
 $script = <<<JS
         //     var i=false;
-        // $('#modalButtoncreate').click(function(){
+        // $('#mdModal').click(function(){
         //     $('#genericModal').modal('show').find('#modalContent').load($(this).attr('value'));
         // });
         // $('a[title=Update]').click(function(e){

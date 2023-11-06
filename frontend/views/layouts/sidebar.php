@@ -157,6 +157,8 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                 Yii::$app->user->can('view_ro_check_range') ?     ['label' => 'Check Ranges', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/ro-check-ranges/index'],] : null,
                 Yii::$app->user->can('view_ro_mode_of_payment') ?     ['label' => 'Mode of Payments', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/mode-of-payments/index'],] : null,
                 Yii::$app->user->can('view_banks') ?     ['label' => 'Banks', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/banks/index'],] : null,
+                Yii::$app->user->can('view_bank_branches') ?     ['label' => 'Bank Branches', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/bank-branches/index'],] : null,
+                Yii::$app->user->can('view_bank_branch_details') ?     ['label' => 'Bank Branch Details', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/bank-branch-details/index'],] : null,
             ];
 
             $cashTransactions = [

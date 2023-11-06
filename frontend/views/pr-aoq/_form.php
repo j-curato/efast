@@ -180,7 +180,7 @@ $row = 1;
                             <input class='checkbox ' type='checkbox' :name="'items['+rfqItem.rfq_item_id+']['+bidderIndex+'][is_lowest]'" v-model='bidder.isLowest'>
                         </td>
                         <td>
-                            <a class='remove_this_row btn btn-danger btn-xs ' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                            <a class='remove_this_row btn btn-danger btn-xs ' @click='removeItem(bidderIndex)' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
                         </td>
                     </tr>
 
@@ -270,6 +270,10 @@ $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [
                         }]);
                     }
 
+                },
+                removeItem(index) {
+                    // this.item.bidders.splice(index, 1)
+                    console.log(this.rfqItems)
                 }
             },
             updated() {
