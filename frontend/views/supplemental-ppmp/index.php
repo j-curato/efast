@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <div class='modal-body'>
                     <h4 class="modal-title" id="myModalLabel">IMPORT CSE/NON-CSE</h4>
                     <center><a href="import_formats/cse_import_format.xlsx">Download Template for CSE Here to avoid error during Upload.</a></center>
-                    <center><a href="#">Download Template forNON-CSE Here to avoid error during Upload.</a></center>
+                    <center><a href="import_formats/non_cse_import_format.xlsx">Download Template forNON-CSE Here to avoid error during Upload.</a></center>
                     <?php
                     $form = ActiveForm::begin([
                         // 'action' => ['transaction/import-transaction'],
