@@ -209,7 +209,7 @@ if (!empty($model->fk_dv_aucs_id)) {
     <table class="table" id='entry_table'>
         <tbody>
             <?php
-            foreach ($model->getItems() as $val) {
+            foreach ($entries as $val) {
                 $debit = $val['debit'];
                 $credit = $val['credit'];
                 $object_code = $val['object_code'];
