@@ -4998,6 +4998,14 @@ class ReportController extends \yii\web\Controller
                     [31, $row],
                     $val['isUnserviceable']
                 );
+                $sheet->setCellValue(
+                    [32, $row],
+                    $val['uacs']
+                );
+                $sheet->setCellValue(
+                    [33, $row],
+                    $val['general_ledger']
+                );
                 if (strtolower($val['isCrntUsr']) === 'current user') {
                     $bookValCol = 39;
                     $property_num = $val['property_number'];
