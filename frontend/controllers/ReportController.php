@@ -116,7 +116,6 @@ class ReportController extends \yii\web\Controller
                             'detailed-financial-position',
                             'withholding-and-remittance-summary',
                             'transaction-tracking',
-                            'dv-time-monitoring',
                             'dv-time-monitoring-summary',
                             'province-fund-source-balance',
                             'liquidation-report-annex',
@@ -220,14 +219,17 @@ class ReportController extends \yii\web\Controller
                     [
                         'actions' => [
                             'province-adequacy'
-
                         ],
                         'allow' => true,
                         'roles' => ['po_adequacy_of_resource']
                     ],
-
-
-
+                    [
+                        'actions' => [
+                            'dv-time-monitoring',
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_dv_time_monitoring']
+                    ],
                 ]
             ],
             'verbs' => [
