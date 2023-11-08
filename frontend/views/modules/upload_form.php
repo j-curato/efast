@@ -84,7 +84,7 @@ SweetAlertAsset::register($this);
                         if (res.isSuccess) {
                             swal({
                                 icon: 'success',
-                                title: "Successfuly Imported",
+                                title: "Successfully Imported",
                                 type: "success",
                                 timer: 3000,
                                 closeOnConfirm: false,

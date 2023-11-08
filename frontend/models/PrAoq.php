@@ -103,7 +103,7 @@ class PrAoq extends \yii\db\ActiveRecord
                 pr_stock.stock_title,
                 IFNULL(REPLACE( pr_purchase_request_item.specification, '[n]', '<br>'),'') as specification,
                 pr_purchase_request_item.quantity,
-                payee.account_name as payee,
+                UPPER(IFNULL(payee.registered_name,payee.account_name)) as payee,
                 payee.id as payee_id,
                 pr_aoq_entries.amount,
                 pr_aoq_entries.remark,

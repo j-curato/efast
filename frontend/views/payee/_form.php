@@ -54,14 +54,14 @@ $banks = YIi::$app->db->createCommand("SELECT UPPER(banks.name) as bank_name,ban
         </div>
     </div>
 
-    <?= $form->field($model, 'account_name')->textInput(['class' => 'capitalize-input form-control']) ?>
+    <?= $form->field($model, 'account_name')->textInput(['class' => ' form-control']) ?>
 
-    <?= $form->field($model, 'registered_name')->textInput(['class' => 'capitalize-input form-control']) ?>
-    <?= $form->field($model, 'account_num')->textInput(['class' => 'capitalize-input form-control']) ?>
+    <?= $form->field($model, 'registered_name')->textInput(['class' => ' form-control']) ?>
+    <?= $form->field($model, 'account_num')->textInput(['class' => ' form-control']) ?>
 
-    <?= $form->field($model, 'contact_person')->textInput(['class' => 'capitalize-input form-control']) ?>
+    <?= $form->field($model, 'contact_person')->textInput(['class' => ' form-control']) ?>
 
-    <?= $form->field($model, 'registered_address')->textInput(['class' => 'capitalize-input form-control']) ?>
+    <?= $form->field($model, 'registered_address')->textInput(['class' => ' form-control']) ?>
 
     <?= $form->field($model, 'contact')->textInput(['maxlength' => true]) ?>
 

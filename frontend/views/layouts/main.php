@@ -36,6 +36,9 @@ $this->registerJsFile("@web/js/vue.js", ['position' => $this::POS_HEAD]);
 //     '@web/frontend/web/js/globalFunctions.js',
 //     ['depends' => [\yii\web\JqueryAsset::class]]
 // )
+// $this->registerJsFile('https://cdn.jsdelivr.net/npm/sweetalert2@10', ['position' => JqueryAsset::class]);
+// $this->registerJsFile('@web/js/vue-spinner.min.js', ['position' => $this::POS_HEAD]);
+
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -82,6 +85,10 @@ $this->registerJsFile("@web/js/vue.js", ['position' => $this::POS_HEAD]);
 
         .select2-container--krajee-bs4 {
             width: 100% !important;
+        }
+
+        .select2-selection {
+            min-height: 2.4em;
         }
 
         @media print {

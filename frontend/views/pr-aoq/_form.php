@@ -49,7 +49,6 @@ $row = 1;
                 <div class="col-sm-2">
                     <?= $form->field($model, 'pr_rfq_id')->widget(
                         Select2::class,
-
                         [
                             'data' => $pr_rfq,
                             'options' => ['placeholder' => 'Search for a Purchase Request'],

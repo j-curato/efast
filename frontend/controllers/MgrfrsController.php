@@ -2,20 +2,21 @@
 
 namespace frontend\controllers;
 
+use app\models\Barangays;
 use Yii;
-use yii\db\Query;
+use app\models\Mgrfrs;
+use app\models\MgrfrsSearch;
+use app\models\Municipalities;
 use ErrorException;
-use yii\web\Controller;
-use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
-use app\models\BankBranchDetails;
+use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use app\models\BankBranchDetailsSearch;
+use yii\filters\VerbFilter;
 
 /**
- * BankBranchDetailsController implements the CRUD actions for BankBranchDetails model.
+ * MgrfrsController implements the CRUD actions for Mgrfrs model.
  */
-class BankBranchDetailsController extends Controller
+class MgrfrsController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -25,13 +26,6 @@ class BankBranchDetailsController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => [
-                    'index',
-                    'view',
-                    'create',
-                    'update',
-                    'delete',
-                ],
                 'rules' => [
                     [
                         'actions' => [
@@ -39,21 +33,30 @@ class BankBranchDetailsController extends Controller
                             'view',
                         ],
                         'allow' => true,
-                        'roles' => ['view_bank_branch_details']
-                    ],
-                    [
-                        'actions' => [
-                            'update',
-                        ],
-                        'allow' => true,
-                        'roles' => ['update_bank_branch_details']
+                        'roles' => ['view_mgrfr']
                     ],
                     [
                         'actions' => [
                             'create',
                         ],
                         'allow' => true,
-                        'roles' => ['create_bank_branch_details']
+                        'roles' => ['create_mgrfr']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_mgrfr']
+                    ],
+                    [
+                        'actions' => [
+                            'get-municipalities',
+                            'get-Barangays',
+                            'search-mgrfr-serial-number'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
                     ],
                 ]
             ],
@@ -67,12 +70,12 @@ class BankBranchDetailsController extends Controller
     }
 
     /**
-     * Lists all BankBranchDetails models.
+     * Lists all Mgrfrs models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new BankBranchDetailsSearch();
+        $searchModel = new MgrfrsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -82,7 +85,7 @@ class BankBranchDetailsController extends Controller
     }
 
     /**
-     * Displays a single BankBranchDetails model.
+     * Displays a single Mgrfrs model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -95,37 +98,40 @@ class BankBranchDetailsController extends Controller
     }
 
     /**
-     * Creates a new BankBranchDetails model.
+     * Creates a new Mgrfrs model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new BankBranchDetails();
+        $model = new Mgrfrs();
 
         if ($model->load(Yii::$app->request->post())) {
-            $txn = Yii::$app->db->beginTransaction();
-            Yii::$app->db->createCommand("UPDATE bank_branch_details SET is_disabled = 1 
-                WHERE fk_bank_branch_id = 1")
-                ->bindValue(':id', $model->fk_bank_branch_id)
-                ->execute();
-            if (!$model->validate()) {
-                throw new ErrorException(json_encode($model->errors));
+
+            try {
+                $txn = Yii::$app->db->beginTransaction();
+
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save Failed');
+                }
+                $txn->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                $txn->rollBack();
+                return $e->getMessage();
             }
-            if (!$model->save(false)) {
-                throw new ErrorException('Model Save Failed');
-            }
-            $txn->commit();
-            return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        return $this->renderAjax('create', [
+        return $this->render('create', [
             'model' => $model,
         ]);
     }
 
     /**
-     * Updates an existing BankBranchDetails model.
+     * Updates an existing Mgrfrs model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -135,45 +141,71 @@ class BankBranchDetailsController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post())) {
+
+            try {
+                $txn = Yii::$app->db->beginTransaction();
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save Failed');
+                }
+                $txn->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                $txn->rollBack();
+                return $e->getMessage();
+            }
         }
 
-        return $this->renderAjax('update', [
+        return $this->render('update', [
             'model' => $model,
         ]);
     }
 
     /**
-     * Deletes an existing BankBranchDetails model.
+     * Deletes an existing Mgrfrs model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
+    // public function actionDelete($id)
+    // {
+    //     $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
-    }
+    //     return $this->redirect(['index']);
+    // }
 
     /**
-     * Finds the BankBranchDetails model based on its primary key value.
+     * Finds the Mgrfrs model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return BankBranchDetails the loaded model
+     * @return Mgrfrs the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = BankBranchDetails::findOne($id)) !== null) {
+        if (($model = Mgrfrs::findOne($id)) !== null) {
             return $model;
         }
-
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function actionSearchBankBranchDetails($page = null, $q = null, $id = null)
+
+    public function actionGetMunicipalities()
+    {
+        if (Yii::$app->request->post()) {
+            return json_encode(Municipalities::getMunicipalitiesByProvinceId(YIi::$app->request->post('id')));
+        }
+    }
+    public function actionGetBarangays()
+    {
+        if (Yii::$app->request->post()) {
+            return json_encode(Barangays::getBarangaysByMunicipalityId(YIi::$app->request->post('id')));
+        }
+    }
+    public function actionSearchMgrfrSerialNumber($page = null, $q = null, $id = null)
     {
         $limit = 5;
         $offset = ($page - 1) * $limit;
@@ -181,7 +213,7 @@ class BankBranchDetailsController extends Controller
         $out = ['results' => ['id' => '', 'text' => '']];
         if (!empty($id)) {
         } else if (!is_null($q)) {
-            $data = BankBranchDetails::searchBankBranchDetail($q, $offset, $limit);
+            $data = Mgrfrs::searchSerialNumber($q, $offset, $limit);
             $out['results'] = array_values($data);
             if (!empty($page)) {
                 $out['pagination'] = ['more' => !empty($data) ? true : false];

@@ -6,7 +6,6 @@ use kartik\form\ActiveForm;
 use yii\helpers\Html;
 use kartik\grid\GridView;
 use kartik\select2\Select2;
-
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\SupplementalPpmpSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -161,11 +160,10 @@ $script = <<<JS
                             processData:false,
                             success:function(data){
                                 var res = JSON.parse(data)
-                                console.log(data)
                                 if (res.isSuccess){
                                     swal( {
                                         icon: 'success',
-                                        title: "Successfuly Imported",
+                                        title: "Successfully Imported",
                                         type: "success",
                                         timer:3000,
                                         closeOnConfirm: false,

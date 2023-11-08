@@ -690,7 +690,6 @@ class SupplementalPpmpController extends Controller
                     $unit_of_measure_id = Yii::$app->db->createCommand("SELECT id FROM unit_of_measure WHERE unit_of_measure.unit_of_measure = :unit_of_measure")
                         ->bindValue(':unit_of_measure', $unit_of_measure)->queryScalar();
                     if (empty($unit_of_measure_id)) {
-
                         throw new ErrorException($unit_of_measure . 'unit of measure Does not exists in line' . $key);
                     }
                     $ppmp = new SupplementalPpmp();

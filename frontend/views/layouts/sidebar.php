@@ -310,12 +310,22 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                 Yii::$app->user->can('super-user') ?     ['label' => 'DV Time Monitoring Summary', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/dv-time-monitoring-summary'],] : null,
                 Yii::$app->user->can('super-user') ?     ['label' => 'Holidays', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/holidays'],] : null,
             ];
+
             $hrMasterRecords = [
                 Yii::$app->user->can('super-user') ?     ['label' => 'Employees', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/employee/index'],] : null,
                 Yii::$app->user->can('super-user') ?     ['label' => 'permission', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/permission/index'],] : null,
                 Yii::$app->user->can('super-user') ?     ['label' => 'role', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/role/index'],] : null,
                 Yii::$app->user->can('super-user') ?     ['label' => 'user', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/user/index'],] : null,
             ];
+            $rapidMasterRecords = [];
+            $rapidTransaction = [
+                Yii::$app->user->can('super-user') ?     ['label' => 'MG RFR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/mgrfrs/index'],] : null,
+
+            ];
+            $rapidReports = [];
+
+
+
             $menuItems =  [
                 [
                     'label' => 'Accounting',
@@ -485,6 +495,29 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                             'label' => 'Reports',
                             'iconStyle' => 'far text-info',
                             'items' => removeNull($inspectionReports)
+                        ],
+                    ],
+
+
+                ],
+                [
+                    'label' => 'Rapid',
+                    'icon' => 'fa fa-search',
+                    'items' => [
+                        [
+                            'label' => 'Master Records',
+                            'iconStyle' => 'far text-info',
+                            'items' => removeNull($rapidMasterRecords)
+                        ],
+                        [
+                            'label' => 'Transactions',
+                            'iconStyle' => 'far text-info',
+                            'items' => removeNull($rapidTransaction)
+                        ],
+                        [
+                            'label' => 'Reports',
+                            'iconStyle' => 'far text-info',
+                            'items' => removeNull($rapidReports)
                         ],
                     ],
 

@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "bank_branch_details".
@@ -64,5 +65,20 @@ class BankBranchDetails extends \yii\db\ActiveRecord
     public function getBankBranch()
     {
         return $this->hasOne(BankBranches::class, ['id' => 'fk_bank_branch_id']);
+    }
+    public static function searchBankBranchDetail($text, $offset, $limit)
+    {
+        return BankBranchDetails::find()
+            ->addSelect([
+                'bank_branch_details.id',
+                new Expression('UPPER(CONCAT(banks.name," - ",bank_branches.branch_name)) as text')
+            ])
+            ->join('JOIN', 'bank_branches', ' bank_branch_details.fk_bank_branch_id = bank_branches.id')
+            ->join('JOIN', 'banks', 'bank_branches.fk_bank_id  = banks.id')
+            ->andWhere(['like', 'bank_branches.branch_name', $text])
+            ->andWhere('bank_branch_details.is_disabled = 0')
+            ->offset($offset)
+            ->limit($limit)
+            ->asArray()->all();
     }
 }
