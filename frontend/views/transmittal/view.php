@@ -138,16 +138,10 @@ $date = DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y');
 </div>
 
 <style>
-    td,
-    th {
-        background-color: white;
+    th,
+    td {
         border: 1px solid black;
-        line-height: 1.42857143;
-        vertical-align: top;
-        padding: 10px;
-    }
-
-    .font-weight-bold {
-        font-weight: bold;
+        padding: 4px;
+        font-size: .7rem;
     }
 </style>

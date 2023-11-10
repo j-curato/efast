@@ -45,7 +45,7 @@ $defaultHeaderText =  [
 //         [
 //             'value' => '',
 //         ],
-      
+
 //     ];
 ?>
 <div class="transmittal-view"></div>
@@ -115,10 +115,10 @@ $baseUrl
         return (pageWidth - textWidth) / 2;
     }
     async function generatePDF() {
-        $('.pdf-export td').css('font-size', '10px');
-        $('.pdf-export td').css('padding', '4px');
-        $('.pdf-export th').css('font-size', '10px');
-        $('.pdf-export th').css('padding', '4px');
+        // $('.pdf-export td').css('font-size', '10px');
+        // $('.pdf-export td').css('padding', '4px');
+        // $('.pdf-export th').css('font-size', '10px');
+        // $('.pdf-export th').css('padding', '4px');
         const {
             jsPDF
         } = window.jspdf;
@@ -222,9 +222,9 @@ $baseUrl
             doc.putTotalPages(totalPagesExp)
         }
         doc.save("<?= !empty($fileName) ? $fileName : 'newFile' ?>.pdf");
-        $('.pdf-export td').css('font-size', '16px');
-        $('.pdf-export td').css('padding', '10px');
-        $('.pdf-export th').css('font-size', '16px');
-        $('.pdf-export th').css('padding', '10px');
+        // $('.pdf-export td').css('font-size', '16px');
+        // $('.pdf-export td').css('padding', '10px');
+        // $('.pdf-export th').css('font-size', '16px');
+        // $('.pdf-export th').css('padding', '10px');
     }
 </script>

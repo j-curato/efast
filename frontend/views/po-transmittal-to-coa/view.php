@@ -19,7 +19,7 @@ $officerInCharge  = !empty($model->fk_officer_in_charge) ? $model->officerInChar
     'date' => $date,
     'serial_number' => $model->transmittal_number,
     'headerTexts' => MyHelper::getTransmittalPdfHeaderTexts($date, $model->transmittal_number),
-    'fileName'=>'PO Transmittal to Coa'
+    'fileName' => 'PO Transmittal to Coa'
 ]) ?>
 <div class="transmittal-view">
     <div class="container card" style="padding: 1rem;">
@@ -30,7 +30,7 @@ $officerInCharge  = !empty($model->fk_officer_in_charge) ? $model->officerInChar
         </ul>
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-            <button onclick="generatePDF() " class="btn "> <i class="fa fa-file-pdf"></i> Download PDF</button>
+            <button onclick="generatePDF() " class="btn  generate-pdf"> <i class="fa fa-file-pdf"></i> Download PDF</button>
         </p>
 
 
@@ -133,12 +133,10 @@ $officerInCharge  = !empty($model->fk_officer_in_charge) ? $model->officerInChar
     </div>
 </div>
 <style>
-    td,
-    th {
-        background-color: white;
+    th,
+    td {
         border: 1px solid black;
-        padding: 10px;
-        line-height: 1.42857143;
-        vertical-align: top;
+        padding: 4px;
+        font-size: .7rem;
     }
 </style>

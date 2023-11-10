@@ -46,12 +46,11 @@ $toDate = DateTime::createFromFormat('Y-m-d H:i:s', $model->to_date);
             ?>
             <button onclick="generatePDF() " class="btn "> <i class="fa fa-file-pdf"></i> Download PDF</button>
         </p>
-
         <table class="pdf-export">
-
             <tr>
-                <th colspan="3" class="text-center border-0">
-                    <u style="font-size:larger;"> NOTICE OF POSTPONEMENT</u>
+                <th colspan="3" class="text-center border-0 " style="font-size: 1.2rem;">
+                    <u> NOTICE OF POSTPONEMENT</u>
+                    <br>
                 </th>
             </tr>
             <tr>
@@ -104,10 +103,9 @@ $toDate = DateTime::createFromFormat('Y-m-d H:i:s', $model->to_date);
     th,
     td {
         border: 1px solid black;
-        padding: 12px;
-        font-size: 16;
+        padding: 4px;
+        font-size: .7rem;
     }
-
 
     table {
         width: 100%;
