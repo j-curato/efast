@@ -148,7 +148,6 @@ class NoticeOfPostponement extends \yii\db\ActiveRecord
         return Yii::$app->db->createCommand("SELECT 
             notice_of_postponement_items.id as item_id,
             notice_of_postponement_items.from_date,
-            notice_of_postponement_items.to_date,
             notice_of_postponement_items.fk_rfq_id,
             pr_rfq.rfq_number,
             pr_purchase_request.purpose
