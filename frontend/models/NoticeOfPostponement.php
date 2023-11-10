@@ -33,8 +33,9 @@ class NoticeOfPostponement extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'fk_approved_by', 'type', 'is_final'], 'integer'],
-            [['to_date', 'fk_approved_by', 'type'], 'required'],
+            [['id', 'fk_approved_by', 'type', 'is_final', 'fk_bac_composition_member_id'], 'integer'],
+            [['to_date', 'fk_bac_composition_member_id', 'type'], 'required'],
+            [['to_date'], 'trim'],
             [['created_at', 'to_date', 'final_at'], 'safe'],
             [['serial_number'], 'string', 'max' => 255],
             [['serial_number'], 'unique'],
@@ -57,6 +58,7 @@ class NoticeOfPostponement extends \yii\db\ActiveRecord
             'fk_approved_by' => 'Approved By',
             'is_final' => 'is Final',
             'final_at' => 'Final At',
+            'fk_bac_composition_member_id' => 'Approved By',
         ];
     }
 
@@ -68,6 +70,10 @@ class NoticeOfPostponement extends \yii\db\ActiveRecord
     public function getNoticeOfPostponementItems()
     {
         return $this->hasMany(NoticeOfPostponementItems::class, ['fk_notice_of_postponement_id' => 'id']);
+    }
+    public function getBacMember()
+    {
+        return $this->hasOne(BacCompositionMember::class, ['id' => 'fk_bac_composition_member_id']);
     }
 
     public function beforeSave($insert)

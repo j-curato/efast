@@ -8,12 +8,15 @@ use kartik\widgets\DatePicker;
 use yii\bootstrap4\ActiveForm;
 use kartik\select2\Select2Asset;
 use app\components\helpers\MyHelper;
+use app\models\BacComposition;
 use aryelds\sweetalert\SweetAlertAsset;
 use kartik\widgets\DateTimePicker;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\NoticeOfPostponement */
 /* @var $form yii\widgets\ActiveForm */
+
+$bacMembers = BacComposition::getBacMembersByOffice('ro');
 ?>
 
 <div class="notice-of-postponement-form" id="main">
@@ -40,26 +43,9 @@ use kartik\widgets\DateTimePicker;
                 ]) ?>
             </div>
             <div class="col-sm-6">
-                <?= $form->field($model, 'fk_approved_by')->widget(Select2::class, [
-                    'data' => ArrayHelper::map(MyHelper::getEmployee($model->fk_approved_by, 'all'), 'employee_id', 'employee_name'),
+                <?= $form->field($model, 'fk_bac_composition_member_id')->widget(Select2::class, [
+                    'data' => ArrayHelper::map($bacMembers, 'id', 'employee_name'),
                     'options' => ['placeholder' => 'Search for a Employee ...'],
-                    'pluginOptions' => [
-                        'allowClear' => true,
-                        'minimumInputLength' => 1,
-                        'language' => [
-                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                        ],
-                        'ajax' => [
-                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
-                            'dataType' => 'json',
-                            'delay' => 250,
-                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                            'cache' => true
-                        ],
-                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                    ],
                 ]) ?>
             </div>
         </div>

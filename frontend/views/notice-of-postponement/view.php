@@ -14,11 +14,15 @@ $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 $imagePath =  Yii::$app->request->baseUrl . '/frontend/web/dti_logo.png';
 
-$approved_by = Employee::getEmployeeById($model->fk_approved_by);
+$approved_by = Employee::getEmployeeById($model->bacMember->employee_id ?? null);
+
+
 $toDate = DateTime::createFromFormat('Y-m-d H:i:s', $model->to_date);
-
-
 ?>
+<?= $this->render('/modules/download_pdf_with_header', [
+    'date' => $toDate->format('F d, Y'),
+    'serial_number' => $model->serial_number
+]) ?>
 <div class="notice-of-postponement-view" id="main">
 
 
@@ -28,7 +32,6 @@ $toDate = DateTime::createFromFormat('Y-m-d H:i:s', $model->to_date);
         <p>
             <?php
             if (!$model->is_final) {
-                echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) . ' ';
                 echo Html::a('Final', ['final', 'id' => $model->id], ['class' => 'btn btn-success', '@click' => 'final']);
             } else {
                 echo "<h5 style='color:red;'>This NOP is already Final.</h5>";
@@ -41,60 +44,64 @@ $toDate = DateTime::createFromFormat('Y-m-d H:i:s', $model->to_date);
                 }
             }
             ?>
+            <button onclick="generatePDF() " class="btn "> <i class="fa fa-file-pdf"></i> Download PDF</button>
         </p>
         <table>
-
-            <thead>
-                <tr>
-                    <td colspan="3" class="text-right no-bdr">
-                        <?= Html::img('frontend/web/dtiNewLogo.png', ['alt' => 'some', 'class' => 'pull-left img-responsive', 'style' => 'width:250px ;']); ?>
-                    </td>
-                </tr>
-            </thead>
             <tr>
-                <th colspan="3" class="ctr no-bdr">
+                <td colspan="3" class="text-right border-0">
+                    <?= Html::img('frontend/web/dtiNewLogo.png', ['alt' => 'some', 'class' => 'pull-left img-responsive', 'style' => 'width:250px ;']); ?>
+                </td>
+            </tr>
+        </table>
+        <table class="pdf-export">
+
+            <tr>
+                <th colspan="3" class="text-center border-0">
                     <u style="font-size:larger;"> NOTICE OF POSTPONEMENT</u>
                 </th>
             </tr>
             <tr>
-                <td colspan="3" class="no-bdr">
+                <td colspan="3" class="border-0">
                     <p class=""> <span class="ml-4"></span>Due to the <?= $model->type == 1 ? 'non-quorum of RBAC members' : 'short period of time prior to the opening' ?>
                         , Notice of Postponement is hereby issued for the following procurement activities pursuant to Section 29 of the 2016 Revised IRR of RA 9184, to wit:</p>
                 </td>
             </tr>
             <tr>
-                <th class="ctr">ACTIVITY</th>
-                <td class="ctr"><u>From <br>(Date/Time)</u></td>
-                <td class="ctr"><u>to <br>(Date/Time)</u></td>
+                <th class="text-center">ACTIVITY</th>
+                <th class="text-center"><u>From <br>(Date/Time)</u></th>
+                <th class="text-center"><u>to <br>(Date/Time)</u></th>
             </tr>
 
             <tr v-for="item in items">
                 <th class="">{{item.rfq_number}} - {{item.purpose}}</th>
-                <td class="ctr">{{formatDate(item.from_date)}} 3:00 PM</td>
-                <td class="ctr"><?= $toDate->format('F d, Y h:i A') ?> </td>
+                <td class="text-center">{{formatDate(item.from_date)}} 3:00 PM</td>
+                <td class="text-center"><?= $toDate->format('F d, Y h:i A') ?> </td>
             </tr>
             <tr>
-                <td colspan="3" class="no-bdr">
+                <td colspan="3" class="border-left-0 border-right-0 border-bottom-0">
+                    <br><br><br>
                     <p class="mt-5">
                         <span class="ml-4"></span> Deadline for the submission of quotation is on
                         <?= $toDate->format('F d, Y') . ' at ' . $toDate->format('h:i a') ?>
-                        <b>Late bids/qoutations will not be accepted.</b> The BAC shall take custody of bids submitted on or beore the deadline of submission to ensure integrit, securit and confidentiality.
+                        <b>Late bids/quotations will not be accepted.</b> The BAC shall take custody of bids submitted on or before the deadline of submission to ensure integrity, security and confidentiality.
                     </p>
                     <p class="ml-4">For information of all concerned.</p>
                 </td>
             </tr>
             <tr>
-                <td colspan="" class="no-bdr"> </td>
-                <td colspan="2" class="text-center no-bdr pt-5">
-
-                    <u><b><?= !empty($approved_by['employee_name']) ? strtoupper($approved_by['employee_name']) : '' ?></b></u><br>
-                    <p style="text-transform:capitalize;" class="pos">{{position}}</p>
-                    <select class=" text-center position-select form-control" @change='updatePosition' v-model='position'>
-                        <option value="">Select BAC Position</option>
-                        <option v-for="option in bacPositionOptions" :value="option.position">{{ option.position }}</option>
-                    </select>
+                <td colspan="" class="border-0"> </td>
+                <th colspan="2" class="text-center border-0 pt-5" style="vertical-align: bottom;">
+                <br>
+                    <u style="font-weight:bold"><b><?= !empty($approved_by['employee_name']) ? strtoupper($approved_by['employee_name']) : '' ?></b></u><br>
+                </th>
+            </tr>
+            <tr>
+                <td colspan="" class="border-0"> </td>
+                <td colspan="2" class="text-capitalize p-0 border-0 text-center" style="vertical-align: top;">
+                    <?= !empty($model->bacMember->bacPosition->position) ? ucfirst($model->bacMember->bacPosition->position) : '' ?>
                 </td>
             </tr>
+
 
         </table>
     </div>
@@ -103,10 +110,6 @@ $toDate = DateTime::createFromFormat('Y-m-d H:i:s', $model->to_date);
 <?php
 ?>
 <style>
-    .no-bdr {
-        border: 0;
-    }
-
     th,
     td {
         border: 1px solid black;
@@ -114,13 +117,6 @@ $toDate = DateTime::createFromFormat('Y-m-d H:i:s', $model->to_date);
         font-size: 16;
     }
 
-    .ctr {
-        text-align: center;
-    }
-
-    .pos {
-        display: none;
-    }
 
     table {
         width: 100%;
@@ -134,18 +130,6 @@ $toDate = DateTime::createFromFormat('Y-m-d H:i:s', $model->to_date);
             display: none;
         }
 
-        .container {
-            margin: 0 1in 0 .9in;
-
-        }
-
-        table {
-            margin-right: 100px;
-        }
-
-        .pos {
-            display: inline-block;
-        }
     }
 </style>
 <?php

@@ -83,4 +83,20 @@ class BacComposition extends \yii\db\ActiveRecord
             ->bindValue(':office_id',   $fk_office_id)
             ->queryAll();
     }
+    public static function getBacMembersByOffice($office)
+    {
+
+        return Yii::$app->db->createCommand("SELECT 
+        bac_composition_member.id,
+        employee_search_view.employee_name
+         FROM bac_composition 
+        JOIN office ON bac_composition.fk_office_id = office.id
+        JOIN bac_composition_member  ON bac_composition.id =bac_composition_member.bac_composition_id
+        JOIN employee_search_view ON bac_composition_member.employee_id = employee_search_view.employee_id
+        WHERE 
+        office.office_name = 'ro'
+        AND bac_composition.is_disabled = 0")
+            ->bindValue(':office', $office)
+            ->queryAll();
+    }
 }
