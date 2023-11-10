@@ -3,7 +3,6 @@
 namespace frontend\controllers;
 
 use app\models\PoTransmittal;
-use app\models\PoTransmittalEntries;
 use Yii;
 use app\models\PoTransmittalToCoa;
 use app\models\PoTransmittalToCoaEntries;
@@ -196,6 +195,7 @@ class PoTransmittalToCoaController extends Controller
     public function actionCreate()
     {
         $model = new PoTransmittalToCoa();
+        $model->fk_approved_by = 99684622555676858;
         if ($model->load(Yii::$app->request->post())) {
             try {
 
