@@ -14,12 +14,45 @@ $this->params['breadcrumbs'][] = $this->title;
 $date = DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y');
 $approvedBy  = !empty($model->fk_approved_by) ? $model->approvedBy->getEmployeeDetails() : [];
 $officerInCharge  = !empty($model->fk_officer_in_charge) ? $model->officerInCharge->getEmployeeDetails() : [];
+$headerTexts = [
+    [
+        'value' =>  $date,
+    ],
+    [
+        'value' => '',
+    ],
+    [
+        'value' => 'ADA JUNE M.HORMILLADA',
+        'fontStyle' => 'bold',
+    ],
+    [
+        'value' => 'State Auditor III',
+    ],
+    [
+        'value' => 'OIC - Audit Team Leader',
+    ],
+    [
+        'value' => 'COA - DTI Caraga',
+    ],
+    [
+        'value' => '',
+    ],
+    [
+        'value' => 'Dear Ma’am Hormillada:',
+    ],
+    [
+        'value' => '',
+    ],
+    [
+        'value' => "       We are hereby submitting the following Purchase Orders, with assigned Transmittal # {$model->serial_number} of DTI Regional Office:",
+    ],
+];
 ?>
 <?= $this->render('/modules/download_pdf_with_header', [
     'date' => $date,
     'serial_number' => $model->serial_number,
     'fileName' => 'Purchase Order Transmittals',
-    'headerTexts' => MyHelper::getTransmittalPdfHeaderTexts($date, $model->serial_number),
+    'headerTexts' => $headerTexts,
 
 ]) ?>
 <div class="purchase-order-transmittal-view">
