@@ -29,6 +29,12 @@ $toDate = DateTime::createFromFormat('Y-m-d H:i:s', $model->to_date);
 
 
     <div class="container card card-primary p-4">
+        <ul>
+
+            <li class="text-danger">The NOP cannot be updated if it is already marked as final.</li>
+            <li class="text-danger">Finalize the NOP to reflect the dates in the AOQ for the selected RFQs.</li>
+            <li class="text-danger">To print, click the 'Download PDF' button.</li>
+        </ul>
         <p>
             <?php
             if (!$model->is_final) {
@@ -91,7 +97,8 @@ $toDate = DateTime::createFromFormat('Y-m-d H:i:s', $model->to_date);
             <tr>
                 <td colspan="" class="border-0"> </td>
                 <th colspan="2" class="text-center border-0 pt-5" style="vertical-align: bottom;">
-                <br>
+                    <br>
+                    <br>
                     <u style="font-weight:bold"><b><?= !empty($approved_by['employee_name']) ? strtoupper($approved_by['employee_name']) : '' ?></b></u><br>
                 </th>
             </tr>
