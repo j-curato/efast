@@ -12,11 +12,7 @@ $this->title = $model->serial_number;
 $this->params['breadcrumbs'][] = ['label' => 'Notice Of Postponements', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
-$imagePath =  Yii::$app->request->baseUrl . '/frontend/web/dti_logo.png';
-
 $approved_by = Employee::getEmployeeById($model->bacMember->employee_id ?? null);
-
-
 $toDate = DateTime::createFromFormat('Y-m-d H:i:s', $model->to_date);
 ?>
 <?= $this->render('/modules/download_pdf_with_header', [
@@ -24,13 +20,8 @@ $toDate = DateTime::createFromFormat('Y-m-d H:i:s', $model->to_date);
     'serial_number' => $model->serial_number
 ]) ?>
 <div class="notice-of-postponement-view" id="main">
-
-
-
-
     <div class="container card card-primary p-4">
         <ul>
-
             <li class="text-danger">The NOP cannot be updated if it is already marked as final.</li>
             <li class="text-danger">Finalize the NOP to reflect the dates in the AOQ for the selected RFQs.</li>
             <li class="text-danger">To print, click the 'Download PDF' button.</li>
@@ -52,13 +43,7 @@ $toDate = DateTime::createFromFormat('Y-m-d H:i:s', $model->to_date);
             ?>
             <button onclick="generatePDF() " class="btn "> <i class="fa fa-file-pdf"></i> Download PDF</button>
         </p>
-        <table>
-            <tr>
-                <td colspan="3" class="text-right border-0">
-                    <?= Html::img('frontend/web/dtiNewLogo.png', ['alt' => 'some', 'class' => 'pull-left img-responsive', 'style' => 'width:250px ;']); ?>
-                </td>
-            </tr>
-        </table>
+
         <table class="pdf-export">
 
             <tr>
