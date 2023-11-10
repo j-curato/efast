@@ -28,7 +28,7 @@ if (Yii::$app->user->isGuest) {
 AppAsset::register($this);
 JqueryPluginAssets::register($this);
 
-// $this->registerJsFile("@web/js/jquery.min.js", ['position' => $this::POS_HEAD]);
+$this->registerJsFile("@web/js/jquery.min.js", ['position' => $this::POS_HEAD]);
 // $this->registerJsFile("@web/js/select2.min.js", ['depends' => [JqueryAsset::class]]);
 // $this->registerCssFile("@web/css/select2.min.css",);
 $this->registerJsFile("@web/js/vue.js", ['position' => $this::POS_HEAD]);
@@ -37,7 +37,7 @@ $this->registerJsFile("@web/js/vue.js", ['position' => $this::POS_HEAD]);
 //     ['depends' => [\yii\web\JqueryAsset::class]]
 // )
 // $this->registerJsFile('https://cdn.jsdelivr.net/npm/sweetalert2@10', ['position' => JqueryAsset::class]);
-// $this->registerJsFile('@web/js/vue-spinner.min.js', ['position' => $this::POS_HEAD]);
+$this->registerJsFile('@web/js/vue-spinner.min.js', ['position' => $this::POS_HEAD]);
 
 ?>
 <?php $this->beginPage() ?>
