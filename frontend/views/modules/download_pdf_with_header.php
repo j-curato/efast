@@ -6,6 +6,47 @@
 
 
 \yii\web\YiiAsset::register($this);
+$defaultHeaderText =  [
+    [
+        'value' => '',
+    ],
+];
+// $headerTexts =
+//     [
+//         [
+//             'value' =>  $date,
+//         ],
+//         [
+//             'value' => '',
+//         ],
+//         [
+//             'value' => 'ADA JUNE M.HORMILLADA',
+//             'fontStyle' => 'bold',
+//         ],
+//         [
+//             'value' => 'State Auditor III',
+//         ],
+//         [
+
+//             'value' => 'OIC - Audit Team Leader',
+//         ],
+//         [
+
+//             'value' => 'COA - DTI Caraga',
+//         ],
+//         [
+//             'value' => '',
+
+//         ],
+//         [
+
+//             'value' => 'Dear Ma’am Hormillada:',
+//         ],
+//         [
+//             'value' => '',
+//         ],
+      
+//     ];
 ?>
 <div class="transmittal-view"></div>
 
@@ -89,46 +130,9 @@ $baseUrl
         var pageWidth = pageSize.width ? pageSize.width : pageSize.getWidth()
         doc.setFontSize(9)
         const textHeaderDefaultWidth = 14
-        let headerTexts = [{
-                value: '<?= $date ?>',
-            },
-            {
-                value: '',
-            },
-            {
-                value: 'ADA JUNE M.HORMILLADA',
-                fontStyle: 'bold',
-            },
-            {
-                value: 'State Auditor III',
-            },
-            {
-
-                value: 'OIC - Audit Team Leader',
-            },
-            {
-
-                value: 'COA - DTI Caraga',
-            },
-            {
-                value: '',
-
-            },
-            {
-
-                value: 'Dear Ma’am Hormillada:',
-            },
-            {
-                value: '',
-            },
-            {
-
-                value: '    We are hereby submitting the following DVs, with assigned Transmittal # <?= $serial_number; ?> of DTI Regional Office:',
-            },
-        ]
+        let headerTexts = JSON.parse('<?= !empty($headerTexts) ? json_encode($headerTexts) : json_encode($defaultHeaderText) ?>')
         let addTextFinalHeight = displayTexts(doc, headerTexts, headerImageAspectRatio.imageHeight + 20, '+')
 
-        // return
 
         function addTexts() {}
         // get aspect ratio of location image
@@ -217,7 +221,7 @@ $baseUrl
         if (typeof doc.putTotalPages === 'function') {
             doc.putTotalPages(totalPagesExp)
         }
-        doc.save("newFile.pdf");
+        doc.save("<?= !empty($fileName) ? $fileName : 'newFile' ?>.pdf");
         $('.pdf-export td').css('font-size', '16px');
         $('.pdf-export td').css('padding', '10px');
         $('.pdf-export th').css('font-size', '16px');

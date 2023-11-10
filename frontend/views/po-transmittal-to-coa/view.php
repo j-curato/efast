@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
@@ -16,7 +17,9 @@ $officerInCharge  = !empty($model->fk_officer_in_charge) ? $model->officerInChar
 
 <?= $this->render('/modules/download_pdf_with_header', [
     'date' => $date,
-    'serial_number' => $model->transmittal_number
+    'serial_number' => $model->transmittal_number,
+    'headerTexts' => MyHelper::getTransmittalPdfHeaderTexts($date, $model->transmittal_number),
+    'fileName'=>'PO Transmittal to Coa'
 ]) ?>
 <div class="transmittal-view">
     <div class="container card" style="padding: 1rem;">

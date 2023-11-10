@@ -17,7 +17,10 @@ $toDate = DateTime::createFromFormat('Y-m-d H:i:s', $model->to_date);
 ?>
 <?= $this->render('/modules/download_pdf_with_header', [
     'date' => $toDate->format('F d, Y'),
-    'serial_number' => $model->serial_number
+    'serial_number' => $model->serial_number,
+    'fileName' => 'Notice of Postponement',
+    'headerTexts' => null,
+
 ]) ?>
 <div class="notice-of-postponement-view" id="main">
     <div class="container card card-primary p-4">

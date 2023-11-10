@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
 
 
@@ -16,7 +17,10 @@ $officerInCharge  = !empty($model->fk_officer_in_charge) ? $model->officerInChar
 ?>
 <?= $this->render('/modules/download_pdf_with_header', [
     'date' => $date,
-    'serial_number' => $model->serial_number
+    'serial_number' => $model->serial_number,
+    'fileName' => 'Purchase Order Transmittals',
+    'headerTexts' => MyHelper::getTransmittalPdfHeaderTexts($date, $model->serial_number),
+
 ]) ?>
 <div class="purchase-order-transmittal-view">
 
@@ -24,7 +28,9 @@ $officerInCharge  = !empty($model->fk_officer_in_charge) ? $model->officerInChar
 
     <div class="container card" style="padding: 1rem;">
         <ul>
-            <li ><p class="text-danger">To Print Click Download to PDF</p></li>
+            <li>
+                <p class="text-danger">To Print Click Download to PDF</p>
+            </li>
         </ul>
         <p>
             <?= Yii::$app->user->can('update_purchase_order_transmittal') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'mdModal btn btn-primary']) : '' ?>

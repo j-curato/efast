@@ -1,5 +1,6 @@
 <?php
 
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\Transmittal */
@@ -11,10 +12,13 @@ $this->params['breadcrumbs'][] = $this->title;
 $approvedBy  = !empty($model->fk_approved_by) ? $model->approvedBy->getEmployeeDetails() : [];
 $officerInCharge  = !empty($model->fk_officer_in_charge) ? $model->officerInCharge->getEmployeeDetails() : [];
 $date = DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y');
+
 ?>
 <?= $this->render('/modules/download_pdf_with_header', [
     'date' => $date,
-    'serial_number' => $model->transmittal_number
+    'serial_number' => $model->transmittal_number,
+    'fileName' => 'Transmittal',
+    'headerTexts' => MyHelper::getTransmittalPdfHeaderTexts($date, $model->transmittal_number),
 ]) ?>
 <div class="transmittal-view">
     <div class="container card p-2">

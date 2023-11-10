@@ -261,4 +261,41 @@ class MyHelper extends BaseObject
             'paramNames' => implode(',', $paramNames),
         ];
     }
+    public static function getTransmittalPdfHeaderTexts($date = '', $serial_number = '')
+    {
+        return
+            [
+                [
+                    'value' =>  $date,
+                ],
+                [
+                    'value' => '',
+                ],
+                [
+                    'value' => 'ADA JUNE M.HORMILLADA',
+                    'fontStyle' => 'bold',
+                ],
+                [
+                    'value' => 'State Auditor III',
+                ],
+                [
+                    'value' => 'OIC - Audit Team Leader',
+                ],
+                [
+                    'value' => 'COA - DTI Caraga',
+                ],
+                [
+                    'value' => '',
+                ],
+                [
+                    'value' => 'Dear Ma’am Hormillada:',
+                ],
+                [
+                    'value' => '',
+                ],
+                [
+                    'value' => "       We are hereby submitting the following DVs, with assigned Transmittal # {$serial_number} of DTI Regional Office:",
+                ],
+            ];
+    }
 }
