@@ -20,7 +20,11 @@ $officerInCharge  = !empty($model->fk_officer_in_charge) ? $model->officerInChar
 ]) ?>
 <div class="transmittal-view">
     <div class="container card" style="padding: 1rem;">
-
+        <ul>
+            <li>
+                <p class="text-danger">To Print Click Download to PDF</p>
+            </li>
+        </ul>
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
             <button onclick="generatePDF() " class="btn "> <i class="fa fa-file-pdf"></i> Download PDF</button>

@@ -18,6 +18,11 @@ $date = DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y');
 ]) ?>
 <div class="transmittal-view">
     <div class="container card p-2">
+        <ul>
+            <li>
+                <p class="text-danger">To Print Click Download to PDF</p>
+            </li>
+        </ul>
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
             <button onclick="generatePDF() " class="btn "> <i class="fa fa-file-pdf"></i> Download PDF</button>

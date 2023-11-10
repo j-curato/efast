@@ -23,6 +23,9 @@ $officerInCharge  = !empty($model->fk_officer_in_charge) ? $model->officerInChar
 
 
     <div class="container card" style="padding: 1rem;">
+        <ul>
+            <li ><p class="text-danger">To Print Click Download to PDF</p></li>
+        </ul>
         <p>
             <?= Yii::$app->user->can('update_purchase_order_transmittal') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'mdModal btn btn-primary']) : '' ?>
             <button onclick="generatePDF() " class="btn "> <i class="fa fa-file-pdf"></i> Download PDF</button>
