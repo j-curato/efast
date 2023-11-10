@@ -34,7 +34,7 @@ $toDate = DateTime::createFromFormat('Y-m-d H:i:s', $model->to_date);
             if (!$model->is_final) {
                 echo Html::a('Final', ['final', 'id' => $model->id], ['class' => 'btn btn-success', '@click' => 'final']);
             } else {
-                echo "<h5 style='color:red;'>This NOP is already Final.</h5>";
+                echo "<span style='color:red;'>This NOP is already Final.</span>";
             }
             ?>
             <?php
