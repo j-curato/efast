@@ -3,6 +3,7 @@
 namespace frontend\assets;
 
 use yii\web\AssetBundle;
+use yii\web\JqueryAsset;
 
 /**
  * Main frontend application asset bundle.
@@ -17,19 +18,10 @@ class JqueryPluginAssets extends AssetBundle
         'css/select2.min.css'
     ];
     public $js = [
-        // 'js/jquery.min.js',
-        // 'app.js',
-        // 'maskmoney/dist/jquery.maskMoney.min.js',
-        'js/select2.min.js',
-        // 'js/scripts.js',
-        // 'manifest.webmanifest',
-        // 'js/vue.js',
-        // 'js/axios.min.js'
-
-
-
+        'js/jspdf.js',
+        'js/jspdf-autotable.js'
     ];
     public $depends = [
-        'js/jquery.min.js',
+        JqueryAsset::class
     ];
 }

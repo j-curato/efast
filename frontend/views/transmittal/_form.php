@@ -1,12 +1,16 @@
 <?php
 
-use app\models\ForTransmittalSearch;
-use app\models\VwTransmittalFormDvsSearch;
-use aryelds\sweetalert\SweetAlertAsset;
-use kartik\date\DatePicker;
-use kartik\grid\GridView;
+use app\components\helpers\MyHelper;
 use yii\helpers\Html;
+use kartik\grid\GridView;
+use yii\web\JsExpression;
+use kartik\date\DatePicker;
+use kartik\select2\Select2;
+use yii\helpers\ArrayHelper;
 use yii\bootstrap4\ActiveForm;
+use app\models\ForTransmittalSearch;
+use aryelds\sweetalert\SweetAlertAsset;
+use app\models\VwTransmittalFormDvsSearch;
 
 
 /* @var $this yii\web\View */
@@ -20,18 +24,16 @@ $rowNum = 0;
     <?php
     $searchModel = new VwTransmittalFormDvsSearch();
     $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
+    $dataProvider->pagination = ['pageSize' => 10];
     $gridColumns = [
 
         [
             'label' => 'Action',
             'format' => 'raw',
             'value' => function ($model) {
-
-                return Html::button('<id class="fa fa-plus"></id>', ['class' => 'add_btn btn btn-primary', 'onclick' => 'add(this)']);
+                return Html::button('<id class="fa fa-plus"></id>', ['class' => 'add_btn btn-xs btn-primary', 'onclick' => 'add(this)']);
             },
         ],
-
         [
             'label' => 'id',
             'format' => 'raw',
@@ -92,7 +94,6 @@ $rowNum = 0;
             'position' => 'absolute',
 
         ],
-
         'toggleDataContainer' => ['class' => 'btn-group mr-2'],
         'columns' => $gridColumns,
     ]); ?>
@@ -106,6 +107,54 @@ $rowNum = 0;
 
                 ]
             ]) ?>
+        </div>
+        <div class="col-sm-3">
+            <?= $form->field($model, 'fk_officer_in_charge')->widget(Select2::class, [
+                'data' => ArrayHelper::map(MyHelper::getEmployee($model->fk_officer_in_charge, 'all'), 'employee_id', 'employee_name'),
+                'options' => ['placeholder' => 'Search for a Employee ...'],
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'minimumInputLength' => 1,
+                    'language' => [
+                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                    ],
+                    'ajax' => [
+                        'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                        'dataType' => 'json',
+                        'delay' => 250,
+                        'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
+                        'cache' => true
+                    ],
+                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                ],
+
+            ]) ?>
+        </div>
+        <div class="col-sm-3">
+            <?= $form->field($model, 'fk_approved_by')->widget(Select2::class, [
+                'data' => ArrayHelper::map(MyHelper::getEmployee($model->fk_approved_by, 'all'), 'employee_id', 'employee_name'),
+                'options' => ['placeholder' => 'Search for a Employee ...'],
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'minimumInputLength' => 1,
+                    'language' => [
+                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                    ],
+                    'ajax' => [
+                        'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                        'dataType' => 'json',
+                        'delay' => 250,
+                        'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
+                        'cache' => true
+                    ],
+                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                ],
+
+            ])  ?>
         </div>
 
     </div>
@@ -123,18 +172,8 @@ $rowNum = 0;
         <tbody>
             <?php
 
-            foreach ($items as $itm) {
-                // item_id
-                // dv_id
-                // issuance_date
-                // check_or_ada_no
-                // ada_number
-                // reporting_period
-                // payee
-                // particular
-                // dv_number
-                // amtDisbursed
-                // taxWitheld
+            foreach ($model->getItems() as $itm) {
+
                 echo "<tr>
                     <td style='display:none'>
                         <input type='text' name='items[$rowNum][item_id]' value='{$itm['item_id']}'>
@@ -148,7 +187,7 @@ $rowNum = 0;
                     <td>{$itm['particular']}</td>
                     <td>" . number_format($itm['amtDisbursed'], 2) . "</td>
                     <td>" . number_format($itm['taxWitheld'], 2) . "</td>
-                    <td><button id='remove' class='btn btn-danger ' onclick='remove(this)'><i class='fa fa-times'></i></button></td>
+                    <td><button id='remove' class='btn-xs btn-danger ' onclick='remove(this)'><i class='fa fa-times'></i></button></td>
                 </tr>";
                 $rowNum++;
             } ?>

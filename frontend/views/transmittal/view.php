@@ -1,30 +1,29 @@
 <?php
 
-use app\models\Assignatory;
-use app\models\EmployeePosition;
-use kartik\select2\Select2;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\widgets\DetailView;
-
 /* @var $this yii\web\View */
 /* @var $model app\models\Transmittal */
 
-$this->title = $model->id;
+$this->title = $model->transmittal_number;
 $this->params['breadcrumbs'][] = ['label' => 'Transmittals', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
+$approvedBy  = !empty($model->fk_approved_by) ? $model->approvedBy->getEmployeeDetails() : [];
+$officerInCharge  = !empty($model->fk_officer_in_charge) ? $model->officerInCharge->getEmployeeDetails() : [];
+$date = DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y');
 ?>
+<?= $this->render('/modules/download_pdf_with_header', [
+    'date' => $date,
+    'serial_number' => $model->transmittal_number
+]) ?>
 <div class="transmittal-view">
+    <div class="container card p-2">
+        <p>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+            <button onclick="generatePDF() " class="btn "> <i class="fa fa-file-pdf"></i> Download PDF</button>
 
-
-
-    <div class="container">
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <div class="row" style="float:right">
-            <?= Html::img(Yii::$app->request->baseUrl . '/frontend/web/dti3.png', ['alt' => 'some', 'class' => 'pull-left img-responsive', 'style' => 'width: 100px;height:100px;margin-left:auto']); ?>
-        </div>
-        <div class="addresseeInfo" style="margin-top: 130px;">
+        </p>
+        <div class="addresseeInfo p-3">
             <div class="addresseeInfo head" style=" margin-bottom:2rem"><?php echo date('F d, Y', strtotime($model->date)) ?></div>
             <div class="addresseeInfo head" style="font-weight: bold;">ADA JUNE M. HORMILLADA</div>
             <div class="addresseeInfo head">State Auditor III</div>
@@ -36,10 +35,9 @@ $this->params['breadcrumbs'][] = $this->title;
             </p>
         </div>
 
-
-
-        <table class="">
-            <thead style="border-top: 1px solid black;">
+        <table id="tableData" class="pdf-export">
+            <thead>
+                </tr>
                 <th>No.</th>
                 <th>DV Number</th>
                 <th>Check/ADA</th>
@@ -49,14 +47,12 @@ $this->params['breadcrumbs'][] = $this->title;
                 <th>Amount Disbursed</th>
                 <th>Tax Withheld</th>
             </thead>
-
             <tbody>
 
                 <?php
                 $total = 0;
                 $totalTax = 0;
-                foreach ($items as $i => $val) {
-
+                foreach ($model->getItems() as $i => $val) {
                     $q = $i + 1;
                     echo "<tr>
                         <td>$q</td>
@@ -73,302 +69,76 @@ $this->params['breadcrumbs'][] = $this->title;
                 }
                 ?>
                 <tr>
-
-                    <td colspan="6" style="font-weight: bold;text-align:center"> Total</td>
-                    <td style='text-align:right'> <?php echo number_format($total, 2); ?></td>
-                    <td style='text-align:right'> <?php echo number_format($totalTax, 2); ?></td>
+                    <th colspan="6" class='text-center'>Total</th>
+                    <th class='text-right'> <b><?= number_format($total, 2) ?></b></th>
+                    <th class='text-right'> <b><?= number_format($totalTax, 2) ?></b></th>
                 </tr>
+                <tr>
+                    <td colspan="8" class="border-bottom-0 border-right-0 border-left-0">
+                        <br>
+                        Thank you.
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8" class="border-0 pt-2">
+                        <br>
+                        <br>
+                        <br>
+                        <p class="mt-5">Very truly yours,</p>
+                        <br>
+                        <br>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="8" class="border-0">
+                        <p><?= !empty($approvedBy['fullName']) ? strtoupper($approvedBy['fullName']) : '' ?>
+                    </th>
+                </tr>
+                <tr>
+                    <td colspan="8" class="border-0">
+                        <p><?= !empty($approvedBy['position']) ? $approvedBy['position'] : '' ?></p>
+
+                    </td>
+                </tr>
+                <?php if (!empty($model->fk_officer_in_charge)) : ?>
+                    <tr>
+                        <td colspan="8" class="border-0">
+                            <br>
+                            <br>
+                            <p> For the Regional Director</p>
+                            <br>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th colspan="8" class="border-0">
+                            <b class=""><?= !empty($officerInCharge['fullName']) ? strtoupper($officerInCharge['fullName']) : '' ?></b>
+                        </th>
+                    </tr>
+                    <tr>
+                        <td colspan="8" class="border-0">
+                            <p><?= !empty($officerInCharge['position']) ? $officerInCharge['position'] : '' ?></p>
+                            <br>
+                        </td>
+                    </tr>
+                <?php endif; ?>
+
             </tbody>
         </table>
-        <div class="addresseeInfo head" style="margin-top:1rem">Thank you.</div>
-        <div class="addresseeInfo head" style="margin-top:4rem">Very truly yours,</div>
-        <div class="addresseeInfo head" style="margin-top:2rem">
-            <div class="head" style="font-weight:bold;right:10;" id="asig_1">
-
-            </div>
-            <div class="head" id="oic">Regional Director</div>
-        </div>
-        <div class="row" style="margin-top:2rem">
-            <br>
-            <div class="head" id="for_rd"></div>
-        </div>
-        <div class="addresseeInfo" style="margin-top: 2rem;">
-            <div class="head" id='ass' style="font-weight: bold;"></div>
-            <br>
-            <div class="head" id="oic_position_text"></div>
-        </div>
-        <div class="row" style="margin-top: 20px;">
-
-            <div class="col-sm-3 as">
-                <label for="assignatory_1">Regional Director </label>
-                <select name="" id="assignatory_1" class="assignatory" onchange="regionalDirector(this)" style="width: 100%;">
-                    <option value=""></option>
-                </select>
-            </div>
-            <div class="col-sm-3 as">
-                <label for="qwe">OIC</label>
-                <!-- <select id="assignatory" onchange="sample(this)" name="assignatory" class=" select" style="width: 100%">
-                    <option></option>
-                </select> -->
-                <?php
-                echo Select2::widget([
-                    'data' => ArrayHelper::map(Assignatory::find()->asArray()->all(), 'name', 'name'),
-                    'name' => 'ass',
-                    'options' => ['id' => 'assignatory', 'onChange' => 'sample(this)'],
-                    'pluginOptions' => [
-                        'placeholder' => 'select',
-                        'allowClear' => true,
-
-                    ],
-                ])
-                ?>
-            </div>
-            <div class="col-sm-3 as">
-                <label for="oic">Regional Director </label>
-                <select name="" id="oic_rd" onchange="oicRd(this)" style="width: 100%;">
-                    <option value=""></option>
-                </select>
-            </div>
-            <div class="col-sm-3 as">
-                <label for="qwe">OIC Position</label>
-
-                <?php
-                echo Select2::widget([
-                    'data' => ArrayHelper::map(EmployeePosition::find()->asArray()->all(), 'position', 'position'),
-                    'name' => 'oic_position',
-                    'id' => 'oic_position',
-                    'options' => ['onChange' => 'oic_position(this)'],
-                    'pluginOptions' => [
-                        'placeholder' => 'select',
-                        'allowClear' => true,
-                    ],
-                ])
-                ?>
-            </div>
-        </div>
     </div>
 
-    <script>
-        var reference = []
-
-        function oic_position(q) {
-            console.log($(q).val())
-            $('#oic_position_text').text($(q).val())
-
-        }
-
-        function oicRd(x) {
-            $("#oic").text(x.value)
-        }
-
-        function regionalDirector(x) {
-            $("#asig_1").text(x.value)
-        }
-
-        function sample(q) {
-            console.log(q.value)
-
-            $("#ass").text(q.value)
-            if (q.value == '') {
-                $("#for_rd").text('')
-            } else {
-
-                $("#for_rd").text('For the Regional Director')
-            }
-
-
-        }
-        $(document).ready(function() {
-            var oic_rd = ['Officer-in-Charge', 'Regional Director']
-            $('#oic_rd').select2({
-                data: oic_rd,
-                placeholder: "Select ",
-                allowClear: true,
-                closeOnSelect: true
-            })
-            $.getJSON(window.location.pathname + '?r=assignatory/get-all-assignatory')
-
-                .then(function(data) {
-
-                    var array = []
-                    $.each(data, function(key, val) {
-                        array.push({
-                            id: val.name,
-                            text: val.name
-                        })
-                    })
-                    assignatory = array
-                    $('.assignatory').select2({
-                        data: assignatory,
-                        placeholder: "Select ",
-                        allowClear: true,
-                        closeOnSelect: true
-                    })
-
-                })
-        })
-    </script>
 </div>
 
 <style>
-    table,
     td,
     th {
         background-color: white;
-
         border: 1px solid black;
-        padding: 8px;
         line-height: 1.42857143;
         vertical-align: top;
-
+        padding: 10px;
     }
 
-    .container {
-        background-color: white;
-        width: 80%;
-        margin-bottom: 10px;
-        padding: 2rem;
-    }
-
-    .addresseeInfo {
-        margin-left: 0;
-        margin-right: 0;
-    }
-
-    .main-footer {
-        display: none;
-    }
-
-    .head {
-        font-size: 12pt;
-    }
-
-    @media print {
-        .as {
-            display: none;
-        }
-
-        .assignatory {
-            display: none;
-        }
-
-        .container {
-            width: 100%;
-
-        }
-
-        header.onlyprint {
-            position: fixed;
-            /* Display only on print page (each) */
-            top: 0;
-            /* Because it's header */
-        }
-
-        footer.onlyprint {
-            position: fixed;
-            bottom: 0;
-            /* Because it's footer */
-        }
-
-
-        .actions {
-            display: none;
-        }
-
-        .select2-container--default .select2-selection--single,
-        .select2-selection .select2-selection--single {
-            /* border: 1px solid #d2d6de; */
-            /* border-radius: 0; */
-            padding: 0;
-
-        }
-
-        .select2-container {
-            height: 20px;
-        }
-
-        .links {
-            display: none;
-        }
-
-        .btn {
-            display: none;
-        }
-
-        .krajee-datepicker {
-            border: 1px solid white;
-            font-size: 10px;
-            padding-left: 9px;
-        }
-
-        /* .select2-selection__rendered{
-            text-decoration: underline;
-        } */
-        .select2-container--default .select2-selection--single {
-            background-color: #fff;
-            border: none;
-            padding-left: 0;
-        }
-
-        .select2-selection__arrow {
-            display: none;
-        }
-
-
-        .select2-selection {
-            border: 1px solid white;
-        }
-
-        select {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            text-indent: 1px;
-            text-overflow: '';
-            border: none;
-        }
-
-
-        @page {
-            size: auto;
-            margin: 0;
-            margin-top: 0.5cm;
-        }
-
-
-
-        .container {
-            margin: 0;
-            top: 0;
-        }
-
-        .entity_name {
-            font-size: 5pt;
-        }
-
-
-
-        .container {
-
-            border: none;
-        }
-
-
-        .main-footer {
-            display: none;
-        }
+    .font-weight-bold {
+        font-weight: bold;
     }
 </style>
-
-<?php
-$this->registerJsFile(yii::$app->request->baseUrl . "/js/select2.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-?>
-<?php
-$script = <<< JS
-    $("#assignatory").change(function(){
-      
-        console.log("qwe")
-    })
-
-JS;
-
-?>

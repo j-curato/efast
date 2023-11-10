@@ -173,7 +173,6 @@ class TransmittalController extends Controller
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
-            'items' => $this->getItems($id)
         ]);
     }
 
@@ -185,6 +184,7 @@ class TransmittalController extends Controller
     public function actionCreate()
     {
         $model = new Transmittal();
+        $model->fk_approved_by = 99684622555676858;
         if ($model->load(Yii::$app->request->post())) {
             try {
                 $items = Yii::$app->request->post('items') ?? [];
@@ -244,7 +244,7 @@ class TransmittalController extends Controller
         }
         return $this->render('update', [
             'model' => $model,
-            'items' => $this->getItems($id)
+            // 'items' => $this->getItems($id)
         ]);
     }
 

@@ -1,19 +1,16 @@
 <?php
 
-use app\models\CashDisbursement;
-use app\models\CashDisbursementSearch;
-use app\models\ForTransmittalSearch;
-use app\models\LiquidationEntriesViewSearch;
-use app\models\LiquidationViewSearch;
-use app\models\PoTransmittal;
-use app\models\PoTransmittalSearch;
-use app\models\VwNotInCoaTransmittalSearch;
-use aryelds\sweetalert\SweetAlertAsset;
-use kartik\date\DatePicker;
-use kartik\grid\GridView;
 use yii\helpers\Html;
-use yii\bootstrap4\ActiveForm;
+use kartik\grid\GridView;
+use yii\web\JsExpression;
+use kartik\date\DatePicker;
+use kartik\select2\Select2;
+use yii\helpers\ArrayHelper;
 
+use yii\bootstrap4\ActiveForm;
+use app\components\helpers\MyHelper;
+use aryelds\sweetalert\SweetAlertAsset;
+use app\models\VwNotInCoaTransmittalSearch;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Transmittal */
@@ -69,14 +66,61 @@ $itemRow = 0;
     ]); ?>
 
     <div class="row">
-        <div class="col-sm-2">
+        <div class="col-sm-3">
             <?= $form->field($model, 'date')->widget(DatePicker::class, [
                 'pluginOptions' => [
                     'autoclose' => true,
                     'format' => 'yyyy-mm-dd',
-
                 ]
             ]) ?>
+        </div>
+        <div class="col-sm-3">
+            <?= $form->field($model, 'fk_officer_in_charge')->widget(Select2::class, [
+                'data' => ArrayHelper::map(MyHelper::getEmployee($model->fk_officer_in_charge, 'all'), 'employee_id', 'employee_name'),
+                'options' => ['placeholder' => 'Search for a Employee ...'],
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'minimumInputLength' => 1,
+                    'language' => [
+                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                    ],
+                    'ajax' => [
+                        'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                        'dataType' => 'json',
+                        'delay' => 250,
+                        'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
+                        'cache' => true
+                    ],
+                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                ],
+
+            ]) ?>
+        </div>
+        <div class="col-sm-3">
+            <?= $form->field($model, 'fk_approved_by')->widget(Select2::class, [
+                'data' => ArrayHelper::map(MyHelper::getEmployee($model->fk_approved_by, 'all'), 'employee_id', 'employee_name'),
+                'options' => ['placeholder' => 'Search for a Employee ...'],
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'minimumInputLength' => 1,
+                    'language' => [
+                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                    ],
+                    'ajax' => [
+                        'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                        'dataType' => 'json',
+                        'delay' => 250,
+                        'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
+                        'cache' => true
+                    ],
+                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                ],
+
+            ])  ?>
         </div>
     </div>
     <table class="table table-striped" id="transaction_table" style="background-color: white;">

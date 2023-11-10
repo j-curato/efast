@@ -1,9 +1,14 @@
 <?php
 
-use kartik\date\DatePicker;
-use kartik\grid\GridView;
 use yii\helpers\Html;
+use kartik\grid\GridView;
+use yii\web\JsExpression;
+use kartik\date\DatePicker;
+use kartik\select2\Select2;
+use yii\helpers\ArrayHelper;
 use yii\bootstrap4\ActiveForm;
+use app\components\helpers\MyHelper;
+use aryelds\sweetalert\SweetAlertAsset;
 
 
 /* @var $this yii\web\View */
@@ -14,7 +19,6 @@ use yii\bootstrap4\ActiveForm;
 <div class="purchase-order-transmittal-form card" style="padding: 1rem;">
 
     <?php
-
 
     $gridColumns = [
 
@@ -65,24 +69,67 @@ use yii\bootstrap4\ActiveForm;
         'columns' => $gridColumns,
     ]); ?>
 
-    <?= Html::beginForm([$action, 'id' => $model->id], 'post', ['id' => 'purchase_order_transmittal_form']); ?>
+    <?php $form = ActiveForm::begin([
+        'id' => $model->formName()
+    ]); ?>
     <div class="row">
         <div class="col-sm-3">
-
-            <label for="date">Date</label>
-            <?php
-            echo DatePicker::widget([
-                'name' => 'date',
-                'value' => !empty($model->date) ? $model->date : date('Y-m-d'),
-                'options' => ['required' => true],
+            <?= $form->field($model, 'date')->widget(DatePicker::class, [
                 'pluginOptions' => [
                     'autoclose' => true,
                     'format' => 'yyyy-mm-dd',
-
                 ]
             ]);
             ?>
 
+        </div>
+        <div class="col-sm-3">
+            <?= $form->field($model, 'fk_officer_in_charge')->widget(Select2::class, [
+                'data' => ArrayHelper::map(MyHelper::getEmployee($model->fk_officer_in_charge, 'all'), 'employee_id', 'employee_name'),
+                'options' => ['placeholder' => 'Search for a Employee ...'],
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'minimumInputLength' => 1,
+                    'language' => [
+                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                    ],
+                    'ajax' => [
+                        'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                        'dataType' => 'json',
+                        'delay' => 250,
+                        'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
+                        'cache' => true
+                    ],
+                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                ],
+
+            ]) ?>
+        </div>
+        <div class="col-sm-3">
+            <?= $form->field($model, 'fk_approved_by')->widget(Select2::class, [
+                'data' => ArrayHelper::map(MyHelper::getEmployee($model->fk_approved_by, 'all'), 'employee_id', 'employee_name'),
+                'options' => ['placeholder' => 'Search for a Employee ...'],
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'minimumInputLength' => 1,
+                    'language' => [
+                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                    ],
+                    'ajax' => [
+                        'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                        'dataType' => 'json',
+                        'delay' => 250,
+                        'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
+                        'cache' => true
+                    ],
+                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                ],
+
+            ])  ?>
         </div>
     </div>
 
@@ -96,15 +143,17 @@ use yii\bootstrap4\ActiveForm;
             <?php
             $item_row = 1;
             if (!empty($model->id)) {
-                foreach ($items as $val) {
+                foreach ($model->getTransmittalItems() as $val) {
                     $po_id = $val['po_id'];
                     $id = $val['id'];
                     $serial_number = $val['serial_number'];
                     $payee = $val['payee'];
                     $purpose = $val['purpose'];
                     echo "<tr>
-                        <td style='display:none'><input type='text' class='item_id' value='{$id}' name='item_id[$item_row]'>
-                        <input type='text' class='po_id' value='{$po_id}' name='pr_purchase_order_item_ids[$item_row]'></td>
+                        <td style='display:none'>
+                        <input type='text' class='item_id' value='{$id}' name='items[$item_row][id]'>
+                        <input type='text' class='po_id' value='{$po_id}' name='items[$item_row][fk_purchase_order_item_id]'>
+                        </td>
                         <td>$serial_number</td>
                         <td>$payee</td>
                         <td>$purpose</td>
@@ -118,12 +167,13 @@ use yii\bootstrap4\ActiveForm;
 
     </table>
     <div class="row justify-content-center">
-        <div class="form-group col-sm-2">
-            <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%;margin:3rem 0 4rem 0']); ?>
 
+        <div class="form-group col-sm-2">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
         </div>
     </div>
-    <?= Html::endForm(); ?>
+
+    <?php ActiveForm::end(); ?>
 
 </div>
 
@@ -133,7 +183,7 @@ use yii\bootstrap4\ActiveForm;
     function addRow(row) {
         const $this = $(row)
         const clone = $this.closest('tr').clone()
-        clone.find('.po_id').attr('name', `pr_purchase_order_item_ids[${row_num}]`)
+        clone.find('.po_id').attr('name', `items[${row_num}][fk_purchase_order_item_id]`)
         // console.log(clone.find('.po_id').attr('name'))
         clone.find('.add_row').parent().remove()
         clone.append('<td><button type="button" class="remove btn-xs btn-danger"><i class="fa fa-times"></i></button></td>')
@@ -148,3 +198,39 @@ use yii\bootstrap4\ActiveForm;
         })
     })
 </script>
+
+<?php
+SweetAlertAsset::register($this);
+$script = <<< JS
+   
+
+   $(document).ready(()=>{
+        $("#PoTransmittalToCoa").on("beforeSubmit", function (event) {
+            event.preventDefault();
+            var form = $(this);
+            $.ajax({
+                url: form.attr("action"),
+                type: form.attr("method"),
+                data: form.serialize(),
+                success: function (data) {
+                    let res = JSON.parse(data)
+                    console.log(res)
+                    swal({
+                        icon: 'error',
+                        title: res.error,
+                        type: "error",
+                        timer: 3000,
+                        closeOnConfirm: false,
+                        closeOnCancel: false
+                    })
+                },
+                error: function (data) {
+            
+                }
+            });
+            return false;
+         });
+    })
+JS;
+$this->registerJs($script);
+?>

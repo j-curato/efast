@@ -9,7 +9,7 @@ use Yii;
  *
  * @property int $id
  * @property int $fk_purchase_order_transmittal_id
- * @property int $fk_purchase_order_id
+ * @property int $fk_purchase_order_item_id
  *
  * @property PurchaseOrderTransmittal $fkPurchaseOrderTransmittal
  */
@@ -29,8 +29,8 @@ class PurchaseOrderTransmittalItems extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['fk_purchase_order_transmittal_id', 'fk_purchase_order_id'], 'required'],
-            [['fk_purchase_order_transmittal_id', 'fk_purchase_order_id'], 'integer'],
+            [['fk_purchase_order_transmittal_id', 'fk_purchase_order_item_id'], 'required'],
+            [['fk_purchase_order_transmittal_id', 'fk_purchase_order_item_id'], 'integer'],
             [['fk_purchase_order_transmittal_id'], 'exist', 'skipOnError' => true, 'targetClass' => PurchaseOrderTransmittal::class, 'targetAttribute' => ['fk_purchase_order_transmittal_id' => 'id']],
         ];
     }
@@ -42,8 +42,8 @@ class PurchaseOrderTransmittalItems extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'fk_purchase_order_transmittal_id' => 'Fk Purchase Order Transmittal ID',
-            'fk_purchase_order_id' => 'Fk Purchase Order ID',
+            'fk_purchase_order_transmittal_id' => ' Purchase Order Transmittal ',
+            'fk_purchase_order_item_id' => ' Purchase Order ',
         ];
     }
 

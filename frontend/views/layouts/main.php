@@ -7,8 +7,6 @@ use frontend\assets\AppAsset;
 use frontend\assets\JqueryPluginAssets;
 use yii\helpers\Html;
 use yii\bootstrap4\Modal;
-use yii\web\JqueryAsset;
-use yii\widgets\Pjax;
 
 \hail812\adminlte3\assets\FontAwesomeAsset::register($this);
 \hail812\adminlte3\assets\AdminLteAsset::register($this);
@@ -28,7 +26,9 @@ if (Yii::$app->user->isGuest) {
     );
 }
 AppAsset::register($this);
-$this->registerJsFile("@web/js/jquery.min.js", ['position' => $this::POS_HEAD]);
+JqueryPluginAssets::register($this);
+
+// $this->registerJsFile("@web/js/jquery.min.js", ['position' => $this::POS_HEAD]);
 // $this->registerJsFile("@web/js/select2.min.js", ['depends' => [JqueryAsset::class]]);
 // $this->registerCssFile("@web/css/select2.min.css",);
 $this->registerJsFile("@web/js/vue.js", ['position' => $this::POS_HEAD]);
