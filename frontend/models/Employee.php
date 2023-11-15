@@ -79,7 +79,8 @@ class Employee extends \yii\db\ActiveRecord
                 "employee.position",
                 "employee.property_custodian",
                 "office.office_name",
-                "divisions.division"
+                "divisions.division",
+                'employee_id'
             ])
             ->joinWith('office')
             ->joinWith('empDivision')

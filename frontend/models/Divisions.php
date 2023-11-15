@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "{{%divisions}}".
@@ -52,5 +53,15 @@ class Divisions extends \yii\db\ActiveRecord
     public function getEmployee()
     {
         return $this->hasOne(Employee::class, ['employee_id' => 'fk_division_chief']);
+    }
+    public static function getDivisionsA()
+    {
+        return self::find()
+            ->addSelect([
+                'id',
+                new Expression('UPPER(division) as division')
+            ])
+            ->asArray()
+            ->all();
     }
 }

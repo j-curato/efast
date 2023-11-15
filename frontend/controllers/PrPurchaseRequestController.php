@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use app\behaviors\HistoryLogsBehavior;
 use Yii;
 use DateTime;
 use yii\db\Query;
@@ -15,10 +16,7 @@ use app\models\PrPurchaseRequest;
 use yii\web\NotFoundHttpException;
 use app\models\SupplementalPpmpCse;
 use app\components\helpers\MyHelper;
-use app\models\PrProjectProcurement;
-use app\models\PurchaseRequestIndex;
 use app\models\PrPurchaseRequestItem;
-use app\models\PrPurchaseRequestSearch;
 use app\models\PurchaseRequestIndexSearch;
 use app\models\PrPurchaseRequestAllotments;
 
@@ -33,6 +31,7 @@ class PrPurchaseRequestController extends Controller
     public function behaviors()
     {
         return [
+
             'access' => [
                 'class' => AccessControl::class,
                 'only' => [
@@ -496,11 +495,12 @@ class PrPurchaseRequestController extends Controller
                 $transaction = Yii::$app->db->beginTransaction();
                 $pr_items = Yii::$app->request->post('pr_items') ?? [];
                 $allotment_items = Yii::$app->request->post('allotment_items') ?? [];
-                $date_now = new DateTime();
-                $model->date = $date_now->format('Y-m-d');
-                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()  % 9223372036854775807")->queryScalar();
-                $model->pr_number = $this->getPrNumber($model->date, $model->fk_office_id, $model->fk_division_id);
-                $model->fk_created_by = Yii::$app->user->identity->id;
+                if (!Yii::$app->user->can('change_purchase_request_date')) {
+                    $date_now = new DateTime();
+                    $model->date = $date_now->format('Y-m-d');
+                }
+                // $model->pr_number = $this->getPrNumber($model->date, $model->fk_office_id, $model->fk_division_id);
+
                 $allotment_items_ttl = array_column($allotment_items, 'gross_amount');
                 if (strtolower($model->office->office_name) == 'ro') {
                     $validate_ttl = $this->calculateItemsTotal($pr_items, $allotment_items_ttl);
@@ -646,6 +646,7 @@ class PrPurchaseRequestController extends Controller
             return $this->goHome();
         }
         if ($model->load(Yii::$app->request->post())) {
+
             try {
                 $transaction = Yii::$app->db->beginTransaction();
                 if ($model->is_cancelled) {
@@ -654,9 +655,9 @@ class PrPurchaseRequestController extends Controller
                 $pr_items = Yii::$app->request->post('pr_items') ?? [];
                 $allotment_items = Yii::$app->request->post('allotment_items') ?? [];
 
-                if (intval($oldModel->fk_office_id) !== intval($model->fk_office_id) || intval($oldModel->fk_division_id) !== intval($model->fk_division_id)) {
-                    $model->pr_number = $this->getPrNumber($model->date, $model->fk_office_id, $model->fk_division_id);
-                }
+                // if (intval($oldModel->fk_office_id) !== intval($model->fk_office_id) || intval($oldModel->fk_division_id) !== intval($model->fk_division_id)) {
+                //     $model->pr_number = $this->getPrNumber($model->date, $model->fk_office_id, $model->fk_division_id);
+                // }
                 $check_rfqs = $this->checkRfq($model->id);
                 if (!empty($check_rfqs)) {
                     throw new ErrorException('Unable to Update PR No. has RFQ"s.');

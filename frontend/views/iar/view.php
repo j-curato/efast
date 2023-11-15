@@ -1,7 +1,8 @@
 <?php
 
-use common\models\User;
 use yii\helpers\Html;
+use common\models\User;
+use yii\web\JqueryAsset;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
@@ -86,6 +87,8 @@ $date_generated = !empty($model->date_generated) ? DateTime::createFromFormat('Y
 <div class="iar-view">
     <div class="container card" style="padding: 1rem;">
         <p>
+            <?= Yii::$app->user->can('update_iar') ? Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary mdModal']) : '' ?>
+
             <?= Html::a('IR Link', ['inspection-report/view', 'id' => $model->fk_ir_id], ['class' => 'btn btn-link', 'style' => 'margin-bottom:2rem']) ?>
             <!-- <?= Html::a('Add End-User', ['update', 'id' => $model->id], ['class' => 'btn btn-primary', 'title' => 'Update', 'style' => 'margin-bottom:2rem']); ?> -->
         </p>
@@ -333,4 +336,12 @@ $js = <<<JS
 JS;
 $this->registerJs($js);
 
+?>
+
+<?php
+
+$this->registerJsFile(
+    '@web/frontend/web/js/globalFunctions.js',
+    ['depends' => [JqueryAsset::class]]
+)
 ?>

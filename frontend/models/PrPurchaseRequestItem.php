@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use app\behaviors\HistoryLogsBehavior;
 
 /**
  * This is the model class for table "pr_purchase_request_item".
@@ -16,6 +17,14 @@ use Yii;
  */
 class PrPurchaseRequestItem extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            'historyLogs' => [
+                'class' => HistoryLogsBehavior::class,
+            ],
+        ];
+    }
     /**
      * {@inheritdoc}
      */

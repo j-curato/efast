@@ -47,4 +47,8 @@ class DivisionProgramUnit extends \yii\db\ActiveRecord
             'fk_mfo_pap_id' => 'MFO/PAP ',
         ];
     }
+    public static function getDivisionProgramUnitsA()
+    {
+        return self::find()->asArray()->all();
+    }
 }

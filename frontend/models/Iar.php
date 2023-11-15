@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use app\behaviors\HistoryLogsBehavior;
 
 /**
  * This is the model class for table "{{%iar}}".
@@ -14,6 +15,15 @@ use Yii;
 class Iar extends \yii\db\ActiveRecord
 {
     public $office_name;
+
+    public function behaviors()
+    {
+        return [
+            'historyLogs' => [
+                'class' => HistoryLogsBehavior::class,
+            ],
+        ];
+    }
     /**
      * {@inheritdoc}
      */

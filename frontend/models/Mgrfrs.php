@@ -195,4 +195,7 @@ class Mgrfrs extends \yii\db\ActiveRecord
             ->limit($limit)
             ->asArray()->all();
     }
+    public function getMgrfrDetails()
+    {
+    }
 }

@@ -45,4 +45,8 @@ class Office extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
         ];
     }
+    public static function getOfficesA()
+    {
+        return self::find()->asArray()->all();
+    }
 }

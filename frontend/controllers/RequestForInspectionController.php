@@ -246,12 +246,16 @@ class RequestForInspectionController extends Controller
             $sql .= Yii::$app->db->getQueryBuilder()->buildCondition(['!=', 'request_for_inspection_items.id', $rfi_item_id], $params);
         }
         $q = YIi::$app->db->createCommand("SELECT 
-        pr_purchase_request_item.quantity - IFNULL(aoq_items_quantity.quantity,0) as remaining_quantity
+                (CASE 
+                WHEN   unit_of_measure.unit_of_measure ='lot' THEN pr_purchase_request_item.quantity
+                ELSE  pr_purchase_request_item.quantity - IFNULL(aoq_items_quantity.quantity,0)
+            END) as remaining_quantity
         FROM 
         pr_purchase_order_items_aoq_items
         INNER JOIN pr_aoq_entries ON pr_purchase_order_items_aoq_items.fk_aoq_entries_id = pr_aoq_entries.id
         INNER JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
         INNER JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
+        LEFT JOIN unit_of_measure ON pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
         LEFT JOIN (SELECT 
                         request_for_inspection_items.fk_pr_purchase_order_items_aoq_item_id,
                         SUM(request_for_inspection_items.quantity) as quantity

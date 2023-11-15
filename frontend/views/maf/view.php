@@ -10,7 +10,6 @@ $this->title = $model->serial_number;
 $this->params['breadcrumbs'][] = ['label' => 'MAF', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
-var_dump(Yii::$app->snowflake->generateId());
 // $number = 2; // Replace with your integer
 
 // $q =  (int)(microtime(true) * 1000);

@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use app\behaviors\HistoryLogsBehavior;
+use app\components\helpers\MyHelper;
 use DateTime;
 use Yii;
 
@@ -20,6 +22,15 @@ use Yii;
  */
 class PrPurchaseRequest extends \yii\db\ActiveRecord
 {
+
+    public function behaviors()
+    {
+        return [
+            'historyLogs' => [
+                'class' => HistoryLogsBehavior::class,
+            ],
+        ];
+    }
     /**
      * {@inheritdoc}
      */
@@ -53,7 +64,6 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
             [['pr_number'], 'string', 'max' => 255],
             [['pr_number'], 'unique'],
             [[
-                'pr_number',
                 'date',
                 'book_id',
                 'budget_year',
@@ -73,58 +83,6 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
     }
 
 
-    private function generatePrNumber($is_backdate = false)
-    {
-        $date = DateTime::createFromFormat('Y-m-d', $this->date);
-        $last_num_qry = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(pr_number,'-',-1) AS UNSIGNED) as last_number
-            FROM pr_purchase_request
-            WHERE pr_purchase_request.fk_office_id = :office_id
-            AND pr_purchase_request.fk_division_id = :division_id
-            AND pr_purchase_request.is_final = 0
-            AND pr_purchase_request.date <= :dte
-            AND pr_purchase_request.date LIKE :yr
-            ORDER BY last_number DESC LIMIT 1")
-            ->bindValue(':office_id', $this->fk_office_id)
-            ->bindValue(':division_id', $this->fk_division_id)
-            ->bindValue(':dte', $this->date)
-            ->bindValue(':yr', $date->format('Y') . '%')
-            ->queryScalar();
-        if ($is_backdate) {
-            $last_ltr = YIi::$app->db->createCommand("SELECT 
-                 CASE
-                    WHEN SUBSTRING(pr_number, -1) REGEXP '[0-9]' THEN NULL
-                    ELSE CHAR(ASCII(SUBSTRING(pr_number, -1)) + 1)
-                  END as lst_ltr
-               FROM pr_purchase_request
-               WHERE pr_purchase_request.fk_office_id = :office_id
-               AND pr_purchase_request.fk_division_id = :division_id
-               AND pr_purchase_request.is_final = 0
-               AND pr_purchase_request.date = :dte
-               AND pr_purchase_request.date LIKE :yr
-                 ORDER BY lst_ltr DESC")
-                ->bindValue(':office_id', $this->fk_office_id)
-                ->bindValue(':division_id', $this->fk_division_id)
-                ->bindValue(':dte',  $this->date)
-                ->bindValue(':yr', $date->format('Y') . '%')
-                ->queryScalar();
-        }
-
-        $num  = 1;
-        if (!empty($last_num_qry)) {
-            $num = intval($last_num_qry);
-            !$is_backdate ? $num++ : '';
-        }
-        $zro = '';
-        for ($i =  strlen($num); $i < 4; $i++) {
-            $zro .= 0;
-        }
-        $lst_ltr = '';
-        if ($is_backdate) {
-            $lst_ltr = empty($last_ltr) ? 'A' : '';
-        }
-
-        return  strtoupper($this->office->office_name) . '-' . strtoupper($this->divisionDetails->division) . '-' . $date->format('Y-m-d') . '-' . $zro . $num . $lst_ltr;
-    }
 
     public function getTxnLinks()
     {
@@ -258,5 +216,60 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
     public function getDivisionDetails()
     {
         return $this->hasOne(Divisions::class, ['id' => 'fk_division_id']);
+    }
+    public function beforeSave($insert)
+    {
+
+        if (parent::beforeSave($insert)) {
+            if ($this->isNewRecord) {
+                if (empty($this->id)) {
+                    $this->id = MyHelper::getUuid();
+                }
+                if (empty($this->pr_number)) {
+                    $this->pr_number = $this->generatePrNumber();
+                }
+                if (empty($this->fk_created_by)) {
+                    $this->fk_created_by = Yii::$app->user->identity->id;
+                }
+            }
+            if (!$this->isNewRecord) {
+                $newDate = $this->getDirtyAttributes()['date'] ?? null;
+                $oldDate = $this->getOldAttribute('date');
+                if (!empty($newDate) && $newDate !== $oldDate) {
+                    $this->pr_number = $this->updatePrNumber();
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+    private function updatePrNumber()
+    {
+        $date = DateTime::createFromFormat('Y-m-d', $this->date);
+        $pr_number =  explode('-', $this->pr_number);
+        // $pr_number[0] = strtoupper($this->office->office_name);
+        // $pr_number[1] = strtoupper($this->divisionDetails->division);
+        $pr_number[2] = $date->format('Y');
+        $pr_number[3] = $date->format('m');
+        $pr_number[4] = $date->format('d');
+        return implode('-', $pr_number);
+    }
+    private function generatePrNumber()
+    {
+
+        $date = DateTime::createFromFormat('Y-m-d', $this->date);
+        $last_num_qry = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(pr_number,'-',-1) AS UNSIGNED) as last_number
+            FROM pr_purchase_request
+            WHERE pr_purchase_request.fk_office_id = :office_id
+            AND pr_purchase_request.fk_division_id = :division_id
+            AND pr_purchase_request.is_final = 0
+            AND pr_purchase_request.date LIKE :yr
+            ORDER BY last_number DESC LIMIT 1")
+            ->bindValue(':office_id', $this->fk_office_id)
+            ->bindValue(':division_id', $this->fk_division_id)
+            ->bindValue(':yr', $date->format('Y') . '%')
+            ->queryScalar();
+        $num  = !empty($last_num_qry) ? intval($last_num_qry) + 1  : 1;
+        return  strtoupper($this->office->office_name) . '-' . strtoupper($this->divisionDetails->division) . '-' . $date->format('Y-m-d') . '-' . str_pad($num, 4, '0', STR_PAD_LEFT);
     }
 }

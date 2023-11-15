@@ -139,8 +139,7 @@ AND rci_items.is_deleted  =0
         WHERE 
         rci_items.fk_rci_id = :id
         AND rci_items.is_deleted = 0
-        AND cash_disbursement_items.is_deleted = 0
-        ")
+        AND cash_disbursement_items.is_deleted = 0")
             ->bindValue(':id', $model_id)
             ->queryAll();
     }

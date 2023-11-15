@@ -2,21 +2,18 @@
 
 namespace frontend\controllers;
 
-use app\models\Barangays;
 use Yii;
-use app\models\Mgrfrs;
-use app\models\MgrfrsSearch;
-use app\models\Municipalities;
+use app\models\DueDiligenceReports;
+use app\models\DueDiligenceReportsSearch;
 use ErrorException;
-use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * MgrfrsController implements the CRUD actions for Mgrfrs model.
+ * DueDiligenceReportsController implements the CRUD actions for DueDiligenceReports model.
  */
-class MgrfrsController extends Controller
+class DueDiligenceReportsController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -24,44 +21,8 @@ class MgrfrsController extends Controller
     public function behaviors()
     {
         return [
-            'access' => [
-                'class' => AccessControl::class,
-                'rules' => [
-                    [
-                        'actions' => [
-                            'index',
-                            'view',
-                        ],
-                        'allow' => true,
-                        'roles' => ['view_mgrfr']
-                    ],
-                    [
-                        'actions' => [
-                            'create',
-                        ],
-                        'allow' => true,
-                        'roles' => ['create_mgrfr']
-                    ],
-                    [
-                        'actions' => [
-                            'update',
-                        ],
-                        'allow' => true,
-                        'roles' => ['update_mgrfr']
-                    ],
-                    [
-                        'actions' => [
-                            'get-municipalities',
-                            'get-Barangays',
-                            'search-mgrfr'
-                        ],
-                        'allow' => true,
-                        'roles' => ['@']
-                    ],
-                ]
-            ],
             'verbs' => [
-                'class' => VerbFilter::class,
+                'class' => VerbFilter::className(),
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -70,12 +31,12 @@ class MgrfrsController extends Controller
     }
 
     /**
-     * Lists all Mgrfrs models.
+     * Lists all DueDiligenceReports models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new MgrfrsSearch();
+        $searchModel = new DueDiligenceReportsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -85,7 +46,7 @@ class MgrfrsController extends Controller
     }
 
     /**
-     * Displays a single Mgrfrs model.
+     * Displays a single DueDiligenceReports model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -98,24 +59,27 @@ class MgrfrsController extends Controller
     }
 
     /**
-     * Creates a new Mgrfrs model.
+     * Creates a new DueDiligenceReports model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new Mgrfrs();
+        $model = new DueDiligenceReports();
 
         if ($model->load(Yii::$app->request->post())) {
-
             try {
                 $txn = Yii::$app->db->beginTransaction();
-
+                $items = Yii::$app->request->post('items') ?? [];
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
                 if (!$model->save(false)) {
                     throw new ErrorException('Model Save Failed');
+                }
+                $insertItems = $model->insertItems($items);
+                if ($insertItems !== true) {
+                    throw new ErrorException($insertItems);
                 }
                 $txn->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
@@ -131,7 +95,7 @@ class MgrfrsController extends Controller
     }
 
     /**
-     * Updates an existing Mgrfrs model.
+     * Updates an existing DueDiligenceReports model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -140,16 +104,19 @@ class MgrfrsController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
         if ($model->load(Yii::$app->request->post())) {
-
             try {
                 $txn = Yii::$app->db->beginTransaction();
+                $items = Yii::$app->request->post('items') ?? [];
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
                 if (!$model->save(false)) {
                     throw new ErrorException('Model Save Failed');
+                }
+                $insertItems = $model->insertItems($items);
+                if ($insertItems !== true) {
+                    throw new ErrorException($insertItems);
                 }
                 $txn->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
@@ -165,60 +132,32 @@ class MgrfrsController extends Controller
     }
 
     /**
-     * Deletes an existing Mgrfrs model.
+     * Deletes an existing DueDiligenceReports model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    // public function actionDelete($id)
-    // {
-    //     $this->findModel($id)->delete();
+    public function actionDelete($id)
+    {
+        $this->findModel($id)->delete();
 
-    //     return $this->redirect(['index']);
-    // }
+        return $this->redirect(['index']);
+    }
 
     /**
-     * Finds the Mgrfrs model based on its primary key value.
+     * Finds the DueDiligenceReports model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Mgrfrs the loaded model
+     * @return DueDiligenceReports the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Mgrfrs::findOne($id)) !== null) {
+        if (($model = DueDiligenceReports::findOne($id)) !== null) {
             return $model;
         }
-        throw new NotFoundHttpException('The requested page does not exist.');
-    }
 
-    public function actionGetMunicipalities()
-    {
-        if (Yii::$app->request->post()) {
-            return json_encode(Municipalities::getMunicipalitiesByProvinceId(YIi::$app->request->post('id')));
-        }
-    }
-    public function actionGetBarangays()
-    {
-        if (Yii::$app->request->post()) {
-            return json_encode(Barangays::getBarangaysByMunicipalityId(YIi::$app->request->post('id')));
-        }
-    }
-    public function actionSearchMgrfr($page = null, $q = null, $id = null)
-    {
-        $limit = 5;
-        $offset = ($page - 1) * $limit;
-        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        $out = ['results' => ['id' => '', 'text' => '']];
-        if (!empty($id)) {
-        } else if (!is_null($q)) {
-            $data = Mgrfrs::searchSerialNumber($q, $offset, $limit);
-            $out['results'] = array_values($data);
-            if (!empty($page)) {
-                $out['pagination'] = ['more' => !empty($data) ? true : false];
-            }
-        }
-        return $out;
+        throw new NotFoundHttpException('The requested page does not exist.');
     }
 }

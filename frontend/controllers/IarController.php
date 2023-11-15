@@ -29,7 +29,8 @@ class IarController extends Controller
                 'only' => [
                     'view',
                     'index',
-                    'search-iar'
+                    'search-iar',
+                    'update'
 
                 ],
                 'rules' => [
@@ -40,6 +41,13 @@ class IarController extends Controller
                         ],
                         'allow' => true,
                         'roles' => ['iar']
+                    ],
+                    [
+                        'actions' => [
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_iar']
                     ],
                     [
                         'actions' => [

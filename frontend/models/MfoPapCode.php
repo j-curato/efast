@@ -31,12 +31,7 @@ class MfoPapCode extends \yii\db\ActiveRecord
             [['code', 'name', 'description', 'division'], 'required'],
             [['code', 'name', 'description', 'division'], 'string', 'max' => 255],
             [[
-                'id',
-                'code',
-                'name',
                 'description',
-                'division',
-
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }

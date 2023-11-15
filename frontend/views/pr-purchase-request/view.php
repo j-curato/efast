@@ -55,7 +55,7 @@ SweetAlertAsset::register($this);
                     <th colspan="3">Entity Name: Department of Trade and Industry</th>
                     <th colspan="3">
 
-                        <span> Fund CLuster:</span>
+                        <span> Fund Cluster:</span>
                         <span><?= $model->book->name ?></span>
 
                     </th>
