@@ -1,9 +1,7 @@
 <?php
 
 use aryelds\sweetalert\SweetAlertAsset;
-use kartik\grid\GridViewAsset;
 use yii\helpers\Html;
-use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\PrPurchaseOrder */
@@ -51,342 +49,346 @@ if (!empty($model->date_completed)) {
 ?>
 <div class="pr-purchase-order-view">
 
-
     <div class="container">
+        <div class="card p-2">
 
-        <p>
-            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+            <p>
+                <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+                <?php
+                if (!$model->is_cancelled) {
+                    echo  Html::a('Cancel', ['cancel', 'id' => $model->id], [
+                        'class' => 'btn btn-danger',
+                        'id' => 'cancel'
+
+                    ]);
+                }
+                echo   Html::a('AOQ Link ', ['pr-aoq/view', 'id' => $model->fk_pr_aoq_id], ['class' => 'btn btn-link ', 'style' => 'margin:3px'])
+                ?>
+            </p>
+        </div>
+
+        <div class="card p-2">
+
             <?php
-            if (!$model->is_cancelled) {
-                echo  Html::a('Cancel', ['cancel', 'id' => $model->id], [
-                    'class' => 'btn btn-danger',
-                    'id' => 'cancel'
+            $row_number = 0;
 
-                ]);
-            }
-            echo   Html::a('AOQ Link ', ['pr-aoq/view', 'id' => $model->fk_pr_aoq_id], ['class' => 'btn btn-link ', 'style' => 'margin:3px'])
+            foreach ($model->getItems() as $index => $val) {
             ?>
-        </p>
-        <?php
-        $row_number = 0;
+                <?php
+                $po_number = $index;
+                $payee =  $val[0]['payee'];
+                $payee_address =   !empty($val[0]['address']) ? $val[0]['address'] : '';
+                $payee_tin_number =   !empty($val[0]['tin_number']) ? $val[0]['tin_number'] : '';
+                $total_amount = intval($val[0]['quantity']) * floatval($val[0]['unit_cost']);
+                $unit_of_measure = $val[0]['unit_of_measure'];
+                $description = $val[0]['description'];
+                $specification = $val[0]['specification'];
+                $quantity = $val[0]['quantity'];
 
-        foreach ($model->getItems() as $index => $val) {
-        ?>
-            <?php
-            $po_number = $index;
-            $payee =  $val[0]['payee'];
-            $payee_address =   !empty($val[0]['address']) ? $val[0]['address'] : '';
-            $payee_tin_number =   !empty($val[0]['tin_number']) ? $val[0]['tin_number'] : '';
-            $total_amount = intval($val[0]['quantity']) * floatval($val[0]['unit_cost']);
-            $unit_of_measure = $val[0]['unit_of_measure'];
-            $description = $val[0]['description'];
-            $specification = $val[0]['specification'];
-            $quantity = $val[0]['quantity'];
+                if (strtolower($model->contractType->contract_name) === 'jo') {
+                ?>
+                    <table>
+                        <thead>
 
-            if (strtolower($model->contractType->contract_name) === 'jo') {
-            ?>
-                <table>
-                    <thead>
+                            <tr>
+                                <th colspan="4" class="no-border">
+                                    <span>Republic of the Philippines</span>
+                                    <br>
+                                    <span>DEPARTMENT OF TRADE & INDUSTRY</span>
+                                    <br>
+                                    <span>Regional Office, Butuan City</span>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th colspan="4" class="no-border">
+                                    JOB ORDER
+                                </th>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="no-border"></td>
+                                <th colspan="1" class="no-border left">
+                                    <span>
+                                        Job Order No.:
+                                    </span>
+                                    <span>
+                                        <?php echo $po_number ?>
+                                    </span>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td colspan="3" class="no-border"></td>
+                                <th colspan="1" class="no-border left">
+                                    <span>
 
-                        <tr>
-                            <th colspan="4" class="no-border">
-                                <span>Republic of the Philippines</span>
-                                <br>
-                                <span>DEPARTMENT OF TRADE & INDUSTRY</span>
-                                <br>
-                                <span>Regional Office, Butuan City</span>
-                            </th>
-                        </tr>
-                        <tr>
-                            <th colspan="4" class="no-border">
-                                JOB ORDER
-                            </th>
-                        </tr>
-                        <tr>
-                            <td colspan="3" class="no-border"></td>
-                            <th colspan="1" class="no-border left">
-                                <span>
-                                    Job Order No.:
-                                </span>
-                                <span>
-                                    <?php echo $po_number ?>
-                                </span>
-                            </th>
-                        </tr>
-                        <tr>
-                            <td colspan="3" class="no-border"></td>
-                            <th colspan="1" class="no-border left">
-                                <span>
-
-                                    Date:
-                                </span>
-                                <span><?php echo $po_date ?></span>
-                            </th>
-                        </tr>
-                        <tr>
-                            <th class="no-border left">To</th>
-                            <th colspan="3" class="no-border left">
-                                <div class="greeting">
-                                    <div style="padding:0;">
-                                        : <?php echo $payee ?>
+                                        Date:
+                                    </span>
+                                    <span><?php echo $po_date ?></span>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th class="no-border left">To</th>
+                                <th colspan="3" class="no-border left">
+                                    <div class="greeting">
+                                        <div style="padding:0;">
+                                            : <?php echo $payee ?>
+                                        </div>
                                     </div>
-                                </div>
-                            </th>
-                        </tr>
-                        <tr>
-                            <th class="no-border left">ADDRESS</th>
-                            <th colspan="3" class="no-border left">
-                                <div class="greeting">
-                                    <div style="padding:0;">
-                                        : <?php echo $payee_address ?>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th class="no-border left">ADDRESS</th>
+                                <th colspan="3" class="no-border left">
+                                    <div class="greeting">
+                                        <div style="padding:0;">
+                                            : <?php echo $payee_address ?>
+                                        </div>
                                     </div>
-                                </div>
-                            </th>
-                        </tr>
-                        <tr>
-                            <th class="no-border left">DESCRIPTION OF WORK</th>
-                            <th colspan="3" class="no-border"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td colspan="4" class="no-border">
-                                <div class="greeting">
-                                    <div style="font-weight: bold;"><?php echo $description ?></div>
-                                    <?php
-                                    foreach ($val as $val2) {
-                                        $total_amount = intval($val2['quantity']) * floatval($val2['unit_cost']);
-                                        // $total_amount = 0;
-                                        $unit_of_measure = $val2['unit_of_measure'];
-                                        $description = $val2['description'];
-                                        $specification = $val2['specification'];
-                                        $quantity = $val2['quantity'];
-                                        $spec =  explode('<br>', $specification);
-                                        foreach ($spec as $specs_val) {
+                                </th>
+                            </tr>
+                            <tr>
+                                <th class="no-border left">DESCRIPTION OF WORK</th>
+                                <th colspan="3" class="no-border"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="4" class="no-border">
+                                    <div class="greeting">
+                                        <div style="font-weight: bold;"><?php echo $description ?></div>
+                                        <?php
+                                        foreach ($val as $val2) {
+                                            $total_amount = intval($val2['quantity']) * floatval($val2['unit_cost']);
+                                            // $total_amount = 0;
+                                            $unit_of_measure = $val2['unit_of_measure'];
+                                            $description = $val2['description'];
+                                            $specification = $val2['specification'];
+                                            $quantity = $val2['quantity'];
+                                            $spec =  explode('<br>', $specification);
+                                            foreach ($spec as $specs_val) {
 
-                                            echo "<div style='font-style:italic;'>
+                                                echo "<div style='font-style:italic;'>
                                             {$specs_val}
                                         </div>";
+                                            }
                                         }
-                                    }
-                                    ?>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="no-border" style="border-bottom: 1px solid black;"></td>
-                            <td colspan="3" class="no-border" style="border-bottom: 1px solid black; font-weight:bold;"><?php echo $purpose ?></td>
-                        </tr>
-                        <tr>
-                            <td class="no-border">
-                                Estimated Cost
-                            </td>
-                            <td colspan="2" class="no-border ">
-                                <div class="greeting">
-                                    <div style="padding: 0;">
-                                        :<?php echo number_format($total_amount, 2) ?>
+                                        ?>
                                     </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="no-border">
-                                Project Charge
-                            </td>
-                            <td colspan="2" class="no-border ">
-
-                                <div class="greeting">
-                                    <div style="padding: 0;">
-                                        :<?php echo number_format($total_amount, 2) ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="no-border" style="border-bottom: 1px solid black;"></td>
+                                <td colspan="3" class="no-border" style="border-bottom: 1px solid black; font-weight:bold;"><?php echo $purpose ?></td>
+                            </tr>
+                            <tr>
+                                <td class="no-border">
+                                    Estimated Cost
+                                </td>
+                                <td colspan="2" class="no-border ">
+                                    <div class="greeting">
+                                        <div style="padding: 0;">
+                                            :<?php echo number_format($total_amount, 2) ?>
+                                        </div>
                                     </div>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="no-border">
-                                Date & Time Work Begun
-                            </td>
-                            <td colspan="2" class="no-border">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="no-border">
+                                    Project Charge
+                                </td>
+                                <td colspan="2" class="no-border ">
 
-                                <div class="greeting">
-                                    <div style='padding:0;'>
-                                        : <?php echo $date_begun ?>
+                                    <div class="greeting">
+                                        <div style="padding: 0;">
+                                            :<?php echo number_format($total_amount, 2) ?>
+                                        </div>
                                     </div>
-                                </div>
-                            </td>
-                            <td class="no-border"></td>
-                        </tr>
-                        <tr>
-                            <td class="no-border">
-                                Date & Time Completed
-                            </td>
-                            <td colspan="2" class="no-border">
-                                <div class="greeting">
-                                    <div style='padding:0;'>
-                                        : <?php echo $date_completed ?>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="no-border">
+                                    Date & Time Work Begun
+                                </td>
+                                <td colspan="2" class="no-border">
+
+                                    <div class="greeting">
+                                        <div style='padding:0;'>
+                                            : <?php echo $date_begun ?>
+                                        </div>
                                     </div>
-                                </div>
-                            </td>
-                            <td class="no-border"></td>
-                        </tr>
-                        <tr>
-                            <td class="no-border" style="vertical-align:top;">
-                                Conforme
-                            </td>
-                            <td colspan="2" class="no-border" style="font-weight:bold;">
-                                <br>
-                                <br>
-                                <br>
+                                </td>
+                                <td class="no-border"></td>
+                            </tr>
+                            <tr>
+                                <td class="no-border">
+                                    Date & Time Completed
+                                </td>
+                                <td colspan="2" class="no-border">
+                                    <div class="greeting">
+                                        <div style='padding:0;'>
+                                            : <?php echo $date_completed ?>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="no-border"></td>
+                            </tr>
+                            <tr>
+                                <td class="no-border" style="vertical-align:top;">
+                                    Conforme
+                                </td>
+                                <td colspan="2" class="no-border" style="font-weight:bold;">
+                                    <br>
+                                    <br>
+                                    <br>
 
-                                <div class="greeting">
-                                    <div style="text-align: center;padding:0;"> <?php echo $payee ?></div>
-                                </div>
-                                <br>
-                                <br>
-                            </td>
-                            <td class='no-border'></td>
-                        </tr>
-                        <tr>
-                            <td class="no-border">Requested by</td>
-                            <td class="no-border">Authorized by</td>
-                            <td class="no-border">Inspected by</td>
-                            <td class="no-border">Funds Availability </td>
-                        </tr>
-                        <tr>
-                            <td class=" signatories center no-border" style="min-width: 200px;">
-                                <span class="personel" style="text-decoration: underline;font-size:12px">
-                                    <?= $requested_by ?>
-                                </span>
-                                <br>
-                                <span>
-                                    <?= $requested_by_position ?>
-                                </span>
-                            </td>
-                            <td class=" signatories center no-border" style="min-width: 200px;">
-                                <span class="personel" style="text-decoration: underline;font-size:12px">
-                                    <?= $auth_personel ?>
+                                    <div class="greeting">
+                                        <div style="text-align: center;padding:0;"> <?php echo $payee ?></div>
+                                    </div>
+                                    <br>
+                                    <br>
+                                </td>
+                                <td class='no-border'></td>
+                            </tr>
+                            <tr>
+                                <td class="no-border">Requested by</td>
+                                <td class="no-border">Authorized by</td>
+                                <td class="no-border">Inspected by</td>
+                                <td class="no-border">Funds Availability </td>
+                            </tr>
+                            <tr>
+                                <td class=" signatories center no-border" style="min-width: 200px;">
+                                    <span class="personel" style="text-decoration: underline;font-size:12px">
+                                        <?= $requested_by ?>
+                                    </span>
+                                    <br>
+                                    <span>
+                                        <?= $requested_by_position ?>
+                                    </span>
+                                </td>
+                                <td class=" signatories center no-border" style="min-width: 200px;">
+                                    <span class="personel" style="text-decoration: underline;font-size:12px">
+                                        <?= $auth_personel ?>
 
-                                </span>
-                                <br>
-                                <span>
-                                    <?= $auth_personel_position ?>
-
-
-                                </span>
-                            </td>
-                            <td class=" signatories center no-border" style="min-width: 200px;">
-                                <span class="personel" style="text-decoration: underline;font-size:12px">
-                                    <?= $inspected_by ?>
-
-                                </span>
-                                <br>
-                                <span>
-                                    <?= $inspected_by_position ?>
-
-                                </span>
-                            </td>
-                            <td class=" signatories center no-border" style="min-width: 200px;">
-                                <span class="personel" style="text-decoration: underline;font-size:12px">
-                                    <?= $accountant ?>
-
-                                </span>
-                                <br>
-                                <span>
-                                    <?= $accountant_position ?>
-
-                                </span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            <?php
-            } else {
-            ?>
-                <table id="purchase_order">
-                    <tbody>
-                        <tr>
-                            <th style="text-align: center;" colspan="6">
-                                <span>PURCHASE ORDER</span>
-                                <br>
-                                <span>Department of Trade and Industy</span>
-                                <br>
-                                <span>Entity Name</span>
-                            </th>
-                        </tr>
-                        <tr>
-                            <td colspan="3">
-                                <span>Supplier:</span>
-                                <span><?php
-                                        echo $payee;
-
-                                        ?></span>
-                                <br>
-                                <span>Address:</span>
-                                <span><?php
-                                        echo $payee_address
-                                        ?></span>
-                                <br>
-                                <span>TIN:</span>
-                                <span><?php
-                                        echo $payee_tin_number
-                                        ?></span>
-                            </td>
-                            <td colspan="3">
-                                <span>P.O No.:</span>
-                                <span><?php echo $po_number ?></span>
-                                <br>
-                                <span>Date:</span>
-                                <span><?php
-                                        echo $po_date;
-                                        ?></span>
-                                <br>
-                                <span>Mode of Procurement:</span>
-                                <span><?php echo $model->modeOfProcurement->mode_name ?></span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="6">
-                                <span>Gentlemen:</span>
-                                <span> Please furnish this Office the following articles subject to the terms and conditions contained herein:</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="3">
-                                <span>Place of Delivery:</span>
-                                <span><?php echo $model->place_of_delivery ?></span>
-                                <br>
-                                <span>Date of Delivery:</span>
-                                <span><?php echo $model->delivery_date ?></span>
-
-                            </td>
-                            <td colspan="3">
-                                <span>Delivery Term:</span>
-                                <span><?php echo $model->delivery_term ?></span>
+                                    </span>
+                                    <br>
+                                    <span>
+                                        <?= $auth_personel_position ?>
 
 
-                                <br>
-                                <span>Payment Term:</span>
-                                <span><?php echo $model->payment_term ?></span>
+                                    </span>
+                                </td>
+                                <td class=" signatories center no-border" style="min-width: 200px;">
+                                    <span class="personel" style="text-decoration: underline;font-size:12px">
+                                        <?= $inspected_by ?>
+
+                                    </span>
+                                    <br>
+                                    <span>
+                                        <?= $inspected_by_position ?>
+
+                                    </span>
+                                </td>
+                                <td class=" signatories center no-border" style="min-width: 200px;">
+                                    <span class="personel" style="text-decoration: underline;font-size:12px">
+                                        <?= $accountant ?>
+
+                                    </span>
+                                    <br>
+                                    <span>
+                                        <?= $accountant_position ?>
+
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                <?php
+                } else {
+                ?>
+                    <table id="purchase_order">
+                        <tbody>
+                            <tr>
+                                <th style="text-align: center;" colspan="6">
+                                    <span>PURCHASE ORDER</span>
+                                    <br>
+                                    <span>Department of Trade and Industy</span>
+                                    <br>
+                                    <span>Entity Name</span>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    <span>Supplier:</span>
+                                    <span><?php
+                                            echo $payee;
+
+                                            ?></span>
+                                    <br>
+                                    <span>Address:</span>
+                                    <span><?php
+                                            echo $payee_address
+                                            ?></span>
+                                    <br>
+                                    <span>TIN:</span>
+                                    <span><?php
+                                            echo $payee_tin_number
+                                            ?></span>
+                                </td>
+                                <td colspan="3">
+                                    <span>P.O No.:</span>
+                                    <span><?php echo $po_number ?></span>
+                                    <br>
+                                    <span>Date:</span>
+                                    <span><?php
+                                            echo $po_date;
+                                            ?></span>
+                                    <br>
+                                    <span>Mode of Procurement:</span>
+                                    <span><?php echo $model->modeOfProcurement->mode_name ?></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="6">
+                                    <span>Gentlemen:</span>
+                                    <span> Please furnish this Office the following articles subject to the terms and conditions contained herein:</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    <span>Place of Delivery:</span>
+                                    <span><?php echo $model->place_of_delivery ?></span>
+                                    <br>
+                                    <span>Date of Delivery:</span>
+                                    <span><?php echo $model->delivery_date ?></span>
+
+                                </td>
+                                <td colspan="3">
+                                    <span>Delivery Term:</span>
+                                    <span><?php echo $model->delivery_term ?></span>
 
 
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Stock/ Property No.</th>
-                            <th>Unit</th>
-                            <th>Description</th>
-                            <th>Quantity</th>
-                            <th>Unit Cost</th>
-                            <th>Amount</th>
+                                    <br>
+                                    <span>Payment Term:</span>
+                                    <span><?php echo $model->payment_term ?></span>
 
-                        </tr>
-                        <?php
-                        $grand_total = 0;
-                        foreach ($val as $val2) {
 
-                            $total_amount = intval($val2['quantity']) * floatval($val2['unit_cost']);
-                            $unit_cost =  !empty($val2['unit_cost']) ? number_format($val2['unit_cost'], 2) : 0;
-                            echo "<tr>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Stock/ Property No.</th>
+                                <th>Unit</th>
+                                <th>Description</th>
+                                <th>Quantity</th>
+                                <th>Unit Cost</th>
+                                <th>Amount</th>
+
+                            </tr>
+                            <?php
+                            $grand_total = 0;
+                            foreach ($val as $val2) {
+
+                                $total_amount = intval($val2['quantity']) * floatval($val2['unit_cost']);
+                                $unit_cost =  !empty($val2['unit_cost']) ? number_format($val2['unit_cost'], 2) : 0;
+                                echo "<tr>
                                 <td>{$val2['bac_code']}</td>
                                 <td>{$val2['unit_of_measure']}</td>
                                 <td>
@@ -401,142 +403,145 @@ if (!empty($model->date_completed)) {
                                 <td class='amount'> {$unit_cost} </td>
                                 <td class='amount'>" . number_format($total_amount, 2) . " </td>
                             </tr>";
-                            $grand_total += $total_amount;
-                        }
+                                $grand_total += $total_amount;
+                            }
 
-                        ?>
-                        <tr>
-                            <th colspan="5">Grand Total</th>
-                            <th style="text-align: right;"><?php echo number_format($grand_total, 2) ?></th>
-                        </tr>
-                        <tr>
-                            <td colspan="6">
-                                <span>Purpose: </span>
-                                <span style="font-weight: bold;">
-                                    <?php
-                                    echo $purpose;
-                                    ?>
-                                </span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="6">
-                                <span>(Total Amount in Words): </span>
-                                <span style="font-weight: bold;">
-                                    <?php
-                                    echo strtoupper(Yii::$app->memem->convertNumberToWord($grand_total));
-                                    ?>
-                                </span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="6">
-                                In case of failure to make the full delivery within the time specified above, a penalty of one-tenth (1/10) of one percent for every day of delay shall be imposed on the undelivered item/s.
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="3" style="text-align: center; border-right:none">
-                                <span style="float: left;">Conforme:</span>
-                                <br>
-                                <br>
-                                <br>
-                                <span style="text-decoration:underline;font-weight:bold"><?= $payee ?></span>
+                            ?>
+                            <tr>
+                                <th colspan="5">Grand Total</th>
+                                <th style="text-align: right;"><?php echo number_format($grand_total, 2) ?></th>
+                            </tr>
+                            <tr>
+                                <td colspan="6">
+                                    <span>Purpose: </span>
+                                    <span style="font-weight: bold;">
+                                        <?php
+                                        echo $purpose;
+                                        ?>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="6">
+                                    <span>(Total Amount in Words): </span>
+                                    <span style="font-weight: bold;">
+                                        <?php
+                                        echo strtoupper(Yii::$app->memem->convertNumberToWord($grand_total));
+                                        ?>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="6">
+                                    In case of failure to make the full delivery within the time specified above, a penalty of one-tenth (1/10) of one percent for every day of delay shall be imposed on the undelivered item/s.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" style="text-align: center; border-right:none">
+                                    <span style="float: left;">Conforme:</span>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <span style="text-decoration:underline;font-weight:bold"><?= $payee ?></span>
 
-                                <br>
-                                <span>Signature over Printed Name of Supplier</span>
-                                <br>
-                                <br>
-                                <span>______________________</span>
-                                <br>
-                                <span>Date</span>
-                            </td>
-                            <td colspan="3" style="text-align: center; border-left:none">
-                                <span style="float: left;">Very truly yours,</span>
-                                <br>
-                                <br>
-                                <br>
-                                <span style="text-decoration: underline; font-weight:bold">
-                                    <?php
-                                    echo strtoupper($model->authorizedOfficial->f_name . ' ' . $model->authorizedOfficial->m_name[0] . '. ' . $model->authorizedOfficial->l_name)
-                                    ?>
-                                </span>
-                                <br>
-                                <span>Signature over Printed Name of Authorized Official</span>
-                                <br>
-                                <br>
-                                <span><?php echo $model->authorizedOfficial->position ?></span>
-                                <br>
-                                <span>Designation</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="3" style="text-align: center;">
-                                <span style="float: left;">Fund Cluster:</span>
-                                <span style="float: left;">_______________________</span>
-                                <br>
-                                <span style="float: left;">Funds Available:</span>
-                                <span style="float: left;">_______________________</span>
-                                <br>
-                                <br>
-                                <br>
-                                <span style="text-decoration:underline; font-weight:bold;">
-                                    <?php
-                                    echo strtoupper($model->accountingUnit->f_name . ' ' . $model->accountingUnit->m_name[0] . '. ' . $model->accountingUnit->l_name)
-                                    ?></span>
-                                <br>
-                                <span style="margin-left:auto;width:100%">Signature over Printed Name of Chief Accountant/Head of </span>
-                                <br>
-                                </span> Accounting Division/Unit</span>
-                            </td>
-                            <td colspan="3" style="width: 300px;">
-                                <span>ORS/BURS No.:</span>
-                                <span>__________________</span>
-                                <br>
-                                <span>Date of the ORS/BURS:</span>
-                                <span>______________</span>
-                                <br>
-                                <span>Amount:</span>
-                                <span>__________________</span>
+                                    <br>
+                                    <span>Signature over Printed Name of Supplier</span>
+                                    <br>
+                                    <br>
+                                    <span>______________________</span>
+                                    <br>
+                                    <span>Date</span>
+                                </td>
+                                <td colspan="3" style="text-align: center; border-left:none">
+                                    <span style="float: left;">Very truly yours,</span>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <span style="text-decoration: underline; font-weight:bold">
+                                        <?php
+                                        echo strtoupper($model->authorizedOfficial->f_name . ' ' . $model->authorizedOfficial->m_name[0] . '. ' . $model->authorizedOfficial->l_name)
+                                        ?>
+                                    </span>
+                                    <br>
+                                    <span>Signature over Printed Name of Authorized Official</span>
+                                    <br>
+                                    <br>
+                                    <span><?php echo $model->authorizedOfficial->position ?></span>
+                                    <br>
+                                    <span>Designation</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" style="text-align: center;">
+                                    <span style="float: left;">Fund Cluster:</span>
+                                    <span style="float: left;">_______________________</span>
+                                    <br>
+                                    <span style="float: left;">Funds Available:</span>
+                                    <span style="float: left;">_______________________</span>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <span style="text-decoration:underline; font-weight:bold;">
+                                        <?php
+                                        echo strtoupper($model->accountingUnit->f_name . ' ' . $model->accountingUnit->m_name[0] . '. ' . $model->accountingUnit->l_name)
+                                        ?></span>
+                                    <br>
+                                    <span style="margin-left:auto;width:100%">Signature over Printed Name of Chief Accountant/Head of </span>
+                                    <br>
+                                    </span> Accounting Division/Unit</span>
+                                </td>
+                                <td colspan="3" style="width: 300px;">
+                                    <span>ORS/BURS No.:</span>
+                                    <span>__________________</span>
+                                    <br>
+                                    <span>Date of the ORS/BURS:</span>
+                                    <span>______________</span>
+                                    <br>
+                                    <span>Amount:</span>
+                                    <span>__________________</span>
 
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                <?php } ?>
+                <p style='page-break-after:always;'></p>
             <?php } ?>
-            <p style='page-break-after:always;'></p>
-        <?php } ?>
-        <table id="rfi_links">
-            <thead>
-                <tr class="bg-danger">
-                    <th colspan="5">RFI LINKS</th>
-                </tr>
-                <th>PO#</th>
-                <th>Stock Name</th>
-                <th>RFI Number</th>
-                <th>Quantity</th>
-                <th>Link</th>
-            </thead>
-            <tbody>
-                <?php
-                foreach ($model->getRfiLinks() as $rfi) {
-                    $stock_title = $rfi['stock_title'];
-                    $quantity = $rfi['quantity'];
-                    $id = $rfi['fk_request_for_inspection_id'];
-                    $rfi_number = $rfi['rfi_number'];
-                    $po_number = $rfi['po_number'];
+        </div>
 
-                    echo "<tr>
+        <div class="card p-2">
+            <table id="rfi_links" class="table table-hover">
+                <thead>
+                    <tr class="table-info">
+                        <th colspan="5">RFI LINKS</th>
+                    </tr>
+                    <th>PO No.</th>
+                    <th>Stock Name</th>
+                    <th>RFI Number</th>
+                    <th>Quantity</th>
+                    <th>Link</th>
+                </thead>
+                <tbody>
+                    <?php
+                    foreach ($model->getRfiLinks() as $rfi) {
+                        $stock_title = $rfi['stock_title'];
+                        $quantity = $rfi['quantity'];
+                        $id = $rfi['fk_request_for_inspection_id'];
+                        $rfi_number = $rfi['rfi_number'];
+                        $po_number = $rfi['po_number'];
+                        echo "<tr>
                                 <td>$po_number</td>
                                 <td>$stock_title</td>
                                 <td>$rfi_number</td>
                                 <td>$quantity</td>
                                 <td>";
-                    echo    HTMl::a('Link', ['request-for-inspection/view', 'id' => $id], ['class' => 'btn btn-link']);
-                    echo "</td></tr>";
-                }
-                ?>
-            </tbody>
-        </table>
+                        echo    HTMl::a('Link', ['request-for-inspection/view', 'id' => $id], ['class' => 'btn btn-link']);
+                        echo "</td></tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 
 
@@ -583,10 +588,7 @@ if (!empty($model->date_completed)) {
         border: none;
     }
 
-    .container {
-        padding: 3em;
-        background-color: white;
-    }
+
 
     td,
     th {

@@ -3,7 +3,6 @@
 use aryelds\sweetalert\SweetAlertAsset;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\PrAoq */
@@ -14,10 +13,9 @@ $this->params['breadcrumbs'][] = ['label' => 'Pr Aoqs', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
-<div class="pr-aoq-view">
+<div class="pr-aoq-view" id="app">
 
-    <div class="card" style="background-color: white;padding:1rem">
-
+    <div class="card p-2">
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 
@@ -36,6 +34,10 @@ $this->params['breadcrumbs'][] = $this->title;
             echo   Html::a('RFQ Link ', ['pr-rfq/view', 'id' => $model->pr_rfq_id], ['class' => 'btn btn-link ', 'style' => 'margin:3px'])
             ?>
         </p>
+    </div>
+    <div class="card p-2">
+
+
         <?php
         $for_print = ArrayHelper::index($aoq_items_query, null, 'rfq_item_id');
         $result = ArrayHelper::index($aoq_items_query, null, 'rfq_item_id');
@@ -48,90 +50,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
         ?>
-        <div id="app">
+        <div>
 
             <table>
-                <!-- <thead>
-                <tr>
-                    <th colspan="<?= $header_count ?>" style='text-align:center;border:none;'>
-                        <span>
-                            Department of Trade and Industry - Caraga
-                        </span>
-                        <br>
-                        <span>
-                            Regional Office XIII
-                        </span>
-                        <br>
-                        <span>
-                            Butuan City
-                        </span>
-
-                    </th>
-                </tr>
-                <tr>
-                    <th colspan="<?= $header_count ?>" style='text-align:center;border:none;'>
-                        <span>
-                            ABSTRACT OF CANVASS AND ACTION OF AWARDS
-                        </span>
-                    </th>
-                </tr>
-                <tr>
-                    <th colspan="<?= $header_count ?>" style='padding:0;border:none;'>
-                        <?php
-                        $date = DateTime::createFromFormat('Y-m-d H:i:s', $model->rfq->deadline);
-                        echo $date->format('F d, Y');
-
-                        ?>
-                        <span style="float: right;">
-                            <?php
-                            echo $model->aoq_number;
-                            ?>
-                        </span>
-                    </th>
-                </tr>
-                <tr>
-                    <th rowspan="3">Item No.</th>
-                    <th rowspan="3">Qty</th>
-                    <th rowspan="3">Unit</th>
-                    <th rowspan="3">Description</th>
-
-                </tr>
-                <?php
-                // $payeeRow = "<tr>";
-                // $payeeHeaderRow = "<tr>";
-                // $payee_position = [];
-                // $payee_count  = 5;
-                // $payee_head_query = Yii::$app->db->createCommand("SELECT IFNULL(payee.registered_name,payee.account_name) as payee
-                //     FROM `pr_aoq_entries`
-                //     LEFT JOIN payee ON pr_aoq_entries.payee_id = payee.id
-                //     WHERE pr_aoq_entries.pr_aoq_id = :id
-                //     AND pr_aoq_entries.is_deleted = 0
-                //     GROUP BY payee")
-                //     ->bindValue(':id', $model->id)
-                //     ->queryAll();
-
-                // foreach ($payee_head_query as $i => $val) {
-
-                //     $payee = $val['payee'];
-                //     $payeeRow .= "<th style='text-align:center' colspan='2'>
-                //                 <span>$payee</span>
-                //             </th>";
-                //     $payeeHeaderRow .= "<th class='center'>Unit Cost</th><th class='center'>Gross Amount</th>";
-                //     $payee_position[$payee_count] = $payee;
-
-                //     $payee_count += 2;
-                // }
-                // echo $payeeRow . "<th class='center'>Lowest</th>";
-                // echo $payeeHeaderRow . "<th></th>";
-                ?>
-
-
-
-            </thead>
-            <tbody>
-
-
-            </tbody> -->
                 <thead>
                     <tr>
                         <th colspan="<?= $header_count ?>" style='text-align:center;border:none;'>
@@ -266,9 +187,7 @@ $this->params['breadcrumbs'][] = $this->title;
                                 <?php
                                 $i = 1;
                                 foreach ($bac_compositions as $val) {
-
                                     if (strtolower($val['position']) === 'member') {
-
                                         $member_name =  strtoupper($val['employee_name']);
                                         $member_position = ucwords($val['position']);
                                         echo "<div style='text-align:center'>
@@ -320,104 +239,31 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tfoot>
 
             </table>
-            <table class="links_table table table-stripe">
-                <tbody>
-                    <tr class="danger">
-                        <th colspan="3" style="text-align: center;">PO Links</th>
-                    </tr>
-                    <?php
-                    foreach ($model->getPoLinks() as $val) {
-                        $isCancelled = $val['is_cancelled'] ? 'Cancelled' : '';
-                        echo "<tr>
+        </div>
+
+    </div>
+    <div class="card p-2">
+        <table class="links_table table table-hover">
+            <thead>
+                <tr class="table-info">
+                    <th colspan="3" class="text-center">PO Links</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <?php
+                foreach ($model->getPoLinks() as $val) {
+                    $isCancelled = $val['is_cancelled'] ? 'Cancelled' : '';
+                    echo "<tr>
                                 <td>{$val['po_number']}</td>
                                 <td>" . Html::a('PO Link ', ['pr-purchase-order/view', 'id' => $val['id']], ['class' => 'btn btn-link ', 'style' => 'margin:3px']) . "</td>
                                 <td>$isCancelled</td>
                             </tr>";
-                    }
-                    ?>
+                }
+                ?>
 
-
-                </tbody>
-            </table>
-
-
-        </div>
-        <!-- <table class="">
-            <thead>
-                <tr>
-                    <th rowspan="2" class="center">Item No.</th>
-                    <th rowspan="2" class="center">Qty</th>
-                    <th rowspan="2" class="center">Unit</th>
-                    <th rowspan="2" class="center">Description</th>
-                    <th v-for="payee in payees" colspan="2" class="center">
-                        {{payee}}
-                    </th>
-                    <th>Lowest</th>
-                </tr>
-                <tr>
-                    <template v-for="payee in payees">
-                        <th class='center'>Unit Cost</th>
-                        <th class='center'>Gross Amount</th>
-                    </template>
-                    <td></td>
-                </tr>
-            </thead>
-            <tr v-for="(item,idx) in displayItems">
-
-                <td>{{idx +1}}</td>
-                <td>{{item.quantity}}</td>
-                <td>{{item.unit_of_measure}}</td>
-                <th>{{item.description}}</th>
-                <template v-for="payee in payees">
-                    <td class="center">
-                        <p v-if="q(item,payee)!=0">
-                            {{q(item,payee)}}
-                        </p>
-                        <p v-else=>-</p>
-                    </td>
-                    <td class="center">
-                        <p v-if="q(item,payee)!=0">
-                            {{q(item,payee) *item.quantity}}
-                        </p>
-                        <p v-else=>-</p>
-                    </td>
-                </template>
-
-                <td>
-                    <p v-for="rm in item.lowests">
-
-                        {{rm}}
-                    </p>
-                </td>
-
-            </tr>
-            <tr>
-                <th colspan="4">
-                    Total
-                </th>
-                <template v-for="payee in payees">
-                    <td class="center">
-                        {{payee}}
-                    </td>
-                    <td class="center">
-                        {{ calculatePayeeGrossTotal(payee)}}
-                    </td>
-                </template>
-                <td></td>
-            </tr>
-            <tr>
-                <td colspan="4">
-
-                </td>
-                <template v-for="payee in payees">
-                    <td colspan="2" class="center">
-                        <span v-for="itm in getPayeeRemarks(payee)">{{itm}} <br></span>
-                    </td>
-                </template>
-                <td></td>
-
-            </tr>
-        </table> -->
+            </tbody>
+        </table>
     </div>
 
 </div>
@@ -472,7 +318,6 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 
     .container {
-        background-color: white;
         padding: 3em;
     }
 

@@ -29,8 +29,8 @@ class HistoryLogsBehavior extends Behavior
                     'table_name' => $this->owner->tableName(),
                     'row_id' => $this->owner->id,
                     'attribute_name' => $attribute,
-                    'old_value' => $oldValue,
-                    'new_value' => $newValue,
+                    'old_value' => $oldValue ?? '',
+                    'new_value' => $newValue ?? '',
                     'fk_changed_by' => Yii::$app->user->id,
                 ])->execute();
             }

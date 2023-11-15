@@ -2,10 +2,11 @@
 
 namespace app\models;
 
-use app\behaviors\HistoryLogsBehavior;
-use app\components\helpers\MyHelper;
-use DateTime;
 use Yii;
+use DateTime;
+use ErrorException;
+use app\components\helpers\MyHelper;
+use app\behaviors\HistoryLogsBehavior;
 
 /**
  * This is the model class for table "pr_purchase_request".
@@ -271,5 +272,37 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
             ->queryScalar();
         $num  = !empty($last_num_qry) ? intval($last_num_qry) + 1  : 1;
         return  strtoupper($this->office->office_name) . '-' . strtoupper($this->divisionDetails->division) . '-' . $date->format('Y-m-d') . '-' . str_pad($num, 4, '0', STR_PAD_LEFT);
+    }
+    private function checkHasRfq()
+    {
+        return Yii::$app->db->createCommand("SELECT 
+                GROUP_CONCAT(pr_rfq.rfq_number) as rfq_nums
+                FROM pr_rfq
+                WHERE  pr_rfq.is_cancelled = 0
+                AND  pr_rfq.pr_purchase_request_id = :id
+                GROUP BY 
+                pr_rfq.pr_purchase_request_id")
+            ->bindValue(':id', $this->id)
+            ->queryScalar();
+    }
+    public function cancel()
+    {
+        try {
+            $this->is_cancelled =  $this->is_cancelled ? 0 : 1;
+            $this->cancelled_at = date('Y-m-d H:i:s');
+            if ($this->is_cancelled === 1) {
+
+                $hasRfq = $this->checkHasRfq();
+                if (!empty($hasRfq)) {
+                    throw new ErrorException("Unable to cancel PR,RFQ No./s $hasRfq is/are not Cancelled.");
+                }
+            }
+            if (!$this->save(false)) {
+                throw new ErrorException('Cancel Save Failed');
+            }
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
     }
 }

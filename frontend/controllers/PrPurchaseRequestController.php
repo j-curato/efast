@@ -814,9 +814,6 @@ class PrPurchaseRequestController extends Controller
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
 
         $out = ['results' => ['id' => '', 'text' => '']];
-
-
-
         if (!is_null($q)) {
             $query = new Query();
 
@@ -880,29 +877,16 @@ class PrPurchaseRequestController extends Controller
     {
         if (Yii::$app->request->post()) {
             try {
+                $txn = Yii::$app->db->beginTransaction();
                 $model = $this->findModel($id);
-                $model->is_cancelled =  $model->is_cancelled ? 0 : 1;
-                $model->cancelled_at = date('Y-m-d H:i:s');
-                if ($model->is_cancelled === 1) {
-                    $qry = Yii::$app->db->createCommand("SELECT 
-                    GROUP_CONCAT(pr_rfq.rfq_number) as rfq_nums
-                    FROM pr_rfq
-                    WHERE  pr_rfq.is_cancelled = 0
-                    AND  pr_rfq.pr_purchase_request_id = :id
-                    GROUP BY 
-                    pr_rfq.pr_purchase_request_id")
-                        ->bindValue(':id', $model->id)
-                        ->queryScalar();
-
-                    if (!empty($qry)) {
-                        throw new ErrorException("Unable to cancel PR,RFQ No./s $qry is/are not Cancelled.");
-                    }
+                $cancel = $model->cancel();
+                if ($cancel !== true) {
+                    throw new ErrorException($cancel);
                 }
-                if (!$model->save(false)) {
-                    throw new ErrorException('Save Failed');
-                }
-                return json_encode(['error' => false, 'message' => 'Successfuly Save']);
+                $txn->commit();
+                return json_encode(['error' => false, 'message' => 'Successfully Save']);
             } catch (ErrorException $e) {
+                $txn->rollBack();
                 return json_encode(['error' => true, 'message' => $e->getMessage()]);
             }
         }
@@ -924,9 +908,9 @@ class PrPurchaseRequestController extends Controller
             $query->select(["  CAST(id as CHAR(50)) as id, UPPER(`stock_or_act_name`) as text"])
                 ->from('pr_ppmp_search_view')
                 ->where(['like', 'stock_or_act_name', $q])
-                ->andwhere('pr_ppmp_search_view.budget_year = :budget_year', ['budget_year' => $budget_year])
-                ->andwhere('pr_ppmp_search_view.fk_office_id = :fk_office_id', ['fk_office_id' => $office_id])
-                ->andwhere('pr_ppmp_search_view.fk_division_id = :fk_division_id', ['fk_division_id' => $division_id])
+                ->andWhere('pr_ppmp_search_view.budget_year = :budget_year', ['budget_year' => $budget_year])
+                ->andWhere('pr_ppmp_search_view.fk_office_id = :fk_office_id', ['fk_office_id' => $office_id])
+                ->andWhere('pr_ppmp_search_view.fk_division_id = :fk_division_id', ['fk_division_id' => $division_id])
                 ->orFilterWhere([
                     'and',
                     ['like', 'stock_or_act_name', $q],
