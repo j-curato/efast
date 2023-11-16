@@ -8,7 +8,7 @@ use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\bootstrap4\ActiveForm;
 use aryelds\sweetalert\SweetAlertAsset;
-
+use kartik\select2\Select2Asset;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\PrAoq */
@@ -213,10 +213,11 @@ $row = 1;
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [JqueryAsset::class]]);
-
+Select2Asset::register($this);
 ?>
 <script type="text/javascript">
     $(document).ready(function() {
+
         new Vue({
             el: '#main',
             data: {
@@ -227,9 +228,7 @@ $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [
                 $('#praoq-pr_rfq_id').on('change',
                     this.getRfqItems
                 )
-                console.log(this.rfqItems)
-                payeeSelect()
-                maskAmount()
+
             },
             methods: {
 
@@ -282,6 +281,8 @@ $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [
                 maskAmount()
             },
         })
+        payeeSelect()
+        maskAmount()
 
         // maskAmount()
         // $('#rfq_items_table').on('click', '.remove_this_row', function() {
