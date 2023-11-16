@@ -142,37 +142,32 @@ class IarTransmittalController extends Controller
     {
         $model = new IarTransmittal();
         $searchModel = new IarIndexSearch();
-
+        $model->fk_approved_by = 99684622555676858;
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider->pagination = ['pageSize' => 10];
         $dataProvider->query->andWhere('NOT EXISTS (SELECT * FROM iar_transmittal_items WHERE iar_transmittal_items.fk_iar_id = iar_index.id AND iar_transmittal_items.is_deleted =0) ');
-        if (Yii::$app->request->isPost) {
-            $items  = !empty($_POST['iar_ids']) ? array_unique($_POST['iar_ids']) : [];
-            $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
-            $model->date = $_POST['date'];
-            $model->serial_number = $this->serialNumber($model->date);
-            $transaction = YIi::$app->db->beginTransaction();
+        if ($model->load(Yii::$app->request->post())) {
+
             try {
-                if ($model->validate()) {
-                    if ($model->save(false)) {
-
-                        $insert_entry = $this->insertItems($model->id, $items);
-                        if ($insert_entry['isSuccess']) {
-                            $transaction->commit();
-                            return $this->redirect(['view', 'id' => $model->id]);
-                        } else {
-
-                            $transaction->rollBack();
-                            return json_encode(['isSuccess' => false, 'error_message' => $insert_entry['error_message']]);
-                        }
-                    }
-                } else {
-                    $transaction->rollBack();
-                    return json_encode(['isSuccess' => false, 'error_message' => $model->errors]);
+                $transaction = YIi::$app->db->beginTransaction();
+                $items  = Yii::$app->request->post('items');
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
                 }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save Failed');
+                }
+
+                $insertItems = $model->insertItems($items);
+                if ($insertItems !== true) {
+                    throw new ErrorException($insertItems);
+                }
+
+                $transaction->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
                 $transaction->rollBack();
-
-                return json_encode(['isSuccess' => false, 'error_message' => $e->getMessage()]);
+                return $e->getMessage();
             }
         }
 
@@ -180,7 +175,6 @@ class IarTransmittalController extends Controller
             'model' => $model,
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'action' => 'iar-transmittal/create',
         ]);
     }
 
@@ -196,45 +190,30 @@ class IarTransmittalController extends Controller
         $model = $this->findModel($id);
         $searchModel = new IarIndexSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider->pagination = ['pageSize' => 10];
         $dataProvider->query->andWhere('NOT EXISTS (SELECT * FROM iar_transmittal_items WHERE iar_transmittal_items.fk_iar_id = iar_index.id AND iar_transmittal_items.is_deleted =0) ');
-        if (Yii::$app->request->isPost) {
-            $items  = !empty($_POST['iar_ids']) ? array_unique($_POST['iar_ids']) : [];
-            $item_id  = !empty($_POST['item_id']) ? $_POST['item_id'] : [];
-            $model->date = $_POST['date'];
-            $transaction = YIi::$app->db->beginTransaction();
+        if ($model->load(Yii::$app->request->post())) {
+
             try {
-                if ($model->validate()) {
-                    if ($model->save(false)) {
-                        $params = [];
-                        if (!empty($item_id)) {
-
-                            $sql = Yii::$app->db->getQueryBuilder()->buildCondition(['NOT IN', 'iar_transmittal_items.id', $item_id], $params);
-                            YIi::$app->db->createCommand("UPDATE iar_transmittal_items SET is_deleted = 1   
-                        WHERE 
-                        iar_transmittal_items.fk_iar_transmittal_id = :id
-                        AND $sql
-                        ", $params)
-                                ->bindValue(':id', $model->id)->query();
-                        }
-
-                        $insert_entry = $this->insertItems($model->id, $items, $item_id);
-                        if ($insert_entry['isSuccess']) {
-                            $transaction->commit();
-                            return $this->redirect(['view', 'id' => $model->id]);
-                        } else {
-
-                            $transaction->rollBack();
-                            return json_encode(['isSuccess' => false, 'error_message' => $insert_entry['error_message']]);
-                        }
-                    }
-                } else {
-                    $transaction->rollBack();
-                    return json_encode(['isSuccess' => false, 'error_message' => $model->errors]);
+                $transaction = YIi::$app->db->beginTransaction();
+                $items  = Yii::$app->request->post('items');
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
                 }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save Failed');
+                }
+
+                $insertItems = $model->insertItems($items);
+                if ($insertItems !== true) {
+                    throw new ErrorException($insertItems);
+                }
+
+                $transaction->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
                 $transaction->rollBack();
-
-                return json_encode(['isSuccess' => false, 'error_message' => $e->getMessage()]);
+                return $e->getMessage();
             }
         }
 

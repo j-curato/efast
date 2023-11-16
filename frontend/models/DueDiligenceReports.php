@@ -2,9 +2,12 @@
 
 namespace app\models;
 
-use app\components\helpers\MyHelper;
-use ErrorException;
 use Yii;
+use ErrorException;
+use app\components\helpers\MyHelper;
+use app\behaviors\GenerateIdBehavior;
+use app\behaviors\HistoryLogsBehavior;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "due_diligence_reports".
@@ -37,6 +40,17 @@ use Yii;
  */
 class DueDiligenceReports extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            'historyLogs' => [
+                'class' => HistoryLogsBehavior::class,
+            ],
+            'generateId' => [
+                'class' => GenerateIdBehavior::class,
+            ],
+        ];
+    }
     /**
      * {@inheritdoc}
      */
@@ -144,7 +158,8 @@ class DueDiligenceReports extends \yii\db\ActiveRecord
     {
         if ($this->isNewRecord) {
             if (empty($this->id)) {
-                $this->id = MyHelper::getUuid();
+                // $this->id = MyHelper::getUuid();
+                $this->generateId();
             }
             if (empty($this->serial_number)) {
                 $this->serial_number = $this->generateSerialNumber();
@@ -210,5 +225,31 @@ class DueDiligenceReports extends \yii\db\ActiveRecord
         return DueDiligenceReportItems::find()->where('fk_due_diligence_report_id =:id', ['id' => $this->id])
             ->andWhere('is_deleted = 0')
             ->asArray()->all();
+    }
+
+    public static function searchSerialNumber($page = null, $text = null, $id = null)
+    {
+        $limit = 5;
+        $offset = ($page - 1) * $limit;
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if ($id > 0) {
+            $out['results'] = ['id' => $id, 'text' => self::findOne($id)->serial_number];
+        } else if (!is_null($text)) {
+            $query = self::find()
+                ->addSelect([
+                    new Expression("CAST(id AS CHAR(50)) as id"),
+                    new Expression("serial_number as text"),
+                ])
+                ->from('due_diligence_reports')
+                ->where(['like', 'due_diligence_reports.serial_number', $text])
+                ->offset($offset)
+                ->limit($limit);
+            $command = $query->createCommand();
+            $data = $command->queryAll();
+            $out['results'] = array_values($data);
+            $out['pagination'] = ['more' => !empty($data) ? true : false];
+        }
+        return $out;
     }
 }

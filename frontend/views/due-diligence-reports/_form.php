@@ -32,7 +32,7 @@ $items  = $model->getItemsA();
     <?php $form = ActiveForm::begin([
         'id' => $model->formName()
     ]); ?>
-    <div class="card p-3">
+    <div class="card p-3 m-1">
         <div class="row ">
             <div class="col-sm-4">
                 <?= $form->field($model, 'fk_mgrfr_id')->widget(Select2::class, [
@@ -127,102 +127,96 @@ $items  = $model->getItemsA();
         </div>
     </div>
 
-    <div class="card p-2">
-        <div class="flex-container">
-            <div class="card p-3 " style="margin: 3px; ">
-                <?= $form->field($model, 'supplier_is_registered')->radioList(
-                    [
-                        '0' => 'No',
-                        '1' => 'Yes',
-                    ],
-                ) ?>
-            </div>
-            <div class="card p-3 ">
-                <?= $form->field($model, 'supplier_has_business_permit')->radioList(
-                    [
-                        '0' => 'No',
-                        '1' => 'Yes',
-                    ],
-                ) ?>
-            </div>
-            <div class="card p-3 ">
-                <?= $form->field($model, 'supplier_is_bir_registered')->radioList(
-                    [
-                        '0' => 'No',
-                        '1' => 'Yes',
-                    ]
-                ) ?>
-            </div>
+    <div class="flex-container">
+        <div class="card p-3 " style="margin: 3px; ">
+            <?= $form->field($model, 'supplier_is_registered')->radioList(
+                [
+                    '0' => 'No',
+                    '1' => 'Yes',
+                ],
+            ) ?>
+        </div>
+        <div class="card p-3 ">
+            <?= $form->field($model, 'supplier_has_business_permit')->radioList(
+                [
+                    '0' => 'No',
+                    '1' => 'Yes',
+                ],
+            ) ?>
+        </div>
+        <div class="card p-3 ">
+            <?= $form->field($model, 'supplier_is_bir_registered')->radioList(
+                [
+                    '0' => 'No',
+                    '1' => 'Yes',
+                ]
+            ) ?>
         </div>
     </div>
 
 
-    <div class="card p-2">
-        <div class="flex-container">
-            <div class="card p-3 " style="margin: 3px; ">
-                <?= $form->field($model, 'supplier_has_officer_connection')->radioList(
-                    [
-                        '0' => 'No',
-                        '1' => 'Yes',
-                    ]
-                ) ?>
-            </div>
-            <div class="card p-3 ">
-                <?= $form->field($model, 'supplier_is_financial_capable')->radioList(
-                    [
-                        '0' => 'No',
-                        '1' => 'Yes',
-                    ]
-                ) ?>
-            </div>
+    <div class="flex-container">
+        <div class="card p-3 " style="margin: 3px; ">
+            <?= $form->field($model, 'supplier_has_officer_connection')->radioList(
+                [
+                    '0' => 'No',
+                    '1' => 'Yes',
+                ]
+            ) ?>
+        </div>
+        <div class="card p-3 ">
+            <?= $form->field($model, 'supplier_is_financial_capable')->radioList(
+                [
+                    '0' => 'No',
+                    '1' => 'Yes',
+                ]
+            ) ?>
         </div>
     </div>
-    <div class="card p-2">
-        <div class="flex-container">
-            <div class="card p-3 " style="margin: 3px; ">
-                <?= $form->field($model, 'supplier_is_authorized_dealer')->radioList(
-                    [
-                        '0' => 'No',
-                        '1' => 'Yes',
-                    ]
-                ) ?>
-            </div>
-            <div class="card p-3 ">
-                <?= $form->field($model, 'supplier_has_quality_material')->radioList(
-                    [
-                        '0' => 'No',
-                        '1' => 'Yes',
-                    ]
-                ) ?>
-                <?= $form->field($model, 'supplier_nursery')->textarea(['rows' => 2]) ?>
 
-            </div>
+    <div class="flex-container">
+        <div class="card p-3 " style="margin: 3px; ">
+            <?= $form->field($model, 'supplier_is_authorized_dealer')->radioList(
+                [
+                    '0' => 'No',
+                    '1' => 'Yes',
+                ]
+            ) ?>
+        </div>
+        <div class="card p-3 ">
+            <?= $form->field($model, 'supplier_has_quality_material')->radioList(
+                [
+                    '0' => 'No',
+                    '1' => 'Yes',
+                ]
+            ) ?>
+            <?= $form->field($model, 'supplier_nursery')->textarea(['rows' => 2]) ?>
+
         </div>
     </div>
-    <div class="card p-2">
-        <div class="flex-container">
-            <div class="card p-3 " style="margin: 3px; ">
-                <?= $form->field($model, 'supplier_can_comply_specs')->radioList(
-                    [
-                        '0' => 'No',
-                        '1' => 'Yes',
-                    ]
-                ) ?>
-            </div>
-            <div class="card p-3 ">
-                <?= $form->field($model, 'supplier_has_legal_issues')->radioList(
-                    [
-                        '0' => 'No',
-                        '1' => 'Yes',
-                    ]
-                ) ?>
-            </div>
+
+    <div class="flex-container">
+        <div class="card p-3 " style="margin: 3px; ">
+            <?= $form->field($model, 'supplier_can_comply_specs')->radioList(
+                [
+                    '0' => 'No',
+                    '1' => 'Yes',
+                ]
+            ) ?>
+        </div>
+        <div class="card p-3 ">
+            <?= $form->field($model, 'supplier_has_legal_issues')->radioList(
+                [
+                    '0' => 'No',
+                    '1' => 'Yes',
+                ]
+            ) ?>
         </div>
     </div>
-    <div class="card p-3">
+    <div class="card p-3 m-1">
         <?= $form->field($model, 'comments')->textarea(['rows' => 3]) ?>
     </div>
-    <div class="card p-3">
+    <div class="card p-3 m-1">
 
         <table class="">
             <tr>
@@ -305,10 +299,9 @@ $("#DueDiligenceReports").on("beforeSubmit", function (event) {
         type: form.attr("method"),
         data: form.serialize(),
         success: function (data) {
-            let res = JSON.parse(data)
             swal({
                 icon: 'error',
-                title: res,
+                title: data,
                 type: "error",
                 timer: 3000,
                 closeOnConfirm: false,

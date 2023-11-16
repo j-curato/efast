@@ -6,6 +6,7 @@ use Yii;
 use app\models\DueDiligenceReports;
 use app\models\DueDiligenceReportsSearch;
 use ErrorException;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -21,8 +22,45 @@ class DueDiligenceReportsController extends Controller
     public function behaviors()
     {
         return [
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'actions' => [
+                            'index',
+                            'view',
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_due_diligence_report']
+                    ],
+                    [
+                        'actions' => [
+
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_due_diligence_report']
+                    ],
+                    [
+                        'actions' => [
+
+                            'update',
+                        ],
+                        'allow' => true,
+                        'roles' => ['update_due_diligence_report']
+                    ],
+                    [
+                        'actions' => [
+
+                            'search-due-diligence-report',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ],
+                ]
+            ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'delete' => ['POST'],
                 ],
@@ -138,12 +176,12 @@ class DueDiligenceReportsController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
+    // public function actionDelete($id)
+    // {
+    //     $this->findModel($id)->delete();
 
-        return $this->redirect(['index']);
-    }
+    //     return $this->redirect(['index']);
+    // }
 
     /**
      * Finds the DueDiligenceReports model based on its primary key value.
@@ -157,7 +195,14 @@ class DueDiligenceReportsController extends Controller
         if (($model = DueDiligenceReports::findOne($id)) !== null) {
             return $model;
         }
-
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+    public function actionSearchDueDiligenceReport()
+    {
+        if (Yii::$app->request->get()) {
+            $page = Yii::$app->request->get("page") ?? 1;
+            $text = Yii::$app->request->get("text") ?? null;
+            return  DueDiligenceReports::searchSerialNumber($page, $text);
+        }
     }
 }

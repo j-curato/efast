@@ -11,13 +11,11 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="iar-transmittal-create">
 
-    <h3><?= Html::encode($this->title) ?></h3>
 
     <?= $this->render('_form', [
         'model' => $model,
         'searchModel' => $searchModel,
         'dataProvider' => $dataProvider,
-        'action' => $action,
     ]) ?>
 
 </div>

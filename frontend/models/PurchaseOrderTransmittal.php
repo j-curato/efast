@@ -5,6 +5,7 @@ namespace app\models;
 use DateTime;
 use Yii;
 use ErrorException;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "{{%purchase_order_transmittal}}".
@@ -104,6 +105,8 @@ class PurchaseOrderTransmittal extends \yii\db\ActiveRecord
     {
         try {
             $itemModels = [];
+            $deleteItems = $this->deleteItems(ArrayHelper::getColumn($items, 'id'));
+
             foreach ($items as  $item) {
                 $model =  !empty($item['id']) ? PurchaseOrderTransmittalItems::findOne($item['id']) : new PurchaseOrderTransmittalItems();
                 $model->attributes = $item;
@@ -124,6 +127,27 @@ class PurchaseOrderTransmittal extends \yii\db\ActiveRecord
         } catch (ErrorException $e) {
             return $e->getMessage();
         }
+    }
+    private function deleteItems($items)
+    {
+        $queryItems  = Yii::$app->db->createCommand("SELECT iar_transmittal_items.id FROM iar_transmittal_items WHERE fk_iar_transmittal_id  = :id
+        AND is_deleted = 0")
+            ->bindValue(':id', $this->id)
+            ->queryAll();
+        $toDelete = array_diff(array_column($queryItems, 'id'), $items);
+        if (!empty($toDelete)) {
+            $params = [];
+            $sql  = ' AND ';
+            $sql .= Yii::$app->db->queryBuilder->buildCondition(['IN', 'id', $toDelete], $params);
+            Yii::$app->db->createCommand("UPDATE iar_transmittal_items
+                SET iar_transmittal_items.is_deleted = 1 
+                WHERE iar_transmittal_items.fk_iar_transmittal_id = :id
+                AND iar_transmittal_items.is_deleted= 0
+                $sql", $params)
+                ->bindValue(':id', $this->id)
+                ->execute();
+        }
+        return true;
     }
     public function getTransmittalItems()
     {

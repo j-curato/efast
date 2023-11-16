@@ -200,7 +200,7 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                 Yii::$app->user->can('view_iirup') ?     ['label' => 'IIRUP', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/iirup/index'],] : null,
                 Yii::$app->user->can('view_derecognition') ?     ['label' => 'Derecognition', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/derecognition/index'],] : null,
             ];
-            $propertReports = [
+            $propertyReports = [
                 Yii::$app->user->can('super-user') ?     ['label' => 'Print PC Stickers', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/property-card/print-pc'],] : null,
                 Yii::$app->user->can('property_database') ?  ['label' => 'Property Database', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/property/property-database'],] : null,
                 Yii::$app->user->can('view_rpcppe') ?     ['label' => 'RPCPPE', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rpcppe/index'],] : null,
@@ -319,8 +319,9 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
             ];
             $rapidMasterRecords = [];
             $rapidTransaction = [
-                Yii::$app->user->can('super-user') ?     ['label' => 'MG RFR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/mgrfrs/index'],] : null,
-
+                Yii::$app->user->can('view_mgrfr') ?     ['label' => 'MG RFR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/mgrfrs/index'],] : null,
+                Yii::$app->user->can('view_due_diligence_report') ?     ['label' => 'Due Diligence Reports', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/due-diligence-reports/index'],] : null,
+                Yii::$app->user->can('super-user') ?     ['label' => 'Notification to Pay', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/notification-to-pay/index'],] : null,
             ];
             $rapidReports = [];
 
@@ -424,7 +425,7 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                         [
                             'label' => 'Reports',
                             'iconStyle' => 'far text-info',
-                            'items' => removeNull($propertReports)
+                            'items' => removeNull($propertyReports)
                         ],
                     ],
 
