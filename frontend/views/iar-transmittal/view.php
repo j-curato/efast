@@ -28,7 +28,14 @@ $date = DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y');
             <button onclick="generatePDF() " class="btn "> <i class="fa fa-file-pdf"></i> Download PDF</button>
 
         </p>
-
+        <div class="row" style="float:right">
+            <div class="col-sm-12">
+                <?= Html::img(Yii::$app->request->baseUrl . '/frontend/web/images/dti_header.png', [
+                    'alt' => 'some', 'class' => 'pull-left img-responsive',
+                    'style' => 'width: 16em;'
+                ]); ?>
+            </div>
+        </div>
         <table>
             <tr>
                 <td colspan="11" style="border: 0;">
@@ -57,7 +64,7 @@ $date = DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y');
                 <th>IR Number</th>
                 <th>RFI Number</th>
                 <th>End-User</th>
-                <th>Purpose</th>
+                <th style="min-width: 20em;width:5em">Purpose</th>
                 <th>Inspector</th>
                 <th>Responsible Center</th>
                 <th>PO Number</th>
@@ -155,7 +162,6 @@ $date = DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y');
 
 </div>
 <?php
-$this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", []);
 ?>
 <style>
     th,
@@ -163,6 +169,20 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", []);
         border: 1px solid black;
         padding: 4px;
         font-size: .7rem;
+    }
+
+    @page {
+        size: A4;
+        margin: 1cm;
+        /* Adjust margins as needed */
+    }
+
+    @media print {
+
+        .main-footer,
+        .btn {
+            display: none;
+        }
     }
 </style>
 
