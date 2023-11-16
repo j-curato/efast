@@ -188,8 +188,6 @@ $date = DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y');
             display: none;
         }
 
-
-
         .header-tbl th,
         .header-tbl td,
         .head {
