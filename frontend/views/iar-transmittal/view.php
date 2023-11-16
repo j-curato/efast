@@ -124,7 +124,7 @@ $date = DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y');
                     </td>
                 </tr>
                 <tr>
-                    <th colspan="3" class="border-0 head">
+                    <th colspan="8" class="border-0 head">
                         <p><?= !empty($approvedBy['fullName']) ? strtoupper($approvedBy['fullName']) : '' ?>
                     </th>
                 </tr>
@@ -171,16 +171,16 @@ $date = DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y');
         font-size: .7rem;
     }
 
-    table {
-        width: 100%;
-    }
+
 
     @page {
         size: A4;
-        /* Adjust margins as needed */
+        margin: 1in
+            /* Adjust margins as needed */
     }
 
     @media print {
+
 
         .main-footer,
         .btn {
