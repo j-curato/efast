@@ -173,14 +173,15 @@ $date = DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y');
 
 
 
-    @page {
-        size: A4;
-        margin: 1in
-            /* Adjust margins as needed */
-    }
+
 
     @media print {
 
+        @page {
+            size: A4;
+            margin: .4in
+                /* Adjust margins as needed */
+        }
 
         .main-footer,
         .btn {
