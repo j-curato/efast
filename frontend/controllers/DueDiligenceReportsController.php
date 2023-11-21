@@ -3,13 +3,14 @@
 namespace frontend\controllers;
 
 use Yii;
+use ErrorException;
+use common\models\User;
+use yii\web\Controller;
+use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
+use yii\web\NotFoundHttpException;
 use app\models\DueDiligenceReports;
 use app\models\DueDiligenceReportsSearch;
-use ErrorException;
-use yii\filters\AccessControl;
-use yii\web\Controller;
-use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 
 /**
  * DueDiligenceReportsController implements the CRUD actions for DueDiligenceReports model.
@@ -55,7 +56,10 @@ class DueDiligenceReportsController extends Controller
                             'search-due-diligence-report',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => [
+                            'create_due_diligence_report',
+                            'update_due_diligence_report'
+                        ]
                     ],
                 ]
             ],
@@ -104,7 +108,8 @@ class DueDiligenceReportsController extends Controller
     public function actionCreate()
     {
         $model = new DueDiligenceReports();
-
+        $user_data = User::getUserDetails();
+        $model->fk_office_id = $user_data->employee->office->id;
         if ($model->load(Yii::$app->request->post())) {
             try {
                 $txn = Yii::$app->db->beginTransaction();

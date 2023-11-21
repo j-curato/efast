@@ -42,7 +42,7 @@ class Employee extends \yii\db\ActiveRecord
                 'm_name',
                 'fk_division_id'
             ], 'required'],
-            [['employee_number', 'f_name', 'l_name', 'm_name', 'status', 'position', 'suffix', 'province'], 'string', 'max' => 255],
+            [['employee_number', 'f_name', 'l_name', 'm_name', 'status', 'position', 'suffix', 'province', 'mobile_number'], 'string', 'max' => 255],
             [[
                 'employee_id',
                 'f_name',
@@ -66,21 +66,22 @@ class Employee extends \yii\db\ActiveRecord
         return Employee::find()
             ->select([
                 "CONCAT(f_name,' ',
-            (CASE
-            WHEN m_name !='' THEN CONCAT(LEFT(m_name,1),'. ')
-            ELSE ''
-            END),
-            l_name,
-            (CASE
-            WHEN employee.suffix !='' THEN CONCAT(', ',employee.suffix)
-            ELSE ''
-            END)
-            ) as `fullName`",
+                    (CASE
+                        WHEN m_name !='' THEN CONCAT(LEFT(m_name,1),'. ')
+                        ELSE ''
+                    END),
+                    l_name,
+                    (CASE
+                        WHEN employee.suffix !='' THEN CONCAT(', ',employee.suffix)
+                        ELSE ''
+                    END)
+                    ) as `fullName`",
                 "employee.position",
                 "employee.property_custodian",
                 "office.office_name",
                 "divisions.division",
-                'employee_id'
+                'employee_id',
+                'mobile_number'
             ])
             ->joinWith('office')
             ->joinWith('empDivision')
@@ -115,6 +116,7 @@ class Employee extends \yii\db\ActiveRecord
             'province' => 'Province',
             'fk_office_id' => 'Office/Province',
             'fk_division_id' => 'Division',
+            'mobile_number' => 'Mobile Number',
         ];
     }
     public function getOffice()

@@ -62,7 +62,8 @@ class Mgrfrs extends \yii\db\ActiveRecord
                 'email_address',
                 'investment_type',
                 'organization_name',
-                'fk_bank_branch_detail_id'
+                'fk_bank_branch_detail_id',
+                'fk_office_id'
             ], 'required'],
             [['matching_grant_amount', 'equity_amount'], 'number'],
             [['created_at'], 'safe'],
@@ -172,16 +173,20 @@ class Mgrfrs extends \yii\db\ActiveRecord
     }
     private function generateSerialNumber()
     {
+
         $lastNum = Yii::$app->db->createCommand("SELECT 
             CAST(SUBSTRING_INDEX(mgrfrs.serial_number,'-',-1) AS UNSIGNED) as last_num
             FROM 
             mgrfrs
+            WHERE 
+            fk_office_id = :office_id
             ORDER BY last_num DESC
             LIMIT 1")
+            ->bindValue(':office_id', $this->fk_office_id)
             ->queryScalar();
         $num = !empty($lastNum) ? intval($lastNum) + 1 : 1;
 
-        return date('Y') . '-' . str_pad($num, 4, '0', STR_PAD_LEFT);
+        return strtoupper($this->office->office_name) . '-' . date('Y') . '-' . str_pad($num, 4, '0', STR_PAD_LEFT);
     }
     public static function searchSerialNumber($text, $offset, $limit)
     {
@@ -197,5 +202,36 @@ class Mgrfrs extends \yii\db\ActiveRecord
     }
     public function getMgrfrDetails()
     {
+
+        return self::find()
+            ->addSelect([
+                new Expression('CAST(mgrfrs.id as CHAR(50)) as id'),
+                'mgrfrs.serial_number',
+                'mgrfrs.organization_name',
+                'barangays.barangay_name',
+                'municipalities.municipality_name',
+                'provinces.province_name',
+                'office.office_name',
+                'mgrfrs.purok',
+                'mgrfrs.authorized_personnel',
+                'mgrfrs.contact_number',
+                'mgrfrs.saving_account_number',
+                'mgrfrs.email_address',
+                'mgrfrs.investment_type',
+                'mgrfrs.investment_description',
+                'mgrfrs.project_consultant',
+                'mgrfrs.project_objective',
+                'mgrfrs.project_beneficiary',
+                'mgrfrs.matching_grant_amount',
+                'mgrfrs.equity_amount'
+
+            ])
+            ->join('LEFT JOIN', 'barangays', ' mgrfrs.fk_barangay_id = barangays.id')
+            ->join('LEFT JOIN', 'provinces', 'mgrfrs.fk_province_id = provinces.id')
+            ->join('LEFT JOIN', 'municipalities', 'mgrfrs.fk_municipality_id = municipalities.id')
+            ->join('LEFT JOIN', 'office', 'mgrfrs.fk_office_id = office.id')
+            ->where('mgrfrs.id = :id', ['id' => $this->id])
+            ->asArray()
+            ->one();
     }
 }

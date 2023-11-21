@@ -66,10 +66,7 @@ class DueDiligenceReports extends \yii\db\ActiveRecord
     {
         return [
             [[
-                'supplier_name',
-                'supplier_address',
-                'contact_person',
-                'contact_number',
+
                 'supplier_is_registered',
                 'supplier_has_business_permit',
                 'supplier_is_bir_registered',
@@ -83,11 +80,16 @@ class DueDiligenceReports extends \yii\db\ActiveRecord
                 'fk_conducted_by',
                 'fk_mgrfr_id',
                 'fk_noted_by',
+                'fk_office_id',
+                'fk_payee_id'
             ], 'required'],
-            [['supplier_address', 'supplier_nursery', 'comments'], 'string'],
-            [['supplier_has_business_permit', 'supplier_is_bir_registered', 'supplier_has_officer_connection', 'supplier_is_financial_capable', 'supplier_is_authorized_dealer', 'supplier_has_quality_material', 'supplier_can_comply_specs', 'supplier_has_legal_issues', 'fk_mgrfr_id', 'fk_conducted_by', 'fk_noted_by'], 'integer'],
+            [['supplier_nursery', 'comments', 'fk_office_id'], 'string'],
+            [[
+                'fk_payee_id', 'supplier_has_business_permit', 'supplier_is_bir_registered',
+                'supplier_has_officer_connection', 'supplier_is_financial_capable', 'supplier_is_authorized_dealer', 'supplier_has_quality_material', 'supplier_can_comply_specs', 'supplier_has_legal_issues', 'fk_mgrfr_id', 'fk_conducted_by', 'fk_noted_by'
+            ], 'integer'],
             [['created_at'], 'safe'],
-            [['serial_number', 'supplier_name', 'contact_person', 'contact_number', 'supplier_is_registered'], 'string', 'max' => 255],
+            [['serial_number',  'supplier_is_registered'], 'string', 'max' => 255],
             [['serial_number'], 'unique'],
             [['fk_conducted_by'], 'exist', 'skipOnError' => true, 'targetClass' => Employee::class, 'targetAttribute' => ['fk_conducted_by' => 'employee_id']],
             [['fk_mgrfr_id'], 'exist', 'skipOnError' => true, 'targetClass' => Mgrfrs::class, 'targetAttribute' => ['fk_mgrfr_id' => 'id']],
@@ -102,11 +104,6 @@ class DueDiligenceReports extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'serial_number' => 'Serial Number',
-            'supplier_name' => 'Supplier Name',
-            'supplier_address' => 'Supplier Address',
-            'contact_person' => 'Contact Person',
-            'contact_number' => 'Contact Number',
             'supplier_is_registered' => 'SEC/CDA/DTI Registration',
             'supplier_has_business_permit' => 'Business Permit/ Mayor`s Permit',
             'supplier_is_bir_registered' => 'BIR Registration',
@@ -122,6 +119,8 @@ class DueDiligenceReports extends \yii\db\ActiveRecord
             'fk_conducted_by' => ' Conducted By',
             'fk_noted_by' => ' Noted By',
             'created_at' => 'Created at',
+            'fk_office_id' => 'Office',
+            'fk_payee_id' => 'Payee',
         ];
     }
 
@@ -144,6 +143,10 @@ class DueDiligenceReports extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Mgrfrs::class, ['id' => 'fk_mgrfr_id']);
     }
+    public function getOffice()
+    {
+        return $this->hasOne(Office::class, ['id' => 'fk_office_id']);
+    }
 
     /**
      * Gets query for [[FkNotedBy]].
@@ -153,6 +156,10 @@ class DueDiligenceReports extends \yii\db\ActiveRecord
     public function getNotedBy()
     {
         return $this->hasOne(Employee::class, ['employee_id' => 'fk_noted_by']);
+    }
+    public function getPayee()
+    {
+        return $this->hasOne(Payee::class, ['id' => 'fk_payee_id']);
     }
     public function beforeSave($insert)
     {
@@ -172,10 +179,13 @@ class DueDiligenceReports extends \yii\db\ActiveRecord
 
         $lastNum = YIi::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(serial_number,'-',-1)AS UNSIGNED) as last_num 
         FROM due_diligence_reports
+        WHERE 
+        due_diligence_reports.fk_office_id = :office_id
         ORDER BY last_num DESC LIMIT 1")
+            ->bindValue(':office_id', $this->fk_office_id)
             ->queryScalar();
         $num = !empty($lastNum) ? intval($lastNum) + 1 : 1;
-        return date('Y') . '-' . str_pad($num, 4, '0', STR_PAD_LEFT);
+        return strtoupper($this->office->office_name) . '-' . date('Y') . '-' . str_pad($num, 4, '0', STR_PAD_LEFT);
     }
     public function insertItems($items)
     {
@@ -216,7 +226,6 @@ class DueDiligenceReports extends \yii\db\ActiveRecord
             }
             return true;
         } catch (ErrorException $e) {
-
             return $e->getMessage();
         }
     }

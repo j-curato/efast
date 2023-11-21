@@ -29,12 +29,28 @@ class CashDepositsController extends Controller
                         'actions' => [
                             'index',
                             'view',
-                            'create',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['view_cash_deposits']
+                    ],
+                    [
+                        'actions' => [
+
                             'update',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
-                    ]
+                        'roles' => ['update_cash_deposits']
+                    ],
+                    [
+                        'actions' => [
+                            'create',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_cash_deposits']
+                    ],
+
+
                 ]
             ],
             'verbs' => [
@@ -84,7 +100,6 @@ class CashDepositsController extends Controller
         $model = new CashDeposits();
 
         if ($model->load(Yii::$app->request->post())) {
-
             try {
                 $txn = Yii::$app->db->beginTransaction();
                 if (!$model->validate()) {

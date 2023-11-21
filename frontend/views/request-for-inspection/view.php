@@ -20,7 +20,7 @@ $requested_by = !empty($model->fk_requested_by) ? $model->requestedBy->getEmploy
 $officeName = $model->office->office_name;
 $isProvincialOffice = strtolower($officeName)  === 'ro' ? false : true;
 ?>
-<div class="request-for-inspection-view" id='app'>
+<div class="request-for-inspection-view" id='main'>
     <div class="container card">
         <h5 class='note'>
             *Note:
@@ -330,7 +330,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['dep
 </style>
 <script>
     new Vue({
-        el: '#app',
+        el: '#main',
         data: {
             withPoItems: <?= Json::encode($model->getWithPoItems()); ?>,
             withoutPoItems: <?= Json::encode($model->getNoPoItems()); ?>,

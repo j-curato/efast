@@ -19,7 +19,8 @@ class JqueryPluginAssets extends AssetBundle
     ];
     public $js = [
         'js/jspdf.js',
-        'js/jspdf-autotable.js'
+        'js/jspdf-autotable.js',
+        'frontend/web/js/globalFunctions.js',
     ];
     public $depends = [
         JqueryAsset::class

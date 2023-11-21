@@ -72,7 +72,7 @@ class CashDeposits extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getFkMgrfr()
+    public function getMgrfr()
     {
         return $this->hasOne(Mgrfrs::class, ['id' => 'fk_mgrfr_id']);
     }

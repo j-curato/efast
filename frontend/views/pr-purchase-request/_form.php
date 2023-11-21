@@ -226,10 +226,8 @@ $user_data = User::getUserDetails();
                         'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
                         'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
                     ],
-
                 ]) ?>
             </div>
-
         </div>
         <hr style="  position: relative;
                             top: 10px;

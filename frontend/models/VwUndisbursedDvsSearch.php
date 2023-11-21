@@ -12,6 +12,7 @@ use app\models\VwUndisbursedDvs;
 class VwUndisbursedDvsSearch extends VwUndisbursedDvs
 {
     public $bookFilter;
+    public $pageSize = 10;
     /**
      * {@inheritdoc}
      */
@@ -69,6 +70,9 @@ class VwUndisbursedDvsSearch extends VwUndisbursedDvs
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'pagination' => [
+                'pageSize' => $this->pageSize, // Set the page size
+            ],
         ]);
 
         $this->load($params);

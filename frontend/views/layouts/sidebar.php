@@ -320,12 +320,12 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
             $rapidMasterRecords = [];
             $rapidTransaction = [
                 Yii::$app->user->can('view_mgrfr') ?     ['label' => 'MG RFR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/mgrfrs/index'],] : null,
+                Yii::$app->user->can('view_cash_deposits') ?     ['label' => 'Cash Deposits', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/cash-deposits/index'],] : null,
                 Yii::$app->user->can('view_due_diligence_report') ?     ['label' => 'Due Diligence Reports', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/due-diligence-reports/index'],] : null,
-                Yii::$app->user->can('super-user') ?     ['label' => 'Notification to Pay', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/notification-to-pay/index'],] : null,
+                Yii::$app->user->can('view_notification_to_pay') ?     ['label' => 'Notification to Pay', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/notification-to-pay/index'],] : null,
+                Yii::$app->user->can('view_mg_liquidation') ?     ['label' => 'MG Liquidations', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/mg-liquidations/index'],] : null,
             ];
             $rapidReports = [];
-
-
 
             $menuItems =  [
                 [

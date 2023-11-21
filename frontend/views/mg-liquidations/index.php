@@ -4,44 +4,35 @@ use yii\helpers\Html;
 use kartik\grid\GridView;
 
 /* @var $this yii\web\View */
-/* @var $searchModel app\models\CashDepositsSearch */
+/* @var $searchModel app\models\MgLiquidationsSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Cash Deposits';
+$this->title = 'Mg Liquidations';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="cash-deposits-index">
+<div class="mg-liquidations-index">
 
 
     <p>
-        <?= Yii::$app->user->can('create_cash_deposits') ? Html::a('<i class="fa fa-plus"></i> Create', ['create'], ['class' => 'btn btn-success']) : '' ?>
+        <?= Yii::$app->user->can('create_mg_liquidation') ? Html::a('<i class="fa fa-plus"></i> Create ', ['create'], ['class' => 'btn btn-success']) : '' ?>
     </p>
-
-
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'panel' => [
-            'type'  => 'primary',
-            'heading' => 'Cash Deposits'
+            'type' => 'primary',
+            'heading' => 'MG Liquidations'
         ],
         'columns' => [
-
-            'fk_mgrfr_id',
             'serial_number',
             'reporting_period',
-            'date',
-            'particular:ntext',
-            'matching_grant_amount',
-            'equity_amount',
-            'other_amount',
-
-        
+            'fk_mgrfr_id',
+            'created_at',
             [
                 'label' => 'Actions',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    $updateBtn = Yii::$app->user->can('update_cash_deposits') ? Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => '']) : '';
+                    $updateBtn = Yii::$app->user->can('update_mg_liquidation') ? Html::a('<i class="fa fa-pencil-alt"></i>', ['update', 'id' => $model->id], ['class' => '']) : '';
                     return Html::a('<i class="fa fa-eye"></i>', ['view', 'id' => $model->id]) . ' ' . $updateBtn;
                 }
             ]

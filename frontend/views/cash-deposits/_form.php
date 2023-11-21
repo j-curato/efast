@@ -6,20 +6,26 @@ use kartik\date\DatePicker;
 use kartik\money\MaskMoney;
 use kartik\widgets\Select2;
 use yii\bootstrap4\ActiveForm;
+use yii\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\CashDeposits */
 /* @var $form yii\widgets\ActiveForm */
+
+$mgrfr = [];
+
+if (!empty($model->fk_mgrfr_id)) {
+    $mgrfr[] = $model->mgrfr->getMgrfrDetails();
+}
 ?>
 
 <div class="cash-deposits-form">
-
     <div class="container card p-2">
         <?php $form = ActiveForm::begin(); ?>
         <div class="row">
             <div class="col-sm-4">
                 <?= $form->field($model, 'fk_mgrfr_id')->widget(Select2::class, [
-                    // 'data' => $defaultBankBranchDetail,
+                    'data' => ArrayHelper::map($mgrfr, 'id', 'serial_number'),
                     'options' => ['placeholder' => 'Search for a Bank ...', 'style' => 'height:30em'],
                     'pluginOptions' => [
                         'allowClear' => true,

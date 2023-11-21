@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Office;
 use aryelds\sweetalert\SweetAlertAsset;
 use yii\helpers\Html;
 use yii\web\JsExpression;
@@ -16,8 +17,12 @@ if (!empty($model->fk_noted_by)) {
     $notedBy[] = $model->notedBy->getEmployeeDetails();
 }
 $conductedBy = [];
-if (!empty($model->fk_noted_by)) {
+if (!empty($model->fk_conducted_by)) {
     $conductedBy[] =  $model->conductedBy->getEmployeeDetails();
+}
+$payee = [];
+if (!empty($model->fk_payee_id)) {
+    $payee[] =  $model->payee->getPayeeDetailsA();
 }
 $mgrfr = [];
 if (!empty($model->fk_mgrfr_id)) {
@@ -28,107 +33,131 @@ if (!empty($model->fk_mgrfr_id)) {
 }
 $items  = $model->getItemsA();
 ?>
-<div class="due-diligence-reports-form container  p-2" id="main">
+<div class="due-diligence-reports-form   p-2" id="main">
     <?php $form = ActiveForm::begin([
         'id' => $model->formName()
     ]); ?>
-    <div class="card p-3 m-1">
-        <div class="row ">
-            <div class="col-sm-4">
-                <?= $form->field($model, 'fk_mgrfr_id')->widget(Select2::class, [
-                    'data' => ArrayHelper::map($mgrfr, 'id', 'serial_number'),
-                    'options' => ['placeholder' => 'Search for a MG RFR Serial No. ...'],
-                    'pluginOptions' => [
-                        'allowClear' => true,
-                        'minimumInputLength' => 1,
-                        'language' => [
-                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                        ],
-                        'ajax' => [
-                            'url' => Yii::$app->request->baseUrl . '?r=mgrfrs/search-mgrfr',
-                            'dataType' => 'json',
-                            'delay' => 250,
-                            'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
-                            'cache' => true
-                        ],
-                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                    ],
-                ]) ?>
-            </div>
-            <div class="col-sm-4">
-                <?= $form->field($model, 'fk_conducted_by')->widget(Select2::class, [
-                    'data' => ArrayHelper::map($conductedBy, 'employee_id', 'fullName'),
-                    'options' => ['placeholder' => 'Search for a Employee ...'],
-                    'pluginOptions' => [
-                        'allowClear' => true,
-                        'minimumInputLength' => 1,
-                        'language' => [
-                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                        ],
-                        'ajax' => [
-                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
-                            'dataType' => 'json',
-                            'delay' => 250,
-                            'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
-                            'cache' => true
-                        ],
-                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                    ],
+    <div class="container p-3">
+        <div class="card p-2 m-1">
 
-                ])  ?>
-
-            </div>
-            <div class="col-sm-4">
-                <?= $form->field($model, 'fk_noted_by')->widget(Select2::class, [
-                    'data' => ArrayHelper::map($notedBy, 'employee_id', 'fullName'),
-                    'options' => ['placeholder' => 'Search for a Employee ...'],
-                    'pluginOptions' => [
-                        'allowClear' => true,
-                        'minimumInputLength' => 1,
-                        'language' => [
-                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+            <div class="row ">
+                <?php ?>
+                <div class="col-4">
+                    <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
+                        'data' => ArrayHelper::map(Office::getOfficesA(), 'id', 'office_name'),
+                        'options' => [
+                            'placeholder' => 'Select Office'
                         ],
-                        'ajax' => [
-                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
-                            'dataType' => 'json',
-                            'delay' => 250,
-                            'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
-                            'cache' => true
+                        'pluginOptions' => []
+                    ]) ?>
+                </div>
+                <div class="col-sm-4">
+                    <?= $form->field($model, 'fk_mgrfr_id')->widget(Select2::class, [
+                        'data' => ArrayHelper::map($mgrfr, 'id', 'serial_number'),
+                        'options' => ['placeholder' => 'Search for a MG RFR Serial No. ...'],
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                            'minimumInputLength' => 1,
+                            'language' => [
+                                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                            ],
+                            'ajax' => [
+                                'url' => Yii::$app->request->baseUrl . '?r=mgrfrs/search-mgrfr',
+                                'dataType' => 'json',
+                                'delay' => 250,
+                                'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
+                                'cache' => true
+                            ],
+                            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
                         ],
-                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                    ],
+                    ]) ?>
+                </div>
+                <div class="col-sm-4">
+                    <?= $form->field($model, 'fk_payee_id')->widget(Select2::class, [
+                        'data' => ArrayHelper::map($payee, 'id', 'registered_name'),
+                        'options' => ['placeholder' => 'Search for a Payee ...'],
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                            'minimumInputLength' => 1,
+                            'language' => [
+                                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                            ],
+                            'ajax' => [
+                                'url' => Yii::$app->request->baseUrl . '?r=payee/search-payee',
+                                'dataType' => 'json',
+                                'delay' => 250,
+                                'data' => new JsExpression('function(params) { return {q:params.term,page:params.page ||1}; }'),
+                                'cache' => true
+                            ],
+                            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                        ],
 
-                ])  ?>
+                    ])  ?>
+
+                </div>
+                <div class="col-sm-6">
+                    <?= $form->field($model, 'fk_conducted_by')->widget(Select2::class, [
+                        'data' => ArrayHelper::map($conductedBy, 'employee_id', 'fullName'),
+                        'options' => ['placeholder' => 'Search for a Employee ...'],
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                            'minimumInputLength' => 1,
+                            'language' => [
+                                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                            ],
+                            'ajax' => [
+                                'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                                'dataType' => 'json',
+                                'delay' => 250,
+                                'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
+                                'cache' => true
+                            ],
+                            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                        ],
+
+                    ])  ?>
+
+                </div>
+                <div class="col-sm-6">
+                    <?= $form->field($model, 'fk_noted_by')->widget(Select2::class, [
+                        'data' => ArrayHelper::map($notedBy, 'employee_id', 'fullName'),
+                        'options' => ['placeholder' => 'Search for a Employee ...'],
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                            'minimumInputLength' => 1,
+                            'language' => [
+                                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                            ],
+                            'ajax' => [
+                                'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                                'dataType' => 'json',
+                                'delay' => 250,
+                                'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
+                                'cache' => true
+                            ],
+                            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                        ],
+
+                    ])  ?>
+
+                </div>
+
+
 
             </div>
         </div>
-        <div class="row">
-            <div class="col-sm-4">
-                <?= $form->field($model, 'supplier_name')->textInput(['maxlength' => true]) ?>
-            </div>
-            <div class="col-sm-4">
-                <?= $form->field($model, 'contact_person')->textInput(['maxlength' => true]) ?>
 
-            </div>
-            <div class="col-sm-4">
-                <?= $form->field($model, 'contact_number')->textInput(['maxlength' => true]) ?>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-12">
-                <?= $form->field($model, 'supplier_address')->textarea(['rows' => 2]) ?>
-            </div>
-        </div>
-    </div>
 
-    <div class="flex-container">
-        <div class="card p-3 " style="margin: 3px; ">
+
+        <div class="card p-3 m-1">
             <?= $form->field($model, 'supplier_is_registered')->radioList(
                 [
                     '0' => 'No',
@@ -136,7 +165,8 @@ $items  = $model->getItemsA();
                 ],
             ) ?>
         </div>
-        <div class="card p-3 ">
+
+        <div class="card p-3 m-1">
             <?= $form->field($model, 'supplier_has_business_permit')->radioList(
                 [
                     '0' => 'No',
@@ -144,7 +174,8 @@ $items  = $model->getItemsA();
                 ],
             ) ?>
         </div>
-        <div class="card p-3 ">
+
+        <div class="card p-3 m-1">
             <?= $form->field($model, 'supplier_is_bir_registered')->radioList(
                 [
                     '0' => 'No',
@@ -152,11 +183,9 @@ $items  = $model->getItemsA();
                 ]
             ) ?>
         </div>
-    </div>
 
 
-    <div class="flex-container">
-        <div class="card p-3 " style="margin: 3px; ">
+        <div class="card p-3 m-1" style="margin: 3px; ">
             <?= $form->field($model, 'supplier_has_officer_connection')->radioList(
                 [
                     '0' => 'No',
@@ -164,7 +193,7 @@ $items  = $model->getItemsA();
                 ]
             ) ?>
         </div>
-        <div class="card p-3 ">
+        <div class="card p-3 m-1">
             <?= $form->field($model, 'supplier_is_financial_capable')->radioList(
                 [
                     '0' => 'No',
@@ -172,10 +201,8 @@ $items  = $model->getItemsA();
                 ]
             ) ?>
         </div>
-    </div>
 
-    <div class="flex-container">
-        <div class="card p-3 " style="margin: 3px; ">
+        <div class="card p-3 m-1" style="margin: 3px; ">
             <?= $form->field($model, 'supplier_is_authorized_dealer')->radioList(
                 [
                     '0' => 'No',
@@ -183,7 +210,7 @@ $items  = $model->getItemsA();
                 ]
             ) ?>
         </div>
-        <div class="card p-3 ">
+        <div class="card p-3 m-1">
             <?= $form->field($model, 'supplier_has_quality_material')->radioList(
                 [
                     '0' => 'No',
@@ -193,9 +220,7 @@ $items  = $model->getItemsA();
             <?= $form->field($model, 'supplier_nursery')->textarea(['rows' => 2]) ?>
 
         </div>
-    </div>
 
-    <div class="flex-container">
         <div class="card p-3 " style="margin: 3px; ">
             <?= $form->field($model, 'supplier_can_comply_specs')->radioList(
                 [
@@ -204,7 +229,7 @@ $items  = $model->getItemsA();
                 ]
             ) ?>
         </div>
-        <div class="card p-3 ">
+        <div class="card p-3 m-1">
             <?= $form->field($model, 'supplier_has_legal_issues')->radioList(
                 [
                     '0' => 'No',
@@ -212,85 +237,86 @@ $items  = $model->getItemsA();
                 ]
             ) ?>
         </div>
-    </div>
-    <div class="card p-3 m-1">
-        <?= $form->field($model, 'comments')->textarea(['rows' => 3]) ?>
-    </div>
-    <div class="card p-3 m-1">
+        <div class="card p-3 m-1">
+            <?= $form->field($model, 'comments')->textarea(['rows' => 3]) ?>
+        </div>
+        <div class="card p-3 m-1">
 
-        <table class="">
-            <tr>
-                <th>Clients/Customers</th>
-                <td style="max-width: 1em;" class="text-center">
-                    <button type="button" class="btn-xs btn-success" @click='addItem()'><i class="fa fa-plus"></i> Add</button>
-                </td>
-            </tr>
-            <tbody>
-                <tr v-for="(item,idx) in items" :key='idx'>
-                    <td>
-                        <input type="hidden" :name="'items['+idx+'][id]'" class="form-control" v-model="item.id" v-if="item.id">
-                        <input type="text" :name="'items['+idx+'][customer_name]'" class="form-control" v-model="item.customer_name">
-                    </td>
-                    <td class="text-center">
-                        <button type="button" @click='removeRow(idx)' class=" btn-xs btn-danger"><i class="fa fa-times"></i></button>
+            <table class="">
+                <tr>
+                    <th>Clients/Customers</th>
+                    <td style="max-width: 1em;" class="text-center">
+                        <button type="button" class="btn-xs btn-success" @click='addItem()'><i class="fa fa-plus"></i> Add</button>
                     </td>
                 </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="row justify-content-center">
-        <div class="form-group col-sm-2">
-            <?= Html::submitButton('Save', ['class' => 'btn btn-success w-100']) ?>
+                <tbody>
+                    <tr v-for="(item,idx) in items" :key='idx'>
+                        <td>
+                            <input type="hidden" :name="'items['+idx+'][id]'" class="form-control" v-model="item.id" v-if="item.id">
+                            <input type="text" :name="'items['+idx+'][customer_name]'" class="form-control" v-model="item.customer_name">
+                        </td>
+                        <td class="text-center">
+                            <button type="button" @click='removeRow(idx)' class=" btn-xs btn-danger"><i class="fa fa-times"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
+        <div class="card pt-2 m-1">
+            <div class="row justify-content-center ">
+                <div class="form-group col-sm-2   ">
+                    <?= Html::submitButton('Save', ['class' => 'btn btn-success w-100']) ?>
+                </div>
+            </div>
+        </div>
+
+        <?php ActiveForm::end(); ?>
+
     </div>
-    <?php ActiveForm::end(); ?>
 
-</div>
-
-<script>
-    $(document).ready(function() {
-        new Vue({
-            el: '#main',
-            data: {
-                items: JSON.parse('<?= !empty($items) ? json_encode($items) : json_encode([]) ?>')
-            },
-            mounted() {
-                console.log(this.items)
-            },
-            methods: {
-                addItem() {
-                    this.items.push({
-                        customer_name: null,
-                    })
+    <script>
+        $(document).ready(function() {
+            new Vue({
+                el: '#main',
+                data: {
+                    items: JSON.parse('<?= !empty($items) ? json_encode($items) : json_encode([]) ?>')
                 },
-                removeRow(index) {
-                    this.items.splice(index, 1)
+                mounted() {
+                    console.log(this.items)
+                },
+                methods: {
+                    addItem() {
+                        this.items.push({
+                            customer_name: null,
+                        })
+                    },
+                    removeRow(index) {
+                        this.items.splice(index, 1)
+                    }
                 }
-            }
+            })
         })
-    })
-</script>
-<style>
-    td,
-    th {
-        padding: .2em;
-    }
+    </script>
+    <style>
+        td,
+        th {
+            padding: .2em;
+        }
 
-    .flex-container {
-        display: flex;
-        width: 100%;
-        /* Optional: Add a border for visualization */
-    }
+        .flex-container {
+            display: flex;
+            width: 100%;
+            /* Optional: Add a border for visualization */
+        }
 
-    .flex-container>div {
-        margin: 5px;
-        width: 100%;
-    }
-</style>
-<?php
-SweetAlertAsset::register($this);
-$js = <<< JS
+        .flex-container>div {
+            margin: 5px;
+            width: 100%;
+        }
+    </style>
+    <?php
+    SweetAlertAsset::register($this);
+    $js = <<< JS
 $("#DueDiligenceReports").on("beforeSubmit", function (event) {
     event.preventDefault();
     var form = $(this);
@@ -315,5 +341,5 @@ $("#DueDiligenceReports").on("beforeSubmit", function (event) {
     return false;
 });
 JS;
-$this->registerJs($js);
-?>
+    $this->registerJs($js);
+    ?>

@@ -18,7 +18,7 @@ class DueDiligenceReportsSearch extends DueDiligenceReports
     {
         return [
             [['id', 'supplier_has_business_permit', 'supplier_is_bir_registered', 'supplier_has_officer_connection', 'supplier_is_financial_capable', 'supplier_is_authorized_dealer', 'supplier_has_quality_material', 'supplier_can_comply_specs', 'supplier_has_legal_issues', 'fk_mgrfr_id', 'fk_conducted_by', 'fk_noted_by', 'fk_office_id'], 'integer'],
-            [['serial_number', 'supplier_name', 'supplier_address', 'contact_person', 'contact_number', 'supplier_is_registered', 'supplier_nursery', 'comments', 'created_at'], 'safe'],
+            [['serial_number',  'supplier_is_registered', 'supplier_nursery', 'comments', 'created_at'], 'safe'],
         ];
     }
 
@@ -75,10 +75,7 @@ class DueDiligenceReportsSearch extends DueDiligenceReports
         ]);
 
         $query->andFilterWhere(['like', 'serial_number', $this->serial_number])
-            ->andFilterWhere(['like', 'supplier_name', $this->supplier_name])
-            ->andFilterWhere(['like', 'supplier_address', $this->supplier_address])
-            ->andFilterWhere(['like', 'contact_person', $this->contact_person])
-            ->andFilterWhere(['like', 'contact_number', $this->contact_number])
+          
             ->andFilterWhere(['like', 'supplier_is_registered', $this->supplier_is_registered])
             ->andFilterWhere(['like', 'supplier_nursery', $this->supplier_nursery])
             ->andFilterWhere(['like', 'comments', $this->comments]);

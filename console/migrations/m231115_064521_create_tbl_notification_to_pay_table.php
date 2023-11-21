@@ -23,7 +23,7 @@ class m231115_064521_create_tbl_notification_to_pay_table extends Migration
             'matching_grant_amount' => $this->decimal(15, 2),
             'equity_amount' => $this->decimal(15, 2),
             'other_amount' => $this->decimal(15, 2),
-            'fk_office' => $this->integer(),
+            'fk_office_id' => $this->integer(),
             'fk_coordinator' => $this->bigInteger(),
             'fk_provincial_director' => $this->bigInteger(),
             'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')
@@ -45,17 +45,17 @@ class m231115_064521_create_tbl_notification_to_pay_table extends Migration
             'id',
             'RESTRICT'
         );
-        // creates index for column `fk_office`
+        // creates index for column `fk_office_id`
         $this->createIndex(
-            '{{%idx-tbl_notification_to_pay-fk_office}}',
+            '{{%idx-tbl_notification_to_pay-fk_office_id}}',
             '{{%tbl_notification_to_pay}}',
-            'fk_office'
+            'fk_office_id'
         );
         // add foreign key for table `{{%due_diligence_reports}}`
         $this->addForeignKey(
-            '{{%fk-tbl_notification_to_pay-fk_office}}',
+            '{{%fk-tbl_notification_to_pay-fk_office_id}}',
             '{{%tbl_notification_to_pay}}',
-            'fk_office',
+            'fk_office_id',
             '{{%office}}',
             'id',
             'RESTRICT'
@@ -111,12 +111,12 @@ class m231115_064521_create_tbl_notification_to_pay_table extends Migration
 
         //  foreign key for table `{{%due_diligence_reports}}`
         $this->dropForeignKey(
-            '{{%fk-tbl_notification_to_pay-fk_office}}',
+            '{{%fk-tbl_notification_to_pay-fk_office_id}}',
             '{{%tbl_notification_to_pay}}',
         );
-        // drop index for column `fk_office`
+        // drop index for column `fk_office_id`
         $this->dropIndex(
-            '{{%idx-tbl_notification_to_pay-fk_office}}',
+            '{{%idx-tbl_notification_to_pay-fk_office_id}}',
             '{{%tbl_notification_to_pay}}'
         );
         //  foreign key for table `{{%due_diligence_reports}}`

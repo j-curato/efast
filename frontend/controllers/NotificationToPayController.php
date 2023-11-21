@@ -3,21 +3,18 @@
 namespace frontend\controllers;
 
 use Yii;
+use app\models\NotificationToPay;
+use app\models\NotificationToPaySearch;
 use ErrorException;
-use app\models\Mgrfrs;
-use common\models\User;
-use yii\web\Controller;
-use app\models\Barangays;
-use yii\filters\VerbFilter;
-use app\models\MgrfrsSearch;
-use app\models\Municipalities;
 use yii\filters\AccessControl;
+use yii\web\Controller;
 use yii\web\NotFoundHttpException;
+use yii\filters\VerbFilter;
 
 /**
- * MgrfrsController implements the CRUD actions for Mgrfrs model.
+ * NotificationToPayController implements the CRUD actions for NotificationToPay model.
  */
-class MgrfrsController extends Controller
+class NotificationToPayController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -34,30 +31,28 @@ class MgrfrsController extends Controller
                             'view',
                         ],
                         'allow' => true,
-                        'roles' => ['view_mgrfr']
-                    ],
-                    [
-                        'actions' => [
-                            'create',
-                        ],
-                        'allow' => true,
-                        'roles' => ['create_mgrfr']
+                        'roles' => ['view_notification_to_pay'],
                     ],
                     [
                         'actions' => [
                             'update',
                         ],
                         'allow' => true,
-                        'roles' => ['update_mgrfr']
+                        'roles' => ['update_notification_to_pay'],
                     ],
                     [
                         'actions' => [
-                            'get-municipalities',
-                            'get-barangays',
-                            'search-mgrfr'
+                            'create',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['create_notification_to_pay'],
+                    ],
+                    [
+                        'actions' => [
+                            'search-notification-to-pay'
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_notification_to_pay', 'update_notification_to_pay'],
                     ],
                 ]
             ],
@@ -71,12 +66,12 @@ class MgrfrsController extends Controller
     }
 
     /**
-     * Lists all Mgrfrs models.
+     * Lists all NotificationToPay models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new MgrfrsSearch();
+        $searchModel = new NotificationToPaySearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -86,7 +81,7 @@ class MgrfrsController extends Controller
     }
 
     /**
-     * Displays a single Mgrfrs model.
+     * Displays a single NotificationToPay model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -99,20 +94,18 @@ class MgrfrsController extends Controller
     }
 
     /**
-     * Creates a new Mgrfrs model.
+     * Creates a new NotificationToPay model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new Mgrfrs();
-        $user_data = User::getUserDetails();
-        $model->fk_office_id = $user_data->employee->office->id;
+        $model = new NotificationToPay();
+
         if ($model->load(Yii::$app->request->post())) {
 
             try {
-                $txn = Yii::$app->db->beginTransaction();
-
+                $txn = YIi::$app->db->beginTransaction();
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
@@ -127,13 +120,13 @@ class MgrfrsController extends Controller
             }
         }
 
-        return $this->render('create', [
+        return $this->renderAjax('create', [
             'model' => $model,
         ]);
     }
 
     /**
-     * Updates an existing Mgrfrs model.
+     * Updates an existing NotificationToPay model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -142,11 +135,11 @@ class MgrfrsController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
         if ($model->load(Yii::$app->request->post())) {
 
             try {
-                $txn = Yii::$app->db->beginTransaction();
+                $txn = YIi::$app->db->beginTransaction();
+
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
@@ -161,13 +154,13 @@ class MgrfrsController extends Controller
             }
         }
 
-        return $this->render('update', [
+        return $this->renderAjax('update', [
             'model' => $model,
         ]);
     }
 
     /**
-     * Deletes an existing Mgrfrs model.
+     * Deletes an existing NotificationToPay model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -181,46 +174,26 @@ class MgrfrsController extends Controller
     // }
 
     /**
-     * Finds the Mgrfrs model based on its primary key value.
+     * Finds the NotificationToPay model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Mgrfrs the loaded model
+     * @return NotificationToPay the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Mgrfrs::findOne($id)) !== null) {
+        if (($model = NotificationToPay::findOne($id)) !== null) {
             return $model;
         }
+
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-
-    public function actionGetMunicipalities()
+    public function actionSearchNotificationToPay()
     {
-        if (Yii::$app->request->post()) {
-            return json_encode(Municipalities::getMunicipalitiesByProvinceId(YIi::$app->request->post('id')));
+        if (Yii::$app->request->get()) {
+            $page = Yii::$app->request->get("page") ?? 1;
+            $text = Yii::$app->request->get("text") ?? null;
+            return  NotificationToPay::searchSerialNumber($page, $text);
         }
-    }
-    public function actionGetBarangays()
-    {
-        if (Yii::$app->request->post()) {
-            return json_encode(Barangays::getBarangaysByMunicipalityId(YIi::$app->request->post('id')));
-        }
-    }
-    public function actionSearchMgrfr($page = null, $q = null, $id = null)
-    {
-        $limit = 5;
-        $offset = ($page - 1) * $limit;
-        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
-        $out = ['results' => ['id' => '', 'text' => '']];
-        if (!empty($id)) {
-        } else if (!is_null($q)) {
-            $data = Mgrfrs::searchSerialNumber($q, $offset, $limit);
-            $out['results'] = array_values($data);
-            if (!empty($page)) {
-                $out['pagination'] = ['more' => !empty($data) ? true : false];
-            }
-        }
-        return $out;
     }
 }

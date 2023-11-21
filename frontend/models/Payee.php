@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "payee".
@@ -151,5 +152,25 @@ class Payee extends \yii\db\ActiveRecord
     public function getBank()
     {
         return $this->hasOne(Banks::class, ['id' => 'fk_bank_id']);
+    }
+    public function getPayeeDetailsA()
+    {
+
+        return self::find()
+            ->addSelect([
+                new Expression('CAST(id AS UNSIGNED) as id'),
+                'account_name',
+                'registered_name',
+                'contact_person',
+                'registered_address',
+                'contact',
+                'remark',
+                'tin_number',
+                'fk_bank_id',
+                'account_num',
+            ])
+            ->where('id = :id', ['id' => $this->id])
+            ->asArray()
+            ->one();
     }
 }

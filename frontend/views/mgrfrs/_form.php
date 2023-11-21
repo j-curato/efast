@@ -29,14 +29,16 @@ $defaultBankBranchDetail = !empty($model->fk_bank_branch_detail_id) ?
         <div class="col-sm-4">
             <?= $form->field($model, 'organization_name')->textInput(['maxlength' => true]) ?>
         </div>
-        <div class="col-sm-2">
-            <?= $form->field($model, 'fk_office_id')->dropdownList(
-                ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
-                [
-                    'prompt' => 'Select Office'
-                ]
-            ) ?>
-        </div>
+        <?php if (Yii::$app->user->can('select_mgrfr_office')) : ?>
+            <div class="col-sm-2">
+                <?= $form->field($model, 'fk_office_id')->dropdownList(
+                    ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
+                    [
+                        'prompt' => 'Select Office'
+                    ]
+                ) ?>
+            </div>
+        <?php endif; ?>
         <div class="col-sm-2">
             <?= $form->field($model, 'fk_province_id')->dropdownList(
                 ArrayHelper::map(Provinces::find()->where('fk_region_id = 16')->asArray()->all(), 'id', 'province_name'),

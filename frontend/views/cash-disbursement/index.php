@@ -18,53 +18,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Html::a('Create Cash Disbursement', ['create'], ['class' => 'btn btn-success']) ?>
-        <!-- <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button> -->
+        <?= Html::a('<i class="fa fa-plus"></i> Create ', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
-    <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">UPLOAD Cash Disbursement</h4>
-                </div>
-                <div class='modal-body'>
-                    <center><a href="/afms/frontend/web/import_formats/Cash_Disbursement and DV Format.xlsx">Download Template Here to avoid error during Upload.</a></center>
-                    <hr>
-                    <?php
 
-
-                    $form = ActiveForm::begin([
-                        'action' => ['cash-disbursement/import'],
-                        'method' => 'post',
-                        'id' => 'formupload',
-                        'options' => [
-                            'enctype' => 'multipart/form-data',
-                        ], // important
-                    ]);
-                    // echo '<input type="file">';
-                    echo FileInput::widget([
-                        'name' => 'file',
-                        // 'options' => ['multiple' => true],
-                        'id' => 'fileupload',
-                        'pluginOptions' => [
-                            'showPreview' => true,
-                            'showCaption' => true,
-                            'showRemove' => true,
-                            'showUpload' => true,
-                        ]
-                    ]);
-
-                    ActiveForm::end();
-
-
-                    ?>
-
-                </div>
-            </div>
-        </div>
-    </div>
 
     <?php
     $gridColumn = [
@@ -133,7 +90,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'panel' => [
             'type' => Gridview::TYPE_PRIMARY,
-            'heading'=>'List of Cash Disbursements'
+            'heading' => 'List of Cash Disbursements'
         ],
         'pjax' => true,
         'toolbar' =>  [
