@@ -96,15 +96,15 @@ class PrAoq extends \yii\db\ActiveRecord
     public function getItems()
     {
         return Yii::$app->db->createCommand("SELECT
-                pr_aoq_entries.id as item_id,
-                pr_rfq_item.id as rfq_item_id,
+                CAST(pr_aoq_entries.id as CHAR(50)) as item_id,
+                CAST(pr_rfq_item.id as CHAR(50)) as rfq_item_id,
                 pr_stock.bac_code,
                 unit_of_measure.unit_of_measure,
                 pr_stock.stock_title,
                 IFNULL(REPLACE( pr_purchase_request_item.specification, '[n]', '<br>'),'') as specification,
                 pr_purchase_request_item.quantity,
                 UPPER(IFNULL(payee.registered_name,payee.account_name)) as payee,
-                payee.id as payee_id,
+                CAST(payee.id AS CHAR(50)) as payee_id,
                 pr_aoq_entries.amount,
                 pr_aoq_entries.remark,
                 pr_aoq_entries.is_lowest
