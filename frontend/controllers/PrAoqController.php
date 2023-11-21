@@ -229,7 +229,7 @@ class PrAoqController extends Controller
                 $bidders[] = [
                     'id' => $i['item_id'],
                     'unitCost' => $i['amount'],
-                    'maskedAmount' => number_format($i['amount'], 2),
+                    'maskedAmount' => number_format($i['amount'] ?? 0, 2),
                     'payeeId' => $i['payee_id'],
                     'remark' => $i['remark'],
                     'isLowest' => intval($i['is_lowest']) === 1 ? true : false,
