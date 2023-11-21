@@ -49,7 +49,7 @@ class BankBranchDetails extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'fk_bank_branch_id' => ' Bank Branch ID',
+            'fk_bank_branch_id' => ' Bank Branch ',
             'address' => 'Address',
             'bank_manager' => 'Bank Manager',
             'is_disabled' => 'Is Disabled',

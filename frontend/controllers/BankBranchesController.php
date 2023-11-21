@@ -24,12 +24,7 @@ class BankBranchesController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => [
-                    'index',
-                    'view',
-                    'update',
-                    'create',
-                ],
+
                 'rules' => [
                     [
                         'actions' => [

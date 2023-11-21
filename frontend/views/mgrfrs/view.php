@@ -261,13 +261,3 @@ $this->params['breadcrumbs'][] = $this->title;
         }
     }
 </style>
-
-<script>
-    $(document).ready(function() {
-
-        new Vue({
-            el: '#main',
-
-        })
-    })
-</script>
