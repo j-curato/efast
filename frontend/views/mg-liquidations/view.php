@@ -30,7 +30,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     <b>Serial Number :<?= $model->serial_number ?> </b>
                 </div>
                 <div class=" col-3 p-2 ">
-                    <b>Reporting Period :<?= $model->mgrfr->investment_type ?> </b>
+                    <b>Reporting Period :<?= $model->reporting_period ?> </b>
+                </div>
+                <div class=" col-3 p-2 ">
+                    <b>Investment Type :<?= $model->mgrfr->investment_type ?> </b>
                 </div>
 
             </div>
