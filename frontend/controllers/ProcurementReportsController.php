@@ -115,10 +115,10 @@ class ProcurementReportsController extends \yii\web\Controller
         $file_name = "liquidation_$id.xlsx";
 
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
-        $path = Yii::getAlias('@webroot') . '/exports';
+        $path = Yii::getAlias('@webroot') . '/transaction';
 
         $file = $path . "/liquidation_$id.xlsx";
-        $file2 = "exports/liquidation_$id.xlsx";
+        $file2 = "transaction/liquidation_$id.xlsx";
         $writer->save($file);
         header('Content-Type: application/octet-stream');
         header("Content-Transfer-Encoding: Binary");
