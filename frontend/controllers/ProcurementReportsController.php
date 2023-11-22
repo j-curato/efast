@@ -110,7 +110,7 @@ class ProcurementReportsController extends \yii\web\Controller
         }
 
         date_default_timezone_set('Asia/Manila');
-        $file_name = "detailed_dv_$year.xlsx";
+        $file_name = "pr_to_iar_tracking_$year.xlsx";
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
         $fileSaveLoc =  "transaction\\" . $file_name;
         $path = Yii::getAlias('@webroot') . '/transaction';
