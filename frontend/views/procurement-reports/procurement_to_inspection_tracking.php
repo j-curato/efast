@@ -5,6 +5,7 @@ use yii\helpers\Html;
 use kartik\grid\GridView;
 use kartik\widgets\ActiveForm;
 use kartik\widgets\FileInput;
+use yii\helpers\Url;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\PayeeSearch */
@@ -38,26 +39,66 @@ $this->params['breadcrumbs'][] = $this->title;
             'pr_is_cancelled',
             'quantity',
             'unit_cost',
-            'rfq_number',
+
+            [
+                'attribute' => 'rfq_number',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return !empty($model->rfq_number) ? Html::a($model->rfq_number, Url::to(["pr-rfq/view", 'id' => $model->rfq_id])) : '';
+                }
+            ],
             'rfq_date',
             'rfq_deadline',
             'rfq_is_cancelled',
-            'aoq_number',
+            [
+                'attribute' => 'aoq_number',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return !empty($model->aoq_number) ? Html::a($model->aoq_number, Url::to(["pr-aoq/view", 'id' => $model->aoq_id])) : '';
+                }
+            ],
             'aoq_is_cancelled',
             'payee_name',
             'bidAmount',
             'bidGrossAmount',
-            'po_number',
+            [
+                'attribute' => 'po_number',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return !empty($model->po_number) ? Html::a($model->po_number, Url::to(["pr-purchase-order/view", 'id' => $model->purchase_order_id])) : '';
+                }
+            ],
             'po_is_cancelled',
             'poTransmittalNumber',
             'poTransmittalDate',
-            'rfi_number',
+            [
+                'attribute' => 'rfi_number',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    return !empty($model->rfi_number) ? Html::a($model->rfi_number, Url::to(["request-for-inspection/view", 'id' => $model->request_for_inspection_id])) : '';
+                }
+            ],
             'date',
             'inspection_from',
             'inspection_to',
             'inspected_quantity',
-            'ir_number',
-            'iar_number',
+
+            [
+                'attribute' => 'ir_number',
+                'format' => 'raw',
+                'value' => function ($model) {
+
+                    return !empty($model->ir_number) ? Html::a($model->ir_number, Url::to(["inspection-report/view", 'id' => $model->inspection_report_id])) : '';
+                }
+            ],
+            [
+                'attribute' => 'iar_number',
+                'format' => 'raw',
+                'value' => function ($model) {
+
+                    return !empty($model->iar_number) ? Html::a($model->iar_number, Url::to(["iar/view", 'id' => $model->iar_id])) : '';
+                }
+            ],
             'iarTransmittalNumber',
             'iarTransmittalDate',
         ],
