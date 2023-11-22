@@ -659,7 +659,7 @@ class PrPurchaseRequestController extends Controller
                 //     $model->pr_number = $this->getPrNumber($model->date, $model->fk_office_id, $model->fk_division_id);
                 // }
                 $check_rfqs = $this->checkRfq($model->id);
-                if (!empty($check_rfqs)) {
+                if (!empty($check_rfqs) && !Yii::$app->user->can('super-user')) {
                     throw new ErrorException('Unable to Update PR No. has RFQ"s.');
                 }
                 $allotment_items_ttl = array_column($allotment_items, 'gross_amount');
