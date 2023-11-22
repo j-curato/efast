@@ -112,8 +112,8 @@ class ProcurementReportsController extends \yii\web\Controller
         date_default_timezone_set('Asia/Manila');
         $file_name = "detailed_dv_$year.xlsx";
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
-        $fileSaveLoc =  "transaction\\" . $file_name;
-        $path = Yii::getAlias('@webroot') . '/transaction';
+        $fileSaveLoc =  "exports\\" . $file_name;
+        $path = Yii::getAlias('@webroot') . '/exports';
         $file = $path . "/$file_name";
         $writer->save($file);
         header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
