@@ -109,29 +109,11 @@ class ProcurementReportsController extends \yii\web\Controller
             $row++;
         }
 
-
-        date_default_timezone_set('Asia/Manila');
-        $id = uniqid() . '_' . date('Y-m-d h A');
-        $file_name = "liquidation_$id.xlsx";
-
-        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
-        $path = Yii::getAlias('@webroot') . '/transaction';
-
-        $file = $path . "/liquidation_$id.xlsx";
-        $file2 = "transaction/liquidation_$id.xlsx";
-        $writer->save($file);
-        header('Content-Type: application/octet-stream');
-        header("Content-Transfer-Encoding: Binary");
-        header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
-
-        return json_encode($file2);
-
-
         date_default_timezone_set('Asia/Manila');
         $file_name = "detailed_dv_$year.xlsx";
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
-        $fileSaveLoc =  "exports\\" . $file_name;
-        $path = Yii::getAlias('@webroot') . '/exports';
+        $fileSaveLoc =  "transaction\\" . $file_name;
+        $path = Yii::getAlias('@webroot') . '/transaction';
         $file = $path . "/$file_name";
         $writer->save($file);
         header("Content-disposition: attachment; filename=\"" . $file_name . "\"");
@@ -139,10 +121,6 @@ class ProcurementReportsController extends \yii\web\Controller
         header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
         header('Pragma: public'); // HTTP/1.0
         return  json_encode($fileSaveLoc);
-
-
-
-
 
         exit();
     }
