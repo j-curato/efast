@@ -19,7 +19,7 @@ use yii\bootstrap4\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
     <div class="row">
-        <div class="col-sm-3">
+        <div class="col-sm-6">
             <?= $form->field($model, 'date_requested')->widget(
                 DatePicker::class,
                 ['pluginOptions' => [
@@ -28,7 +28,7 @@ use yii\bootstrap4\ActiveForm;
                 ]]
             ) ?>
         </div>
-        <div class="col-sm-3">
+        <div class="col-sm-6">
             <?= $form->field($model, 'date_accomplished')->widget(
                 DatePicker::class,
                 ['pluginOptions' => [
@@ -38,7 +38,7 @@ use yii\bootstrap4\ActiveForm;
             ) ?>
         </div>
 
-        <div class="col-sm-3">
+        <div class="col-sm-6">
             <?= $form->field($model, 'fk_division_id')->widget(Select2::class, [
                 'data' => ArrayHelper::map(Divisions::find()->asArray()->all(), 'id', 'division'),
                 'pluginOptions' => [
@@ -47,8 +47,7 @@ use yii\bootstrap4\ActiveForm;
             ]) ?>
 
         </div>
-
-        <div class="col-sm-3">
+        <div class="col-sm-6">
             <?= $form->field($model, 'type')->widget(Select2::class, [
                 'data' => [
                     'ir' => 'Incident Request',
@@ -61,11 +60,8 @@ use yii\bootstrap4\ActiveForm;
         </div>
 
     </div>
-
-
     <div class="row">
         <div class="col-sm-6">
-
             <?= $form->field($model, 'fk_requested_by')->widget(Select2::class, [
                 'data' => ArrayHelper::map(MyHelper::getEmployee($model->fk_requested_by, 'all'), 'employee_id', 'employee_name'),
                 'options' => ['placeholder' => 'Search for a Employee ...'],
