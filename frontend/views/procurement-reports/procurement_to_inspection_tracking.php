@@ -39,7 +39,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'pr_is_cancelled',
             'quantity',
             'unit_cost',
-
             [
                 'attribute' => 'rfq_number',
                 'format' => 'raw',
