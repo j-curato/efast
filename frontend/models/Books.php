@@ -83,4 +83,12 @@ class Books extends \yii\db\ActiveRecord
     {
         return $this->hasMany(RecordAllotments::class, ['book_id' => 'id']);
     }
+    public static function getBookById($id)
+    {
+
+        return self::find()
+            ->andWhere(['id' => $id])
+            ->asArray()
+            ->one();
+    }
 }

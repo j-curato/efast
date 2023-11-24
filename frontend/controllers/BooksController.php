@@ -173,4 +173,12 @@ class BooksController extends Controller
         $na = (new \yii\db\Query())->select('*')->from('books')->all();
         return json_encode($na);
     }
+    public function actionGetBookDetails()
+    {
+        if (Yii::$app->request->post()) {
+
+            $id = Yii::$app->request->post('id');
+            return json_encode(Books::getBookById($id));
+        }
+    }
 }
