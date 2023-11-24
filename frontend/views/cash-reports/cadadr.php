@@ -4,7 +4,6 @@
 use app\models\Books;
 use yii\helpers\Html;
 use kartik\date\DatePicker;
-use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use aryelds\sweetalert\SweetAlertAsset;
 
@@ -17,11 +16,8 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index " style="background-color: white;padding:20px" id="mainVue">
 
-
-
     <form id="filter">
         <div class="row">
-
             <div class="col-sm-3">
                 <label for="from_reporting_period"> From Reporting Period</label>
                 <?php
@@ -74,7 +70,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
             <div class="col-sm-2" style="margin-top: 2.05rem;">
-                <button class="btn btn-success" id="generate">Generate</button>
+                <button class="btn btn-success" id="generate" type="button">Generate</button>
             </div>
 
         </div>
@@ -303,7 +299,6 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                     }
                     axios.post(url, data)
                         .then(res => {
-                            console.log(res)
                             this.book_details = res.data
                         })
                         .catch(err => {
@@ -312,53 +307,53 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
                 }
             }
         })
-    });
-    var mfo = []
-    var allotment_balances = []
-    $('#generate').click((e) => {
-        e.preventDefault();
-        $('#con').hide()
-        $('#dots5').show()
-        $.ajax({
-            type: 'POST',
-            url: window.location.href,
-            data: $("#filter").serialize(),
-            success: function(data) {
-                var res = JSON.parse(data)
-                console.log(res)
-                // display counts per mode of payments
-                let t = 0;
-                $('#mode_of_payment_count tbody').html('')
-                $.each(res.per_mode_of_payment, function(key, val) {
-                    if (key) {
-                        $('#mode_of_payment_count tbody').append(`<tr>
+        var mfo = []
+        var allotment_balances = []
+        $('#generate').click((e) => {
+            e.preventDefault();
+            $('#con').hide()
+            $('#dots5').show()
+            $.ajax({
+                type: 'POST',
+                url: window.location.href,
+                data: $("#filter").serialize(),
+                success: function(data) {
+                    var res = JSON.parse(data)
+                    console.log(res)
+                    // display counts per mode of payments
+                    let t = 0;
+                    $('#mode_of_payment_count tbody').html('')
+                    $.each(res.per_mode_of_payment, function(key, val) {
+                        if (key) {
+                            $('#mode_of_payment_count tbody').append(`<tr>
                         <th>${key}</th>
                         <th>${val.length}</th>
                     </tr>`)
-                        t += val.length
-                    }
-                })
-                console.log(t)
+                            t += val.length
+                        }
+                    })
+                    console.log(t)
 
-                const frm = new Date($('#from_reporting_period').val())
-                const to = new Date($('#to_reporting_period').val())
-                const month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+                    const frm = new Date($('#from_reporting_period').val())
+                    const to = new Date($('#to_reporting_period').val())
+                    const month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-                const frm_prd = month[frm.getMonth()] + ', ' + frm.getFullYear()
-                const to_prd = month[to.getMonth()] + ', ' + to.getFullYear()
-                let f_prd = frm_prd == to_prd ? to_prd : frm_prd + ' to ' + to_prd;
+                    const frm_prd = month[frm.getMonth()] + ', ' + frm.getFullYear()
+                    const to_prd = month[to.getMonth()] + ', ' + to.getFullYear()
+                    let f_prd = frm_prd == to_prd ? to_prd : frm_prd + ' to ' + to_prd;
 
-                $('#period').text('As of ' + f_prd)
-                displayData(res)
-                setTimeout(() => {
-                    $('#con').show()
-                    $('#dots5').hide()
-                }, 2000);
+                    $('#period').text('As of ' + f_prd)
+                    displayData(res)
+                    setTimeout(() => {
+                        $('#con').show()
+                        $('#dots5').hide()
+                    }, 2000);
 
-            }
+                }
 
+            })
         })
-    })
+    });
 
     // function displayCancelledChecks(res) {
     //     $('#cancelled_checks_table tbody').html('')
