@@ -2,10 +2,11 @@
 <?php
 
 use app\models\Books;
-use aryelds\sweetalert\SweetAlertAsset;
+use yii\helpers\Html;
 use kartik\date\DatePicker;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
+use aryelds\sweetalert\SweetAlertAsset;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\JevPreparationSearch */
@@ -14,7 +15,7 @@ use yii\helpers\ArrayHelper;
 $this->title = "CADADR";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="jev-preparation-index " style="background-color: white;padding:20px">
+<div class="jev-preparation-index " style="background-color: white;padding:20px" id="mainVue">
 
 
 
@@ -22,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="row">
 
             <div class="col-sm-3">
-                <label for="from_reporting_period"> From Reporting Peiod</label>
+                <label for="from_reporting_period"> From Reporting Period</label>
                 <?php
 
                 echo DatePicker::widget([
@@ -40,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             </div>
             <div class="col-sm-3">
-                <label for="to_reporting_period"> To Reporting Peiod</label>
+                <label for="to_reporting_period"> To Reporting Period</label>
                 <?php
                 echo DatePicker::widget([
                     'name' => 'to_reporting_period',
@@ -57,15 +58,17 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
             <div class="col-sm-3">
                 <label for="book"> Books</label>
-                <?php
-                echo Select2::widget([
-                    'name' => 'book_id',
-                    'id' => 'book',
-                    'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
-                    'pluginOptions' => [
-                        'placeholder' => 'Select Book'
+                <?= Html::dropDownList(
+                    'book_id',
+                    null,
+                    ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
+                    [
+                        'prompt' => 'Select an option', 'class' => 'form-control',
+                        'v-model' => 'book_id',
+                        '@change' => 'getBookDetails'
                     ]
-                ])
+                );
+
                 ?>
             </div>
 
@@ -102,7 +105,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
                     <th class='head' colspan="">Bank Name:</th>
-                    <th class='head' colspan="7">LAND BANK OF THE PHILIPPINES (MDS ACCT# 101-2036-90014-1)</th>
+                    <th class='head' colspan="7">LAND BANK OF THE PHILIPPINES (MDS ACCT# {{book_details.account_number}})</th>
                     <th class='head' colspan="2"><span id="period"></span></th>
                     <th class='head' colspan="2">Sheet Number:</th>
                     <th class='head' colspan="1"> 15/</th>
@@ -276,12 +279,40 @@ $this->params['breadcrumbs'][] = $this->title;
 
     }
 </style>
-
 <?php
 $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 <script>
+    $(document).ready(function() {
+
+        new Vue({
+            el: "#mainVue",
+            data: {
+                book_account_number: null,
+                book_id: null,
+                book_details: {},
+            },
+            methods: {
+
+                getBookDetails() {
+                    const url = window.location.pathname + '?r=books/get-book-details'
+                    const data = {
+                        _csrf: "<?= Yii::$app->request->getCsrfToken() ?>",
+                        id: this.book_id
+                    }
+                    axios.post(url, data)
+                        .then(res => {
+                            console.log(res)
+                            this.book_details = res.data
+                        })
+                        .catch(err => {
+                            console.log(err)
+                        })
+                }
+            }
+        })
+    });
     var mfo = []
     var allotment_balances = []
     $('#generate').click((e) => {
