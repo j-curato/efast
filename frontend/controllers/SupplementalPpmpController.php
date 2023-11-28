@@ -392,68 +392,68 @@ class SupplementalPpmpController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    // public function actionCreate()
-    // {
-    //     $model = new SupplementalPpmp();
-    //     $model->fk_approved_by = '99684622555676858';
-    //     $model->fk_certified_funds_available_by = '99684622555676773';
-    //     if (Yii::$app->request->isPost) {
+    public function actionCreate()
+    {
+        $model = new SupplementalPpmp();
+        $model->fk_approved_by = '99684622555676858';
+        $model->fk_certified_funds_available_by = '99684622555676773';
+        if (Yii::$app->request->isPost) {
 
-    //         try {
-    //             $transaction = Yii::$app->db->beginTransaction();
-    //             $cse_items = !empty($_POST['cse_items']) ? $_POST['cse_items'] : [];
-    //             $non_cse_items = !empty($_POST['ppmp_non_cse']) ? $_POST['ppmp_non_cse'] : [];
-    //             $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT() % 9223372036854775807")->queryScalar();
-    //             $model->date = date("Y-m-d");
-    //             $model->budget_year = $_POST['budget_year'];
-    //             $model->cse_type = $_POST['cse_type'];
-    //             $model->fk_prepared_by = $_POST['fk_prepared_by'];
-    //             $model->fk_reviewed_by = $_POST['fk_reviewed_by'];
-    //             $model->fk_division_program_unit_id = $_POST['fk_division_program_unit_id'];
-    //             $model->fk_approved_by = $_POST['fk_approved_by'];
-    //             $model->fk_certified_funds_available_by = $_POST['fk_certified_funds_available_by'];
-    //             $model->fk_created_by = Yii::$app->user->identity->id;
-    //             if (Yii::$app->user->can('ro_procurement_admin')) {
-    //                 $model->fk_division_id = $_POST['fk_division_id'];
-    //                 $model->fk_office_id = $_POST['fk_office_id'];
-    //             } else {
-    //                 $user_data = User::getUserDetails();
-    //                 $model->fk_office_id = $user_data->employee->office->id;
-    //                 $model->fk_division_id =  $_POST['fk_division_id'] ?? $user_data->employee->empDivision->id;
-    //             }
-    //             // $model->serial_number = $this->serialNumber($model->budget_year, $model->cse_type, $model->fk_office_id);
-    //             $model->is_supplemental = 1;
+            try {
+                $transaction = Yii::$app->db->beginTransaction();
+                $cse_items = !empty($_POST['cse_items']) ? $_POST['cse_items'] : [];
+                $non_cse_items = !empty($_POST['ppmp_non_cse']) ? $_POST['ppmp_non_cse'] : [];
+                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT() % 9223372036854775807")->queryScalar();
+                $model->date = date("Y-m-d");
+                $model->budget_year = $_POST['budget_year'];
+                $model->cse_type = $_POST['cse_type'];
+                $model->fk_prepared_by = $_POST['fk_prepared_by'];
+                $model->fk_reviewed_by = $_POST['fk_reviewed_by'];
+                $model->fk_division_program_unit_id = $_POST['fk_division_program_unit_id'];
+                $model->fk_approved_by = $_POST['fk_approved_by'];
+                $model->fk_certified_funds_available_by = $_POST['fk_certified_funds_available_by'];
+                $model->fk_created_by = Yii::$app->user->identity->id;
+                if (Yii::$app->user->can('ro_procurement_admin')) {
+                    $model->fk_division_id = $_POST['fk_division_id'];
+                    $model->fk_office_id = $_POST['fk_office_id'];
+                } else {
+                    $user_data = User::getUserDetails();
+                    $model->fk_office_id = $user_data->employee->office->id;
+                    $model->fk_division_id =  $_POST['fk_division_id'] ?? $user_data->employee->empDivision->id;
+                }
+                // $model->serial_number = $this->serialNumber($model->budget_year, $model->cse_type, $model->fk_office_id);
+                $model->is_supplemental = 1;
 
-    //             if (!$model->validate()) {
-    //                 throw new ErrorException(json_encode($model->errors));
-    //             }
-    //             if (!$model->save(false)) {
-    //                 throw new ErrorException('PPMP Save Failed');
-    //             }
-    //             if ($model->cse_type === 'cse') {
-    //                 $insert_cse = $this->insertCseItems($model->id, $cse_items);
-    //                 if ($insert_cse !== true) {
-    //                     throw new ErrorException($insert_cse);
-    //                 }
-    //             } else if ($model->cse_type === 'non_cse') {
-    //                 $insert_non_cse = $this->insertNonCseItems($model->id, $non_cse_items);
-    //                 if ($insert_non_cse !== true) {
-    //                     throw new ErrorException($insert_non_cse);
-    //                 }
-    //             }
-    //             $transaction->commit();
-    //             return $this->redirect(['view', 'id' => $model->id]);
-    //         } catch (ErrorException $e) {
-    //             $transaction->rollBack();
-    //             return json_encode(['isSuccess' => false, 'error_message' => $e->getMessage()]);
-    //         }
-    //     }
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('PPMP Save Failed');
+                }
+                if ($model->cse_type === 'cse') {
+                    $insert_cse = $this->insertCseItems($model->id, $cse_items);
+                    if ($insert_cse !== true) {
+                        throw new ErrorException($insert_cse);
+                    }
+                } else if ($model->cse_type === 'non_cse') {
+                    $insert_non_cse = $this->insertNonCseItems($model->id, $non_cse_items);
+                    if ($insert_non_cse !== true) {
+                        throw new ErrorException($insert_non_cse);
+                    }
+                }
+                $transaction->commit();
+                return $this->redirect(['view', 'id' => $model->id]);
+            } catch (ErrorException $e) {
+                $transaction->rollBack();
+                return json_encode(['isSuccess' => false, 'error_message' => $e->getMessage()]);
+            }
+        }
 
-    //     return $this->render('create', [
-    //         'model' => $model,
-    //         'action' => 'supplemental-ppmp/create',
-    //     ]);
-    // }
+        return $this->render('create', [
+            'model' => $model,
+            'action' => 'supplemental-ppmp/create',
+        ]);
+    }
 
     /**
      * Updates an existing SupplementalPpmp model.
