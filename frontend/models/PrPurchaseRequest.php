@@ -65,6 +65,7 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
             [['pr_number'], 'string', 'max' => 255],
             [['pr_number'], 'unique'],
             [['date'], 'validateDate'],
+            [['budget_year'], 'validateBudgetYear'],
             [[
                 'date',
                 'book_id',
@@ -89,7 +90,7 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
         $targetDate = '2024-01-01';
         $selectedDate = $this->$attribute;
 
-        if ($this->isNewRecord && strtotime($selectedDate) < strtotime($targetDate) && strtotime(date('Y-m-d')) > strtotime(date('2023-11-28'))) {
+        if ($this->isNewRecord && strtotime($selectedDate) < strtotime($targetDate) && strtotime(date('Y-m-d')) > strtotime(date('2023-11-27'))) {
             $this->addError($attribute, 'Please select a date on or after ' . $targetDate);
         }
 
@@ -112,7 +113,7 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
 
         if (
             $this->isNewRecord
-            && strtotime(date('Y-m-d')) > strtotime(date('2023-11-28'))
+            && strtotime(date('Y-m-d')) > strtotime(date('2023-11-27'))
             && intval($this->$attribute) < 2024
         ) {
             $this->addError($attribute, 'Please select a Budget Year on or after 2024');
