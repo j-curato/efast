@@ -482,74 +482,74 @@ class PrPurchaseRequestController extends Controller
     }
 
 
-    public function actionCreate()
-    {
-        $model = new PrPurchaseRequest();
-        $user_data = User::getUserDetails();
-        $model->fk_office_id =  $user_data->employee->office->id ?? '';
-        $model->fk_division_id =  $user_data->employee->empDivision->id ?? '';
+    // public function actionCreate()
+    // {
+    //     $model = new PrPurchaseRequest();
+    //     $user_data = User::getUserDetails();
+    //     $model->fk_office_id =  $user_data->employee->office->id ?? '';
+    //     $model->fk_division_id =  $user_data->employee->empDivision->id ?? '';
 
 
-        if ($model->load(Yii::$app->request->post())) {
-            try {
-                $transaction = Yii::$app->db->beginTransaction();
-                $pr_items = Yii::$app->request->post('pr_items') ?? [];
-                $allotment_items = Yii::$app->request->post('allotment_items') ?? [];
-                if (!Yii::$app->user->can('change_purchase_request_date')) {
-                    $date_now = new DateTime();
-                    $model->date = $date_now->format('Y-m-d');
-                }
-                // $model->pr_number = $this->getPrNumber($model->date, $model->fk_office_id, $model->fk_division_id);
+    //     if ($model->load(Yii::$app->request->post())) {
+    //         try {
+    //             $transaction = Yii::$app->db->beginTransaction();
+    //             $pr_items = Yii::$app->request->post('pr_items') ?? [];
+    //             $allotment_items = Yii::$app->request->post('allotment_items') ?? [];
+    //             if (!Yii::$app->user->can('change_purchase_request_date')) {
+    //                 $date_now = new DateTime();
+    //                 $model->date = $date_now->format('Y-m-d');
+    //             }
+    //             // $model->pr_number = $this->getPrNumber($model->date, $model->fk_office_id, $model->fk_division_id);
 
-                $allotment_items_ttl = array_column($allotment_items, 'gross_amount');
-                if (strtolower($model->office->office_name) == 'ro') {
-                    $validate_ttl = $this->calculateItemsTotal($pr_items, $allotment_items_ttl);
-                    if ($validate_ttl !== true) {
-                        throw new ErrorException(json_encode('The sum of the allotments does not match the sum of the specifications.'));
-                    }
-                }
+    //             $allotment_items_ttl = array_column($allotment_items, 'gross_amount');
+    //             if (strtolower($model->office->office_name) == 'ro') {
+    //                 $validate_ttl = $this->calculateItemsTotal($pr_items, $allotment_items_ttl);
+    //                 if ($validate_ttl !== true) {
+    //                     throw new ErrorException(json_encode('The sum of the allotments does not match the sum of the specifications.'));
+    //                 }
+    //             }
 
-                if (!$model->validate()) {
-                    throw new ErrorException(json_encode($model->errors));
-                }
-                if (!$model->save(false)) {
-                    throw new ErrorException('PR save failed');
-                }
+    //             if (!$model->validate()) {
+    //                 throw new ErrorException(json_encode($model->errors));
+    //             }
+    //             if (!$model->save(false)) {
+    //                 throw new ErrorException('PR save failed');
+    //             }
 
-                $insert_items = $this->insertPrItems(
-                    $model->id,
-                    $pr_items
-                );
-                if ($insert_items !== true) {
-                    throw new ErrorException($insert_items);
-                }
+    //             $insert_items = $this->insertPrItems(
+    //                 $model->id,
+    //                 $pr_items
+    //             );
+    //             if ($insert_items !== true) {
+    //                 throw new ErrorException($insert_items);
+    //             }
 
-                if (strtolower($model->office->office_name) == 'ro') {
-                    $insert_allotments = $this->insertPrAllotments($model->id, $allotment_items);
-                    if ($insert_allotments !== true) {
-                        throw new ErrorException($insert_allotments);
-                    }
-                }
+    //             if (strtolower($model->office->office_name) == 'ro') {
+    //                 $insert_allotments = $this->insertPrAllotments($model->id, $allotment_items);
+    //                 if ($insert_allotments !== true) {
+    //                     throw new ErrorException($insert_allotments);
+    //                 }
+    //             }
 
-                $transaction->commit();
-                return $this->redirect(['view', 'id' => $model->id]);
-            } catch (ErrorException $e) {
-                $transaction->rollBack();
-                return  $e->getMessage();
-            }
-        }
+    //             $transaction->commit();
+    //             return $this->redirect(['view', 'id' => $model->id]);
+    //         } catch (ErrorException $e) {
+    //             $transaction->rollBack();
+    //             return  $e->getMessage();
+    //         }
+    //     }
 
-        return $this->render('create', [
-            'model' => $model,
-            'action' => 'pr-purchase-request/create',
-            'requested_by' => [],
-            'approved_by' => [],
-            'divisions_list' => Yii::$app->memem->getDivisions(),
-            'mfo_list' => Yii::$app->memem->getMfoPapCode(),
-            'fund_source_list' => Yii::$app->memem->getFundSources(),
-            'offices' => Yii::$app->memem->getOffices(),
-        ]);
-    }
+    //     return $this->render('create', [
+    //         'model' => $model,
+    //         'action' => 'pr-purchase-request/create',
+    //         'requested_by' => [],
+    //         'approved_by' => [],
+    //         'divisions_list' => Yii::$app->memem->getDivisions(),
+    //         'mfo_list' => Yii::$app->memem->getMfoPapCode(),
+    //         'fund_source_list' => Yii::$app->memem->getFundSources(),
+    //         'offices' => Yii::$app->memem->getOffices(),
+    //     ]);
+    // }
     private function clonePurchaseRequest($model_id, $new_date)
     {
         try {
