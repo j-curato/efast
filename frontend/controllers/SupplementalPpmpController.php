@@ -394,10 +394,17 @@ class SupplementalPpmpController extends Controller
      */
     public function actionCreate()
     {
+
+        if (strtotime(date('Y-m-d')) > strtotime(date('2023-11-28'))) {
+            return $this->redirect(['index']);
+        }
         $model = new SupplementalPpmp();
         $model->fk_approved_by = '99684622555676858';
         $model->fk_certified_funds_available_by = '99684622555676773';
+
         if (Yii::$app->request->isPost) {
+
+
             try {
                 $transaction = Yii::$app->db->beginTransaction();
                 $cse_items = !empty($_POST['cse_items']) ? $_POST['cse_items'] : [];

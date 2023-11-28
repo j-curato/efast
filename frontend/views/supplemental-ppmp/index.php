@@ -73,7 +73,13 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
 
     <p>
-        <?= Html::a('Create Supplemental Ppmp', ['create'], ['class' => 'btn btn-success']) ?>
+        <?php
+
+        if (strtotime(date('Y-m-d')) <= strtotime(date('2023-11-28'))) {
+            echo Html::a('Create Supplemental Ppmp', ['create'], ['class' => 'btn btn-success']);
+        }
+
+        ?>
         <?= Yii::$app->user->can('import_supplemental_ppmp') ? Html::a('Import', ['create'], [
             'class' => 'btn btn-warning',
             'data-target' => "#uploadCsemodal", 'data-toggle' => "modal"
