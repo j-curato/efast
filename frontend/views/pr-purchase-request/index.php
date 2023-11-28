@@ -67,17 +67,16 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Action',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return MyHelper::gridDefaultAction($model->id,'none');
+                    return MyHelper::gridDefaultAction($model->id, 'none');
                 }
             ]
         ];
     ?>
-
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
         'panel' => [
-            'type' => Gridview::TYPE_PRIMARY,
+            'type' => GridView::TYPE_PRIMARY,
             'heading' => 'Purchase Requests'
         ],
         'toolbar' => [
@@ -110,8 +109,6 @@ $this->params['breadcrumbs'][] = $this->title;
         'pjax' => true,
         'columns' => $cols,
     ]); ?>
-
-
 </div>
 <style>
     .grid-view td {
@@ -132,7 +129,6 @@ $this->params['breadcrumbs'][] = $this->title;
                     id: 1
                 },
                 success: function(data) {
-
                     console.log(data)
                     if (data == 'success') {
                         // location.reload()
