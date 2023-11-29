@@ -2,6 +2,7 @@
 
 use yii\helpers\Url;
 use yii\helpers\Html;
+use app\models\Office;
 use yii\web\JqueryAsset;
 use yii\web\JsExpression;
 use kartik\widgets\Select2;
@@ -19,8 +20,10 @@ use aryelds\sweetalert\SweetAlertAsset;
     <?php $form = ActiveForm::begin(); ?>
 
 
-    <?= $form->field($model, 'fk_office_id')->textInput() ?>
-
+    <?= $form->field($model, 'fk_office_id')->dropDownList(
+        ArrayHelper::map(Office::getOfficesA(), 'id', 'office_name'),
+        ['prompt' => 'Select Office']
+    ) ?>
     <div class="col-12">
         <?= $form->field($model, 'fk_fmi_subproject_id')->widget(Select2::class, [
             'data' => ArrayHelper::map($subprojectData, 'id', 'serial_number'),
@@ -56,7 +59,25 @@ use aryelds\sweetalert\SweetAlertAsset;
 
     <?= $form->field($model, 'certificate_of_turnover_link')->textarea(['rows' => 6]) ?>
 
-    <?= $form->field($model, 'reporting_period')->textInput(['maxlength' => true]) ?>
+
+    <?= $form->field($model, 'reporting_period')->widget(DatePicker::class, [
+        'pluginOptions' => [
+            'format' => 'yyyy-mm',
+            'todayHighlight' => true,
+            'autoclose' => true,
+            'todayHighlight' => true,
+            'minViewMode' => 'months'
+        ]
+    ]) ?>
+    <?= $form->field($model, 'date')->widget(DatePicker::class, [
+        'pluginOptions' => [
+            'format' => 'yyyy-mm-dd',
+            'todayHighlight' => true,
+            'autoclose' => true,
+            'todayBtn' => true,
+            'todayHighlight' => true,
+        ]
+    ]) ?>
 
     <?= $form->field($model, 'created_at')->textInput() ?>
 
