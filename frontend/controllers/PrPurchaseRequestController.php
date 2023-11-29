@@ -645,6 +645,9 @@ class PrPurchaseRequestController extends Controller
         if ($model->is_final && !Yii::$app->user->can('super-user')) {
             return $this->goHome();
         }
+        if (strtotime(date('Y-m-d')) > strtotime(date('2023-11-28'))) {
+            return $this->redirect(['index']);
+        }
         if ($model->load(Yii::$app->request->post())) {
 
             try {
