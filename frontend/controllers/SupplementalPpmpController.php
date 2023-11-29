@@ -472,7 +472,11 @@ class SupplementalPpmpController extends Controller
     {
         $model = $this->findModel($id);
 
-        if (strtotime(date('Y-m-d')) > strtotime(date('2023-11-28')) && !Yii::$app->user->can('super-user')) {
+        if (
+            strtotime(date('Y-m-d')) > strtotime(date('2023-11-28'))
+            && !Yii::$app->user->can('super-user')
+            && intval($model->budget_year) < 2024
+        ) {
             return $this->redirect(['index']);
         }
         if (Yii::$app->request->post()) {
@@ -496,7 +500,6 @@ class SupplementalPpmpController extends Controller
                     $model->fk_office_id = $user_data->employee->office->id;
                     $model->fk_division_id =  $_POST['fk_division_id'] ?? $user_data->employee->empDivision->id;
                 }
-
 
                 if (intval($model->is_final) === 1) {
                     throw new ErrorException('Cannot Update Supplemental is Already Final');
