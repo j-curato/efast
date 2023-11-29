@@ -472,7 +472,7 @@ class SupplementalPpmpController extends Controller
     {
         $model = $this->findModel($id);
 
-        if (strtotime(date('Y-m-d')) > strtotime(date('2023-11-28'))) {
+        if (strtotime(date('Y-m-d')) > strtotime(date('2023-11-28')) && !Yii::$app->user->can('super-user')) {
             return $this->redirect(['index']);
         }
         if (Yii::$app->request->post()) {
@@ -541,7 +541,7 @@ class SupplementalPpmpController extends Controller
                     vw_supplemental_cse_prs.ppmp_id")
                         ->bindValue(':id', $model->id)
                         ->queryScalar();
-                    if (!empty($check_pr)) {
+                    if (!empty($check_pr) && !Yii::$app->user->can('super-user')) {
                         throw new ErrorException("This item cannot be edited because a purchase request has already been made for it. Please advise the procurement unit to cancel Purchase Request No./s $check_pr");
                     }
                     $insert_cse = $this->insertCseItems($model->id, $cse_items);
@@ -558,7 +558,7 @@ class SupplementalPpmpController extends Controller
                         ->bindValue(':id', $model->id)
                         ->queryScalar();
 
-                    if (!empty($check_pr)) {
+                    if (!empty($check_pr) && !Yii::$app->user->can('super-user')) {
                         throw new ErrorException("This item cannot be edited because a purchase request has already been made for it. Please advise the procurement unit to cancel Purchase Request No./s $check_pr");
                     }
                     $insert_non_cse = $this->insertNonCseItems($model->id, $non_cse_items);
