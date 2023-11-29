@@ -290,7 +290,7 @@ class PropertyController extends Controller
         $out = ['results' => ['id' => '', 'text' => '']];
         if (!is_null($q)) {
             $query = new Query();
-            $query->select('property.id as id, property.property_number AS text')
+            $query->select('CAST(property.id AS CHAR(50)) as id, property.property_number AS text')
                 ->from('property');
             if ($withOPD) {
                 $query->join("JOIN", 'other_property_details', 'property.id = other_property_details.fk_property_id');
