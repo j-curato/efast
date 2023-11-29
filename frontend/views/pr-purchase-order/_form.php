@@ -28,15 +28,21 @@ $requested_by = '';
 $inspected_by = '';
 $aoq_id = '';
 $model_id = '';
-if (!empty($model->id)) {
+
+if (!empty($model->fk_auth_official)) {
     $auth_official_query   = Yii::$app->db->createCommand("SELECT employee_id,UPPER(employee_name)  as employee_name FROM employee_search_view WHERE employee_id = :id")
         ->bindValue(':id', $model->fk_auth_official)
         ->queryAll();
     $auth_official = ArrayHelper::map($auth_official_query, 'employee_id', 'employee_name');
+}
+if (!empty($model->fk_accounting_unit)) {
     $accounting_unit_query   = Yii::$app->db->createCommand("SELECT employee_id,UPPER(employee_name)  as employee_name FROM employee_search_view WHERE employee_id = :id")
         ->bindValue(':id', $model->fk_accounting_unit)
         ->queryAll();
     $accounting_unit = ArrayHelper::map($accounting_unit_query, 'employee_id', 'employee_name');
+}
+if (!empty($model->id)) {
+
 
     $requested_by_query   = Yii::$app->db->createCommand("SELECT employee_id,UPPER(employee_name)  as employee_name FROM employee_search_view WHERE employee_id = :id")
         ->bindValue(':id', $model->fk_requested_by)
@@ -47,10 +53,6 @@ if (!empty($model->id)) {
         ->bindValue(':id', $model->fk_inspected_by)
         ->queryAll();
     $inspected_by = ArrayHelper::map($inspected_query, 'employee_id', 'employee_name');
-
-
-
-
 
 
     $aoq_id_query   = Yii::$app->db->createCommand("SELECT id, aoq_number FROM pr_aoq WHERE id = :id")

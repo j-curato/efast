@@ -228,6 +228,8 @@ class PrPurchaseOrderController extends Controller
         $model->payment_term = 'credit';
         $model->delivery_term = 'FOB Destination';
         $model->fk_office_id = YIi::$app->user->identity->fk_office_id;
+        $model->fk_auth_official = 99684622555676858;
+        $model->fk_accounting_unit = 99684622555676801;
         if ($model->load(Yii::$app->request->post())) {
             try {
                 $txn = MyHelper::beginTxn();
