@@ -42,6 +42,7 @@ class HistoryLogsBehavior extends Behavior
     {
         $currentTimestamp = new Expression('NOW()');
         Yii::$app->db->createCommand()->insert('tbl_creation_history', [
+            'id' => MyHelper::getUuid(),
             'server_name' =>  Yii::$app->request->serverName,
             'table_name' => $this->owner->tableName(),
             'row_id' => $this->owner->id,

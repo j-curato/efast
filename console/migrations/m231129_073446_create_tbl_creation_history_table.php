@@ -23,7 +23,7 @@ class m231129_073446_create_tbl_creation_history_table extends Migration
             'fk_created_by' => $this->bigInteger(),
             'created_at' => $this->dateTime()->notNull()
         ]);
-
+        $this->alterColumn('{{%tbl_creation_history}}', 'id', $this->bigInteger());
         // creates index for column `fk_created_by`
         $this->createIndex(
             '{{%idx-tbl_creation_history-fk_created_by}}',
