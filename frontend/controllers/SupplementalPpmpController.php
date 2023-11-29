@@ -472,7 +472,9 @@ class SupplementalPpmpController extends Controller
     {
         $model = $this->findModel($id);
 
-
+        if (strtotime(date('Y-m-d')) > strtotime(date('2023-11-28'))) {
+            return $this->redirect(['index']);
+        }
         if (Yii::$app->request->post()) {
             try {
                 $transaction = Yii::$app->db->beginTransaction();
