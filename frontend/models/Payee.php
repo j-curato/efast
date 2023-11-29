@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\behaviors\HistoryLogsBehavior;
 use Yii;
 use yii\db\Expression;
 
@@ -21,6 +22,12 @@ use yii\db\Expression;
  */
 class Payee extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            HistoryLogsBehavior::class
+        ];
+    }
     /**
      * {@inheritdoc}
      */

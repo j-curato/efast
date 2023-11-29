@@ -2,10 +2,11 @@
 
 namespace app\behaviors;
 
-use app\components\helpers\MyHelper;
 use Yii;
 use yii\base\Behavior;
+use yii\db\Expression;
 use yii\db\ActiveRecord;
+use app\components\helpers\MyHelper;
 
 class HistoryLogsBehavior extends Behavior
 {
@@ -13,6 +14,7 @@ class HistoryLogsBehavior extends Behavior
     {
         return [
             ActiveRecord::EVENT_BEFORE_UPDATE => 'logChanges',
+            ActiveRecord::EVENT_AFTER_INSERT => 'logCreations',
         ];
     }
 
@@ -35,5 +37,16 @@ class HistoryLogsBehavior extends Behavior
                 ])->execute();
             }
         }
+    }
+    public function logCreations($event)
+    {
+        $currentTimestamp = new Expression('NOW()');
+        Yii::$app->db->createCommand()->insert('tbl_creation_history', [
+            'server_name' =>  Yii::$app->request->serverName,
+            'table_name' => $this->owner->tableName(),
+            'row_id' => $this->owner->id,
+            'fk_created_by' => Yii::$app->user->id,
+            'created_at' => $currentTimestamp
+        ])->execute();
     }
 }
