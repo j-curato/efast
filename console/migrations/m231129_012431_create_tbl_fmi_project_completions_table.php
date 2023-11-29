@@ -27,6 +27,7 @@ class m231129_012431_create_tbl_fmi_project_completions_table extends Migration
             'certificate_of_project_link' => $this->text(),
             'certificate_of_turnover_link' => $this->text(),
             'reporting_period' => $this->string()->notNull(),
+            'date' => $this->date(),
             'created_at' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'),
         ]);
         $this->alterColumn('tbl_fmi_project_completions', 'id', $this->bigInteger());
