@@ -395,9 +395,9 @@ class SupplementalPpmpController extends Controller
     public function actionCreate()
     {
 
-        if (strtotime(date('Y-m-d')) > strtotime(date('2023-11-28'))) {
-            return $this->redirect(['index']);
-        }
+        // if (strtotime(date('Y-m-d')) > strtotime(date('2023-11-28'))) {
+        //     return $this->redirect(['index']);
+        // }
         $model = new SupplementalPpmp();
         $model->fk_approved_by = '99684622555676858';
         $model->fk_certified_funds_available_by = '99684622555676773';
@@ -472,9 +472,9 @@ class SupplementalPpmpController extends Controller
     {
         $model = $this->findModel($id);
 
-        if (strtotime(date('Y-m-d')) > strtotime(date('2023-11-28')) && !Yii::$app->user->can('super-user')) {
-            return $this->redirect(['index']);
-        }
+        // if (strtotime(date('Y-m-d')) > strtotime(date('2023-11-28')) && !Yii::$app->user->can('super-user')) {
+        //     return $this->redirect(['index']);
+        // }
         if (Yii::$app->request->post()) {
             try {
                 $transaction = Yii::$app->db->beginTransaction();

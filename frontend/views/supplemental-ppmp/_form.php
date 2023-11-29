@@ -76,6 +76,11 @@ $cse_type_data = [
                         'autoclose' => true,
                         'minViewMode' => 'years',
                         'format' => 'yyyy',
+                        'startDate' =>
+                        strtotime(date('Y-m-d')) > strtotime('2023-11-28')
+                            &&   !Yii::$app->user->can('super-user')
+                            ? date('2024')
+                            : date('2023'),
 
                     ]
                 ]) ?>
