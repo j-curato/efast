@@ -47,7 +47,7 @@ class HistoryLogsBehavior extends Behavior
             'table_name' => $this->owner->tableName(),
             'row_id' => $this->owner->id,
             'fk_created_by' => Yii::$app->user->id,
-            'created_at' => $currentTimestamp
+            // 'created_at' => $currentTimestamp
         ])->execute();
     }
 }
