@@ -108,13 +108,14 @@ $date = DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y');
                 </tr>
                 <tr>
                     <th colspan="8" class="border-0 head">
-                        <p><?= !empty($approvedBy['fullName']) ? strtoupper($approvedBy['fullName']) : '' ?>
+                        <span> <?= !empty($approvedBy['fullName']) ? strtoupper($approvedBy['fullName']) : '' ?></span>
+                        <br>
+                        <span class="print-position"></span>
                     </th>
                 </tr>
                 <tr>
                     <td colspan="8" class="border-0 head">
-                        <p><?= !empty($approvedBy['position']) ? $approvedBy['position'] : '' ?></p>
-
+                        <p class="export-position"><?= !empty($approvedBy['position']) ? $approvedBy['position'] : '' ?></p>
                     </td>
                 </tr>
                 <?php if (!empty($model->fk_officer_in_charge)) : ?>
@@ -128,7 +129,7 @@ $date = DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y');
                     </tr>
                     <tr>
                         <th colspan="8" class="border-0 head">
-                            <b class=""><?= !empty($officerInCharge['fullName']) ? strtoupper($officerInCharge['fullName']) : '' ?></b>
+                            <b class="font-weight-normal"><?= !empty($officerInCharge['fullName']) ? strtoupper($officerInCharge['fullName']) : '' ?></b>
                         </th>
                     </tr>
                     <tr>
@@ -154,7 +155,9 @@ $date = DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y');
     }
 
 
-
+    .print-position {
+        display: none;
+    }
 
 
     @media print {
@@ -173,14 +176,25 @@ $date = DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y');
 
         .main-footer,
         .btn,
-        .notes {
+        .notes,
+        .export-position {
             display: none;
+        }
+
+        .print-position {
+            display: block;
         }
 
         .header-tbl th,
         .header-tbl td,
         .head {
             font-size: 16px;
+        }
+
+        .print-position::after {
+            content: "<?= !empty($approvedBy['position']) ? $approvedBy['position'] : '' ?>";
+            display: block;
+
         }
     }
 </style>
