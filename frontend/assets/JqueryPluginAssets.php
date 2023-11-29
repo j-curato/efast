@@ -21,6 +21,8 @@ class JqueryPluginAssets extends AssetBundle
         'js/jspdf.js',
         'js/jspdf-autotable.js',
         'frontend/web/js/globalFunctions.js',
+        "js/maskMoney.js",
+        'js/v-money.min.js'
     ];
     public $depends = [
         JqueryAsset::class

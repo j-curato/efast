@@ -3,13 +3,14 @@
 namespace frontend\controllers;
 
 use Yii;
-use app\models\NotificationToPay;
-use app\models\NotificationToPaySearch;
 use ErrorException;
-use yii\filters\AccessControl;
+use common\models\User;
 use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
+use app\models\NotificationToPay;
+use yii\web\NotFoundHttpException;
+use app\models\NotificationToPaySearch;
 
 /**
  * NotificationToPayController implements the CRUD actions for NotificationToPay model.
@@ -101,7 +102,8 @@ class NotificationToPayController extends Controller
     public function actionCreate()
     {
         $model = new NotificationToPay();
-
+        $user_data = User::getUserDetails();
+        $model->fk_office_id = $user_data->employee->office->id;
         if ($model->load(Yii::$app->request->post())) {
 
             try {

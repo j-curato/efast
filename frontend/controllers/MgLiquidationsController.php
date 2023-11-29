@@ -5,14 +5,15 @@ namespace frontend\controllers;
 use Yii;
 use ErrorException;
 use yii\helpers\Json;
+use common\models\User;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
 use yii\helpers\ArrayHelper;
 use app\models\MgLiquidations;
+use yii\filters\AccessControl;
 use app\models\NotificationToPay;
 use yii\web\NotFoundHttpException;
 use app\models\MgLiquidationsSearch;
-use yii\filters\AccessControl;
 
 /**
  * MgLiquidationsController implements the CRUD actions for MgLiquidations model.
@@ -107,7 +108,8 @@ class MgLiquidationsController extends Controller
     public function actionCreate()
     {
         $model = new MgLiquidations();
-
+        $user_data = User::getUserDetails();
+        $model->fk_office_id = $user_data->employee->office->id;
         if ($model->load(Yii::$app->request->post())) {
             try {
                 $txn = Yii::$app->db->beginTransaction();

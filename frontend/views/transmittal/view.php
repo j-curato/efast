@@ -167,8 +167,9 @@ $date = DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y');
 
         #tableData th,
         #tableData td {
-            font-size: 10px;
+            font-size: 15px;
         }
+
 
         .main-footer,
         .btn,

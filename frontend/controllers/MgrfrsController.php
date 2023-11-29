@@ -52,8 +52,6 @@ class MgrfrsController extends Controller
                     ],
                     [
                         'actions' => [
-                            'get-municipalities',
-                            'get-barangays',
                             'search-mgrfr'
                         ],
                         'allow' => true,
@@ -195,18 +193,8 @@ class MgrfrsController extends Controller
         throw new NotFoundHttpException('The requested page does not exist.');
     }
 
-    public function actionGetMunicipalities()
-    {
-        if (Yii::$app->request->post()) {
-            return json_encode(Municipalities::getMunicipalitiesByProvinceId(YIi::$app->request->post('id')));
-        }
-    }
-    public function actionGetBarangays()
-    {
-        if (Yii::$app->request->post()) {
-            return json_encode(Barangays::getBarangaysByMunicipalityId(YIi::$app->request->post('id')));
-        }
-    }
+
+
     public function actionSearchMgrfr($page = null, $q = null, $id = null)
     {
         $limit = 5;

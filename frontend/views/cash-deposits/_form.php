@@ -34,7 +34,7 @@ if (!empty($model->fk_mgrfr_id)) {
                             'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
                         ],
                         'ajax' => [
-                            'url' => Yii::$app->request->baseUrl . '?r=mgrfrs/search-mgrfr-serial-number',
+                            'url' => Yii::$app->request->baseUrl . '?r=mgrfrs/search-mgrfr',
                             'dataType' => 'json',
                             'delay' => 250,
                             'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),

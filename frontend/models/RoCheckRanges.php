@@ -68,4 +68,20 @@ class RoCheckRanges extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Books::class, ['id' => 'fk_book_id']);
     }
+    public function getNextCheckNumber()
+    {
+        return Yii::$app->db->createCommand("WITH RECURSIVE CheckNumberSequence AS (
+            SELECT  ro_check_ranges.`from` as num,ro_check_ranges.`to` FROM ro_check_ranges WHERE id = :id
+            UNION
+            SELECT num + 1,
+                CheckNumberSequence.`to`
+            FROM CheckNumberSequence
+                WHERE num <  CheckNumberSequence.`to`
+        )
+        SELECT CheckNumberSequence.num FROM CheckNumberSequence
+        WHERE NOT EXISTS (SELECT cash_disbursement.check_or_ada_no FROM cash_disbursement WHERE cash_disbursement.check_or_ada_no =  CheckNumberSequence.num)
+        ORDER BY CheckNumberSequence.num LIMIT 1")
+            ->bindValue(':id', $this->id)
+            ->queryScalar();
+    }
 }

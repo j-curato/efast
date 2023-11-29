@@ -171,7 +171,7 @@ $csrfToken = Yii::$app->request->csrfToken;
         methods: {
 
             getMunicipalities() {
-                const url = window.location.pathname + '?r=mgrfrs/get-municipalities'
+                const url = window.location.pathname + '?r=municipalities/get-municipalities'
                 const data = {
                     _csrf: '<?= $csrfToken ?>',
                     id: this.province_id
@@ -183,7 +183,6 @@ $csrfToken = Yii::$app->request->csrfToken;
                         select2Element.html('')
                         select2Element.append('<option   value="">Select City/Municipality</option>')
                         data.map((item) => {
-
                             const newOption = new Option(item.municipality_name, item.id, false, false);
                             select2Element.append(newOption);
 
@@ -197,7 +196,7 @@ $csrfToken = Yii::$app->request->csrfToken;
             },
             getBarangays() {
 
-                const url = window.location.pathname + '?r=mgrfrs/get-barangays'
+                const url = window.location.pathname + '?r=barangays/get-barangays'
                 const data = {
                     _csrf: '<?= $csrfToken ?>',
                     id: this.municipality_id

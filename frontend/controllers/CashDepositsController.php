@@ -141,7 +141,7 @@ class CashDepositsController extends Controller
                 if (!$model->save(false)) {
                     throw new ErrorException('Model Save Failed');
                 }
-                $txn->rollBack();
+                $txn->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
                 $txn->rollback();

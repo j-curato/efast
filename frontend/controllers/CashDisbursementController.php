@@ -419,15 +419,13 @@ class CashDisbursementController extends Controller
     {
         $model = new CashDisbursement();
         $dvSearchModel = new VwUndisbursedDvsSearch();
-        $dvSearchModel->is_cancelled = 0;
         $dvDataProvider = $dvSearchModel->search(Yii::$app->request->queryParams);
-        $dvDataProvider->pagination = ['pageSize' => 10];
         if ($model->load(Yii::$app->request->post())) {
-            $items = Yii::$app->request->post('items') ?? [];
-            $model->begin_time =  DateTime::createFromFormat('h:i a', $model->begin_time)->format('H:i');
-            $model->out_time =  DateTime::createFromFormat('h:i a', $model->out_time)->format('H:i');
             try {
                 $txn = Yii::$app->db->beginTransaction();
+                $items = Yii::$app->request->post('items') ?? [];
+                $model->begin_time =  DateTime::createFromFormat('h:i a', $model->begin_time)->format('H:i');
+                $model->out_time =  DateTime::createFromFormat('h:i a', $model->out_time)->format('H:i');
                 $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()")->queryScalar();
                 if (empty($items)) {
                     throw new ErrorException('Items is Required');
@@ -533,7 +531,7 @@ class CashDisbursementController extends Controller
                 $txn = Yii::$app->db->beginTransaction();
                 $model->begin_time =  DateTime::createFromFormat('h:i a', $model->begin_time)->format('H:i');
                 $model->out_time =  DateTime::createFromFormat('h:i a', $model->out_time)->format('H:i');
-                if ($this->hasAcic($model->id)) {
+                if ($this->hasAcic($model->id) && !Yii::$app->user->can('super-user')) {
                     throw new ErrorException('Cannot Update this Check is already in ACIC');
                 }
                 if ($model->is_cancelled == true) {

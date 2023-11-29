@@ -49,6 +49,13 @@ class BankBranchDetailsController extends Controller
                         'allow' => true,
                         'roles' => ['create_bank_branch_details']
                     ],
+                    [
+                        'actions' => [
+                            'search-bank-branch-details',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ],
                 ]
             ],
             'verbs' => [

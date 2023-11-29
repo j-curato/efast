@@ -49,6 +49,13 @@ class BankBranchesController extends Controller
                         'allow' => true,
                         'roles' => ['update_bank_branches']
                     ],
+                    [
+                        'actions' => [
+                            'search-bank-branch',
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ],
 
                 ]
             ],

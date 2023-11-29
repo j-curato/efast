@@ -273,50 +273,50 @@ $items  = $model->getItemsA();
         <?php ActiveForm::end(); ?>
 
     </div>
-
-    <script>
-        $(document).ready(function() {
-            new Vue({
-                el: '#main',
-                data: {
-                    items: JSON.parse('<?= !empty($items) ? json_encode($items) : json_encode([]) ?>')
+</div>
+<script>
+    $(document).ready(function() {
+        new Vue({
+            el: '#main',
+            data: {
+                items: JSON.parse('<?= !empty($items) ? json_encode($items) : json_encode([]) ?>')
+            },
+            mounted() {
+                console.log(this.items)
+            },
+            methods: {
+                addItem() {
+                    this.items.push({
+                        customer_name: null,
+                    })
                 },
-                mounted() {
-                    console.log(this.items)
-                },
-                methods: {
-                    addItem() {
-                        this.items.push({
-                            customer_name: null,
-                        })
-                    },
-                    removeRow(index) {
-                        this.items.splice(index, 1)
-                    }
+                removeRow(index) {
+                    this.items.splice(index, 1)
                 }
-            })
+            }
         })
-    </script>
-    <style>
-        td,
-        th {
-            padding: .2em;
-        }
+    })
+</script>
+<style>
+    td,
+    th {
+        padding: .2em;
+    }
 
-        .flex-container {
-            display: flex;
-            width: 100%;
-            /* Optional: Add a border for visualization */
-        }
+    .flex-container {
+        display: flex;
+        width: 100%;
+        /* Optional: Add a border for visualization */
+    }
 
-        .flex-container>div {
-            margin: 5px;
-            width: 100%;
-        }
-    </style>
-    <?php
-    SweetAlertAsset::register($this);
-    $js = <<< JS
+    .flex-container>div {
+        margin: 5px;
+        width: 100%;
+    }
+</style>
+<?php
+SweetAlertAsset::register($this);
+$js = <<< JS
 $("#DueDiligenceReports").on("beforeSubmit", function (event) {
     event.preventDefault();
     var form = $(this);
@@ -341,5 +341,5 @@ $("#DueDiligenceReports").on("beforeSubmit", function (event) {
     return false;
 });
 JS;
-    $this->registerJs($js);
-    ?>
+$this->registerJs($js);
+?>

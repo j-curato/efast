@@ -100,6 +100,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'iarTransmittalNumber',
             'iarTransmittalDate',
+            'ro_transaction_numbers'
         ],
     ]); ?>
 

@@ -22,7 +22,7 @@ SweetAlertAsset::register($this);
     <div class="container ">
         <div class="card p-2">
 
-            <p>
+            <span>
                 <?php
                 if (!$model->hasRfq() || Yii::$app->user->can('super-user')) {
                     echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
@@ -44,7 +44,7 @@ SweetAlertAsset::register($this);
                 }
                 // }
                 ?>
-            </p>
+            </span>
         </div>
 
         <div class="card p-2">
