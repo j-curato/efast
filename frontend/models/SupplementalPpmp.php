@@ -46,10 +46,10 @@ class SupplementalPpmp extends \yii\db\ActiveRecord
                 'fk_office_id',
                 'fk_division_id',
                 'fk_division_program_unit_id',
-                'fk_prepared_by',
-                'fk_reviewed_by',
-                'fk_approved_by',
-                'fk_certified_funds_available_by',
+                // 'fk_prepared_by',
+                // 'fk_reviewed_by',
+                // 'fk_approved_by',
+                // 'fk_certified_funds_available_by',
                 'is_supplemental',
 
             ], 'required'],
@@ -63,9 +63,34 @@ class SupplementalPpmp extends \yii\db\ActiveRecord
             [['serial_number', 'cse_type'], 'string', 'max' => 255],
             [['serial_number'], 'unique'],
             [['id'], 'unique'],
+            [['budget_year'], 'validateBudgetYear'],
             [['is_supplemental'], 'default', 'value' => 1],
         ];
     }
+    public function validateBudgetYear($attribute)
+    {
+        if (
+            $this->isNewRecord
+            && strtotime(date('Y-m-d')) > strtotime(date('2023-11-28'))
+            && intval($this->$attribute) < 2024 &&
+            !Yii::$app->user->can('super-user')
+        ) {
+            $this->addError($attribute, 'Please select a Budget Year on or after 2024');
+        }
+
+        if (!$this->isNewRecord &&   !Yii::$app->user->can('super-user')) {
+            $newBudgetYear = $this->getDirtyAttributes()['budget_year'] ?? null;
+            $oldDate = $this->getOldAttribute('budget_year');
+            if (
+                !empty($newBudgetYear) &&
+                intval($oldDate) >= 2024 &&
+                intval($newBudgetYear) < 2024
+            ) {
+                $this->addError($attribute, 'Please select a Year on or after ' . 2024);
+            }
+        }
+    }
+
 
     /**
      * {@inheritdoc}
