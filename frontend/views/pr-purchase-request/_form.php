@@ -315,7 +315,7 @@ $user_data = User::getUserDetails();
                                     </div>
                                     <div class='col-sm-2'>
                                         <label for='amount'>Unit Cost</label>
-                                        <input type='text' class='amount form-control' value='" . number_format($unit_cost, 2) . "' onkeyup='updateMainAmount(this)'>
+                                        <input type='text' class='amount form-control mask-amount' value='" . number_format($unit_cost, 2) . "' onkeyup='updateMainAmount(this)'>
                                         <input type='hidden' name='pr_items[$row_number][unit_cost]' class='unit_cost main-amount' value='$unit_cost'>
                                     </div>
                                     <div class='col-sm-1'>
