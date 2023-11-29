@@ -148,7 +148,11 @@ $user_data = User::getUserDetails();
                         'autoclose' => true,
                         'format' => 'yyyy',
                         'minViewMode' => 'years',
-                        'startDate' => strtotime(date('Y-m-d')) > strtotime('2023-11-28') ? date('2024') : date('2023'),
+                        'startDate' =>
+                        strtotime(date('Y-m-d')) > strtotime('2023-11-28')
+                            &&   !Yii::$app->user->can('super-user')
+                            ? date('2024')
+                            : date('2023'),
                     ],
                     'options' => [
                         'readonly' => true,
@@ -162,7 +166,9 @@ $user_data = User::getUserDetails();
                     'pluginOptions' => [
                         'autoclose' => true,
                         'format' => 'yyyy-mm-dd',
-                        'startDate' => strtotime(date('Y-m-d')) > strtotime('2023-11-28') ? date('2024-01-01') : date('2023-01-01'),
+                        'startDate' => strtotime(date('Y-m-d')) > strtotime('2023-11-28')
+                            &&   !Yii::$app->user->can('super-user')
+                            ? date('2024-01-01') : date('2023-01-01'),
                     ],
                     'options' => [
                         'readonly' => true,

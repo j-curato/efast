@@ -90,13 +90,20 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
         $targetDate = '2024-01-01';
         $selectedDate = $this->$attribute;
 
-        if ($this->isNewRecord && strtotime($selectedDate) < strtotime($targetDate) && strtotime(date('Y-m-d')) > strtotime(date('2023-11-28'))) {
+        if (
+            $this->isNewRecord &&
+            strtotime($selectedDate) < strtotime($targetDate)
+            && strtotime(date('Y-m-d')) > strtotime(date('2023-11-28')) &&
+            !Yii::$app->user->can('super-user')
+
+        ) {
             $this->addError($attribute, 'Please select a date on or after ' . $targetDate);
         }
 
-        if (!$this->isNewRecord) {
+        if (!$this->isNewRecord &&   !Yii::$app->user->can('super-user')) {
             $newDate = $this->getDirtyAttributes()['date'] ?? null;
             $oldDate = $this->getOldAttribute('date');
+
             if (
                 !empty($newDate) &&
                 strtotime(date($oldDate)) >= strtotime(date('2024-01-01')) &&
@@ -114,12 +121,13 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
         if (
             $this->isNewRecord
             && strtotime(date('Y-m-d')) > strtotime(date('2023-11-28'))
-            && intval($this->$attribute) < 2024
+            && intval($this->$attribute) < 2024 &&
+            !Yii::$app->user->can('super-user')
         ) {
             $this->addError($attribute, 'Please select a Budget Year on or after 2024');
         }
 
-        if (!$this->isNewRecord) {
+        if (!$this->isNewRecord &&   !Yii::$app->user->can('super-user')) {
             $newBudgetYear = $this->getDirtyAttributes()['budget_year'] ?? null;
             $oldDate = $this->getOldAttribute('budget_year');
             if (
