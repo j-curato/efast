@@ -7,10 +7,8 @@ use ErrorException;
 use app\models\Mgrfrs;
 use common\models\User;
 use yii\web\Controller;
-use app\models\Barangays;
 use yii\filters\VerbFilter;
 use app\models\MgrfrsSearch;
-use app\models\Municipalities;
 use yii\filters\AccessControl;
 use yii\web\NotFoundHttpException;
 
@@ -34,21 +32,21 @@ class MgrfrsController extends Controller
                             'view',
                         ],
                         'allow' => true,
-                        'roles' => ['view_mgrfr']
+                        'roles' => ['view_rapid_mg_mgrfr']
                     ],
                     [
                         'actions' => [
                             'create',
                         ],
                         'allow' => true,
-                        'roles' => ['create_mgrfr']
+                        'roles' => ['create_rapid_mg_mgrfr']
                     ],
                     [
                         'actions' => [
                             'update',
                         ],
                         'allow' => true,
-                        'roles' => ['update_mgrfr']
+                        'roles' => ['update_rapid_mg_mgrfr']
                     ],
                     [
                         'actions' => [

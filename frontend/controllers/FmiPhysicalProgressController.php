@@ -32,7 +32,7 @@ class FmiPhysicalProgressController extends Controller
                             'index'
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['view_fmi_physical_progress'],
                     ],
                     [
                         'actions' => [
@@ -40,7 +40,7 @@ class FmiPhysicalProgressController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['create_fmi_physical_progress'],
                     ],
                     [
                         'actions' => [
@@ -48,7 +48,7 @@ class FmiPhysicalProgressController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['update_fmi_physical_progress'],
                     ],
                 ]
             ],

@@ -13,7 +13,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="mgrfrs-view" id="main">
     <div class="container card p-3">
         <p>
-            <?= Yii::$app->user->can('update_mgrfr') ? Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) : '' ?>
+            <?= Yii::$app->user->can('update_rapid_mg_mgrfr') ? Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) : '' ?>
         </p>
         <table>
 

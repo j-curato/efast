@@ -31,6 +31,7 @@ class FmiBankDepositTypes extends \yii\db\ActiveRecord
         return [
             [['created_at'], 'safe'],
             [['deposit_type'], 'string', 'max' => 255],
+            [['deposit_type'], 'required'],
         ];
     }
 

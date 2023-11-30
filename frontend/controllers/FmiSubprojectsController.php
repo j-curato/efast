@@ -31,21 +31,21 @@ class FmiSubprojectsController extends Controller
                             'view',
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['view_fmi_subprojects'],
                     ],
                     [
                         'actions' => [
                             'create',
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['create_fmi_subprojects'],
                     ],
                     [
                         'actions' => [
                             'update',
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['update_fmi_subprojects'],
                     ],
                     [
                         'actions' => [

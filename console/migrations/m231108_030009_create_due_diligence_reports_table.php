@@ -10,7 +10,7 @@ use yii\db\Migration;
  * - `{{%employee}}`
  * - `{{%employee}}`
  */
-class m231108_030009_create_due_diligence_reports_table extends Migration
+class m231108_030009_create_rapid_mg_due_diligence_reports_table extends Migration
 {
     /**
      * {@inheritdoc}

@@ -32,28 +32,28 @@ class NotificationToPayController extends Controller
                             'view',
                         ],
                         'allow' => true,
-                        'roles' => ['view_notification_to_pay'],
+                        'roles' => ['view_rapid_mg_notification_to_pay'],
                     ],
                     [
                         'actions' => [
                             'update',
                         ],
                         'allow' => true,
-                        'roles' => ['update_notification_to_pay'],
+                        'roles' => ['update_rapid_mg_notification_to_pay'],
                     ],
                     [
                         'actions' => [
                             'create',
                         ],
                         'allow' => true,
-                        'roles' => ['create_notification_to_pay'],
+                        'roles' => ['create_rapid_mg_notification_to_pay'],
                     ],
                     [
                         'actions' => [
                             'search-notification-to-pay'
                         ],
                         'allow' => true,
-                        'roles' => ['create_notification_to_pay', 'update_notification_to_pay'],
+                        'roles' => ['create_rapid_mg_notification_to_pay', 'update_rapid_mg_notification_to_pay'],
                     ],
                 ]
             ],

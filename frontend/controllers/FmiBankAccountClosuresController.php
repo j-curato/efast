@@ -32,7 +32,7 @@ class FmiBankAccountClosuresController extends Controller
                             'view',
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['view_fmi_bank_closure'],
                     ],
                     [
                         'actions' => [
@@ -40,14 +40,14 @@ class FmiBankAccountClosuresController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['create_fmi_bank_closure'],
                     ],
                     [
                         'actions' => [
                             'update',
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['update_fmi_bank_closure'],
                     ],
                 ]
             ],

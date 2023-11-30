@@ -319,26 +319,26 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
             ];
             $rapidMgMasterRecords = [];
             $rapidMgTransaction = [
-                Yii::$app->user->can('view_mgrfr') ?     ['label' => 'MG RFR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/mgrfrs/index'],] : null,
-                Yii::$app->user->can('view_cash_deposits') ?     ['label' => 'Cash Deposits', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/cash-deposits/index'],] : null,
-                Yii::$app->user->can('view_due_diligence_report') ?     ['label' => 'Due Diligence Reports', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/due-diligence-reports/index'],] : null,
-                Yii::$app->user->can('view_notification_to_pay') ?     ['label' => 'Notification to Pay', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/notification-to-pay/index'],] : null,
-                Yii::$app->user->can('view_mg_liquidation') ?     ['label' => 'MG Liquidations', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/mg-liquidations/index'],] : null,
+                Yii::$app->user->can('view_rapid_mg_mgrfr') ?     ['label' => 'MG RFR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/mgrfrs/index'],] : null,
+                Yii::$app->user->can('view_rapid_mg_cash_deposits') ?     ['label' => 'Cash Deposits', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/cash-deposits/index'],] : null,
+                Yii::$app->user->can('view_rapid_mg_due_diligence_report') ?     ['label' => 'Due Diligence Reports', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/due-diligence-reports/index'],] : null,
+                Yii::$app->user->can('view_rapid_mg_notification_to_pay') ?     ['label' => 'Notification to Pay', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/notification-to-pay/index'],] : null,
+                Yii::$app->user->can('view_rapid_mg_liquidation') ?     ['label' => 'MG Liquidations', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/mg-liquidations/index'],] : null,
             ];
             $rapidMgReports = [];
             $rapidFmiMasterRecords = [
-                Yii::$app->user->can('super-user') ?     ['label' => 'Bank Deposit Types', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-bank-deposit-types/index'],] : null,
+                Yii::$app->user->can('view_fmi_bank_deposit_type') ?     ['label' => 'Bank Deposit Types', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-bank-deposit-types/index'],] : null,
             ];
             $rapidFmiTransaction = [
-                Yii::$app->user->can('super-user') ?     ['label' => 'Batches', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-batches/index'],] : null,
-                Yii::$app->user->can('super-user') ?     ['label' => 'Tranches', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-tranches/index'],] : null,
-                Yii::$app->user->can('super-user') ?     ['label' => 'Subprojects', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-subprojects/index'],] : null,
-                Yii::$app->user->can('super-user') ?     ['label' => 'Bank Deposits', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-bank-deposits/index'],] : null,
-                Yii::$app->user->can('super-user') ?     ['label' => 'LGU Liquidations', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-lgu-liquidations/index'],] : null,
-                Yii::$app->user->can('super-user') ?     ['label' => 'Actual Date of Start', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-actual-date-of-starts/index'],] : null,
-                Yii::$app->user->can('super-user') ?     ['label' => 'Physical Progress', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-physical-progress/index'],] : null,
-                Yii::$app->user->can('super-user') ?     ['label' => 'Bank Account Closures', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-bank-account-closures/index'],] : null,
-                Yii::$app->user->can('super-user') ?     ['label' => 'Project Completions', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-project-completions/index'],] : null,
+                Yii::$app->user->can('view_fmi_batch') ?     ['label' => 'Batches', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-batches/index'],] : null,
+                Yii::$app->user->can('view_fmi_tranches') ?     ['label' => 'Tranches', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-tranches/index'],] : null,
+                Yii::$app->user->can('view_fmi_subprojects') ?     ['label' => 'Subprojects', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-subprojects/index'],] : null,
+                Yii::$app->user->can('view_fmi_bank_deposits') ?     ['label' => 'Bank Deposits', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-bank-deposits/index'],] : null,
+                Yii::$app->user->can('view_fmi_lgu_liquidation') ?     ['label' => 'LGU Liquidations', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-lgu-liquidations/index'],] : null,
+                Yii::$app->user->can('view_fmi_actual_date_of_start') ?     ['label' => 'Actual Date of Start', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-actual-date-of-starts/index'],] : null,
+                Yii::$app->user->can('view_fmi_physical_progress') ?     ['label' => 'Physical Progress', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-physical-progress/index'],] : null,
+                Yii::$app->user->can('view_fmi_bank_closure') ?     ['label' => 'Bank Account Closures', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-bank-account-closures/index'],] : null,
+                Yii::$app->user->can('view_fmi_project_completion') ?     ['label' => 'Project Completions', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-project-completions/index'],] : null,
 
             ];
             $rapidFmiReports = [];

@@ -7,18 +7,27 @@ use yii\web\JqueryAsset;
 use yii\web\JsExpression;
 use kartik\widgets\Select2;
 use yii\helpers\ArrayHelper;
+use kartik\widgets\DatePicker;
 use yii\bootstrap4\ActiveForm;
 use aryelds\sweetalert\SweetAlertAsset;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\FmiProjectCompletions */
 /* @var $form yii\widgets\ActiveForm */
+
+$subprojectData = [
+    [
+        'id' => $model->fk_fmi_subproject_id ?? null,
+        'serial_number' => $model->fmiSubproject->serial_number ?? null
+    ]
+];
 ?>
 
 <div class="fmi-project-completions-form">
 
-    <?php $form = ActiveForm::begin(); ?>
-
+    <?php $form = ActiveForm::begin([
+        'id'=>$model->formName()
+    ]); ?>
 
     <?= $form->field($model, 'fk_office_id')->dropDownList(
         ArrayHelper::map(Office::getOfficesA(), 'id', 'office_name'),
@@ -48,41 +57,68 @@ use aryelds\sweetalert\SweetAlertAsset;
 
         ]) ?>
     </div>
+    <div class="row">
+        <div class="col-6">
+            <?= $form->field($model, 'reporting_period')->widget(DatePicker::class, [
+                'pluginOptions' => [
+                    'format' => 'yyyy-mm',
+                    'todayHighlight' => true,
+                    'autoclose' => true,
+                    'todayHighlight' => true,
+                    'minViewMode' => 'months'
+                ]
+            ]) ?>
+        </div>
+        <div class="col-6">
+            <?= $form->field($model, 'date')->widget(DatePicker::class, [
+                'pluginOptions' => [
+                    'format' => 'yyyy-mm-dd',
+                    'todayHighlight' => true,
+                    'autoclose' => true,
+                    'todayBtn' => true,
+                    'todayHighlight' => true,
+                ]
+            ]) ?>
+        </div>
+    </div>
 
-    <?= $form->field($model, 'completion_date')->textInput() ?>
+    <div class="row">
+        <div class="col-6">
+            <?= $form->field($model, 'completion_date')->widget(DatePicker::class, [
+                'pluginOptions' => [
+                    'format' => 'yyyy-mm-dd',
+                    'todayHighlight' => true,
+                    'autoclose' => true,
+                    'todayBtn' => true,
+                    'todayHighlight' => true,
+                ]
+            ]) ?>
+        </div>
+        <div class="col-6">
+            <?= $form->field($model, 'turnover_date')->widget(DatePicker::class, [
+                'pluginOptions' => [
+                    'format' => 'yyyy-mm-dd',
+                    'todayHighlight' => true,
+                    'autoclose' => true,
+                    'todayBtn' => true,
+                    'todayHighlight' => true,
+                ]
+            ]) ?>
+        </div>
+    </div>
 
-    <?= $form->field($model, 'turnover_date')->textInput() ?>
 
-    <?= $form->field($model, 'spcr_link')->textarea(['rows' => 6]) ?>
+    <?= $form->field($model, 'spcr_link')->textarea(['rows' => 2]) ?>
 
-    <?= $form->field($model, 'certificate_of_project_link')->textarea(['rows' => 6]) ?>
+    <?= $form->field($model, 'certificate_of_project_link')->textarea(['rows' => 2]) ?>
 
-    <?= $form->field($model, 'certificate_of_turnover_link')->textarea(['rows' => 6]) ?>
+    <?= $form->field($model, 'certificate_of_turnover_link')->textarea(['rows' => 2]) ?>
 
+    <div class="row justify-content-center">
 
-    <?= $form->field($model, 'reporting_period')->widget(DatePicker::class, [
-        'pluginOptions' => [
-            'format' => 'yyyy-mm',
-            'todayHighlight' => true,
-            'autoclose' => true,
-            'todayHighlight' => true,
-            'minViewMode' => 'months'
-        ]
-    ]) ?>
-    <?= $form->field($model, 'date')->widget(DatePicker::class, [
-        'pluginOptions' => [
-            'format' => 'yyyy-mm-dd',
-            'todayHighlight' => true,
-            'autoclose' => true,
-            'todayBtn' => true,
-            'todayHighlight' => true,
-        ]
-    ]) ?>
-
-    <?= $form->field($model, 'created_at')->textInput() ?>
-
-    <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        <div class="form-group">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        </div>
     </div>
 
     <?php ActiveForm::end(); ?>
@@ -94,7 +130,7 @@ $this->registerJsFile("@web/frontend/modules/js/activeFormAjaxSubmit.js", ['depe
 $js = <<<JS
 
     $(document).ready(function(){
-        $("#FmiBankAccountClosures").on("beforeSubmit", function(event) {
+        $("#FmiProjectCompletions").on("beforeSubmit", function(event) {
             event.preventDefault();
             var form = $(this);
             ajaxSubmit(form)

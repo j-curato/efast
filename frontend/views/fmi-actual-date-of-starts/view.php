@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="container">
         <card class=" card p-2">
             <span>
-                <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'mdModal btn btn-primary']) ?>
+                <?= Yii::$app->user->can('update_fmi_actual_date_of_start') ? Html::a('Update', ['update', 'id' => $model->id], ['class' => 'mdModal btn btn-primary']) : '' ?>
             </span>
         </card>
         <card class="card p-3">

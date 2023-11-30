@@ -13,7 +13,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="fmi-bank-deposits-index">
 
     <p>
-        <?= Yii::$app->user->can('super-user') ? Html::a('Create Fmi Bank Deposits', ['create'], ['class' => 'btn btn-success lrgModal']) : '' ?>
+        <?= Yii::$app->user->can('create_fmi_bank_deposits') ? Html::a('<i class="fa fa-plus"></i> Create', ['create'], ['class' => 'btn btn-success lrgModal']) : '' ?>
     </p>
 
     <?= GridView::widget([

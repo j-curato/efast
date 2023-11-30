@@ -19,7 +19,7 @@ SweetAlertAsset::register($this);
     <div class="container">
         <div class="card p-2">
             <span>
-                <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary mdModal']) ?>
+                <?= Yii::$app->user->can('update_fmi_tranches') ? Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary mdModal']) : '' ?>
             </span>
         </div>
         <div class="card p-3">

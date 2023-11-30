@@ -6,41 +6,43 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\FmiProjectCompletions */
 
-$this->title = $model->id;
+$this->title = $model->serial_number;
 $this->params['breadcrumbs'][] = ['label' => 'Fmi Project Completions', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="fmi-project-completions-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <div class="container">
+        <div class="card p-2">
+            <span>
+                <?= Yii::$app->user->can('update_fmi_project_completion') ? Html::a(
+                    'Update',
+                    ['update', 'id' => $model->id],
+                    ['class' => 'btn btn-primary mdModal']
+                ) : '' ?>
 
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
+            </span>
+        </div>
+        <div class="card p-3">
+            <?= DetailView::widget([
+                'model' => $model,
+                'attributes' => [
+                    'fk_office_id',
+                    'fk_fmi_subproject_id',
+                    'serial_number',
+                    'completion_date',
+                    'turnover_date',
+                    'spcr_link:ntext',
+                    'certificate_of_project_link:ntext',
+                    'certificate_of_turnover_link:ntext',
+                    'reporting_period',
+                ],
+            ]) ?>
+        </div>
+    </div>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'id',
-            'fk_office_id',
-            'fk_fmi_subproject_id',
-            'serial_number',
-            'completion_date',
-            'turnover_date',
-            'spcr_link:ntext',
-            'certificate_of_project_link:ntext',
-            'certificate_of_turnover_link:ntext',
-            'reporting_period',
-            'created_at',
-        ],
-    ]) ?>
+
+
 
 </div>

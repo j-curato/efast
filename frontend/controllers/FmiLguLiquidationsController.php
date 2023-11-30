@@ -31,11 +31,9 @@ class FmiLguLiquidationsController extends Controller
                         'actions' => [
                             'index',
                             'view',
-
-
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['view_fmi_lgu_liquidation'],
                     ],
                     [
                         'actions' => [
@@ -44,14 +42,14 @@ class FmiLguLiquidationsController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['update_fmi_lgu_liquidation'],
                     ],
                     [
                         'actions' => [
                             'create',
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['create_fmi_lgu_liquidation'],
                     ],
                 ]
             ],

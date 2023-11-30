@@ -32,7 +32,7 @@ class DueDiligenceReportsController extends Controller
                             'view',
                         ],
                         'allow' => true,
-                        'roles' => ['view_due_diligence_report']
+                        'roles' => ['view_rapid_mg_due_diligence_report']
                     ],
                     [
                         'actions' => [
@@ -40,7 +40,7 @@ class DueDiligenceReportsController extends Controller
                             'create',
                         ],
                         'allow' => true,
-                        'roles' => ['create_due_diligence_report']
+                        'roles' => ['create_rapid_mg_due_diligence_report']
                     ],
                     [
                         'actions' => [
@@ -48,7 +48,7 @@ class DueDiligenceReportsController extends Controller
                             'update',
                         ],
                         'allow' => true,
-                        'roles' => ['update_due_diligence_report']
+                        'roles' => ['update_rapid_mg_due_diligence_report']
                     ],
                     [
                         'actions' => [
@@ -57,8 +57,8 @@ class DueDiligenceReportsController extends Controller
                         ],
                         'allow' => true,
                         'roles' => [
-                            'create_due_diligence_report',
-                            'update_due_diligence_report'
+                            'create_rapid_mg_due_diligence_report',
+                            'update_rapid_mg_due_diligence_report'
                         ]
                     ],
                 ]

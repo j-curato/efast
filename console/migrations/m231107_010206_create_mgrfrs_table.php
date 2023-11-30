@@ -11,7 +11,7 @@ use yii\db\Migration;
  * - `{{%barangays}}`
  * - `{{%office}}`
  */
-class m231107_010206_create_mgrfrs_table extends Migration
+class m231107_010206_create_rapid_mg_mgrfrs_table extends Migration
 {
     /**
      * {@inheritdoc}

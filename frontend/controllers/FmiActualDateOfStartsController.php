@@ -32,7 +32,7 @@ class FmiActualDateOfStartsController extends Controller
                             'view',
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['view_fmi_actual_date_of_start'],
                     ],
                     [
                         'actions' => [
@@ -40,14 +40,14 @@ class FmiActualDateOfStartsController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['create_fmi_actual_date_of_start'],
                     ],
                     [
                         'actions' => [
                             'update',
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['update_fmi_actual_date_of_start'],
                     ],
                 ]
             ],

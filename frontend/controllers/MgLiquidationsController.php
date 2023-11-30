@@ -4,11 +4,9 @@ namespace frontend\controllers;
 
 use Yii;
 use ErrorException;
-use yii\helpers\Json;
 use common\models\User;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
-use yii\helpers\ArrayHelper;
 use app\models\MgLiquidations;
 use yii\filters\AccessControl;
 use app\models\NotificationToPay;
@@ -35,28 +33,28 @@ class MgLiquidationsController extends Controller
                             'index'
                         ],
                         'allow' => true,
-                        'roles' => ['view_mg_liquidation'],
+                        'roles' => ['view_rapid_mg_liquidation'],
                     ],
                     [
                         'actions' => [
                             'update'
                         ],
                         'allow' => true,
-                        'roles' => ['update_mg_liquidation'],
+                        'roles' => ['update_rapid_mg_liquidation'],
                     ],
                     [
                         'actions' => [
                             'create'
                         ],
                         'allow' => true,
-                        'roles' => ['create_mg_liquidation'],
+                        'roles' => ['create_rapid_mg_liquidation'],
                     ],
                     [
                         'actions' => [
                             'get-notifications-to-pay'
                         ],
                         'allow' => true,
-                        'roles' => ['create_mg_liquidation', 'update_mg_liquidation'],
+                        'roles' => ['create_rapid_mg_liquidation', 'update_rapid_mg_liquidation'],
                     ],
 
                 ]

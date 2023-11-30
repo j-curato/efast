@@ -97,7 +97,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th class='head' colspan="7"> DEPARTMENT OF TRADE AND INDUSTRY, REGION 13-CARAGA</th>
                     <th class='head' colspan="2">Month Covered</th>
                     <th class='head' colspan="2">Fund Cluster:</th>
-                    <th class='head' colspan="1"> MDS 101</th>
+                    <th class='head' colspan="1"> {{book_details.name}}</th>
                 </tr>
                 <tr>
                     <th class='head' colspan="">Bank Name:</th>

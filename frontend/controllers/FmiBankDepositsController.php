@@ -34,7 +34,7 @@ class FmiBankDepositsController extends Controller
                             'view'
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['view_fmi_bank_deposits'],
                     ],
                     [
                         'actions' => [
@@ -42,14 +42,14 @@ class FmiBankDepositsController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['create_fmi_bank_deposits'],
                     ],
                     [
                         'actions' => [
                             'update',
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['update_fmi_bank_deposits'],
                     ],
                 ]
             ],

@@ -8,7 +8,7 @@ use yii\db\Migration;
  *
  * - `{{%mgrfrs}}`
  */
-class m231108_015009_create_cash_deposits_table extends Migration
+class m231108_015009_create_rapid_mg_cash_deposits_table extends Migration
 {
     /**
      * {@inheritdoc}

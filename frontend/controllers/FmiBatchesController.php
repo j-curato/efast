@@ -32,7 +32,7 @@ class FmiBatchesController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['view_fmi_batch'],
                     ],
                     [
                         'actions' => [
@@ -40,14 +40,14 @@ class FmiBatchesController extends Controller
                             'update',
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['update_fmi_batch'],
                     ],
                     [
                         'actions' => [
                             'create',
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['create_fmi_batch'],
                     ],
                     [
                         'actions' => [

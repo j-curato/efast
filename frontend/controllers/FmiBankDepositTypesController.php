@@ -30,21 +30,21 @@ class FmiBankDepositTypesController extends Controller
                             'view',
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['view_fmi_bank_deposit_type'],
                     ],
                     [
                         'actions' => [
                             'create',
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['create_fmi_bank_deposit_type'],
                     ],
                     [
                         'actions' => [
                             'update',
                         ],
                         'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['update_fmi_bank_deposit_type'],
                     ],
                 ]
 

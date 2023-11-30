@@ -19,7 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="container">
         <div class="card p-2">
             <span>
-                <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+                <?= YIi::$app->user->can('update_fmi_lgu_liquidation') ? Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) : '' ?>
             </span>
         </div>
         <div class="card p-3">

@@ -32,7 +32,7 @@ class CashDepositsController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['view_cash_deposits']
+                        'roles' => ['view_rapid_mg_cash_deposits']
                     ],
                     [
                         'actions' => [
@@ -40,14 +40,14 @@ class CashDepositsController extends Controller
                             'update',
                         ],
                         'allow' => true,
-                        'roles' => ['update_cash_deposits']
+                        'roles' => ['update_rapid_mg_cash_deposits']
                     ],
                     [
                         'actions' => [
                             'create',
                         ],
                         'allow' => true,
-                        'roles' => ['create_cash_deposits']
+                        'roles' => ['create_rapid_mg_cash_deposits']
                     ],
 
 
