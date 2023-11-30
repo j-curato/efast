@@ -12,11 +12,11 @@ class m231130_032605_add_constraints_in_po_transmittal_entries_table extends Mig
      */
     public function safeUp()
     {
-        // $this->createIndex(
-        //     'idx-po_transmittal_entries-fk_po_transmittal_id',
-        //     'po_transmittal_entries',
-        //     'fk_po_transmittal_id'
-        // );
+        $this->createIndex(
+            'idx-po_transmittal_entries-fk_po_transmittal_id',
+            'po_transmittal_entries',
+            'fk_po_transmittal_id'
+        );
         $this->addForeignKey(
             'fk-po_transmittal_entries-fk_po_transmittal_id',
             'po_transmittal_entries',
