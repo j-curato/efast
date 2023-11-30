@@ -34,6 +34,18 @@ class Employee extends \yii\db\ActiveRecord
         return [
             [['property_custodian', 'employee_id', 'fk_office_id', 'fk_division_id'], 'integer'],
             [[
+                'f_name',
+                'l_name',
+                'm_name',
+                'position',
+                'suffix',
+            ], 'trim'],
+            [[
+                'f_name',
+                'l_name',
+                'm_name',
+            ], 'filter', 'filter' => 'mb_strtolower'],
+            [[
                 'property_custodian',
                 'employee_id',
                 'fk_office_id',
