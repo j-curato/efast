@@ -32,8 +32,8 @@ class m231130_032605_add_constraints_in_po_transmittal_entries_table extends Mig
      */
     public function safeDown()
     {
-        // $this->dropForeignKey('fk-po_transmittal_entries-fk_po_transmittal_id', 'po_transmittal_entries');
-        // $this->dropIndex('idx-po_transmittal_entries-fk_po_transmittal_id', 'po_transmittal_entries');
+        $this->dropForeignKey('fk-po_transmittal_entries-fk_po_transmittal_id', 'po_transmittal_entries');
+        $this->dropIndex('idx-po_transmittal_entries-fk_po_transmittal_id', 'po_transmittal_entries');
     }
 
     /*
