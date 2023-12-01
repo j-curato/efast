@@ -142,6 +142,10 @@ $user_data = User::getUserDetails();
 
                 ]) ?>
             </div>
+            <?php
+
+
+            ?>
             <div class="col-sm-2">
                 <?= $form->field($model, 'budget_year')->widget(DatePicker::class, [
                     'pluginOptions' => [
@@ -151,6 +155,7 @@ $user_data = User::getUserDetails();
                         'startDate' =>
                         strtotime(date('Y-m-d')) > strtotime('2023-11-28')
                             &&   !Yii::$app->user->can('super-user')
+                            && !Yii::$app->user->can('create_2023_prs')
                             ? date('2024')
                             : date('2023'),
                     ],

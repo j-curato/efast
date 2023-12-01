@@ -74,11 +74,15 @@ class SupplementalPpmp extends \yii\db\ActiveRecord
             && strtotime(date('Y-m-d')) > strtotime(date('2023-11-28'))
             && intval($this->$attribute) < 2024 &&
             !Yii::$app->user->can('super-user')
+            && !Yii::$app->user->can('create_2023_prs')
         ) {
             $this->addError($attribute, 'Please select a Budget Year on or after 2024');
         }
 
-        if (!$this->isNewRecord &&   !Yii::$app->user->can('super-user')) {
+        if (
+            !$this->isNewRecord &&   !Yii::$app->user->can('super-user')
+            && !Yii::$app->user->can('create_2023_prs')
+        ) {
             $newBudgetYear = $this->getDirtyAttributes()['budget_year'] ?? null;
             $oldDate = $this->getOldAttribute('budget_year');
             if (

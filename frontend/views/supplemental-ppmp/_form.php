@@ -79,6 +79,7 @@ $cse_type_data = [
                         'startDate' =>
                         strtotime(date('Y-m-d')) > strtotime('2023-11-28')
                             &&   !Yii::$app->user->can('super-user')
+                            && !Yii::$app->user->can('create_2023_prs')
                             ? date('2024')
                             : date('2023'),
 
