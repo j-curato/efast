@@ -69,8 +69,6 @@ class VwProcurementToIarTracking extends \yii\db\ActiveRecord
         if (!Yii::$app->user->can('ro_procurement_admin')) {
             $query->andWhere('office_name = :office', ['office' => $user_data->employee->office->office_name]);
             if (!Yii::$app->user->can('po_procurement_admin')) {
-             
-             
                 $query->andWhere('division = :division', ['division' => $user_data->employee->empDivision->division]);
             }
         }
