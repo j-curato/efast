@@ -29,6 +29,7 @@ if (!empty($model->fk_due_diligence_report_id)) {
         'serial_number' => $model->dueDiligenceReport->serial_number
     ];
 }
+$col = 8;
 ?>
 
 
@@ -49,17 +50,19 @@ if (!empty($model->fk_due_diligence_report_id)) {
                     ]
                 ]) ?>
             </div>
-            <div class="col-sm-4">
-                <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
-                    'data' => ArrayHelper::map(Office::getOfficesA(), 'id', 'office_name'),
-                    'options' => ['placeholder' => 'Search for a Employee ...'],
-                    'pluginOptions' => [],
+            <?php if (Yii::$app->user->can('ro_rapid_fma')) : $col = 4 ?>
+                <div class="col-sm-4">
+                    <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
+                        'data' => ArrayHelper::map(Office::getOfficesA(), 'id', 'office_name'),
+                        'options' => ['placeholder' => 'Search for a Employee ...'],
+                        'pluginOptions' => [],
 
-                ])  ?>
+                    ])  ?>
 
-            </div>
+                </div>
+            <?php endif; ?>
 
-            <div class="col-4">
+            <div class="col-<?= $col ?>">
                 <?= $form->field($model, 'fk_due_diligence_report_id')->widget(Select2::class, [
                     'data' => ArrayHelper::map($dueDiligence, 'id', 'serial_number'),
                     'options' => ['placeholder' => 'Search for a MG RFR Serial No. ...'],

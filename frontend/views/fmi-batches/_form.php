@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\web\JqueryAsset;
 use yii\widgets\ActiveForm;
 use aryelds\sweetalert\SweetAlertAsset;
 
@@ -30,30 +31,19 @@ use aryelds\sweetalert\SweetAlertAsset;
 
 <?php
 SweetAlertAsset::register($this);
-$js = <<< JS
-$("#FmiBatches").on("beforeSubmit", function (event) {
-    event.preventDefault();
-    var form = $(this);
-    $.ajax({
-        url: form.attr("action"),
-        type: form.attr("method"),
-        data: form.serialize(),
-        success: function (data) {
-            swal({
-                icon: 'error',
-                title: data,
-                type: "error",
-                timer: 3000,
-                closeOnConfirm: false,
-                closeOnCancel: false
-            })
-        },
-        error: function (data) {
-     
-        }
-    });
-    return false;
-});
+$this->registerJsFile("@web/frontend/modules/js/activeFormAjaxSubmit.js", ['depends' => [JqueryAsset::class]]);
+$js = <<<JS
+
+    $(document).ready(function(){
+        $("#FmiBatches").on("beforeSubmit", function(event) {
+            event.preventDefault();
+            var form = $(this);
+            ajaxSubmit(form)
+            return false;
+        });
+      
+    })
 JS;
 $this->registerJs($js);
+
 ?>

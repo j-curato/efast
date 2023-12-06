@@ -185,14 +185,13 @@ class NotificationToPay extends \yii\db\ActiveRecord
             ->addSelect([
                 new Expression("CAST(tbl_notification_to_pay.id AS CHAR(50)) as notification_to_pay_id"),
                 "tbl_notification_to_pay.serial_number",
-                new Expression("payee.registered_name  as payee_name"),
+                new Expression("due_diligence_reports.supplier_name  as payee_name"),
                 "due_diligence_reports.comments",
                 new Expression("COALESCE(tbl_notification_to_pay.matching_grant_amount,0) as matching_grant_amount"),
                 new Expression("COALESCE(tbl_notification_to_pay.equity_amount,0) as equity_amount"),
                 new Expression("COALESCE(tbl_notification_to_pay.other_amount,0) as other_amount"),
             ])
             ->join('JOIN', 'due_diligence_reports', 'tbl_notification_to_pay.fk_due_diligence_report_id = due_diligence_reports.id')
-            ->join('LEFT JOIN ', 'payee', 'due_diligence_reports.fk_payee_id = payee.id')
             ->andWhere("due_diligence_reports.fk_mgrfr_id = :mgrfr_id", [':mgrfr_id' => $id])
             ->andWhere("NOT EXISTS(SELECT liq.fk_notification_to_pay_id FROM tbl_mg_liquidation_items as  liq WHERE liq.is_deleted = 0 and liq.fk_notification_to_pay_id = tbl_notification_to_pay.id )")
             ->asArray()

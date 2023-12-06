@@ -13,7 +13,6 @@ $checkedLine = '<i class="fa fa-check"></i>';
 $emptyCheckLine =  ' &nbsp; &nbsp;';
 $notedBy = $model->notedBy->getEmployeeDetails();
 $conductedBy =  $model->conductedBy->getEmployeeDetails();
-$payee = $model->payee->getPayeeDetailsA();
 ?>
 <div class="due-diligence-reports-view">
     <div class="container">
@@ -41,26 +40,26 @@ $payee = $model->payee->getPayeeDetailsA();
                     <td colspan="2">
                         <span class="w-10">Name of Supplier </span>
                         <span style="margin-left:1.2em">:</span>
-                        <span class="underline w-75"><?= $payee['registered_name'] ?></span>
+                        <span class="underline w-75"><?= $model->supplier_name ?></span>
                     </td>
                 </tr>
                 <tr>
                     <td colspan="2">
                         <span>Address</span>
                         <span style="margin-left:5em">:</span>
-                        <span class="underline w-75"><?= $payee['registered_address'] ?></span>
+                        <span class="underline w-75"><?= $model->supplier_address ?></span>
                     </td>
                 </tr>
                 <tr>
                     <td colspan="2">Contact Person
                         <span style="margin-left:2em">:</span>
-                        <span class="underline w-75"><?= $payee['contact_person'] ?></span>
+                        <span class="underline w-75"><?= $model->supplier_contact_number ?></span>
                     </td>
                 </tr>
                 <tr>
                     <td colspan="2">Contact Number
                         <span style="margin-left:1.5em">:</span>
-                        <span class="underline w-75"><?= $payee['contact'] ?></span>
+                        <span class="underline w-75"><?= $model->supplier_contact_person ?></span>
                     </td>
                 </tr>
                 <tr>

@@ -26,13 +26,26 @@ $this->params['breadcrumbs'][] = $this->title;
             'type' => 'primary'
         ],
         'columns' => [
+            [
+                'attribute' => 'fk_office_id',
+                'value' => 'office.office_name'
+            ],
             'serial_number',
             'date',
             'fk_due_diligence_report_id',
-            'matching_grant_amount',
-            //'equity_amount',
-            //'other_amount',
-            //'created_at',
+
+            [
+                'attribute' => 'matching_grant_amount',
+                'format' => ['decimal', 2]
+            ],
+            [
+                'attribute' => 'equity_amount',
+                'format' => ['decimal', 2]
+            ],
+            [
+                'attribute' => 'other_amount',
+                'format' => ['decimal', 2]
+            ],
 
             [
                 'label' => 'Actions',

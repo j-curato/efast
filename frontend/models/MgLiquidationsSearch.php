@@ -5,6 +5,8 @@ namespace app\models;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\MgLiquidations;
+use common\models\User;
+use Yii;
 
 /**
  * MgLiquidationsSearch represents the model behind the search form of `app\models\MgLiquidations`.
@@ -18,7 +20,10 @@ class MgLiquidationsSearch extends MgLiquidations
     {
         return [
             [['id', 'fk_mgrfr_id'], 'integer'],
-            [['serial_number', 'reporting_period', 'created_at'], 'safe'],
+            [[
+                'serial_number', 'reporting_period', 'created_at',
+                'fk_office_id'
+            ], 'safe'],
         ];
     }
 
@@ -43,7 +48,13 @@ class MgLiquidationsSearch extends MgLiquidations
         $query = MgLiquidations::find();
 
         // add conditions that should always apply here
-
+        $query->joinWith('office');
+        if (!Yii::$app->user->can('ro_rapid_fma')) {
+            $user_data = User::getUserDetails();
+            $query->andWhere([
+                'fk_office_id' => $user_data->employee->office->id
+            ]);
+        }
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
@@ -64,6 +75,7 @@ class MgLiquidationsSearch extends MgLiquidations
         ]);
 
         $query->andFilterWhere(['like', 'serial_number', $this->serial_number])
+            ->andFilterWhere(['like', 'office.office_name', $this->fk_office_id])
             ->andFilterWhere(['like', 'reporting_period', $this->reporting_period]);
 
         return $dataProvider;

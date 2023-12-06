@@ -32,9 +32,10 @@ class MgLiquidationItems extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['fk_mg_liquidation_id', 'fk_notification_to_pay_id', 'date'], 'required'],
+            [['fk_mg_liquidation_id', 'fk_notification_to_pay_id', 'date', 'dv_number'], 'required'],
             [['fk_mg_liquidation_id', 'fk_notification_to_pay_id', 'is_deleted'], 'integer'],
             [['created_at', 'date'], 'safe'],
+            [['dv_number'], 'string', 'max' => 255],
             [['fk_mg_liquidation_id'], 'exist', 'skipOnError' => true, 'targetClass' => MgLiquidations::class, 'targetAttribute' => ['fk_mg_liquidation_id' => 'id']],
             [['fk_notification_to_pay_id'], 'exist', 'skipOnError' => true, 'targetClass' => NotificationToPay::class, 'targetAttribute' => ['fk_notification_to_pay_id' => 'id']],
         ];
@@ -52,6 +53,7 @@ class MgLiquidationItems extends \yii\db\ActiveRecord
             'is_deleted' => 'Is Deleted',
             'created_at' => 'Created At',
             'date' => 'Date',
+            'dv_number' => 'Date',
 
         ];
     }

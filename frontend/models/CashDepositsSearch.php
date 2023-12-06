@@ -2,9 +2,11 @@
 
 namespace app\models;
 
+use Yii;
 use yii\base\Model;
-use yii\data\ActiveDataProvider;
 use app\models\CashDeposits;
+use common\models\User;
+use yii\data\ActiveDataProvider;
 
 /**
  * CashDepositsSearch represents the model behind the search form of `app\models\CashDeposits`.
@@ -18,7 +20,10 @@ class CashDepositsSearch extends CashDeposits
     {
         return [
             [['id', 'fk_mgrfr_id'], 'integer'],
-            [['serial_number', 'reporting_period', 'date', 'particular', 'created_at'], 'safe'],
+            [[
+                'serial_number', 'reporting_period', 'date', 'particular', 'created_at',
+                'fk_office_id'
+            ], 'safe'],
             [['matching_grant_amount', 'equity_amount', 'other_amount'], 'number'],
         ];
     }
@@ -44,7 +49,13 @@ class CashDepositsSearch extends CashDeposits
         $query = CashDeposits::find();
 
         // add conditions that should always apply here
-
+        $query->joinWith('office');
+        if (!Yii::$app->user->can('rapid_fma')) {
+            $user_data = User::getUserDetails();
+            $query->andWhere([
+                'fk_office_id' => $user_data->employee->office->id
+            ]);
+        }
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
@@ -70,6 +81,7 @@ class CashDepositsSearch extends CashDeposits
 
         $query->andFilterWhere(['like', 'serial_number', $this->serial_number])
             ->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
+            ->andFilterWhere(['like', 'office.office_name', $this->fk_office_id])
             ->andFilterWhere(['like', 'particular', $this->particular]);
 
         return $dataProvider;

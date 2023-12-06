@@ -54,6 +54,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <table class="table table-hover">
                 <thead>
                     <th>Date</th>
+                    <th>DV N.o</th>
                     <th>Payee</th>
                     <th>Comments</th>
                     <th>Grant Amount</th>
@@ -65,6 +66,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <tr v-for="(item,index) in items" :key="index">
 
                         <td class="">{{item.date}}</td>
+                        <td class="">{{item.dv_number}}</td>
                         <td>{{item.payee_name}}</td>
                         <td>{{item.comments}}</td>
                         <td class="">{{formatAmount(item.matching_grant_amount)}}</td>

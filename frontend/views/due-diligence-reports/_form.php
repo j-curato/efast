@@ -41,16 +41,17 @@ $items  = $model->getItemsA();
         <div class="card p-2 m-1">
 
             <div class="row ">
-                <?php ?>
-                <div class="col-4">
-                    <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
-                        'data' => ArrayHelper::map(Office::getOfficesA(), 'id', 'office_name'),
-                        'options' => [
-                            'placeholder' => 'Select Office'
-                        ],
-                        'pluginOptions' => []
-                    ]) ?>
-                </div>
+                <?php if (YIi::$app->user->can('ro_rapid_fma')) : ?>
+                    <div class="col-4">
+                        <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
+                            'data' => ArrayHelper::map(Office::getOfficesA(), 'id', 'office_name'),
+                            'options' => [
+                                'placeholder' => 'Select Office'
+                            ],
+                            'pluginOptions' => []
+                        ]) ?>
+                    </div>
+                <?php endif; ?>
                 <div class="col-sm-4">
                     <?= $form->field($model, 'fk_mgrfr_id')->widget(Select2::class, [
                         'data' => ArrayHelper::map($mgrfr, 'id', 'serial_number'),
@@ -75,30 +76,13 @@ $items  = $model->getItemsA();
                     ]) ?>
                 </div>
                 <div class="col-sm-4">
-                    <?= $form->field($model, 'fk_payee_id')->widget(Select2::class, [
-                        'data' => ArrayHelper::map($payee, 'id', 'registered_name'),
-                        'options' => ['placeholder' => 'Search for a Payee ...'],
-                        'pluginOptions' => [
-                            'allowClear' => true,
-                            'minimumInputLength' => 1,
-                            'language' => [
-                                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                            ],
-                            'ajax' => [
-                                'url' => Yii::$app->request->baseUrl . '?r=payee/search-payee',
-                                'dataType' => 'json',
-                                'delay' => 250,
-                                'data' => new JsExpression('function(params) { return {q:params.term,page:params.page ||1}; }'),
-                                'cache' => true
-                            ],
-                            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                        ],
-
-                    ])  ?>
+                    <?= $form->field($model, 'supplier_name')->textInput() ?>
 
                 </div>
+
+                <div class="col-sm-4"> <?= $form->field($model, 'supplier_contact_number')->textInput() ?></div>
+                <div class="col-sm-4"> <?= $form->field($model, 'supplier_contact_person')->textInput() ?></div>
+                <div class="col-sm-4"> <?= $form->field($model, 'supplier_address')->textarea(['rows'=>1]) ?></div>
                 <div class="col-sm-6">
                     <?= $form->field($model, 'fk_conducted_by')->widget(Select2::class, [
                         'data' => ArrayHelper::map($conductedBy, 'employee_id', 'fullName'),

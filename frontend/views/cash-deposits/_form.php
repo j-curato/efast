@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Office;
 use yii\helpers\Html;
 use yii\web\JsExpression;
 use kartik\date\DatePicker;
@@ -17,16 +18,27 @@ $mgrfr = [];
 if (!empty($model->fk_mgrfr_id)) {
     $mgrfr[] = $model->mgrfr->getMgrfrDetails();
 }
+$gridCol = 4;
 ?>
 
 <div class="cash-deposits-form">
     <div class="container card p-2">
         <?php $form = ActiveForm::begin(); ?>
         <div class="row">
-            <div class="col-sm-4">
+            <?php if (Yii::$app->user->can('ro_rapid_fma')) :
+                $gridCol = 3
+            ?>
+                <div class="col-3">
+                    <?= $form->field($model, 'fk_office_id')->dropDownList(
+                        ArrayHelper::map(Office::getOfficesA(), 'id', 'office_name'),
+                        ['prompt' => 'Select Office']
+                    ) ?>
+                </div>
+            <?php endif; ?>
+            <div class="col-sm-<?= $gridCol ?>">
                 <?= $form->field($model, 'fk_mgrfr_id')->widget(Select2::class, [
                     'data' => ArrayHelper::map($mgrfr, 'id', 'serial_number'),
-                    'options' => ['placeholder' => 'Search for a Bank ...', 'style' => 'height:30em'],
+                    'options' => ['placeholder' => 'Search for a Bank ...', 'style' => 'height:<?=$gridCol?>0em'],
                     'pluginOptions' => [
                         'allowClear' => true,
                         'minimumInputLength' => 1,
@@ -47,7 +59,7 @@ if (!empty($model->fk_mgrfr_id)) {
 
                 ])  ?>
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-<?= $gridCol ?>">
                 <?= $form->field($model, 'reporting_period')->widget(DatePicker::class, [
                     'pluginOptions' => [
                         'format' => 'yyyy-mm',
@@ -55,7 +67,7 @@ if (!empty($model->fk_mgrfr_id)) {
                         'autoclose' => true
                     ]
                 ]) ?></div>
-            <div class="col-sm-4">
+            <div class="col-sm-<?= $gridCol ?>">
                 <?= $form->field($model, 'date')->widget(DatePicker::class, [
                     'pluginOptions' => [
                         'format' => 'yyyy-mm-dd',

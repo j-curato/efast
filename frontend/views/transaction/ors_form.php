@@ -1,11 +1,12 @@
 <?php
 
 
-use yii\helpers\Html;
 use yii\helpers\Url;
+use yii\helpers\Html;
 use yii\widgets\Pjax;
-use aryelds\sweetalert\SweetAlertAsset;
 use yii\helpers\ArrayHelper;
+use aryelds\sweetalert\SweetAlertAsset;
+use app\components\helpers\SweetAlertHelper;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\JevPreparationSearch */
@@ -28,16 +29,18 @@ $iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number
     $books = Yii::$app->db->createCommand("SELECT books.id,books.name FROM books")->queryAll();
     $division = strtolower($model->responsibilityCenter->name);
     ?>
-
-
     <!-- FORM 1 -->
     <div class="container card">
         <p>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+            <?= !$model->is_cancelled ?
+                Html::a('Cancel', ['cancel', 'id' => $model->id], [
+                    'class' => 'btn btn-danger',
+                    'onclick' => SweetAlertHelper::getCancelConfirmation(Url::to(['cancel', 'id' => $model->id]))
+                ])
+                : '' ?>
             <button class="btn btn-success" type="button" id="print">Print</button>
         </p>
-
-
         <?php Pjax::begin(['id' => 'journal', 'clientOptions' => ['method' => 'POST']]) ?>
         <div style="float: right;">
             <h6>

@@ -21,26 +21,35 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'panel' => [
             'type' => 'primary',
-            'heading' => 'MG RFRs'
+            'heading' => 'List of MGRFRs'
         ],
         'columns' => [
+            [
+                'attribute' => 'fk_office_id',
+                'value' => 'office.office_name'
+            ],
+            'serial_number',
 
-            'fk_bank_branch_detail_id',
-            'fk_municipality_id',
-            'fk_barangay_id',
-            'fk_office_id',
+            ['attribute' => 'fk_province_id', 'value' => 'province.province_name'],
+            ['attribute' => 'fk_municipality_id', 'value' => 'municipality.municipality_name'],
+            ['attribute' => 'fk_barangay_id', 'value' => 'barangay.barangay_name'],
             'purok',
             'authorized_personnel',
             'contact_number',
-            'saving_account_number',
             'email_address:email',
             'investment_type:ntext',
-            'investment_description:ntext',
+            [
+                'attribute' => 'investment_description',
+                'contentOptions' => ['style' => 'max-width: 30em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;'],
+            ],
             'project_consultant:ntext',
-            'project_objective:ntext',
+            [
+                'attribute' => 'project_objective',
+                'contentOptions' => ['style' => 'max-width: 30em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;'],
+            ],
             'project_beneficiary:ntext',
-            'matching_grant_amount',
-            'equity_amount',
+            ['attribute' => 'matching_grant_amount', 'format' => ['decimal', 2]],
+            ['attribute' => 'equity_amount', 'format' => ['decimal', 2]],
             //'created_at',
 
             [

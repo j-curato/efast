@@ -81,15 +81,26 @@ class DueDiligenceReports extends \yii\db\ActiveRecord
                 'fk_mgrfr_id',
                 'fk_noted_by',
                 'fk_office_id',
-                'fk_payee_id'
+                'supplier_name',
+                'supplier_contact_number',
+                'supplier_contact_person',
+                'supplier_address'
             ], 'required'],
             [['supplier_nursery', 'comments', 'fk_office_id'], 'string'],
             [[
-                'fk_payee_id', 'supplier_has_business_permit', 'supplier_is_bir_registered',
+                'supplier_has_business_permit', 'supplier_is_bir_registered',
                 'supplier_has_officer_connection', 'supplier_is_financial_capable', 'supplier_is_authorized_dealer', 'supplier_has_quality_material', 'supplier_can_comply_specs', 'supplier_has_legal_issues', 'fk_mgrfr_id', 'fk_conducted_by', 'fk_noted_by'
             ], 'integer'],
             [['created_at'], 'safe'],
-            [['serial_number',  'supplier_is_registered'], 'string', 'max' => 255],
+            [[
+                'serial_number',
+                'supplier_is_registered',
+                'supplier_name',
+                'supplier_contact_number',
+                'supplier_contact_person',
+
+            ], 'string', 'max' => 255],
+            [['supplier_address'], 'string'],
             [['serial_number'], 'unique'],
             [['fk_conducted_by'], 'exist', 'skipOnError' => true, 'targetClass' => Employee::class, 'targetAttribute' => ['fk_conducted_by' => 'employee_id']],
             [['fk_mgrfr_id'], 'exist', 'skipOnError' => true, 'targetClass' => Mgrfrs::class, 'targetAttribute' => ['fk_mgrfr_id' => 'id']],
@@ -120,7 +131,10 @@ class DueDiligenceReports extends \yii\db\ActiveRecord
             'fk_noted_by' => ' Noted By',
             'created_at' => 'Created at',
             'fk_office_id' => 'Office',
-            'fk_payee_id' => 'Payee',
+            'supplier_name' => 'Supplier Name',
+            'supplier_address' => 'Address',
+            'supplier_contact_number' => 'Contact No.',
+            'supplier_contact_person' => 'Contact Person',
         ];
     }
 
@@ -156,10 +170,6 @@ class DueDiligenceReports extends \yii\db\ActiveRecord
     public function getNotedBy()
     {
         return $this->hasOne(Employee::class, ['employee_id' => 'fk_noted_by']);
-    }
-    public function getPayee()
-    {
-        return $this->hasOne(Payee::class, ['id' => 'fk_payee_id']);
     }
     public function beforeSave($insert)
     {

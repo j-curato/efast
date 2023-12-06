@@ -1,13 +1,15 @@
 <?php
 
-use app\models\Office;
-use kartik\date\DatePicker;
 use yii\helpers\Url;
 use yii\helpers\Html;
+use app\models\Office;
+use yii\web\JqueryAsset;
 use yii\web\JsExpression;
+use kartik\date\DatePicker;
 use kartik\widgets\Select2;
-use yii\bootstrap4\ActiveForm;
 use yii\helpers\ArrayHelper;
+use yii\bootstrap4\ActiveForm;
+use aryelds\sweetalert\SweetAlertAsset;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\FmiActualDateOfStarts */
@@ -23,7 +25,9 @@ $subprojectData = [
 
 <div class="fmi-actual-date-of-starts-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin([
+        'id' => $model->formName()
+    ]); ?>
     <div class="col-12">
         <?= $form->field($model, 'fk_tbl_fmi_subproject_id')->widget(Select2::class, [
             'data' => ArrayHelper::map($subprojectData, 'id', 'serial_number'),
@@ -52,7 +56,7 @@ $subprojectData = [
 
         <?= $form->field($model, 'fk_office_id')->dropDownList(ArrayHelper::map(Office::getOfficesA(), 'id', 'office_name'), [
 
-            'prompt'=>'Office Name'
+            'prompt' => 'Office Name'
         ]) ?>
     </div>
     <div class="col-12">
@@ -77,3 +81,22 @@ $subprojectData = [
     <?php ActiveForm::end(); ?>
 
 </div>
+
+<?php
+SweetAlertAsset::register($this);
+$this->registerJsFile("@web/frontend/modules/js/activeFormAjaxSubmit.js", ['depends' => [JqueryAsset::class]]);
+$js = <<<JS
+
+    $(document).ready(function(){
+        $("#FmiActualDateOfStarts").on("beforeSubmit", function(event) {
+            event.preventDefault();
+            var form = $(this);
+            ajaxSubmit(form)
+            return false;
+        });
+      
+    })
+JS;
+$this->registerJs($js);
+
+?>

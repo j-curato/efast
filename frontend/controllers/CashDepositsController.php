@@ -5,6 +5,8 @@ namespace frontend\controllers;
 use Yii;
 use app\models\CashDeposits;
 use app\models\CashDepositsSearch;
+use app\models\Mgrfrs;
+use common\models\User;
 use ErrorException;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -45,6 +47,7 @@ class CashDepositsController extends Controller
                     [
                         'actions' => [
                             'create',
+                            'q'
                         ],
                         'allow' => true,
                         'roles' => ['create_rapid_mg_cash_deposits']
@@ -98,7 +101,8 @@ class CashDepositsController extends Controller
     public function actionCreate()
     {
         $model = new CashDeposits();
-
+        $user_data = User::getUserDetails();
+        $model->fk_office_id = $user_data->employee->office->id;
         if ($model->load(Yii::$app->request->post())) {
             try {
                 $txn = Yii::$app->db->beginTransaction();
@@ -182,5 +186,17 @@ class CashDepositsController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionQ()
+    {
+        $liquidatedFilters = [
+            [
+                'value' => '2023-01',
+                'operator' => '=',
+                'column' => 'tbl_mg_liquidations.reporting_period'
+            ]
+        ];
+        return json_encode(Mgrfrs::findOne(5)->getCashBalanceById($liquidatedFilters));
     }
 }

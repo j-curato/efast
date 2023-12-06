@@ -2,9 +2,11 @@
 
 namespace app\models;
 
+use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\NotificationToPay;
+use common\models\User;
 
 /**
  * NotificationToPaySearch represents the model behind the search form of `app\models\NotificationToPay`.
@@ -18,7 +20,9 @@ class NotificationToPaySearch extends NotificationToPay
     {
         return [
             [['id', 'fk_due_diligence_report_id'], 'integer'],
-            [['serial_number', 'date', 'created_at'], 'safe'],
+            [[
+                'serial_number', 'date', 'created_at', 'fk_office_id'
+            ], 'safe'],
             [['matching_grant_amount', 'equity_amount', 'other_amount'], 'number'],
         ];
     }
@@ -44,7 +48,14 @@ class NotificationToPaySearch extends NotificationToPay
         $query = NotificationToPay::find();
 
         // add conditions that should always apply here
+        $query->joinWith('office');
+        if (!Yii::$app->user->can('ro_rapid_fma')) {
 
+            $user_data = User::getUserDetails();
+            $query->andWhere([
+                'fk_office_id' => $user_data->employee->office->id
+            ]);
+        }
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
@@ -69,6 +80,7 @@ class NotificationToPaySearch extends NotificationToPay
         ]);
 
         $query->andFilterWhere(['like', 'serial_number', $this->serial_number]);
+        $query->andFilterWhere(['like', 'office.office_name', $this->fk_office_id]);
 
         return $dataProvider;
     }

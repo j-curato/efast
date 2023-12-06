@@ -2,8 +2,10 @@
 
 namespace app\models;
 
-use app\components\helpers\MyHelper;
 use Yii;
+use app\models\Office;
+use app\components\helpers\MyHelper;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "cash_deposits".
@@ -37,8 +39,8 @@ class CashDeposits extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['fk_mgrfr_id'], 'integer'],
-            [['reporting_period', 'date', 'particular', 'fk_mgrfr_id'], 'required'],
+            [['fk_mgrfr_id', 'fk_office_id'], 'integer'],
+            [['reporting_period', 'date', 'particular', 'fk_mgrfr_id', 'fk_office_id'], 'required'],
             [['date', 'created_at'], 'safe'],
             [['particular'], 'string'],
             [['matching_grant_amount', 'equity_amount', 'other_amount'], 'number'],
@@ -63,6 +65,7 @@ class CashDeposits extends \yii\db\ActiveRecord
             'matching_grant_amount' => 'Matching Grant ',
             'equity_amount' => 'Equity ',
             'other_amount' => 'Others ',
+            'fk_office_id' => 'Office ',
             'created_at' => 'Created At',
         ];
     }
@@ -75,6 +78,10 @@ class CashDeposits extends \yii\db\ActiveRecord
     public function getMgrfr()
     {
         return $this->hasOne(Mgrfrs::class, ['id' => 'fk_mgrfr_id']);
+    }
+    public function getOffice()
+    {
+        return $this->hasOne(Office::class, ['id' => 'fk_office_id']);
     }
     public function beforeSave($insert)
     {
@@ -99,4 +106,5 @@ class CashDeposits extends \yii\db\ActiveRecord
         $num = !empty($lastNum) ? intval($lastNum) + 1 : 1;
         return date('Y') . '-' . str_pad($num, 4, '0', STR_PAD_LEFT);
     }
+
 }

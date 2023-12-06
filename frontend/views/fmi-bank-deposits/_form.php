@@ -2,14 +2,16 @@
 
 use yii\helpers\Url;
 use yii\helpers\Html;
+use app\models\Office;
+use yii\web\JqueryAsset;
 use yii\web\JsExpression;
 use kartik\date\DatePicker;
+use kartik\money\MaskMoney;
 use kartik\widgets\Select2;
 use yii\helpers\ArrayHelper;
 use yii\bootstrap4\ActiveForm;
 use app\models\FmiBankDepositTypes;
-use app\models\Office;
-use kartik\money\MaskMoney;
+use aryelds\sweetalert\SweetAlertAsset;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\FmiBankDeposits */
@@ -25,7 +27,9 @@ $subprojectData = [
 
 <div class="fmi-bank-deposits-form">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin([
+        'id' => $model->formName()
+    ]); ?>
 
     <div class="row">
         <div class="col-6">
@@ -106,3 +110,23 @@ $subprojectData = [
     <?php ActiveForm::end(); ?>
 
 </div>
+
+
+<?php
+SweetAlertAsset::register($this);
+$this->registerJsFile("@web/frontend/modules/js/activeFormAjaxSubmit.js", ['depends' => [JqueryAsset::class]]);
+$js = <<<JS
+
+    $(document).ready(function(){
+        $("#FmiBankDeposits").on("beforeSubmit", function(event) {
+            event.preventDefault();
+            var form = $(this);
+            ajaxSubmit(form)
+            return false;
+        });
+      
+    })
+JS;
+$this->registerJs($js);
+
+?>

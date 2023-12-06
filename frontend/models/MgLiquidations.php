@@ -48,10 +48,10 @@ class MgLiquidations extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['reporting_period', 'fk_mgrfr_id', 'fk_office_id'], 'required'],
+            [['reporting_period', 'fk_mgrfr_id', 'fk_office_id',], 'required'],
             [['id', 'fk_mgrfr_id', 'fk_office_id'], 'integer'],
             [['created_at'], 'safe'],
-            [['serial_number', 'reporting_period'], 'string', 'max' => 255],
+            [['serial_number', 'reporting_period',], 'string', 'max' => 255],
             [['serial_number'], 'unique'],
             [['id'], 'unique'],
             [['fk_mgrfr_id'], 'exist', 'skipOnError' => true, 'targetClass' => Mgrfrs::class, 'targetAttribute' => ['fk_mgrfr_id' => 'id']],
@@ -181,19 +181,20 @@ class MgLiquidations extends \yii\db\ActiveRecord
                 new Expression("CAST(tbl_mg_liquidation_items.id AS CHAR(50)) as id"),
                 new Expression("CAST(tbl_notification_to_pay.id AS CHAR(50)) as notification_to_pay_id"),
                 "tbl_notification_to_pay.serial_number",
-                new Expression("payee.registered_name  as payee_name"),
+                new Expression("due_diligence_reports.supplier_name as payee_name"),
                 "due_diligence_reports.comments",
                 new Expression("COALESCE(tbl_notification_to_pay.matching_grant_amount,0) as matching_grant_amount"),
                 new Expression("COALESCE(tbl_notification_to_pay.equity_amount,0) as equity_amount"),
                 new Expression("COALESCE(tbl_notification_to_pay.other_amount,0) as other_amount"),
                 "tbl_mg_liquidation_items.date",
+                "tbl_mg_liquidation_items.dv_number",
             ])
             ->join('JOIN', 'tbl_notification_to_pay', 'tbl_mg_liquidation_items.fk_notification_to_pay_id = tbl_notification_to_pay.id')
             ->join('JOIN', 'due_diligence_reports', 'tbl_notification_to_pay.fk_due_diligence_report_id = due_diligence_reports.id')
-            ->join('LEFT JOIN ', 'payee', 'due_diligence_reports.fk_payee_id = payee.id')
             ->andWhere("tbl_mg_liquidation_items.fk_mg_liquidation_id = :id", [':id' => $this->id])
             ->andWhere('tbl_mg_liquidation_items.is_deleted = 0')
             ->asArray()
             ->all();
     }
+
 }

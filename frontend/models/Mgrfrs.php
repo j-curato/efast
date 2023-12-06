@@ -2,9 +2,10 @@
 
 namespace app\models;
 
-use app\components\helpers\MyHelper;
 use Yii;
 use yii\db\Expression;
+use app\models\CashDeposits;
+use app\components\helpers\MyHelper;
 
 /**
  * This is the model class for table "mgrfrs".
@@ -223,15 +224,141 @@ class Mgrfrs extends \yii\db\ActiveRecord
                 'mgrfrs.project_objective',
                 'mgrfrs.project_beneficiary',
                 'mgrfrs.matching_grant_amount',
-                'mgrfrs.equity_amount'
+                'mgrfrs.equity_amount',
+                new Expression("banks.`name` as bank_name"),
+                "bank_branches.branch_name",
+                "bank_branch_details.bank_manager",
+                new Expression("bank_branch_details.address as bank_address")
 
             ])
             ->join('LEFT JOIN', 'barangays', ' mgrfrs.fk_barangay_id = barangays.id')
             ->join('LEFT JOIN', 'provinces', 'mgrfrs.fk_province_id = provinces.id')
             ->join('LEFT JOIN', 'municipalities', 'mgrfrs.fk_municipality_id = municipalities.id')
             ->join('LEFT JOIN', 'office', 'mgrfrs.fk_office_id = office.id')
+            ->join("LEFT JOIN", "bank_branch_details", "mgrfrs.fk_bank_branch_detail_id = bank_branch_details.id")
+            ->join("LEFT JOIN", "bank_branches", "bank_branch_details.fk_bank_branch_id = bank_branches.id")
+            ->join("LEFT JOIN", "banks", "bank_branches.fk_bank_id = banks.id")
+
             ->where('mgrfrs.id = :id', ['id' => $this->id])
             ->asArray()
             ->one();
+    }
+
+    /**
+     *Filter Format
+     *$liquidatedFilters = [
+     *    [
+     *        'value' => '2023-01',
+     *        'operator' => '=',
+     *        'column' => 'tbl_mg_liquidations.reporting_period'
+     *    ]
+     *];
+     */
+
+    public  function getCashBalanceById($liquidatedFilters = [], $depositFilters = [])
+    {
+        return self::find()
+            ->addSelect([
+                'mgrfrs.id',
+                new Expression('COALESCE(deposit.total_deposit_equity,0) - COALESCE(liquidated.total_liquidation_equity,0) as balance_equity'),
+                new Expression('COALESCE(deposit.total_deposit_grant,0) - COALESCE(liquidated.total_liquidation_grant,0) as balance_grant'),
+                new Expression('COALESCE(deposit.total_deposit_other_amount,0) - COALESCE(liquidated.total_liquidation_other_amount,0) as balance_other_amount')
+
+            ])
+            ->leftJoin(
+                ['liquidated' => static::buildLiquidationQuery($liquidatedFilters)],
+                'mgrfrs.id = liquidated.fk_mgrfr_id'
+            )
+            ->leftJoin(
+                ['deposit' => static::buildDepositQuery($depositFilters)],
+                'mgrfrs.id = deposit.fk_mgrfr_id'
+            )
+            ->andWhere('mgrfrs.id = :id', ['id' => $this->id])
+            ->asArray()
+            ->one();
+        // ->createCommand()->getRawSql();
+    }
+    protected function buildLiquidationQuery($filters = [])
+    {
+        $qry =   Mgrfrs::find()
+            ->addSelect([
+                'due_diligence_reports.fk_mgrfr_id',
+                new Expression('COALESCE(SUM(tbl_notification_to_pay.equity_amount),0) as total_liquidation_equity'),
+                new Expression('COALESCE(SUM(tbl_notification_to_pay.matching_grant_amount),0) as total_liquidation_grant'),
+                new Expression('COALESCE(SUM(tbl_notification_to_pay.other_amount),0) as total_liquidation_other_amount')
+            ])
+            ->join('JOIN', 'due_diligence_reports', ' mgrfrs.id = due_diligence_reports.fk_mgrfr_id')
+            ->join('JOIN', 'tbl_notification_to_pay', ' due_diligence_reports.id = tbl_notification_to_pay.fk_due_diligence_report_id')
+            ->join('JOIN', 'tbl_mg_liquidation_items', ' tbl_notification_to_pay.id = tbl_mg_liquidation_items.fk_notification_to_pay_id')
+            ->join('JOIN', 'tbl_mg_liquidations', ' tbl_mg_liquidation_items.fk_mg_liquidation_id = tbl_mg_liquidations.id')
+            ->andWhere('tbl_mg_liquidation_items.is_deleted = 0');
+
+        if (!empty($filters)) {
+            foreach ($filters as $val) {
+                $qry->andWhere([$val['operator'], $val['column'], $val['value']]);
+            }
+        }
+        return    $qry->groupBy('due_diligence_reports.fk_mgrfr_id');
+    }
+    protected function buildDepositQuery($filters = [])
+    {
+        $qry =  CashDeposits::find()
+            ->addSelect([
+                "cash_deposits.fk_mgrfr_id",
+                new Expression("COALESCE(SUM(cash_deposits.equity_amount),0) as total_deposit_equity"),
+                new Expression("COALESCE(SUM(cash_deposits.matching_grant_amount),0) as total_deposit_grant"),
+                new Expression("COALESCE(SUM(cash_deposits.other_amount),0) as total_deposit_other_amount")
+            ]);
+        if (!empty($filters)) {
+            foreach ($filters as $val) {
+                $qry->andWhere([$val['operator'], $val['column'], $val['value']]);
+            }
+        }
+        return  $qry->groupBy(' cash_deposits.fk_mgrfr_id');
+    }
+    public function getLiquidations($reporting_period)
+    {
+
+        return self::find()
+            ->addSelect([
+                "tbl_mg_liquidation_items.`date`",
+                "tbl_mg_liquidation_items.dv_number",
+                "due_diligence_reports.supplier_name",
+                "due_diligence_reports.comments",
+                "tbl_notification_to_pay.matching_grant_amount",
+                "tbl_notification_to_pay.equity_amount",
+                "tbl_notification_to_pay.other_amount"
+            ])
+            ->join("JOIN", "due_diligence_reports", " mgrfrs.id = due_diligence_reports.fk_mgrfr_id")
+            ->join("JOIN", "tbl_notification_to_pay", " due_diligence_reports.id = tbl_notification_to_pay.fk_due_diligence_report_id")
+            ->join("JOIN", "tbl_mg_liquidation_items", " tbl_notification_to_pay.id = tbl_mg_liquidation_items.fk_notification_to_pay_id")
+            ->join("JOIN", "tbl_mg_liquidations", " tbl_mg_liquidation_items.fk_mg_liquidation_id = tbl_mg_liquidations.id")
+            ->andWhere([
+                "tbl_mg_liquidation_items.is_deleted" => 0
+            ])
+            ->andWhere([
+                "tbl_mg_liquidations.reporting_period" => $reporting_period
+            ])
+            ->andWhere(['mgrfrs.id' => $this->id])
+            ->asArray()
+            ->all();
+    }
+    public function getCashDepositsByPeriod($reporting_period)
+    {
+        return CashDeposits::find()
+            ->addSelect([
+                "cash_deposits.particular",
+                "cash_deposits.equity_amount",
+                "cash_deposits.matching_grant_amount",
+                "cash_deposits.other_amount"
+            ])
+            ->andWhere([
+                "cash_deposits.fk_mgrfr_id" => $this->id,
+            ])
+            ->andWhere([
+                "cash_deposits.reporting_period" => $reporting_period
+            ])
+            ->asArray()
+            ->all();
     }
 }

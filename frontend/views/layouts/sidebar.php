@@ -325,7 +325,10 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                 Yii::$app->user->can('view_rapid_mg_notification_to_pay') ?     ['label' => 'Notification to Pay', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/notification-to-pay/index'],] : null,
                 Yii::$app->user->can('view_rapid_mg_liquidation') ?     ['label' => 'MG Liquidations', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/mg-liquidations/index'],] : null,
             ];
-            $rapidMgReports = [];
+            $rapidMgReports = [
+                Yii::$app->user->can('super-user') ?     ['label' => 'SORD', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rapid-reports/mg-sord'],] : null,
+
+            ];
             $rapidFmiMasterRecords = [
                 Yii::$app->user->can('view_fmi_bank_deposit_type') ?     ['label' => 'Bank Deposit Types', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-bank-deposit-types/index'],] : null,
             ];
@@ -721,18 +724,6 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                         ],
                     ],
                 ],
-                // [
-                //     'label' => 'Query',
-                //     'icon' => 'fa fa-database',
-                //     'items' => removeNull([
-                //         Yii::$app->user->can('po_fund_source_fur') ?     ['label' => 'Fund Source FUR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/fund-source-fur'],] : null,
-                //         Yii::$app->user->can('po_summary_fund_source_fur') ?     ['label' => 'Summary Fund Source FUR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/summary-fund-source-fur'],] : null,
-                //         Yii::$app->user->can('po_summary_fund_source_fur') ?     ['label' => 'Summary Budget Year FUR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/budget-year-fur'],] : null,
-                //         Yii::$app->user->can('po_rod') ?     ['label' => 'ROD', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rod/index'],] : null,
-                //         Yii::$app->user->can('po_adequacy_of_resource') ?     ['label' => 'Adequacy of Resource', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/province-adequacy'],] : null,
-
-                //     ]),
-                // ],
                 [
                     'label' => 'Procurement',
                     'icon' => 'fa fa-shopping-cart',
@@ -776,6 +767,52 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                         Yii::$app->user->can('inspection_report') ?     ['label' => 'Inspection Report', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/inspection-report/index'],] : null,
                         Yii::$app->user->can('iar') ?     ['label' => 'IAR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/iar/index'],] : null,
                     ]),
+                ],
+                [
+                    'label' => 'Rapid FMI',
+                    'icon' => 'fa fa-search',
+                    'items' => [
+                        [
+                            'label' => 'Master Records',
+                            'iconStyle' => 'far text-info',
+                            'items' => removeNull($rapidFmiMasterRecords)
+                        ],
+                        [
+                            'label' => 'Transactions',
+                            'iconStyle' => 'far text-info',
+                            'items' => removeNull($rapidFmiTransaction)
+                        ],
+                        [
+                            'label' => 'Reports',
+                            'iconStyle' => 'far text-info',
+                            'items' => removeNull($rapidFmiReports)
+                        ],
+                    ],
+
+
+                ],
+                [
+                    'label' => 'Rapid MG',
+                    'icon' => 'fa fa-search',
+                    'items' => [
+                        [
+                            'label' => 'Master Records',
+                            'iconStyle' => 'far text-info',
+                            'items' => removeNull($rapidMgMasterRecords)
+                        ],
+                        [
+                            'label' => 'Transactions',
+                            'iconStyle' => 'far text-info',
+                            'items' => removeNull($rapidMgTransaction)
+                        ],
+                        [
+                            'label' => 'Reports',
+                            'iconStyle' => 'far text-info',
+                            'items' => removeNull($rapidMgReports)
+                        ],
+                    ],
+
+
                 ],
                 [
                     'label' => 'Profile',

@@ -35,13 +35,14 @@ if (!empty($model->fk_mgrfr_id)) {
                     'autoclose' => true
                 ]]) ?>
             </div>
-            <div class="col-sm-3">
-                <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
-                    'data' => ArrayHelper::map(Office::getOfficesA(), 'id', 'office_name'),
-                    'options' => ['placeholder' => 'Select Office'],
-                    'pluginOptions' => [],
-                ]) ?>
-            </div>
+            <?php if (Yii::$app->user->can('ro_rapid_fma')) : ?>
+                <div class="col-sm-3">
+                    <?= $form->field($model, 'fk_office_id')->dropDownList(
+                        ArrayHelper::map(Office::getOfficesA(), 'id', 'office_name'),
+                        ['prompt' => 'Select Office'],
+                    ) ?>
+                </div>
+            <?php endif; ?>
             <?php if ($model->isNewRecord) : ?>
                 <div class="col-sm-3">
                     <?= $form->field($model, 'fk_mgrfr_id')->widget(Select2::class, [
@@ -57,7 +58,7 @@ if (!empty($model->fk_mgrfr_id)) {
                                 'url' => Yii::$app->request->baseUrl . '?r=mgrfrs/search-mgrfr',
                                 'dataType' => 'json',
                                 'delay' => 250,
-                                'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
+                                'data' => new JsExpression('function(params) { return {q:params.term,page:params.page||1}; }'),
                                 'cache' => true
                             ],
                             'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
@@ -74,6 +75,7 @@ if (!empty($model->fk_mgrfr_id)) {
         <table class="table table-hover">
             <thead>
                 <th>Date</th>
+                <th>DV No.</th>
                 <th>Payee</th>
                 <th>Comments</th>
                 <th>Grant Amount</th>
@@ -90,6 +92,7 @@ if (!empty($model->fk_mgrfr_id)) {
                         <input type='text' v-model="item.notification_to_pay_id" :name="'items['+index+'][fk_notification_to_pay_id]'">
                     </td>
                     <td class=""><input type='date' v-model="item.date" :name="'items['+index+'][date]'" class="form-control"></td>
+                    <td class="" style="min-width: 5em;"><input style="min-width: 15em;" type='text' v-model="item.dv_number" :name="'items['+index+'][dv_number]'" class="form-control"></td>
                     <td>{{item.payee_name}}</td>
                     <td>{{item.comments}}</td>
                     <td class="">{{formatAmount(item.matching_grant_amount)}}</td>
