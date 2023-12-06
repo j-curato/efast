@@ -41,7 +41,8 @@ $cancelItmRowNum = 0;
             <?= $form->field($model, 'date_issued')->widget(DatePicker::class, [
                 'pluginOptions' => [
                     'format' => 'yyyy-mm-dd',
-                    'autoclose' => true
+                    'autoclose' => true,
+                    'todayHighlight' => true
                 ]
             ]) ?>
         </div>
