@@ -5,7 +5,6 @@
 
 use yii\helpers\Url;
 use yii\helpers\Html;
-use common\models\User;
 use kartik\date\DatePicker;
 use dosamigos\chartjs\ChartJsAsset;
 use aryelds\sweetalert\SweetAlertAsset;
@@ -14,49 +13,75 @@ use aryelds\sweetalert\SweetAlertAsset;
 $this->title = 'Dashboard';
 ?>
 <?= \yii\helpers\Html::csrfMetaTags() ?>
-<div class="site-index card">
-    <div class="body-content container-fluid">
+<div class="site-index ">
+    <div class="container-fluid">
         <div class="row">
-
-
-            <div class="col-sm-3">
-                <?php
-                echo Html::a('NAS Link', Url::to('http://192.168.1.190:8021', true), ['target' => '_blank', 'class' => 'btn btn-warning']);
-                // echo "  <div class='col-sm-1'><button class='btn btn-success' id='update_cloud' style='margin-bottom:12px'>Update Cloud</button> </div>";
-                ?>
-
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-header border-0">
+                        <div class="d-flex justify-content-between">
+                            <h3 class="card-title">Links</h3>
+                        </div>
+                    </div>
+                    <div class="card-body m-0 pt-0">
+                        <div class="row">
+                            <div class="col-1">
+                                <?= Html::a(
+                                    'NAS Drive',
+                                    Url::to('http://dtinas/drive', true),
+                                    ['target' => '_blank', 'class' => 'btn btn-danger']
+                                );
+                                ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-5">
-                <div class="panel panel-primary">
-                    <div class="panel-heading"><i class="fa fa-calendar"></i> Calendar of Events </div>
-                    <div class="panel-body">
-                        <div style="height:350;width:100%" id="calendar"></div>
+
+
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header border-0">
+                        <div class="d-flex justify-content-between">
+                            <h3 class="card-title">Calendar of Events</h3>
+                            <a href="javascript:void(0);">View Report</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div style="height:350;width:100%" id="calendar"></div>
+                        </div>
                     </div>
                 </div>
             </div>
             <?php if (YIi::$app->user->can('ro_accounting_admin') || YIi::$app->user->can('ro_cash_admin')) { ?>
-                <div class="col-sm-7">
-                    <div class="panel panel-primary">
-                        <div class="panel-heading">Transmittal</div>
-                        <div class="panel-body">
-                            <label for="bar_filter">Year</label>
-                            <?php
-                            echo DatePicker::widget([
-                                'id' => 'bar_filter',
-                                'name' => 'year',
-                                'pluginOptions' => [
-                                    'autoclose' => true,
-                                    'format' => 'yyyy',
-                                    'minViewMode' => 'years',
-                                    'placeholder' => 'Select Year'
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header border-0">
+                            <div class="d-flex justify-content-between">
+                                <h3 class="card-title">DV Transmittals</h3>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div>
+                                <label for="bar_filter">Year</label>
+                                <?= DatePicker::widget([
+                                    'id' => 'bar_filter',
+                                    'name' => 'year',
+                                    'pluginOptions' => [
+                                        'autoclose' => true,
+                                        'format' => 'yyyy',
+                                        'minViewMode' => 'years',
+                                        'placeholder' => 'Select Year'
 
-                                ]
-                            ]);
-                            ?>
-                            <div id="chartContainer">
-                                <canvas id="myChart"></canvas>
+                                    ]
+                                ]);
+                                ?>
+                                <div id="chartContainer">
+                                    <canvas id="myChart"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -64,10 +89,7 @@ $this->title = 'Dashboard';
             <?php } ?>
         </div>
 
-
-
     </div>
-
 </div>
 
 <div id="dots5">
