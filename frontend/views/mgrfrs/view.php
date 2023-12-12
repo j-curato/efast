@@ -12,7 +12,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="mgrfrs-view" id="main">
     <div class="container ">
-        <div class="card p-2">
+        <div class="card p-2 buttons">
 
             <span>
                 <?= Yii::$app->user->can('update_rapid_mg_mgrfr') ? Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) : '' ?>
@@ -21,7 +21,14 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="card p-3">
 
             <table>
-
+                <tr>
+                    <td class="border-0">
+                        <?= Html::img(Yii::$app->request->baseUrl . '/frontend/web/images/dti_header.png', [
+                            'alt' => 'some', 'class' => 'pull-left img-responsive',
+                            'style' => 'width: 16em;'
+                        ]); ?>
+                    </td>
+                </tr>
                 <tr>
                     <th colspan="7" class="text-center border-0">
                         <span>Annex E</span> <br>
@@ -255,12 +262,13 @@ $this->params['breadcrumbs'][] = $this->title;
     td,
     th {
         border: 1px solid black;
+        padding: 5px;
     }
 
     @media print {
 
         .btn,
-        .main-footer {
+        .main-footer ,.buttons{
             display: none;
         }
     }
