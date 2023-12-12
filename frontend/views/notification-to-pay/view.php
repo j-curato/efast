@@ -25,7 +25,7 @@ $coordinator =  $model->coordinator->getEmployeeDetails();
 
 
     <div class="container">
-        <div class="card p-2">
+        <div class="card p-2 buttons">
             <span>
                 <?= Yii::$app->user->can('super-user') ? Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary lrgModal']) : '' ?>
             </span>
@@ -33,6 +33,14 @@ $coordinator =  $model->coordinator->getEmployeeDetails();
         <div class="card p-2">
             <table>
                 <thead>
+                    <tr>
+                        <td>
+                            <?= Html::img(Yii::$app->request->baseUrl . '/frontend/web/images/dti_header.png', [
+                                'alt' => 'some', 'class' => 'pull-left img-responsive',
+                                'style' => 'width: 16em;'
+                            ]); ?>
+                        </td>
+                    </tr>
                     <th class="text-center">
                         <h4 class="font-weight-bold">Annex H</h4>
                         <p>DTI Notification to Pay</p>
@@ -40,19 +48,18 @@ $coordinator =  $model->coordinator->getEmployeeDetails();
                 </thead>
                 <tbody>
                     <tr>
-                        <td>DATE: <u> <?= DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y') ?></u></td>
+                        <td><b>DATE: </b> <u> <?= DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y') ?></u></td>
                     </tr>
                     <tr>
                         <td>
-                            <span>_____________________Name</span><br>
+                            <b><u class="text-uppercase"><?= $model->dueDiligenceReport->mgrfr->bankBranchDetail->bank_manager ?></u></b><br>
                             <span>
                                 <u class="font-weight-bold">
                                     <?= strtoupper($model->dueDiligenceReport->mgrfr->bankBranchDetail->bankBranch->bank->name
                                         . '-' . $model->dueDiligenceReport->mgrfr->bankBranchDetail->bankBranch->branch_name) ?>
                                 </u>
-                                LBP/DBP
                             </span><br>
-                            <span>_____________________Address of SFI</span><br>
+                            <u class="text-uppercase font-weight-bold"><?= $model->dueDiligenceReport->mgrfr->bankBranchDetail->address ?></u><br>
                         </td>
                     </tr>
                     <tr>
@@ -61,16 +68,17 @@ $coordinator =  $model->coordinator->getEmployeeDetails();
                         </td>
                     </tr>
                     <tr>
-                        <td>Dear __________________</td>
+                        <td>Dear <span class="text-capitalize"><?= $model->dueDiligenceReport->mgrfr->bankBranchDetail->bank_manager ?></span> , </td>
                     </tr>
                     <tr>
                         <td>
                             <p>
-                                Relative to the memorandum of agreement signed by your bank under the RAPID Growth Project, you may proceed to debit the savings account number 
+                                Relative to the memorandum of agreement signed by your bank under the RAPID Growth Project, you may proceed to debit the savings account number
                                 <u class="font-weight-bold text-uppercase"><?= $model->dueDiligenceReport->mgrfr->saving_account_number ?></u>
-                                of the project beneficiary <?= $model->dueDiligenceReport->mgrfr->project_beneficiary ?></u> and to process the payment of the supplier. <br>
+                                of the project beneficiary <?= $model->dueDiligenceReport->mgrfr->project_beneficiary ?></u> and to process the payment of the supplier. <br> <br>
                                 Attached is the authority to Debit signed by the project beneficiary authorizing your bank to debit from the account the combined amounts
                                 of the matching grant and the equity counterpart and to pay the indicated supplier/s.
+                                <br>
                                 <br>
                                 For more inquires and clarification, please do not hesitate to contact our RAPID Project Provincial Coordinator <u class="font-weight-bold"><?= !empty($coordinator['fullName']) ? $coordinator['fullName'] : '' ?>
                                 </u>, mobile number <u class="font-weight-bold"><?= !empty($coordinator['mobile_number']) ? $coordinator['mobile_number'] : '________________________' ?>
@@ -85,7 +93,7 @@ $coordinator =  $model->coordinator->getEmployeeDetails();
                         <td>
                             <span><u class="font-weight-bold"><?= !empty($provincialDirector['fullName']) ? $provincialDirector['fullName'] : '' ?></u></span><br>
                             <span><?= !empty($provincialDirector['position']) ? $coordinator['position'] : '' ?></span><br>
-                            Province ________
+                            <!-- Province ________ -->
                         </td>
                     </tr>
                 </tbody>
@@ -106,7 +114,7 @@ $coordinator =  $model->coordinator->getEmployeeDetails();
     @media print {
 
         .main-footer,
-        .btn {
+        .btn,.buttons {
             display: none;
         }
 

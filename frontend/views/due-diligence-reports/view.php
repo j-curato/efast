@@ -17,13 +17,21 @@ $conductedBy =  $model->conductedBy->getEmployeeDetails();
 <div class="due-diligence-reports-view">
     <div class="container">
 
-        <div class="card p-2">
+        <div class="card p-2 buttons" >
             <span>
                 <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
             </span>
         </div>
         <div class=" card p-2">
             <table>
+                <tr>
+                    <td>
+                        <?= Html::img(Yii::$app->request->baseUrl . '/frontend/web/images/dti_header.png', [
+                            'alt' => 'some', 'class' => 'pull-left img-responsive',
+                            'style' => 'width: 16em;'
+                        ]); ?>
+                    </td>
+                </tr>
                 <tr>
                     <th colspan="2" class="text-center">
                         <span>Annex G</span><br>
@@ -254,7 +262,7 @@ $conductedBy =  $model->conductedBy->getEmployeeDetails();
     @media print {
 
         .btn,
-        .main-footer {
+        .main-footer,.buttons {
             display: none;
         }
 
