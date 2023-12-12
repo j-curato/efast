@@ -50,7 +50,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'project_beneficiary:ntext',
             ['attribute' => 'matching_grant_amount', 'format' => ['decimal', 2]],
             ['attribute' => 'equity_amount', 'format' => ['decimal', 2]],
-            //'created_at',
+
 
             [
                 'label' => 'Actions',

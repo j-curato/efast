@@ -73,11 +73,18 @@ class FmiSubprojects extends \yii\db\ActiveRecord
                 'bank_account_name',
                 'bank_account_number',
                 'fk_office_id',
+                'fk_bank_branch_detail_id',
+                'project_name'
             ], 'required'],
-            [['id', 'fk_province_id', 'fk_municipality_id', 'fk_barangay_id', 'fk_fmi_batch_id', 'project_duration', 'project_road_length', 'fk_office_id'], 'integer'],
+            [[
+                'id', 'fk_province_id',
+                'fk_bank_branch_detail_id',
+                'fk_municipality_id', 'fk_barangay_id', 'fk_fmi_batch_id', 'project_duration', 'project_road_length', 'fk_office_id'
+            ], 'integer'],
             [['purok', 'serial_number'], 'string'],
             [['project_start_date', 'created_at'], 'safe'],
             [['grant_amount', 'equity_amount'], 'number'],
+            [['project_name'], 'string'],
             [['bank_account_name', 'bank_account_number'], 'string', 'max' => 255],
             [['id'], 'unique'],
             [['fk_barangay_id'], 'exist', 'skipOnError' => true, 'targetClass' => Barangays::class, 'targetAttribute' => ['fk_barangay_id' => 'id']],
@@ -109,6 +116,9 @@ class FmiSubprojects extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
             'serial_number' => 'Serial Number',
             'fk_office_id' => 'Office',
+            'project_name' => 'Project Name',
+            'fk_bank_branch_detail_id' => 'Bank Branch',
+
         ];
     }
 
@@ -123,6 +133,10 @@ class FmiSubprojects extends \yii\db\ActiveRecord
             'fk_fmi_subproject_id' => 'id',
         ])
             ->andWhere(['is_deleted' => false]);
+    }
+    public function getBankBranchDetail()
+    {
+        return $this->hasOne(BankBranchDetails::class, ['id' => 'fk_bank_branch_detail_id']);
     }
     public function getFmiSubprojectOrganizationsA($selectOptions = [])
     {
@@ -244,7 +258,7 @@ class FmiSubprojects extends \yii\db\ActiveRecord
         }
         return true;
     }
-    public static function searchSubproject($page = 1, $text=null, $id=null)
+    public static function searchSubproject($page = 1, $text = null, $id = null)
     {
         $limit = 5;
         $offset = ($page - 1) * $limit;
@@ -267,5 +281,134 @@ class FmiSubprojects extends \yii\db\ActiveRecord
             $out['pagination'] = ['more' => !empty($data) ? true : false];
         }
         return $out;
+    }
+    public function getDetails()
+    {
+
+        return self::find()
+            ->addSelect([
+                "provinces.province_name",
+                "municipalities.municipality_name",
+                "barangays.barangay_name",
+                "tbl_fmi_subprojects.purok",
+                "tbl_fmi_subprojects.grant_amount",
+                "tbl_fmi_subprojects.equity_amount",
+                "tbl_fmi_batches.batch_name",
+                "tbl_fmi_subprojects.bank_account_name",
+                "tbl_fmi_subprojects.bank_account_number",
+                "tbl_fmi_subprojects.project_name",
+
+
+            ])
+            ->join("LEFT JOIN", "provinces", "tbl_fmi_subprojects.fk_province_id = provinces.id")
+            ->join("LEFT JOIN", "municipalities", "tbl_fmi_subprojects.fk_municipality_id  = municipalities.id")
+            ->join("LEFT JOIN", "barangays", "tbl_fmi_subprojects.fk_barangay_id  = barangays.id")
+            ->join("LEFT JOIN", "tbl_fmi_batches", "tbl_fmi_subprojects.fk_fmi_batch_id = tbl_fmi_batches.id")
+            ->andWhere(['tbl_fmi_subprojects.id' => $this->id])
+            ->asArray()
+            ->one();
+    }
+    public function getBeginningBalance($reportingPeriod)
+    {
+
+        $liquidatedFilters = [
+            [
+                'value' => $reportingPeriod,
+                'operator' => '<',
+                'column' => 'tbl_fmi_lgu_liquidation_items.reporting_period'
+            ]
+        ];
+        $FundReleaseFilter = [
+            [
+                'value' => $reportingPeriod,
+                'operator' => '<',
+                'column' => 'cash_disbursement.reporting_period'
+            ]
+        ];
+        return self::find()
+            ->addSelect([
+                "tbl_fmi_subprojects.id",
+                "liquidated.*",
+                "total_funds.*"
+            ])
+            ->leftJoin(
+                ['liquidated' => static::queryBuildLiquidated($liquidatedFilters)],
+                'tbl_fmi_subprojects.id = liquidated.fk_fmi_subproject_id'
+            )
+            ->leftJoin(
+                ['total_funds' => static::queryBuildFundRelease($FundReleaseFilter)],
+                'tbl_fmi_subprojects.id = total_funds.fk_fmi_subproject_id'
+            )
+            ->andWhere(['id' => $this->id])
+            ->asArray()
+            ->one();
+    }
+    private function queryBuildLiquidated($filters = null)
+    {
+        $qry =  FmiLguLiquidations::find()
+            ->addSelect([
+                "tbl_fmi_lgu_liquidations.fk_fmi_subproject_id",
+                new Expression("SUM(tbl_fmi_lgu_liquidation_items.equity_amount) as total_liquidated_equity"),
+                new Expression("SUM(tbl_fmi_lgu_liquidation_items.grant_amount) as total_liquidated_grant")
+            ])
+            ->join("JOIN", "tbl_fmi_lgu_liquidation_items",  "tbl_fmi_lgu_liquidations.id = tbl_fmi_lgu_liquidation_items.fk_fmi_lgu_liquidation_id")
+            ->andWhere(["tbl_fmi_lgu_liquidation_items.is_deleted" => false]);
+        if (!empty($filters)) {
+            foreach ($filters as $val) {
+                $qry->andWhere([$val['operator'], $val['column'], $val['value']]);
+            }
+        }
+        return $qry->groupBy("tbl_fmi_lgu_liquidations.fk_fmi_subproject_id");
+    }
+    private function queryBuildFundRelease($filter = null)
+    {
+
+        $qry =  FmiFundReleases::find()
+            ->addSelect([
+                "tbl_fmi_fund_releases.fk_fmi_subproject_id",
+                new Expression("COALESCE(SUM(dv_aucs_entries.amount_disbursed),0) as amount_disbursed"),
+                new Expression("COALESCE(SUM(dv_aucs_entries.vat_nonvat) ,0)as vat_nonvat"),
+                new Expression("COALESCE(SUM(dv_aucs_entries.ewt_goods_services),0) as ewt_goods_services"),
+                new Expression("COALESCE(SUM(dv_aucs_entries.compensation),0) as compensation"),
+                new Expression("COALESCE(SUM(dv_aucs_entries.total_withheld),0) as total_withheld"),
+                new Expression("COALESCE(SUM(dv_aucs_entries.other_trust_liabilities),0) as other_trust_liabilities")
+            ])
+            ->join("JOIN", "cash_disbursement", "tbl_fmi_fund_releases.fk_cash_disbursement_id = cash_disbursement.id")
+            ->join("JOIN", "cash_disbursement_items", "cash_disbursement.id = cash_disbursement_items.fk_cash_disbursement_id")
+            ->join("JOIN", "dv_aucs", "cash_disbursement_items.fk_dv_aucs_id = dv_aucs.id")
+            ->join("JOIN", "dv_aucs_entries", "dv_aucs.id = dv_aucs_entries.dv_aucs_id")
+            ->andWhere(["cash_disbursement_items.is_deleted"  => false])
+            ->andWhere(["dv_aucs_entries.is_deleted"  => false]);
+        if (!empty($filters)) {
+            foreach ($filters as $val) {
+                $qry->andWhere([$val['operator'], $val['column'], $val['value']]);
+            }
+        }
+        return  $qry->groupBy("tbl_fmi_fund_releases.fk_fmi_subproject_id");
+    }
+    public function getLiquidationsA($reportingPeriod)
+    {
+        return FmiLguLiquidations::find()
+            ->addSelect([
+                "tbl_fmi_lgu_liquidations.serial_number",
+                "tbl_fmi_lgu_liquidation_items.reporting_period",
+                new Expression("tbl_fmi_lgu_liquidation_items.`date` as check_date"),
+                "tbl_fmi_lgu_liquidation_items.check_number",
+                "tbl_fmi_lgu_liquidation_items.payee",
+                "tbl_fmi_lgu_liquidation_items.particular",
+                "tbl_fmi_lgu_liquidation_items.equity_amount",
+                "tbl_fmi_lgu_liquidation_items.grant_amount",
+                "tbl_fmi_lgu_liquidation_items.other_fund_amount",
+                "tbl_fmi_lgu_liquidation_items.date",
+            ])
+            ->join("JOIN", "tbl_fmi_lgu_liquidation_items", "tbl_fmi_lgu_liquidations.id = tbl_fmi_lgu_liquidation_items.fk_fmi_lgu_liquidation_id")
+            ->andWhere(['tbl_fmi_lgu_liquidation_items.reporting_period' => $reportingPeriod])
+            ->asArray()
+            ->all();
+    }
+
+
+    public function getFundReleasesA($reportingPeriod)
+    {
     }
 }

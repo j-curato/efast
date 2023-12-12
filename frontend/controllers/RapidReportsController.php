@@ -2,8 +2,10 @@
 
 namespace frontend\controllers;
 
+use app\models\FmiSubprojects;
 use Yii;
 use app\models\Mgrfrs;
+use app\models\RapidMgDatabaseSearch;
 use yii\filters\AccessControl;
 
 class RapidReportsController extends \yii\web\Controller
@@ -20,7 +22,21 @@ class RapidReportsController extends \yii\web\Controller
                         ],
                         'allow' => true,
                         'roles' => ['@']
-                    ]
+                    ],
+                    [
+                        'actions' => [
+                            'mg-database'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ],
+                    [
+                        'actions' => [
+                            'fmi-sord'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ],
                 ]
             ]
         ];
@@ -46,11 +62,9 @@ class RapidReportsController extends \yii\web\Controller
                     'column' => 'cash_deposits.reporting_period'
                 ]
             ];
-            // return json_encode(Mgrfrs::findOne(5)->getCashBalanceById($liquidatedFilters));
-            // return  $model->getMgrfrDetails();
             return json_encode(
                 [
-                    'cashDepositBalance' => $model->getCashBalanceById($liquidatedFilters, $cashDepositFilter),
+                    'cashDepositBalance' => $model->getCashBalanceById($reporting_period),
                     'liquidations' => $model->getLiquidations($reporting_period),
                     'cashDeposits' => $model->getCashDepositsByPeriod($reporting_period),
                     'mgrfrDetails' => $model->getMgrfrDetails()
@@ -58,5 +72,33 @@ class RapidReportsController extends \yii\web\Controller
             );
         }
         return $this->render('mg_sord');
+    }
+    public function actionMgDatabase()
+    {
+
+        $searchModel = new RapidMgDatabaseSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('mg_database', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+    public function actionFmiSord()
+    {
+        if (Yii::$app->request->post()) {
+            $id = Yii::$app->request->post('id');
+            $reportingPeriod = Yii::$app->request->post('reporting_period');
+            $model = FmiSubprojects::findOne($id);
+            return json_encode(
+                [
+                    'beginningBalance' => $model->getBeginningBalance($reportingPeriod),
+                    'liquidations' => $model->getLiquidationsA($reportingPeriod),
+                    // 'cashDeposits' => $model->getFundReleasesA($reportingPeriod),
+                    'details' => $model->getDetails()
+                ]
+            );
+        }
+        return $this->render('fmi_sord');
     }
 }

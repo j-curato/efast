@@ -2,9 +2,11 @@
 
 namespace app\models;
 
+use Yii;
 use yii\base\Model;
-use yii\data\ActiveDataProvider;
 use app\models\FmiSubprojects;
+use common\models\User;
+use yii\data\ActiveDataProvider;
 
 /**
  * FmiSubprojectsSearch represents the model behind the search form of `app\models\FmiSubprojects`.
@@ -18,7 +20,14 @@ class FmiSubprojectsSearch extends FmiSubprojects
     {
         return [
             [['id', 'fk_province_id', 'fk_municipality_id', 'fk_barangay_id', 'fk_fmi_batch_id', 'project_duration', 'project_road_length'], 'integer'],
-            [['purok', 'project_start_date', 'bank_account_name', 'bank_account_number', 'created_at'], 'safe'],
+            [[
+                'purok',
+                'project_start_date',
+                'bank_account_name',
+                'bank_account_number',
+                'created_at',
+                'fk_office_id'
+            ], 'safe'],
             [['grant_amount', 'equity_amount'], 'number'],
         ];
     }
@@ -41,10 +50,16 @@ class FmiSubprojectsSearch extends FmiSubprojects
      */
     public function search($params)
     {
-        $query = FmiSubprojects::find();
+        $query = FmiSubprojects::find()
+            ->joinWith('office');
 
         // add conditions that should always apply here
-
+        if (!Yii::$app->user->can('ro_rapid_fma')) {
+            $user_data = User::getUserDetails();
+            $query->andWhere([
+                'fk_office_id' => $user_data->employee->office->id
+            ]);
+        }
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
@@ -74,6 +89,7 @@ class FmiSubprojectsSearch extends FmiSubprojects
 
         $query->andFilterWhere(['like', 'purok', $this->purok])
             ->andFilterWhere(['like', 'bank_account_name', $this->bank_account_name])
+            ->andFilterWhere(['like', 'office.office_name', $this->fk_office_id])
             ->andFilterWhere(['like', 'bank_account_number', $this->bank_account_number]);
 
         return $dataProvider;

@@ -59,4 +59,15 @@ class FmiTranches extends \yii\db\ActiveRecord
             'created_at' => 'Created At',
         ];
     }
+    public static function getAllTranches()
+    {
+
+        return self::find()
+            ->addSelect([
+                'id',
+                'tranche_number'
+            ])
+            ->asArray()
+            ->all();
+    }
 }

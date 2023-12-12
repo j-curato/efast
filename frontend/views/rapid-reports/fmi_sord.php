@@ -6,7 +6,7 @@ use kartik\date\DatePicker;
 use kartik\widgets\Select2;
 use yii\helpers\ArrayHelper;
 
-$this->title = "List of Pending DV's";
+$this->title = "FMI SORD";
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="jev-preparation-index" style="background-color: white;" id="mainVue">
@@ -18,7 +18,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'name' => 'id',
                     'id' => 'id',
                     // 'data' => ArrayHelper::map($mgrfr, 'id', 'serial_number'),
-                    'options' => ['placeholder' => 'Search for a MG RFR Serial No. ...'],
+                    'options' => ['placeholder' => 'Search for a Subproject Serial No. ...'],
                     'pluginOptions' => [
                         'allowClear' => true,
                         'minimumInputLength' => 1,
@@ -26,10 +26,10 @@ $this->params['breadcrumbs'][] = $this->title;
                             'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
                         ],
                         'ajax' => [
-                            'url' => Url::to(['mgrfrs/search-mgrfr']),
+                            'url' => Url::to(['fmi-subprojects/search-subproject']),
                             'dataType' => 'json',
                             'delay' => 250,
-                            'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
+                            'data' => new JsExpression('function(params) { return {text:params.term,page:params.page}; }'),
                             'cache' => true
                         ],
                         'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
@@ -74,15 +74,15 @@ $this->params['breadcrumbs'][] = $this->title;
         <tr>
             <th colspan="8" class="border-0">
 
-                <span>Bank Name and Branch:</span> <span class="text-uppercase"> {{sordData.mgrfrDetails.branch_name}}</span><br>
-                <span>Bank Account Name: </span> <span class="text-uppercase">{{sordData.mgrfrDetails.bank_name}}</span><br>
-                <span>Bank Account Number: {{sordData.mgrfrDetails.saving_account_number}}</span><br>
-                <span>Project Name: {{sordData.mgrfrDetails.investment_type}} </span><br>
+                <span>Bank Name and Branch:</span> <span class="text-uppercase"> {{sordData.details.branch_name}}</span><br>
+                <span>Bank Account Name: </span> <span class="text-uppercase">{{sordData.details.bank_account_name}}</span><br>
+                <span>Bank Account Number: {{sordData.details.bank_account_number}}</span><br>
+                <span>Project Name: {{sordData.details.project_name}} </span><br>
                 <span>Project Location:
-                    <span v-if="sordData.mgrfrDetails.purok">{{sordData.mgrfrDetails.purok}} ,</span>
-                    <span v-if="sordData.mgrfrDetails.barangay_name">{{sordData.mgrfrDetails.barangay_name}} ,</span>
-                    <span v-if="sordData.mgrfrDetails.municipality_name">{{sordData.mgrfrDetails.municipality_name}} ,</span>
-                    <span v-if="sordData.mgrfrDetails.province_name">{{sordData.mgrfrDetails.province_name}} </span>
+                    <span v-if="sordData.details.purok">{{sordData.details.purok}} ,</span>
+                    <span v-if="sordData.details.barangay_name">{{sordData.details.barangay_name}} ,</span>
+                    <span v-if="sordData.details.municipality_name">{{sordData.details.municipality_name}} ,</span>
+                    <span v-if="sordData.details.province_name">{{sordData.details.province_name}} </span>
                 </span>
             </th>
         </tr>
@@ -98,12 +98,12 @@ $this->params['breadcrumbs'][] = $this->title;
             <td colspan="4">
                 Beginning Balance
             </td>
-            <td class="text-right">{{formatAmount(sordData.cashDepositBalance.balance_grant)}}</td>
-            <td class="text-right">{{formatAmount(sordData.cashDepositBalance.balance_equity)}}</td>
-            <td class="text-right">{{formatAmount(sordData.cashDepositBalance.balance_other_amount)}}</td>
-            <td class="text-right">{{formatAmount(parseFloat(sordData.cashDepositBalance.balance_grant) +
-            parseFloat(sordData.cashDepositBalance.balance_equity) +
-            parseFloat(sordData.cashDepositBalance.balance_other_amount))}}</td>
+            <td class="text-right">{{formatAmount(sordData.beginningBalance.balance_grant)}}</td>
+            <td class="text-right">{{formatAmount(sordData.beginningBalance.balance_equity)}}</td>
+            <td class="text-right">{{formatAmount(sordData.beginningBalance.balance_other_amount)}}</td>
+            <td class="text-right">{{formatAmount(parseFloat(sordData.beginningBalance.balance_grant) +
+            parseFloat(sordData.beginningBalance.balance_equity) +
+            parseFloat(sordData.beginningBalance.balance_other_amount))}}</td>
 
         </tr>
         <tr v-for="item in sordData.cashDeposits">
@@ -141,13 +141,15 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <tr v-for="item in sordData.liquidations">
             <td>{{item.date}}</td>
-            <td>{{item.dv_number}}</td>
-            <td>{{item.supplier_name}}</td>
-            <td>{{item.comments}}</td>
-            <td class="text-right">{{formatAmount(item.matching_grant_amount)}}</td>
+            <td>{{item.check_number}}</td>
+            <td>{{item.payee}}</td>
+            <td>{{item.particular}}</td>
+            <td class="text-right">{{formatAmount(item.grant_amount)}}</td>
             <td class="text-right">{{formatAmount(item.equity_amount)}}</td>
-            <td class="text-right">{{formatAmount(item.other_amount)}}</td>
-            <td class="text-right">{{formatAmount(parseFloat(item.matching_grant_amount) + parseFloat(item.equity_amount) + parseFloat(item.other_amount))}}</td>
+            <td class="text-right">{{formatAmount(item.other_fund_amount)}}</td>
+            <td class="text-right">{{formatAmount(parseFloat(item.grant_amount)
+                + parseFloat(item.equity_amount) 
+                + parseFloat(item.other_fund_amount))}}</td>
         </tr>
 
         <tr>
@@ -219,10 +221,10 @@ $this->params['breadcrumbs'][] = $this->title;
             el: '#mainVue',
             data: {
                 sordData: {
+                    beginningBalance: [],
                     liquidations: [],
-                    cashDeposits: [],
                     cashDepositBalance: [],
-                    mgrfrDetails: [],
+                    details: [],
 
                 },
             },
@@ -271,22 +273,25 @@ $this->params['breadcrumbs'][] = $this->title;
             },
             computed: {
                 depositTotalGrant() {
+                    return 0;
                     return this.getDepositTotalForType('matching_grant_amount', 'balance_grant');
                 },
                 depositTotalEquity() {
+                    return 0;
                     return this.getDepositTotalForType('equity_amount', 'balance_equity');
                 },
                 depositTotalOther() {
+                    return 0;
                     return this.getDepositTotalForType('other_amount', 'balance_other_amount');
                 },
                 liquidationTotalGrant() {
-                    return this.getLiquidationTotalByColumn('matching_grant_amount')
+                    return this.getLiquidationTotalByColumn('grant_amount')
                 },
                 liquidationTotalEquity() {
                     return this.getLiquidationTotalByColumn('equity_amount')
                 },
                 liquidationTotalOther() {
-                    return this.getLiquidationTotalByColumn('other_amount')
+                    return this.getLiquidationTotalByColumn('other_fund_amount')
                 },
 
             }

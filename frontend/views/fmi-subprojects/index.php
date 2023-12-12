@@ -27,6 +27,10 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'columns' => [
 
+            [
+                'attribute' => 'fk_office_id',
+                'value' => 'office.office_name'
+            ],
             'fk_province_id',
             'fk_municipality_id',
             'fk_barangay_id',

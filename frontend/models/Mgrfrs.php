@@ -238,7 +238,6 @@ class Mgrfrs extends \yii\db\ActiveRecord
             ->join("LEFT JOIN", "bank_branch_details", "mgrfrs.fk_bank_branch_detail_id = bank_branch_details.id")
             ->join("LEFT JOIN", "bank_branches", "bank_branch_details.fk_bank_branch_id = bank_branches.id")
             ->join("LEFT JOIN", "banks", "bank_branches.fk_bank_id = banks.id")
-
             ->where('mgrfrs.id = :id', ['id' => $this->id])
             ->asArray()
             ->one();
@@ -255,8 +254,22 @@ class Mgrfrs extends \yii\db\ActiveRecord
      *];
      */
 
-    public  function getCashBalanceById($liquidatedFilters = [], $depositFilters = [])
+    public  function getCashBalanceById($reportingPeriod)
     {
+        $liquidatedFilters = [
+            [
+                'value' => $reportingPeriod,
+                'operator' => '<',
+                'column' => 'tbl_mg_liquidations.reporting_period'
+            ]
+        ];
+        $cashDepositFilter = [
+            [
+                'value' => $reportingPeriod,
+                'operator' => '<',
+                'column' => 'cash_deposits.reporting_period'
+            ]
+        ];
         return self::find()
             ->addSelect([
                 'mgrfrs.id',
@@ -270,7 +283,7 @@ class Mgrfrs extends \yii\db\ActiveRecord
                 'mgrfrs.id = liquidated.fk_mgrfr_id'
             )
             ->leftJoin(
-                ['deposit' => static::buildDepositQuery($depositFilters)],
+                ['deposit' => static::buildDepositQuery($cashDepositFilter)],
                 'mgrfrs.id = deposit.fk_mgrfr_id'
             )
             ->andWhere('mgrfrs.id = :id', ['id' => $this->id])

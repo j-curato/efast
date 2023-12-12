@@ -30,6 +30,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'barangay.barangay_name',
                     'purok:ntext',
                     'fmiBatch.batch_name',
+                    'project_name',
                     'project_duration',
                     'project_road_length',
                     [

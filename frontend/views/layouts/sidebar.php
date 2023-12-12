@@ -327,6 +327,7 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
             ];
             $rapidMgReports = [
                 Yii::$app->user->can('super-user') ?     ['label' => 'SORD', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rapid-reports/mg-sord'],] : null,
+                Yii::$app->user->can('super-user') ?     ['label' => 'Database', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rapid-reports/mg-database'],] : null,
 
             ];
             $rapidFmiMasterRecords = [
@@ -336,6 +337,7 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                 Yii::$app->user->can('view_fmi_batch') ?     ['label' => 'Batches', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-batches/index'],] : null,
                 Yii::$app->user->can('view_fmi_tranches') ?     ['label' => 'Tranches', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-tranches/index'],] : null,
                 Yii::$app->user->can('view_fmi_subprojects') ?     ['label' => 'Subprojects', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-subprojects/index'],] : null,
+                Yii::$app->user->can('super-user') ?     ['label' => 'Fund Releases', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-fund-releases/index'],] : null,
                 Yii::$app->user->can('view_fmi_bank_deposits') ?     ['label' => 'Bank Deposits', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-bank-deposits/index'],] : null,
                 Yii::$app->user->can('view_fmi_lgu_liquidation') ?     ['label' => 'LGU Liquidations', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-lgu-liquidations/index'],] : null,
                 Yii::$app->user->can('view_fmi_actual_date_of_start') ?     ['label' => 'Actual Date of Start', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/fmi-actual-date-of-starts/index'],] : null,

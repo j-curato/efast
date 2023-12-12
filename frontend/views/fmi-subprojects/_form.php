@@ -20,6 +20,13 @@ use yii\helpers\Url;
 $batchData = [
     ['id' => $model->fk_fmi_batch_id ?? null, 'batch_name' => $model->fmiBatch->batch_name ?? null],
 ];
+$defaultBankBranchDetail = [
+    [
+        'id' => $model->fk_bank_branch_detail_id,
+        'text' => strtoupper($model->bankBranchDetail->bankBranch->bank->name
+            . ' - ' .  $model->bankBranchDetail->bankBranch->branch_name)
+    ]
+];
 ?>
 
 <div class="fmi-subprojects-form " id="mainVue">
@@ -28,14 +35,16 @@ $batchData = [
     <div class="card p-3">
 
         <div class="row">
-            <div class="col-sm-2">
-                <?= $form->field($model, 'fk_office_id')->dropdownList(
-                    ArrayHelper::map(Office::getOfficesA(), 'id', 'office_name'),
-                    [
-                        'prompt' => 'Select Office',
-                    ]
-                ) ?>
-            </div>
+            <?php if (Yii::$app->user->can('ro_rapid_fma')) : ?>
+                <div class="col-sm-2">
+                    <?= $form->field($model, 'fk_office_id')->dropdownList(
+                        ArrayHelper::map(Office::getOfficesA(), 'id', 'office_name'),
+                        [
+                            'prompt' => 'Select Office',
+                        ]
+                    ) ?>
+                </div>
+            <?php endif; ?>
             <div class="col-sm-2">
                 <?= $form->field($model, 'fk_province_id')->dropdownList(
                     ArrayHelper::map(Provinces::find()->where('fk_region_id = 16')->asArray()->all(), 'id', 'province_name'),
@@ -89,15 +98,20 @@ $batchData = [
 
                 ]) ?>
             </div>
-            <div class="col-3">
+
+
+            <div class="col-9">
+                <?= $form->field($model, 'project_name')->textarea(['rows' => 1]) ?>
+            </div>
+            <div class="col-2">
                 <?= $form->field($model, 'project_duration')->textInput(['type' => 'number']) ?>
 
             </div>
-            <div class="col-3">
+            <div class="col-2">
                 <?= $form->field($model, 'project_road_length')->textInput() ?>
 
             </div>
-            <div class="col-3">
+            <div class="col-2">
                 <?= $form->field($model, 'project_start_date')->widget(DatePicker::class, [
                     'pluginOptions' => [
                         'format' => 'yyyy-mm-dd',
@@ -124,10 +138,37 @@ $batchData = [
                     ]
                 ]) ?>
             </div>
-            <div class="col-3">
+
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-sm-4">
+                <?= $form->field($model, 'fk_bank_branch_detail_id')->widget(Select2::class, [
+                    'data' => ArrayHelper::map($defaultBankBranchDetail, 'id', 'text'),
+                    'options' => ['placeholder' => 'Search for a Bank ...', 'style' => 'height:30em'],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                        'minimumInputLength' => 1,
+                        'language' => [
+                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                        ],
+                        'ajax' => [
+                            'url' => Url::to(['bank-branch-details/search-bank-branch-details']),
+                            'dataType' => 'json',
+                            'delay' => 250,
+                            'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
+                            'cache' => true
+                        ],
+                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                    ],
+
+                ]) ?>
+            </div>
+            <div class="col-4">
                 <?= $form->field($model, 'bank_account_name')->textInput(['maxlength' => true]) ?>
             </div>
-            <div class="col-3">
+            <div class="col-4">
                 <?= $form->field($model, 'bank_account_number')->textInput(['maxlength' => true]) ?>
             </div>
         </div>

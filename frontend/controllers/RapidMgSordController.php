@@ -3,19 +3,19 @@
 namespace frontend\controllers;
 
 use Yii;
-use app\models\FmiSubprojects;
-use app\models\FmiSubprojectsSearch;
-use common\models\User;
+use app\models\Mgrfrs;
+use yii\web\Controller;
+use app\models\RapidMgSord;
+use yii\filters\VerbFilter;
+use app\models\RapidMgSordSearch;
 use ErrorException;
 use yii\filters\AccessControl;
-use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 
 /**
- * FmiSubprojectsController implements the CRUD actions for FmiSubprojects model.
+ * RapidMgSordController implements the CRUD actions for RapidMgSord model.
  */
-class FmiSubprojectsController extends Controller
+class RapidMgSordController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -30,31 +30,36 @@ class FmiSubprojectsController extends Controller
                         'actions' => [
                             'index',
                             'view',
+
+
                         ],
                         'allow' => true,
-                        'roles' => ['view_fmi_subprojects'],
+                        'roles' => ['@']
+                    ],
+                    [
+                        'actions' => [
+
+                            'update',
+
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
                     ],
                     [
                         'actions' => [
                             'create',
+
                         ],
                         'allow' => true,
-                        'roles' => ['create_fmi_subprojects'],
+                        'roles' => ['@']
                     ],
                     [
                         'actions' => [
-                            'update',
+                            'generate',
+
                         ],
                         'allow' => true,
-                        'roles' => ['update_fmi_subprojects'],
-                    ],
-                    [
-                        'actions' => [
-                            'search-subproject',
-                            'get-details'
-                        ],
-                        'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['@']
                     ],
                 ]
             ],
@@ -68,12 +73,12 @@ class FmiSubprojectsController extends Controller
     }
 
     /**
-     * Lists all FmiSubprojects models.
+     * Lists all RapidMgSord models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new FmiSubprojectsSearch();
+        $searchModel = new RapidMgSordSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -83,48 +88,47 @@ class FmiSubprojectsController extends Controller
     }
 
     /**
-     * Displays a single FmiSubprojects model.
+     * Displays a single RapidMgSord model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionView($id)
     {
+        $model = $this->findModel($id);
+
+
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
+            'sordData' => [
+                'cashDepositBalance' => $model->mgrfr->getCashBalanceById($model->reporting_period),
+                'liquidations' => $model->mgrfr->getLiquidations($model->reporting_period),
+                'cashDeposits' => $model->mgrfr->getCashDepositsByPeriod($model->reporting_period),
+                'mgrfrDetails' => $model->mgrfr->getMgrfrDetails()
+            ]
         ]);
     }
 
     /**
-     * Creates a new FmiSubprojects model.
+     * Creates a new RapidMgSord model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new FmiSubprojects();
-        $user_data = User::getUserDetails();
-        $model->fk_office_id = $user_data->employee->office->id;
-        if ($model->load(Yii::$app->request->post())) {
-            try {
-                $txn = Yii::$app->db->beginTransaction();
-                $items = Yii::$app->request->post('items') ?? [];
+        $model = new RapidMgSord();
 
+        if ($model->load(Yii::$app->request->post())) {
+
+            try {
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
-                if (!$model->save(false)) {
+                if (!$model->save()) {
                     throw new ErrorException("Model Save Failed");
                 }
-                $insertItems = $model->insertItems($items);
-                if ($insertItems !== true) {
-                    throw new ErrorException($insertItems);
-                }
-                $txn->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
-
-                $txn->rollback();
                 return $e->getMessage();
             }
         }
@@ -135,7 +139,7 @@ class FmiSubprojectsController extends Controller
     }
 
     /**
-     * Updates an existing FmiSubprojects model.
+     * Updates an existing RapidMgSord model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -144,37 +148,27 @@ class FmiSubprojectsController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-
         if ($model->load(Yii::$app->request->post())) {
             try {
-                $txn = Yii::$app->db->beginTransaction();
-                $items = Yii::$app->request->post('items') ?? [];
-
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
-                if (!$model->save(false)) {
+                if (!$model->save()) {
                     throw new ErrorException("Model Save Failed");
                 }
-                $insertItems = $model->insertItems($items);
-                if ($insertItems !== true) {
-                    throw new ErrorException($insertItems);
-                }
-                $txn->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
-
-                $txn->rollback();
                 return $e->getMessage();
             }
         }
+
         return $this->render('update', [
             'model' => $model,
         ]);
     }
 
     /**
-     * Deletes an existing FmiSubprojects model.
+     * Deletes an existing RapidMgSord model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -188,36 +182,35 @@ class FmiSubprojectsController extends Controller
     }
 
     /**
-     * Finds the FmiSubprojects model based on its primary key value.
+     * Finds the RapidMgSord model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return FmiSubprojects the loaded model
+     * @return RapidMgSord the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = FmiSubprojects::findOne($id)) !== null) {
+        if (($model = RapidMgSord::findOne($id)) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
     }
-    public function actionSearchSubproject()
+    public function actionGenerate()
     {
-
-        if (Yii::$app->request->get()) {
-            $page = Yii::$app->request->get("page") ?? 1;
-            $text = Yii::$app->request->get("text") ?? null;
-            return  FmiSubprojects::searchSubproject($page, $text);
-        }
-    }
-    public function actionGetDetails()
-    {
-
         if (Yii::$app->request->post()) {
             $id = Yii::$app->request->post('id');
-            $model = FmiSubprojects::findOne($id);
-            return json_encode($model->getDetails());
+            $reportingPeriod = Yii::$app->request->post('reporting_period');
+            $model = Mgrfrs::findOne($id);
+
+            return json_encode(
+                [
+                    'cashDepositBalance' => $model->getCashBalanceById($reportingPeriod),
+                    'liquidations' => $model->getLiquidations($reportingPeriod),
+                    'cashDeposits' => $model->getCashDepositsByPeriod($reportingPeriod),
+                    'mgrfrDetails' => $model->getMgrfrDetails()
+                ]
+            );
         }
     }
 }

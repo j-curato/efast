@@ -3,9 +3,8 @@
 namespace frontend\controllers;
 
 use Yii;
-use app\models\FmiSubprojects;
-use app\models\FmiSubprojectsSearch;
-use common\models\User;
+use app\models\FmiFundReleases;
+use app\models\FmiFundReleasesSearch;
 use ErrorException;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -13,9 +12,9 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * FmiSubprojectsController implements the CRUD actions for FmiSubprojects model.
+ * FmiFundReleasesController implements the CRUD actions for FmiFundReleases model.
  */
-class FmiSubprojectsController extends Controller
+class FmiFundReleasesController extends Controller
 {
     /**
      * {@inheritdoc}
@@ -28,33 +27,28 @@ class FmiSubprojectsController extends Controller
                 'rules' => [
                     [
                         'actions' => [
+
                             'index',
                             'view',
+
                         ],
                         'allow' => true,
-                        'roles' => ['view_fmi_subprojects'],
+                        'roles' => ['@']
                     ],
                     [
                         'actions' => [
                             'create',
+
                         ],
                         'allow' => true,
-                        'roles' => ['create_fmi_subprojects'],
+                        'roles' => ['@']
                     ],
                     [
                         'actions' => [
                             'update',
                         ],
                         'allow' => true,
-                        'roles' => ['update_fmi_subprojects'],
-                    ],
-                    [
-                        'actions' => [
-                            'search-subproject',
-                            'get-details'
-                        ],
-                        'allow' => true,
-                        'roles' => ['@'],
+                        'roles' => ['@']
                     ],
                 ]
             ],
@@ -68,12 +62,12 @@ class FmiSubprojectsController extends Controller
     }
 
     /**
-     * Lists all FmiSubprojects models.
+     * Lists all FmiFundReleases models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new FmiSubprojectsSearch();
+        $searchModel = new FmiFundReleasesSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -83,7 +77,7 @@ class FmiSubprojectsController extends Controller
     }
 
     /**
-     * Displays a single FmiSubprojects model.
+     * Displays a single FmiFundReleases model.
      * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
@@ -96,46 +90,38 @@ class FmiSubprojectsController extends Controller
     }
 
     /**
-     * Creates a new FmiSubprojects model.
+     * Creates a new FmiFundReleases model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new FmiSubprojects();
-        $user_data = User::getUserDetails();
-        $model->fk_office_id = $user_data->employee->office->id;
+        $model = new FmiFundReleases();
+
         if ($model->load(Yii::$app->request->post())) {
+
             try {
-                $txn = Yii::$app->db->beginTransaction();
-                $items = Yii::$app->request->post('items') ?? [];
 
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
                 if (!$model->save(false)) {
+
                     throw new ErrorException("Model Save Failed");
                 }
-                $insertItems = $model->insertItems($items);
-                if ($insertItems !== true) {
-                    throw new ErrorException($insertItems);
-                }
-                $txn->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
-
-                $txn->rollback();
                 return $e->getMessage();
             }
         }
 
-        return $this->render('create', [
+        return $this->renderAjax('create', [
             'model' => $model,
         ]);
     }
 
     /**
-     * Updates an existing FmiSubprojects model.
+     * Updates an existing FmiFundReleases model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -145,36 +131,17 @@ class FmiSubprojectsController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($model->load(Yii::$app->request->post())) {
-            try {
-                $txn = Yii::$app->db->beginTransaction();
-                $items = Yii::$app->request->post('items') ?? [];
-
-                if (!$model->validate()) {
-                    throw new ErrorException(json_encode($model->errors));
-                }
-                if (!$model->save(false)) {
-                    throw new ErrorException("Model Save Failed");
-                }
-                $insertItems = $model->insertItems($items);
-                if ($insertItems !== true) {
-                    throw new ErrorException($insertItems);
-                }
-                $txn->commit();
-                return $this->redirect(['view', 'id' => $model->id]);
-            } catch (ErrorException $e) {
-
-                $txn->rollback();
-                return $e->getMessage();
-            }
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            return $this->redirect(['view', 'id' => $model->id]);
         }
-        return $this->render('update', [
+
+        return $this->renderAjax('update', [
             'model' => $model,
         ]);
     }
 
     /**
-     * Deletes an existing FmiSubprojects model.
+     * Deletes an existing FmiFundReleases model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -188,36 +155,18 @@ class FmiSubprojectsController extends Controller
     }
 
     /**
-     * Finds the FmiSubprojects model based on its primary key value.
+     * Finds the FmiFundReleases model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return FmiSubprojects the loaded model
+     * @return FmiFundReleases the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = FmiSubprojects::findOne($id)) !== null) {
+        if (($model = FmiFundReleases::findOne($id)) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
-    }
-    public function actionSearchSubproject()
-    {
-
-        if (Yii::$app->request->get()) {
-            $page = Yii::$app->request->get("page") ?? 1;
-            $text = Yii::$app->request->get("text") ?? null;
-            return  FmiSubprojects::searchSubproject($page, $text);
-        }
-    }
-    public function actionGetDetails()
-    {
-
-        if (Yii::$app->request->post()) {
-            $id = Yii::$app->request->post('id');
-            $model = FmiSubprojects::findOne($id);
-            return json_encode($model->getDetails());
-        }
     }
 }
