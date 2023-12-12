@@ -141,8 +141,11 @@ $subprojectData = [
                             <input type="hidden" :name="'items['+index+'][other_fund_amount]'" class="main-amount" v-model="item.other_fund_amount">
                         </div>
                     </td>
-                    <td>
-                        <button v-if="!item.id" type="button" class="btn-xs btn-danger" @click="removeItem(index)"><i class="fa fa-times"></i></button>
+                    <td style="width: 80px;">
+                        <p>
+                            <button type="button" class="btn-xs btn-warning" @click="copyItem(item)"><i class="fa fa-copy"></i></button>
+                            <button v-if="!item.id" type="button" class="btn-xs btn-danger" @click="removeItem(index)"><i class="fa fa-times"></i></button>
+                        </p>
                     </td>
                 </tr>
             </tbody>
@@ -175,7 +178,19 @@ $subprojectData = [
                 },
             },
             methods: {
+                copyItem(item) {
 
+                    this.items.push({
+                        'reporting_period': '',
+                        'date': item.date,
+                        'check_number': item.check_number,
+                        'payee': item.payee,
+                        'particular': item.particular,
+                        'grant_amount': '',
+                        'equity_amount': '',
+                        'other_fund_amount': '',
+                    });
+                },
                 addItem() {
                     this.items.push({
                         'reporting_period': '',
@@ -186,7 +201,6 @@ $subprojectData = [
                         'grant_amount': '',
                         'equity_amount': '',
                         'other_fund_amount': '',
-
                     });
                 },
                 changeMainAmount(event, item, index, itemName) {
