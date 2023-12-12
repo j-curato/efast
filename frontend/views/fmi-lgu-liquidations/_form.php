@@ -94,32 +94,55 @@ $subprojectData = [
             </thead>
             <tbody>
                 <tr v-for="(item,index) in items" :key="index">
-                    <td class=" d-none"><input v-if="item.id" type='hidden' :name="'items['+index+'][id]'" class="form-control" v-model="item.id"></td>
                     <td>
                         <?php if (!$model->isNewRecord) : ?>
                             <span v-if="item.id">{{item.formatted_period}}</span>
-                            <input  required type='month' v-else :name="'items['+index+'][reporting_period]'" class="form-control" v-model="item.reporting_period">
+                            <input required type='month' v-else :name="'items['+index+'][reporting_period]'" class="form-control" v-model="item.reporting_period">
                         <?php endif; ?>
                     </td>
 
-                    <td><input required :name="'items['+index+'][date]'" class="form-control" type='date' v-model="item.date"></td>
-                    <td><input required :name="'items['+index+'][check_number]'" class="form-control" type='text' v-model="item.check_number"></td>
-                    <td><textarea required :name="'items['+index+'][payee]'" class="form-control" type='text' rows="1" v-model="item.payee"></textarea></td>
-                    <td><textarea required :name="'items['+index+'][particular]'" class="form-control" rows="1" v-model="item.particular"></textarea></td>
                     <td>
-                        <input type="text" class="amt mask-money form-control" v-money="moneyConfig" :value="formatAmount(item.grant_amount)" @keyup="changeMainAmount($event,item,index,'grant_amount')" />
-                        <input type="hidden" :name="'items['+index+'][grant_amount]'" class="main-amount" v-model="item.grant_amount">
+                        <span v-if="item.id">{{item.date}}</span>
+                        <input v-else required :name="'items['+index+'][date]'" class="form-control" type='date' v-model="item.date">
                     </td>
                     <td>
-                        <input type="text" class="amt mask-money form-control" v-money="moneyConfig" :value="formatAmount(item.equity_amount)" @keyup="changeMainAmount($event,item,index,'equity_amount')" />
-                        <input type="hidden" :name="'items['+index+'][equity_amount]'" class="main-amount" v-model="item.equity_amount">
+                        <span v-if="item.id">{{item.check_number}}</span>
+                        <input v-else required :name="'items['+index+'][check_number]'" class="form-control" type='text' v-model="item.check_number">
                     </td>
                     <td>
-                        <input type="text" class="amt mask-money form-control" v-money="moneyConfig" :value="formatAmount(item.other_fund_amount)" @keyup="changeMainAmount($event,item,index,'other_fund_amount')" />
-                        <input type="hidden" :name="'items['+index+'][other_fund_amount]'" class="main-amount" v-model="item.other_fund_amount">
+                        <span v-if="item.id">{{item.payee}}</span>
+                        <textarea v-else required :name="'items['+index+'][payee]'" class="form-control" type='text' rows="1" v-model="item.payee"></textarea>
                     </td>
                     <td>
-                        <button type="button" class="btn-xs btn-danger" @click="removeItem(index)"><i class="fa fa-times"></i></button>
+                        <span v-if="item.id">{{item.particular}}</span>
+                        <textarea v-else required :name="'items['+index+'][particular]'" class="form-control" rows="1" v-model="item.particular"></textarea>
+                    </td>
+                    <td>
+                        <span v-if="item.id">{{formatAmount(item.grant_amount)}}</span>
+                        <div v-else>
+
+                            <input type="text" class="amt mask-money form-control" v-money="moneyConfig" :value="formatAmount(item.grant_amount)" @keyup="changeMainAmount($event,item,index,'grant_amount')" />
+                            <input type="hidden" :name="'items['+index+'][grant_amount]'" class="main-amount" v-model="item.grant_amount">
+                        </div>
+                    </td>
+                    <td>
+                        <span v-if="item.id">{{formatAmount(item.equity_amount)}}</span>
+                        <div v-else>
+
+                            <input type="text" class="amt mask-money form-control" v-money="moneyConfig" :value="formatAmount(item.equity_amount)" @keyup="changeMainAmount($event,item,index,'equity_amount')" />
+                            <input type="hidden" :name="'items['+index+'][equity_amount]'" class="main-amount" v-model="item.equity_amount">
+                        </div>
+                    </td>
+                    <td>
+                        <span v-if="item.id">{{formatAmount(item.other_fund_amount)}}</span>
+                        <div v-else>
+
+                            <input type="text" class="amt mask-money form-control" v-money="moneyConfig" :value="formatAmount(item.other_fund_amount)" @keyup="changeMainAmount($event,item,index,'other_fund_amount')" />
+                            <input type="hidden" :name="'items['+index+'][other_fund_amount]'" class="main-amount" v-model="item.other_fund_amount">
+                        </div>
+                    </td>
+                    <td>
+                        <button v-if="!item.id" type="button" class="btn-xs btn-danger" @click="removeItem(index)"><i class="fa fa-times"></i></button>
                     </td>
                 </tr>
             </tbody>
