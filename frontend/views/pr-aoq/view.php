@@ -515,7 +515,7 @@ SweetAlertAsset::register($this);
 
                 },
                 formatAmount(amount) {
-                    amount = parseFloat(amount)
+                    amount = parseInt(amount)
                     if (typeof amount === 'number' && !isNaN(amount)) {
                         return amount.toLocaleString(); // Formats with commas based on user's locale
                     }

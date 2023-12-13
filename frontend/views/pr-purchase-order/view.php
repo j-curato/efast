@@ -387,7 +387,7 @@ if (!empty($model->date_completed)) {
                             foreach ($val as $val2) {
 
                                 $total_amount = intval($val2['quantity']) * floatval($val2['unit_cost']);
-                                $unit_cost =  !empty($val2['unit_cost']) ? number_format($val2['unit_cost'], 2) : 0;
+                                $unit_cost =  !empty($val2['unit_cost']) ? number_format($val2['unit_cost']) : 0;
                                 echo "<tr>
                                 <td>{$val2['bac_code']}</td>
                                 <td>{$val2['unit_of_measure']}</td>
@@ -401,7 +401,7 @@ if (!empty($model->date_completed)) {
                                 </td>
                                 <td> {$val2['quantity']}</td>
                                 <td class='amount'> {$unit_cost} </td>
-                                <td class='amount'>" . number_format($total_amount, 2) . " </td>
+                                <td class='amount'>" . number_format($total_amount) . " </td>
                             </tr>";
                                 $grand_total += $total_amount;
                             }
@@ -409,7 +409,7 @@ if (!empty($model->date_completed)) {
                             ?>
                             <tr>
                                 <th colspan="5">Grand Total</th>
-                                <th style="text-align: right;"><?php echo number_format($grand_total, 2) ?></th>
+                                <th style="text-align: right;"><?php echo number_format($grand_total) ?></th>
                             </tr>
                             <tr>
                                 <td colspan="6">
