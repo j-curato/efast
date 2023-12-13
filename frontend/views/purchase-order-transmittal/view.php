@@ -66,7 +66,7 @@ $headerTexts = [
             </li>
         </ul>
         <p>
-            <?= Yii::$app->user->can('update_purchase_order_transmittal') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'mdModal btn btn-primary']) : '' ?>
+            <?= Yii::$app->user->can('update_purchase_order_transmittal') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => ' btn btn-primary']) : '' ?>
             <button onclick="generatePDF() " class="btn "> <i class="fa fa-file-pdf"></i> Download PDF</button>
         </p>
         <table>
