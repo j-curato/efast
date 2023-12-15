@@ -8,9 +8,9 @@ return [
     'components' => [
         'db' => [
             'class' => 'yii\db\Connection',
-            'dsn' => 'mysql:host=192.168.1.172;dbname=efast',
-            'username' => 'dbadmin2',
-            'password' => 'password',
+            'dsn' => 'mysql:host=localhost;dbname=afms',
+            'username' => 'root',
+            'password' => '',
             'charset' => 'utf8',
         ],
         'cloud_db' => [
