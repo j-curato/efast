@@ -5,7 +5,7 @@ if [ ! -f "composer.json" ]; then
     echo "Error: This script must be run from the Yii2 project root directory."
     exit 1
 fi
-
+echo 'qwe'
 git fetch
 # Perform git pull
 git pull 
