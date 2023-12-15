@@ -8,7 +8,7 @@ use yii\helpers\ArrayHelper;
 
 $this->title = "FMI SORD";
 $this->params['breadcrumbs'][] = $this->title;
-echo  Yii::getAlias('@webroot');
+echo "qwe";
 ?>
 <div class="jev-preparation-index" style="background-color: white;" id="mainVue">
 
