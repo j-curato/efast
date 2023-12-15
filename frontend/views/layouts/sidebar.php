@@ -326,7 +326,7 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                 Yii::$app->user->can('view_rapid_mg_liquidation') ?     ['label' => 'MG Liquidations', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/mg-liquidations/index'],] : null,
             ];
             $rapidMgReports = [
-                Yii::$app->user->can('super-user') ?     ['label' => 'SORD', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rapid-reports/mg-sord'],] : null,
+                Yii::$app->user->can('super-user') ?     ['label' => 'SORD', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rapid-mg-sord/index'],] : null,
                 Yii::$app->user->can('super-user') ?     ['label' => 'Database', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rapid-reports/mg-database'],] : null,
 
             ];

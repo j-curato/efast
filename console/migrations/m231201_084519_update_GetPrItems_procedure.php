@@ -34,7 +34,7 @@ class m231201_084519_update_GetPrItems_procedure extends Migration
                     WHEN     pr_purchase_request_item.fk_ppmp_non_cse_item_id IS NOT NULL THEN  supplemental_ppmp_non_cse.activity_name 
                     END
                     ) as project_name,
-                    pr_purchase_request_item.id as item_id,
+                   CAST(pr_purchase_request_item.id AS CHAR(50)) as item_id,
                     pr_stock.id as stock_id,
                     pr_stock.stock_title,
                     unit_of_measure.id as unit_of_measure_id,

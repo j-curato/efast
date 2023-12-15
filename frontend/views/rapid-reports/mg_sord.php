@@ -210,9 +210,7 @@ $this->params['breadcrumbs'][] = $this->title;
         border-bottom: 1px solid black;
     } */
 </style>
-<?php
 
-?>
 <script>
     $(document).ready(function() {
         new Vue({
