@@ -10,6 +10,7 @@ use yii\captcha\Captcha;
 
 $this->title = 'Sign In';
 
+
 ?>
 
 
@@ -17,7 +18,7 @@ $this->title = 'Sign In';
 <div class="card">
     <div class="card-body login-card-body">
         <p class="login-box-msg">eFast Login</p>
-
+        <a href="http://dti.local/index.php?r=site%2Flogin">New efast Link dti.local</a>
         <?php $form = \yii\bootstrap4\ActiveForm::begin(['id' => 'login-form']) ?>
 
         <?= $form->field($model, 'username', [
