@@ -563,15 +563,11 @@ class SiteController extends Controller
     }
     public function actionGitUpdate()
     {
-        $repoPath =   Yii::getAlias('@webroot');
-   
-
-        
-        // Execute git fetch
-        shell_exec("cd $repoPath && git fetch");
-
-        // Execute git pull
-        $output = shell_exec("cd $repoPath && git pull");
-        echo "<pre>$output</pre>";
+        $repoPath = Yii::getAlias('@webroot/gitpull.sh');
+        echo getcwd() . "\n";
+        $output = exec('q.bat 2>&1');
+        var_dump($output);
+        echo "\nexecuted ";
+        // $output = shell_exec("start /B $repoPath 2>&1");
     }
 }
