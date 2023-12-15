@@ -564,7 +564,9 @@ class SiteController extends Controller
     public function actionGitUpdate()
     {
         $repoPath =   Yii::getAlias('@webroot');
+   
 
+        
         // Execute git fetch
         shell_exec("cd $repoPath && git fetch");
 
