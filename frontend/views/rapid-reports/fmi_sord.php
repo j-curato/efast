@@ -8,6 +8,7 @@ use yii\helpers\ArrayHelper;
 
 $this->title = "FMI SORD";
 $this->params['breadcrumbs'][] = $this->title;
+echo  Yii::getAlias('@webroot');
 ?>
 <div class="jev-preparation-index" style="background-color: white;" id="mainVue">
 
@@ -98,22 +99,25 @@ $this->params['breadcrumbs'][] = $this->title;
             <td colspan="4">
                 Beginning Balance
             </td>
-            <td class="text-right">{{formatAmount(sordData.beginningBalance.balance_grant)}}</td>
-            <td class="text-right">{{formatAmount(sordData.beginningBalance.balance_equity)}}</td>
-            <td class="text-right">{{formatAmount(sordData.beginningBalance.balance_other_amount)}}</td>
-            <td class="text-right">{{formatAmount(parseFloat(sordData.beginningBalance.balance_grant) +
-            parseFloat(sordData.beginningBalance.balance_equity) +
-            parseFloat(sordData.beginningBalance.balance_other_amount))}}</td>
+
+
+
+            <td class="text-right">{{formatAmount(sordData.beginningBalance.grant_beginning_balance)}}</td>
+            <td class="text-right">{{formatAmount(sordData.beginningBalance.equity_beginning_balance)}}</td>
+            <td class="text-right">{{formatAmount(sordData.beginningBalance.other_beginning_balance)}}</td>
+            <td class="text-right">{{formatAmount(parseFloat(sordData.beginningBalance.grant_beginning_balance) +
+            parseFloat(sordData.beginningBalance.equity_beginning_balance) +
+            parseFloat(sordData.beginningBalance.other_beginning_balance))}}</td>
 
         </tr>
-        <tr v-for="item in sordData.cashDeposits">
+        <tr v-for="item in sordData.grantForTheMonth">
             <td class="" colspan="4">{{item.particular}}</td>
-            <td class="text-right">{{formatAmount(item.matching_grant_amount)}}</td>
-            <td class="text-right">{{formatAmount(item.equity_amount)}}</td>
-            <td class="text-right">{{formatAmount(item.other_amount)}}</td>
-            <td class="text-right">{{formatAmount(parseFloat(item.equity_amount) +
-                parseFloat(item.matching_grant_amount) +
-                parseFloat(item.other_amount))}}</td>
+            <td class="text-right">{{formatAmount(item.total_grant_deposit)}}</td>
+            <td class="text-right">{{formatAmount(item.total_equity_deposit)}}</td>
+            <td class="text-right">{{formatAmount(item.total_other_deposit)}}</td>
+            <td class="text-right">{{formatAmount(parseFloat(item.total_equity_deposit) +
+                parseFloat(item.total_grant_deposit) +
+                parseFloat(item.total_other_deposit))}}</td>
         </tr>
         <tr>
             <th colspan="4">Total Funds Available</th>
@@ -243,7 +247,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     axios.post(url, data)
                         .then(res => {
                             this.sordData = res.data
-                            console.log(this.sordData)
+                            console.log(this.sordData.grantForTheMonth)
                         })
                         .catch(err => {
                             console.log(err)
