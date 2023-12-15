@@ -561,4 +561,15 @@ class SiteController extends Controller
         }
         return $this->renderAjax('upload_form', ['model' => $model]);
     }
+    public function actionGitUpdate()
+    {
+        $repoPath =   Yii::getAlias('@webroot');
+
+        // Execute git fetch
+        shell_exec("cd $repoPath && git fetch");
+
+        // Execute git pull
+        $output = shell_exec("cd $repoPath && git pull");
+        echo "<pre>$output</pre>";
+    }
 }
