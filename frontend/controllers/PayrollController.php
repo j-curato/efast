@@ -415,7 +415,7 @@ class PayrollController extends Controller
             $out['results'] = ['id' => $id, 'text' => Payroll::findOne($id)->payroll_number];
         } else if (!is_null($q)) {
             $query = new Query();
-            $query->select('payroll.id, payroll.payroll_number AS text')
+            $query->select('CAST(payroll.id AS CHAR(50)) as id, payroll.payroll_number AS text')
                 ->from('payroll')
                 ->where(['like', 'payroll.payroll_number', $q]);
 
@@ -427,8 +427,8 @@ class PayrollController extends Controller
     }
     public function actionPayrollData()
     {
-        if ($_POST) {
-            $id = $_POST['id'];
+        if (Yii::$app->request->post()) {
+            $id = Yii::$app->request->post('id');
             $query = Yii::$app->db->createCommand("SELECT
             payroll.payroll_number,
             payroll.type,
