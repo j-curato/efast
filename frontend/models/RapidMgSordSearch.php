@@ -17,8 +17,8 @@ class RapidMgSordSearch extends RapidMgSord
     public function rules()
     {
         return [
-            [['id', 'fk_office_id', 'fk_mgrfr_id'], 'integer'],
-            [['reporting_period', 'created_at'], 'safe'],
+            [['id'], 'integer'],
+            [['reporting_period', 'created_at', 'fk_office_id', 'fk_mgrfr_id'], 'safe'],
         ];
     }
 
@@ -41,7 +41,8 @@ class RapidMgSordSearch extends RapidMgSord
     public function search($params)
     {
         $query = RapidMgSord::find();
-
+        $query->joinWith('office')
+            ->joinWith('mgrfr');
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([
@@ -59,12 +60,12 @@ class RapidMgSordSearch extends RapidMgSord
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'fk_office_id' => $this->fk_office_id,
-            'fk_mgrfr_id' => $this->fk_mgrfr_id,
             'created_at' => $this->created_at,
         ]);
 
-        $query->andFilterWhere(['like', 'reporting_period', $this->reporting_period]);
+        $query->andFilterWhere(['like', 'reporting_period', $this->reporting_period])
+            ->andFilterWhere(['like', 'office.office_name', $this->fk_office_id])
+            ->andFilterWhere(['like', 'mgrfrs.serial_number', $this->fk_mgrfr_id]);
 
         return $dataProvider;
     }

@@ -5,6 +5,8 @@ namespace app\models;
 use app\behaviors\GenerateIdBehavior;
 use app\behaviors\HistoryLogsBehavior;
 use Yii;
+use yii\db\Expression;
+use yii\db\Query;
 
 /**
  * This is the model class for table "tbl_rapid_mg_sord".
@@ -43,6 +45,7 @@ class RapidMgSord extends \yii\db\ActiveRecord
     {
         return [
             [['fk_office_id', 'fk_mgrfr_id', 'reporting_period'], 'required'],
+            ['fk_mgrfr_id', 'validateIfExists'],
             [['id', 'fk_office_id', 'fk_mgrfr_id'], 'integer'],
             [['created_at'], 'safe'],
             [['reporting_period'], 'string', 'max' => 255],
@@ -50,6 +53,24 @@ class RapidMgSord extends \yii\db\ActiveRecord
             [['fk_mgrfr_id'], 'exist', 'skipOnError' => true, 'targetClass' => Mgrfrs::class, 'targetAttribute' => ['fk_mgrfr_id' => 'id']],
             [['fk_office_id'], 'exist', 'skipOnError' => true, 'targetClass' => Office::class, 'targetAttribute' => ['fk_office_id' => 'id']],
         ];
+    }
+    public function validateIfExists($attribute)
+    {
+        $buildQry = self::find()
+            ->addSelect(['id'])
+            ->andWhere(['fk_mgrfr_id' => $this->fk_mgrfr_id])
+            ->andWhere(['reporting_period' => $this->reporting_period]);
+        if (!$this->isNewRecord) {
+            $buildQry->andWhere("id !=:id", ['id' => $this->id]);
+        }
+        $buildQry = $buildQry->createCommand()->getRawSql();
+        $qry = new Query();
+        $qry->addSelect([
+            new Expression("EXISTS($buildQry)")
+        ]);
+        if (!empty($qry->scalar())) {
+            $this->addError('error', 'This Filter Already Exists.');
+        }
     }
 
     /**
@@ -81,7 +102,7 @@ class RapidMgSord extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getFkOffice()
+    public function getOffice()
     {
         return $this->hasOne(Office::class, ['id' => 'fk_office_id']);
     }
