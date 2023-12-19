@@ -2,11 +2,12 @@
 
 namespace app\models;
 
-use app\components\helpers\MyHelper;
+use Yii;
 use ErrorException;
 use ParentIterator;
-use Yii;
 use yii\helpers\ArrayHelper;
+use app\components\helpers\MyHelper;
+use app\behaviors\HistoryLogsBehavior;
 
 /**
  * This is the model class for table "transaction".
@@ -27,6 +28,12 @@ use yii\helpers\ArrayHelper;
  */
 class Transaction extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            HistoryLogsBehavior::class
+        ];
+    }
     /**
      * {@inheritdoc}
      */
@@ -42,7 +49,7 @@ class Transaction extends \yii\db\ActiveRecord
     {
         return [
             [['responsibility_center_id', 'payee_id', 'particular',  'transaction_date', 'type', 'fk_book_id'], 'required'],
-            [['responsibility_center_id', 'payee_id', 'is_local', 'fk_book_id'], 'integer'],
+            [['responsibility_center_id', 'payee_id', 'is_local', 'fk_book_id', 'is_cancelled'], 'integer'],
             [['gross_amount'], 'number'],
             [['tracking_number', 'earmark_no', 'payroll_number', 'type'], 'string', 'max' => 255],
             [['transaction_date'], 'string', 'max' => 50],
@@ -73,6 +80,7 @@ class Transaction extends \yii\db\ActiveRecord
             'type' => 'Type',
             'is_local' => 'is Local',
             'fk_book_id' => 'Book',
+            'is_cancelled' => 'is Cancelled',
         ];
     }
     public function beforeSave($insert)
@@ -199,5 +207,28 @@ class Transaction extends \yii\db\ActiveRecord
         return YIi::$app->db->createCommand("CALL GetTransactionAllotmentItems(:id)")
             ->bindValue(':id', $this->id)
             ->queryAll();
+    }
+    public function cancel()
+    {
+        try {
+            $this->is_cancelled =  $this->is_cancelled ? 0 : 1;
+            if ($this->is_cancelled === 1) {
+                $qry = Yii::$app->db->createCommand("SELECT EXISTS (SELECT process_ors.transaction_id FROM process_ors
+                WHERE 
+                process_ors.is_cancelled = 0
+                AND process_ors.transaction_id = 5000)")
+                    ->bindValue(':id', $this->id)
+                    ->queryScalar();
+                if ($qry) {
+                    throw new ErrorException("Cannot Cancel Transaction has ORS associated with");
+                }
+            }
+            if (!$this->save(false)) {
+                throw new ErrorException('Save Failed');
+            }
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
     }
 }

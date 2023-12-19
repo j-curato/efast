@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\behaviors\HistoryLogsBehavior;
 use Yii;
 
 /**
@@ -17,6 +18,12 @@ use Yii;
  */
 class TransactionPrItems extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            HistoryLogsBehavior::class
+        ];
+    }
     /**
      * {@inheritdoc}
      */
