@@ -299,7 +299,7 @@ if (!empty($model->fk_approved_by)) {
 
 </div>
 <?php
-$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [JqueryAsset::class]]);
+ 
 ?>
 <script>
     $(document).ready(() => {

@@ -335,7 +335,7 @@ if (!empty($model->pr_purchase_request_id)) {
     }
 </style>
 <?php
-$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [JqueryAsset::class]]);
+ 
 ?>
 <script>
     var csrfToken = $('meta[name="csrf-token"]').attr("content");

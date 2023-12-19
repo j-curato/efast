@@ -75,7 +75,7 @@ $book_name = $model->book->name;
     }
 </style>
 <?php
-$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [JqueryAsset::class]]);
+ 
 $this->registerJsFile("@web/js/moment.min.js", ['depends' => [JqueryAsset::class]]);
 $this->registerCssFile("@web/frontend/web/css/site.css");
 $this->registerJsFile("@web/frontend/views/rpcppe/rpcppeScript.js", ['depends' => [JqueryAsset::class]]);

@@ -456,7 +456,7 @@ if (strtolower($model->transaction_type) === 'remittance' || $dvType === 'remitt
 </style>
 
 <?php
-$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [JqueryAsset::class]]);
+ 
 $this->registerJsFile("@web/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $csrfToken = Yii::$app->request->csrfToken;
 ?>

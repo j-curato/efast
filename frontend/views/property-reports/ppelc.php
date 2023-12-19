@@ -222,7 +222,7 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 </style>
 <?php
-$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [JqueryAsset::class]]);
+ 
 $this->registerJsFile("@web/js/moment.min.js", ['depends' => [JqueryAsset::class]]);
 $this->registerCssFile("@web/frontend/web/css/site.css");
 ?>

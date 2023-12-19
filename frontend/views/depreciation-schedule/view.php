@@ -88,7 +88,7 @@ $this->registerCssFile("@web/frontend/views/depreciation-schedule/styles.css", [
     }
 </style>
 <?php
-$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [JqueryAsset::class]]);
+ 
 $this->registerJsFile("@web/js/moment.min.js", ['depends' => [JqueryAsset::class]]);
 $this->registerJsFile("@web/frontend/views/depreciation-schedule/script.js", ['depends' => [JqueryAsset::class]]);
 ?>

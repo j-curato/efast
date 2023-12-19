@@ -300,7 +300,7 @@ $approved_by = MyHelper::getEmployee($model->fk_approved_by, 'one');
     }
 </style>
 <?php
-$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [JqueryAsset::class]]);
+ 
 ?>
 <script>
     $('.editable').focusout(() => {

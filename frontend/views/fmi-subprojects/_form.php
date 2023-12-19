@@ -20,13 +20,13 @@ use yii\helpers\Url;
 $batchData = [
     ['id' => $model->fk_fmi_batch_id ?? null, 'batch_name' => $model->fmiBatch->batch_name ?? null],
 ];
-$defaultBankBranchDetail = [
+$defaultBankBranchDetail = !empty($model->fk_bank_branch_detail_id) ? [
     [
         'id' => $model->fk_bank_branch_detail_id,
         'text' => strtoupper($model->bankBranchDetail->bankBranch->bank->name
             . ' - ' .  $model->bankBranchDetail->bankBranch->branch_name)
     ]
-];
+] : [];
 ?>
 
 <div class="fmi-subprojects-form " id="mainVue">

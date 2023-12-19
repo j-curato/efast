@@ -428,7 +428,7 @@ $user_data = User::getUserDetails();
     }
 </style>
 <?php
-$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [JqueryAsset::class]]);
+ 
 Select2Asset::register($this);
 ?>
 

@@ -212,7 +212,7 @@ $row = 1;
 </style>
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
-$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [JqueryAsset::class]]);
+ 
 Select2Asset::register($this);
 ?>
 <script type="text/javascript">

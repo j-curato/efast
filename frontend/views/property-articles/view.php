@@ -33,4 +33,4 @@ $this->params['breadcrumbs'][] = $this->title;
         padding: 2rem;
     }
 </style>
-<?php $this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [JqueryAsset::class]]); ?>
+<?php   ?>
