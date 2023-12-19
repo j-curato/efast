@@ -67,7 +67,7 @@ $toDate = DateTime::createFromFormat('Y-m-d H:i:s', $model->to_date);
 
             <tr v-for="item in items">
                 <th class="">{{item.rfq_number}} - {{item.purpose}}</th>
-                <td class="text-center">{{formatDate(item.from_date)}} 3:00 PM</td>
+                <td class="text-center">{{item.from_date}} 3:00 PM</td>
                 <td class="text-center"><?= $toDate->format('F d, Y h:i A') ?> </td>
             </tr>
             <tr>
@@ -190,17 +190,17 @@ SweetAlertAsset::register($this);
                 updatePosition() {
                     console.log('qwe')
                 },
-                formatDate(itemDate) {
-                    const predefinedDate = new Date(itemDate); // Replace this with your predefined date
-
-                    const options = {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                    };
-                    const formattedDate = predefinedDate.toLocaleDateString(undefined, options);
-                    return formattedDate
-                },
+                // formatDate(itemDate) {
+                //     const predefinedDate = new Date(itemDate); // Replace this with your predefined date
+                //     console.log(itemDate)
+                //     const options = {
+                //         year: 'numeric',
+                //         month: 'long',
+                //         day: 'numeric'
+                //     };
+                //     const formattedDate = predefinedDate.toLocaleDateString(undefined, options);
+                //     return formattedDate
+                // },
                 final(event) {
                     event.preventDefault()
                     const href = event.target.getAttribute('href');
