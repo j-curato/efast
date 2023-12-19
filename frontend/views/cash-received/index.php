@@ -13,7 +13,7 @@ use yii\web\JqueryAsset;
 $this->title = 'Cash Receive';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="cash-recieved-index">
+<div class="cash-received-index">
 
 
     <p>
@@ -33,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'date',
             'reporting_period',
             [
-                'label' => 'Document Recieved',
+                'label' => 'Document Received',
                 'attribute' => 'documentRecieved.name'
             ],
             [
@@ -74,5 +74,5 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <?php
 
- 
+
 ?>
