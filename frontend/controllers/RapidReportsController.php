@@ -90,12 +90,16 @@ class RapidReportsController extends \yii\web\Controller
             $id = Yii::$app->request->post('id');
             $reportingPeriod = Yii::$app->request->post('reporting_period');
             $model = FmiSubprojects::findOne($id);
+            // return      $model->getGrantByPeriod($reportingPeriod);
             return json_encode(
                 [
                     'beginningBalance' => $model->getBeginningBalance($reportingPeriod),
                     'liquidations' => $model->getLiquidationsA($reportingPeriod),
                     // 'cashDeposits' => $model->getFundReleasesA($reportingPeriod),
-                    'details' => $model->getDetails()
+                    'details' => $model->getDetails(),
+                    'grantDepositsForTheMonth' => $model->getGrantDepositsByPeriod($reportingPeriod),
+                    'equityDepositsForTheMonth' => $model->getEquityDepositsByPeriod($reportingPeriod),
+                    'otherDepositsForTheMonth' => $model->getOtherDepositsByPeriod($reportingPeriod),
                 ]
             );
         }

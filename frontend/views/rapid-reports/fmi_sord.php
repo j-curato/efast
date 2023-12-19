@@ -109,7 +109,25 @@ $this->params['breadcrumbs'][] = $this->title;
             parseFloat(sordData.beginningBalance.other_beginning_balance))}}</td>
 
         </tr>
-        <tr v-for="item in sordData.grantForTheMonth">
+        <tr v-for="item in sordData.grantDepositsForTheMonth">
+            <td class="" colspan="4">{{item.particular}}</td>
+            <td class="text-right">{{formatAmount(item.total_grant_deposit)}}</td>
+            <td class="text-right">{{formatAmount(item.total_equity_deposit)}}</td>
+            <td class="text-right">{{formatAmount(item.total_other_deposit)}}</td>
+            <td class="text-right">{{formatAmount(parseFloat(item.total_equity_deposit) +
+                parseFloat(item.total_grant_deposit) +
+                parseFloat(item.total_other_deposit))}}</td>
+        </tr>
+        <tr v-for="item in sordData.equityDepositsForTheMonth">
+            <td class="" colspan="4">{{item.particular}}</td>
+            <td class="text-right">{{formatAmount(item.total_grant_deposit)}}</td>
+            <td class="text-right">{{formatAmount(item.total_equity_deposit)}}</td>
+            <td class="text-right">{{formatAmount(item.total_other_deposit)}}</td>
+            <td class="text-right">{{formatAmount(parseFloat(item.total_equity_deposit) +
+                parseFloat(item.total_grant_deposit) +
+                parseFloat(item.total_other_deposit))}}</td>
+        </tr>
+        <tr v-for="item in sordData.otherDepositsForTheMonth">
             <td class="" colspan="4">{{item.particular}}</td>
             <td class="text-right">{{formatAmount(item.total_grant_deposit)}}</td>
             <td class="text-right">{{formatAmount(item.total_equity_deposit)}}</td>
@@ -228,6 +246,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     liquidations: [],
                     cashDepositBalance: [],
                     details: [],
+                    grantDepositsForTheMonth: [],
+                    equityDepositsForTheMonth: [],
+                    otherDepositsForTheMonth: [],
 
                 },
             },
@@ -268,24 +289,37 @@ $this->params['breadcrumbs'][] = $this->title;
                 },
 
 
-                getDepositTotalForType(colName, balancePropertyName) {
-                    return this.getCashDepositTotalByColumn(colName) +
-                        parseFloat(this.sordData.cashDepositBalance[balancePropertyName]);
-                },
 
+                // beginningBalance
+                // sordData.grantForTheMonth
+                getTotalGrantDeposits() {
+                    //total_grant_deposit
+                    // total_equity_deposit
+                    // total_other_deposit
+                    return this.sordData.grantDepositsForTheMonth.reduce(
+                        (total, item) => total + parseFloat(item.total_grant_deposit), 0
+                    )
+                },
+                getTotalEquityDeposits() {
+                    return this.sordData.equityDepositsForTheMonth.reduce(
+                        (total, item) => total + parseFloat(item.total_equity_deposit), 0
+                    )
+                },
+                getTotalOtherDeposits() {
+                    return this.sordData.otherDepositsForTheMonth.reduce(
+                        (total, item) => total + parseFloat(item.total_other_deposit), 0
+                    )
+                },
             },
             computed: {
                 depositTotalGrant() {
-                    return 0;
-                    return this.getDepositTotalForType('matching_grant_amount', 'balance_grant');
+                    return parseFloat(this.sordData.beginningBalance.grant_beginning_balance) + parseFloat(this.getTotalGrantDeposits())
                 },
                 depositTotalEquity() {
-                    return 0;
-                    return this.getDepositTotalForType('equity_amount', 'balance_equity');
+                    return parseFloat(this.sordData.beginningBalance.equity_beginning_balance) + parseFloat(this.getTotalEquityDeposits());
                 },
                 depositTotalOther() {
-                    return 0;
-                    return this.getDepositTotalForType('other_amount', 'balance_other_amount');
+                    return parseFloat(this.sordData.beginningBalance.other_beginning_balance) + parseFloat(this.getTotalOtherDeposits());
                 },
                 liquidationTotalGrant() {
                     return this.getLiquidationTotalByColumn('grant_amount')

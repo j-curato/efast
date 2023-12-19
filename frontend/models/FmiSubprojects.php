@@ -331,14 +331,26 @@ class FmiSubprojects extends \yii\db\ActiveRecord
                 'operator' => '=',
                 'column' => 'tbl_fmi_bank_deposit_types.deposit_type'
 
-            ]
+            ],
+            [
+                'value' => $reportingPeriod,
+                'operator' => '<',
+                'column' => 'tbl_fmi_bank_deposits.reporting_period'
+
+            ],
         ];
         $otherDepositFilters = [
             [
                 'value' => 'Other Bank Deposits',
                 'operator' => '=',
                 'column' => 'tbl_fmi_bank_deposit_types.deposit_type'
-            ]
+            ],
+            [
+                'value' => $reportingPeriod,
+                'operator' => '<',
+                'column' => 'tbl_fmi_bank_deposits.reporting_period'
+
+            ],
         ];
         return self::find()
             ->addSelect([
@@ -452,33 +464,44 @@ class FmiSubprojects extends \yii\db\ActiveRecord
             ])
             ->join("JOIN", "tbl_fmi_lgu_liquidation_items", "tbl_fmi_lgu_liquidations.id = tbl_fmi_lgu_liquidation_items.fk_fmi_lgu_liquidation_id")
             ->andWhere(['tbl_fmi_lgu_liquidation_items.reporting_period' => $reportingPeriod])
+            ->andWhere(['tbl_fmi_lgu_liquidations.fk_fmi_subproject_id' => $this->id])
+            ->andWhere(['tbl_fmi_lgu_liquidation_items.is_deleted' => false])
             ->asArray()
             ->all();
     }
 
 
-    public function getGrantByPeriod($reportingPeriod)
+    public function getGrantDepositsByPeriod($reportingPeriod)
     {
-        $FundReleaseFilter = [
-            [
-                'value' => $reportingPeriod,
-                'operator' => '=',
-                'column' => 'cash_disbursement.reporting_period'
-            ]
-        ];
-        return self::find()
+
+        $dvTotalBuildQry = DvAucsEntries::find()
             ->addSelect([
-                new Expression("'Grant' as particular"),
-                new Expression("COALESCE(grant_deposits.amount_disbursed,0) as total_grant_deposit"),
+                "dv_aucs_entries.dv_aucs_id",
+                new Expression(" SUM(dv_aucs_entries.amount_disbursed) as total_disbursed")
+            ])
+            ->andWhere([
+                "dv_aucs_entries.is_deleted" => false
+            ])
+            ->groupBy("dv_aucs_entries.dv_aucs_id");
+
+
+        return FmiFundReleases::find()
+            ->addSelect([
+                "dv_aucs.particular",
+                new Expression("COALESCE(dv_total.total_disbursed,0) as total_grant_deposit"),
                 new Expression(" 0 as total_equity_deposit"),
                 new Expression(" 0 as total_other_deposit")
             ])
-
+            ->join("JOIN",  "cash_disbursement", "tbl_fmi_fund_releases.fk_cash_disbursement_id = cash_disbursement.id")
+            ->join("JOIN", "cash_disbursement_items",  "cash_disbursement.id = cash_disbursement_items.fk_cash_disbursement_id")
+            ->join("JOIN", "dv_aucs", "cash_disbursement_items.fk_dv_aucs_id = dv_aucs.id")
             ->leftJoin(
-                ['grant_deposits' => static::queryBuildFundRelease($FundReleaseFilter)],
-                'tbl_fmi_subprojects.id = grant_deposits.fk_fmi_subproject_id'
+                ['dv_total' => $dvTotalBuildQry],
+                'dv_aucs.id = dv_total.dv_aucs_id'
             )
-            ->andWhere(['tbl_fmi_subprojects.id' => $this->id])
+            ->andWhere(["cash_disbursement_items.is_deleted" => false])
+            ->andWhere(["fk_fmi_subproject_id" => $this->id])
+            ->andWhere(["cash_disbursement.reporting_period" => $reportingPeriod])
             ->asArray()->all();
     }
     public function getEquityDepositsByPeriod($reportingPeriod)
@@ -491,23 +514,21 @@ class FmiSubprojects extends \yii\db\ActiveRecord
 
             ]
         ];
-        return self::find()
+        return FmiBankDeposits::find()
             ->addSelect([
-                new Expression("'Grant' as particular"),
-                new Expression("0 as total_grant_deposit"),
-                new Expression("COALESCE(equity_deposits.total_deposit,0) as total_equity_deposit"),
+                new Expression("'Equity' as particular"),
+                new Expression(" 0 as total_grant_deposit"),
+                new Expression("COALESCE(tbl_fmi_bank_deposits.deposit_amount,0) as total_equity_deposit"),
                 new Expression(" 0 as total_other_deposit")
             ])
-
-            ->leftJoin(
-                ['equity_deposits' => static::getDeposits($equityDepositFilters)],
-                'tbl_fmi_subprojects.id = equity_deposits.fk_fmi_subproject_id'
-            )
-
-            ->andWhere(['tbl_fmi_subprojects.id' => $this->id])
-            ->asArray()->all();
+            ->join("JOIN", "tbl_fmi_bank_deposit_types", "tbl_fmi_bank_deposits.fk_fmi_bank_deposit_type_id = tbl_fmi_bank_deposit_types.id")
+            ->andWhere(['tbl_fmi_bank_deposits.fk_fmi_subproject_id' => $this->id])
+            ->andWhere(['tbl_fmi_bank_deposits.reporting_period' => $reportingPeriod])
+            ->andWhere(['tbl_fmi_bank_deposit_types.deposit_type' => 'LGU Equity'])
+            ->asArray()
+            ->all();
     }
-    public function getOtherDepositByPeriod($reportingPeriod)
+    public function getOtherDepositsByPeriod($reportingPeriod)
     {
         $otherDepositFilters = [
             [
@@ -516,18 +537,18 @@ class FmiSubprojects extends \yii\db\ActiveRecord
                 'column' => 'tbl_fmi_bank_deposit_types.deposit_type'
             ]
         ];
-        return self::find()
+        return FmiBankDeposits::find()
             ->addSelect([
-                new Expression("'Grant' as particular"),
-                new Expression("0 as total_grant_deposit"),
-                new Expression(" 0 as total_equity_deposit"),
-                new Expression("COALESCE(other_deposits.total_deposit,0) as total_other_deposit"),
+                new Expression("'Other Funds' as particular"),
+                new Expression(" 0 as total_grant_deposit"),
+                new Expression("COALESCE(tbl_fmi_bank_deposits.deposit_amount,0) as total_equity_deposit"),
+                new Expression(" 0 as total_other_deposit")
             ])
-            ->leftJoin(
-                ['other_deposits' => static::getDeposits($otherDepositFilters)],
-                'tbl_fmi_subprojects.id = other_deposits.fk_fmi_subproject_id'
-            )
-            ->andWhere(['tbl_fmi_subprojects.id' => $this->id])
-            ->asArray()->all();
+            ->join("JOIN", "tbl_fmi_bank_deposit_types", "tbl_fmi_bank_deposits.fk_fmi_bank_deposit_type_id = tbl_fmi_bank_deposit_types.id")
+            ->andWhere(['tbl_fmi_bank_deposits.fk_fmi_subproject_id' => $this->id])
+            ->andWhere(['tbl_fmi_bank_deposits.reporting_period' => $reportingPeriod])
+            ->andWhere(['tbl_fmi_bank_deposit_types.deposit_type' => 'Other Bank Deposits'])
+            ->asArray()
+            ->all();
     }
 }

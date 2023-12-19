@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Yii::$app->user->can('super-user') ? Html::a('Create Rapid Fmi Sord', ['create'], ['class' => 'btn btn-success']) : '' ?>
+        <?= Yii::$app->user->can('super-user') ? Html::a('<i class="fa fa-plus"></i> Create', ['create'], ['class' => 'btn btn-success']) : '' ?>
     </p>
 
 
@@ -27,7 +27,10 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'columns' => [
 
-            'fk_fmi_subproject_id',
+            [
+                'attribute' => 'fk_fmi_subproject_id',
+                'value' => 'fmiSubproject.serial_number'
+            ],
             'reporting_period',
             [
                 'label' => 'Actions',
