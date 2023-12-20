@@ -72,7 +72,7 @@ class ProcessOrsEntriesController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['ro_accounting_admin']
+                        'roles' => ['ro_accounting_admin','ro_budget_admin']
                     ]
                 ]
             ],
