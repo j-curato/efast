@@ -4419,11 +4419,11 @@ class ReportController extends \yii\web\Controller
              SELECT 
                 cte_ttl_dbs_dvs.reporting_period,
                 cte_ttl_dbs_dvs.ttlDv as total_dv,
-                cte_ttl_dbs_dvs_at_coa.ttlAtCoa as dv_count_at_coa,
-                cte_ttl_dbs_dvs.ttlDv - cte_ttl_dbs_dvs_at_coa.ttlAtCoa as dv_count_at_ro
+                COALESCE(cte_ttl_dbs_dvs_at_coa.ttlAtCoa,0) as dv_count_at_coa,
+                COALESCE(cte_ttl_dbs_dvs.ttlDv - cte_ttl_dbs_dvs_at_coa.ttlAtCoa,0) as dv_count_at_ro
              FROM 
              cte_ttl_dbs_dvs
-             JOIN cte_ttl_dbs_dvs_at_coa ON cte_ttl_dbs_dvs.reporting_period = cte_ttl_dbs_dvs_at_coa.reporting_period
+             LEFT JOIN cte_ttl_dbs_dvs_at_coa ON cte_ttl_dbs_dvs.reporting_period = cte_ttl_dbs_dvs_at_coa.reporting_period
              WHERE cte_ttl_dbs_dvs.reporting_period LIKE :_year
             ")
 
@@ -5091,11 +5091,11 @@ class ReportController extends \yii\web\Controller
                     // accu_depreciation
                     foreach ($books as $book) {
                         $book_name = strtolower($book['book_name']);
-
                         $sheet->setCellValue(
                             [$bookValCol, $row],
-                            // !empty($result[$property_num][$book_name]['accu_depreciation']) ? $result[$property_num][$book_name]['accu_depreciation'] : ''
-                            !empty($result[$property_num][$book_name]['mnthly_depreciation']) ? $months_depreciated * $result[$property_num][$book_name]['mnthly_depreciation'] : ''
+                            !empty($result[$property_num][$book_name]['accu_depreciation']) ? intval($result[$property_num][$book_name]['accu_depreciation']) : ''
+                            // !empty($result[$property_num][$book_name]['mnthly_depreciation']) ? intval($months_depreciated * $result[$property_num][$book_name]['mnthly_depreciation']) : ''
+
                         );
                         $bookValCol++;
                     }
