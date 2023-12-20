@@ -348,6 +348,7 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
             ];
             $rapidFmiReports = [
                 Yii::$app->user->can('super-user') ?     ['label' => 'FMI SORD', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rapid-fmi-sord/index'],] : null,
+                Yii::$app->user->can('super-user') ?     ['label' => 'Database', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rapid-reports/fmi-database'],] : null,
             ];
 
             $menuItems =  [

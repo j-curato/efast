@@ -5,6 +5,8 @@ namespace frontend\controllers;
 use app\models\FmiSubprojects;
 use Yii;
 use app\models\Mgrfrs;
+use app\models\RapidFmiDatabase;
+use app\models\RapidFmiDatabaseSearch;
 use app\models\RapidMgDatabaseSearch;
 use yii\filters\AccessControl;
 
@@ -33,6 +35,13 @@ class RapidReportsController extends \yii\web\Controller
                     [
                         'actions' => [
                             'fmi-sord'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ],
+                    [
+                        'actions' => [
+                            'fmi-database'
                         ],
                         'allow' => true,
                         'roles' => ['@']
@@ -104,5 +113,16 @@ class RapidReportsController extends \yii\web\Controller
             );
         }
         return $this->render('fmi_sord');
+    }
+    public function actionFmiDatabase()
+    {
+
+        $searchModel = new RapidFmiDatabaseSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('fmi_database', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
     }
 }
