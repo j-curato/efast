@@ -4463,7 +4463,7 @@ class ReportController extends \yii\web\Controller
         FROM 
         cte_gd_disbursed_dvs
         JOIN transmittal_entries ON cte_gd_disbursed_dvs.fk_dv_aucs_id = transmittal_entries.fk_dv_aucs_id
-        
+        AND transmittal_entries.is_deleted = 0
         ),
         cte_dv_amts as (
         SELECT 
