@@ -71,7 +71,6 @@ $this->params['breadcrumbs'][] = $this->title;
 </style>
 
 <?php
-$this->registerJsFile(Yii::$app->request->baseUrl . '/frontend/web/js/globalFunctions.js');
 ?>
 <script>
     $(document).ready(function() {
