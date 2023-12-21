@@ -1,6 +1,7 @@
 <?php
 
 use app\components\helpers\MyHelper;
+use app\models\ItHelpdeskCsf;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 
@@ -12,6 +13,7 @@ $this->params['breadcrumbs'][] = ['label' => 'It Helpdesk Csfs', 'url' => ['inde
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 $client = MyHelper::getEmployee($model->maintenanceRequest->fk_requested_by, 'one');
+
 ?>
 <div class="it-helpdesk-csf-view">
 

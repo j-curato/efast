@@ -292,7 +292,9 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
             $itTransactions = [
                 Yii::$app->user->can('view_it_maintenance_request') ?     ['label' => 'IT Maintenance Request', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/it-maintenance-request/index'],] : null,
             ];
-            $itReports = [];
+            $itReports = [
+                Yii::$app->user->can('view_it_maintenance_request') ?     ['label' => 'IT Maintenance CSF Tabulation', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/it-helpdesk-csf/csf-tabulation'],] : null,
+            ];
             $reports = [
                 Yii::$app->user->can('super-user') ?     ['label' => 'Pending ORS', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/pending-ors'],] : null,
                 Yii::$app->user->can('super-user') ?     ['label' => "Pending DV's", 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/pending-dv'],] : null,

@@ -25,13 +25,7 @@ class ItHelpdeskCsfController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => [
-                    'index',
-                    'view',
-                    'create',
-                    'update',
-                    'delete',
-                ],
+
                 'rules' => [
                     [
                         'actions' => [
@@ -39,7 +33,7 @@ class ItHelpdeskCsfController extends Controller
                             'view',
                             'create',
                             'update',
-                            'delete',
+                            'csf-tabulation',
                         ],
                         'allow' => true,
                         'roles' => ['super-user']
@@ -159,5 +153,16 @@ class ItHelpdeskCsfController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+    public function actionCsfTabulation()
+    {
+        if (Yii::$app->request->post()) {
+
+            $fromPeriod = Yii::$app->request->post('from_period');
+            $toPeriod = Yii::$app->request->post('to_period');
+            $formattedToPeriod = date("Y-m-t", strtotime($toPeriod . "-01"));
+            return json_encode(ItHelpdeskCsf::getCsfByPeriod($fromPeriod . "-01", $formattedToPeriod));
+        }
+        return $this->render('csf_tabulation');
     }
 }
