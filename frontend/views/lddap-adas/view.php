@@ -164,12 +164,19 @@ $accounting_head = !empty($model->fk_accounting_head) ?  $accounting_head =  $em
                     <th colspan="8" class="ctr">II. ADVICE TO DEBIT ACCOUNT (ADA) </th>
                 </tr>
                 <tr>
-                    <td colspan="8" class="no-bdr">
+                    <td colspan="7" class="no-bdr">
                         <span> To MDS-GSB of the Agencys </span><br>
                         <span>Please debit MDS Sub-Account Number: 2036-90014-1 </span><br>
                         <span>Please credit the account of the above listed creditors to cover payment of accounts payable (A/Ps) </span>
+                        <br>
 
                     </td>
+                    <th class="amt no-bdr text-center">
+                        <br>
+                        <br>
+                        <br>
+                        <?= number_format($ttlNet, 2) ?>
+                    </th>
                 </tr>
                 <tr>
                     <th colspan="8" class="no-bdr">TOTAL AMOUNT:
