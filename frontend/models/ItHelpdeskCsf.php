@@ -4,6 +4,7 @@ namespace app\models;
 
 use DateTime;
 use Yii;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "it_helpdesk_csf".
@@ -120,5 +121,54 @@ class ItHelpdeskCsf extends \yii\db\ActiveRecord
     public function getMaintenanceRequest()
     {
         return $this->hasOne(ItMaintenanceRequest::class, ['id' => 'fk_it_maintenance_request']);
+    }
+    public static function getCsfByPeriod($fromPeriod, $toPeriod)
+    {
+        return [
+            "details" => static::getNumberOfRatersByPeriod($fromPeriod, $toPeriod),
+            "clarity" => static::buildRatingsQry($fromPeriod, $toPeriod, "clarity"),
+            "skills" => static::buildRatingsQry($fromPeriod, $toPeriod, "skills"),
+            "professionalism" => static::buildRatingsQry($fromPeriod, $toPeriod, "professionalism"),
+            "courtesy" => static::buildRatingsQry($fromPeriod, $toPeriod, "courtesy"),
+            "response_time" => static::buildRatingsQry($fromPeriod, $toPeriod, "response_time"),
+            "outcome" => static::buildRatingsQry($fromPeriod, $toPeriod, "outcome"),
+
+        ];
+    }
+    private  function getNumberOfRatersByPeriod($from_period, $to_period)
+    {
+        return self::find()
+            ->addSelect([
+                // new Expression("DATE_FORMAT(it_helpdesk_csf.`date`,'%Y-%m') as period"),
+                new Expression(" COUNT(*) AS number_of_raters")
+            ])
+
+            ->andWhere([
+                '>=',
+                "it_helpdesk_csf.`date`", $from_period
+            ])
+            ->andWhere([
+                '<=',
+                "it_helpdesk_csf.`date`", $to_period
+            ])
+            // ->groupBy("period")
+            ->asArray()->one();
+    }
+
+    private   function buildRatingsQry($from_period, $to_period, $colName)
+    {
+        return self::find()
+            ->addSelect([
+                // new Expression("DATE_FORMAT(it_helpdesk_csf.`date`,'%Y-%m') as period"),
+                "$colName",
+                ("COUNT($colName) AS num_of_rates")
+            ])
+            ->andWhere([">=", "it_helpdesk_csf.`date`", $from_period])
+            ->andWhere(["<=", "it_helpdesk_csf.`date`", $to_period])
+            ->groupBy([
+                // "period",
+                $colName
+            ])
+            ->asArray()->all();
     }
 }
