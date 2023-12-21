@@ -1196,7 +1196,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                             </div>
                             <div class="col-sm-2">
                                 <label for="unit_of_measure">Unit of Measure</label>
-                                <select required name="pr_items[${row_number}][unit_of_measure_id]" class="unit_of_measure form-control" style="width: 100%">
+                                <select required name="pr_items[${row_number}][unit_of_measure_id]" class="unit_of_measure unit-of-measure form-control" style="width: 100%">
                                 <option value='${unit_of_measure_id}'>${unit_of_measure}</option>
                                 </select>
                             </div>
