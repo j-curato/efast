@@ -223,7 +223,7 @@ $script = <<<JS
                     label: '# of DV`s',
                     data: data.total_dv,
                     backgroundColor: 
-                    'rgb(0, 82, 204)',
+                    '#668cff',
                       
                     borderColor: 
                     'rgb(0, 82, 204)',
@@ -232,7 +232,7 @@ $script = <<<JS
                     label: '# of Dv AT RO',
                     data: data.dv_at_ro,
                     backgroundColor: 
-                    'rgb(179, 0, 0)',
+                    '#ff8080',
                     borderColor: 
                     'rgb(179, 0, 0)',
                     borderWidth: 1
@@ -240,7 +240,8 @@ $script = <<<JS
                     label: '# of Dv AT COA',
                     data: data.dv_at_coa,
                     backgroundColor: 
-                    'rgb(0, 128, 43)',
+                    '#5cd65c',
+                    borderColor: 'rgb(0, 128, 43)',
               
                     borderWidth: 1
                 }
