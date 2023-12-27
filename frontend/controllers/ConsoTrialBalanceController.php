@@ -51,10 +51,16 @@ class ConsoTrialBalanceController extends Controller
                     [
                         'actions' => [
                             'create',
-                            'generate-conso-trial-balance',
                         ],
                         'allow' => true,
                         'roles' => ['create_ro_conso_trial_balance']
+                    ],
+                    [
+                        'actions' => [
+                            'generate-conso-trial-balance',
+                        ],
+                        'allow' => true,
+                        'roles' => ['create_ro_conso_trial_balance', 'update_ro_conso_trial_balance']
                     ],
                 ]
             ],
@@ -261,7 +267,7 @@ class ConsoTrialBalanceController extends Controller
             ->bindValue(':_year', $year)
             ->bindValue(':to_reporting_period', $to_reporting_period)
             ->bindValue(':from_reporting_period', $from_reporting_period)
-            ->bindValue(':book_type', $book_type.'%')
+            ->bindValue(':book_type', $book_type . '%')
             ->queryAll();
         return $query;
     }
