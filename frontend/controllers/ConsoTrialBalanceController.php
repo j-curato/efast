@@ -24,15 +24,7 @@ class ConsoTrialBalanceController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => [
-                    'update',
-                    'create',
-                    'delete',
-                    'view',
-                    'index',
-                    'generate-conso-trial-balance',
-                    'export'
-                ],
+
                 'rules' => [
                     [
                         'actions' => [
@@ -190,8 +182,8 @@ class ConsoTrialBalanceController extends Controller
         $book_params = [];
         if ($book_type !== 'all') {
             $book_and = 'AND ';
-            $book_sql1 = Yii::$app->db->getQueryBuilder()->buildCondition("EXISTS (SELECT id FROM books WHERE books.`type` =:book_type AND jev_preparation.book_id = books.id)", $book_params);
-            $book_sql2 = Yii::$app->db->getQueryBuilder()->buildCondition("EXISTS (SELECT id FROM books WHERE books.`type` =:book_type AND jev_beginning_balance.book_id = books.id)", $book_params);
+            $book_sql1 = Yii::$app->db->getQueryBuilder()->buildCondition("EXISTS (SELECT id FROM books WHERE books.`type` LIKE :book_type AND jev_preparation.book_id = books.id)", $book_params);
+            $book_sql2 = Yii::$app->db->getQueryBuilder()->buildCondition("EXISTS (SELECT id FROM books WHERE books.`type` LIKE :book_type AND jev_beginning_balance.book_id = books.id)", $book_params);
 
             // EXISTS (SELECT id FROM books WHERE books.`name` IN ('Fund 01','Rapid LP') AND jev_beginning_balance.book_id = books.id)
         }
@@ -269,7 +261,7 @@ class ConsoTrialBalanceController extends Controller
             ->bindValue(':_year', $year)
             ->bindValue(':to_reporting_period', $to_reporting_period)
             ->bindValue(':from_reporting_period', $from_reporting_period)
-            ->bindValue(':book_type', $book_type)
+            ->bindValue(':book_type', $book_type.'%')
             ->queryAll();
         return $query;
     }
