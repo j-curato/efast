@@ -5,6 +5,7 @@ namespace app\models;
 use Yii;
 use DateTime;
 use ErrorException;
+use yii\db\Expression;
 use yii\helpers\ArrayHelper;
 
 /**
@@ -157,11 +158,18 @@ class PrAoq extends \yii\db\ActiveRecord
             if ($deleteItems !== true) {
                 throw new ErrorException($deleteItems);
             }
-            foreach ($items as $item) {
+            foreach ($items as $index => $item) {
                 $model = !empty($item['id']) ? PrAoqEntries::findOne($item['id']) : new PrAoqEntries();
                 $model->attributes = $item;
                 $model->pr_aoq_id = $this->id;
                 $model->is_lowest = !empty($item['is_lowest']) ? 1 : 0;
+                if ($model->is_lowest) {
+                    $i = $index + 1;
+                    $itemTotalCost = intval($this->queryItemTotalCost($model->pr_rfq_item_id));
+                    if (intval($model->amount) > $itemTotalCost) {
+                        throw new ErrorException("Item No $i Cannot be greater than " . number_format($itemTotalCost, 2));
+                    }
+                }
                 $itemModels[] = $model;
             }
             foreach ($itemModels as $model) {
@@ -177,6 +185,17 @@ class PrAoq extends \yii\db\ActiveRecord
         } catch (ErrorException $e) {
             return $e->getMessage();
         }
+    }
+    private static function queryItemTotalCost($id)
+    {
+
+        return PrRfqItem::find()
+            ->addSelect([
+                new Expression("pr_purchase_request_item.quantity * pr_purchase_request_item.unit_cost as total_cost")
+            ])
+            ->join("JOIN", "pr_purchase_request_item", "pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id")
+            ->andWhere(['pr_rfq_item.id' => $id])
+            ->scalar();
     }
     private function deleteItems($items)
     {
