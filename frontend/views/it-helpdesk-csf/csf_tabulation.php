@@ -54,6 +54,9 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="card p-3 ">
 
             <table>
+                <tr class=" table-info">
+                    <th colspan="7" class="text-center">ARTA SERVICE QUALITY DIMENSIONS SUMMARY</th>
+                </tr>
                 <tr>
                     <th>Period </th>
                     <th colspan="6"></th>
@@ -155,8 +158,8 @@ $this->params['breadcrumbs'][] = $this->title;
             </table>
             <table class="mt-3 ">
 
-                <tr>
-                    <th colspan="2">SQD (OVERALL SCORE)</th>
+                <tr class="table-info">
+                    <th colspan="2" class="text-center">SQD (OVERALL SCORE)</th>
 
                 </tr>
                 <tr>
