@@ -59,7 +59,9 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
                     <th>Period </th>
-                    <th colspan="6"></th>
+                    <th colspan="6" class="text-center">{{fromPeriod}}
+                        <span v-if="fromPeriod!=toPeriod"> to {{toPeriod}}</span>
+                    </th>
                 </tr>
                 <tr>
                     <th>No. of Raters</th>
@@ -154,9 +156,15 @@ $this->params['breadcrumbs'][] = $this->title;
                         {{computeCsfRating('outcome')}}%
                     </th>
                 </tr>
-
+                <tr>
+                <tr>
+                    <th colspan="5" class="text-center">OVERALL AVE</th>
+                    <th class="text-center">{{computeCsfScoreAve}}</th>
+                    <th class="text-center">{{computeCsfRatingAve}}</th>
+                </tr>
+                </tr>
             </table>
-            <table class="mt-3 ">
+            <!-- <table class="mt-3 ">
 
                 <tr class="table-info">
                     <th colspan="2" class="text-center">SQD (OVERALL SCORE)</th>
@@ -205,7 +213,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th>OVERALL RATING</th>
                     <th class="text-center">{{computeCsfRatingAve}}</th>
                 </tr>
-            </table>
+            </table> -->
             <p class="mt-4">
                 For period ________,
                 a total of <b> {{csf.details.number_of_raters}}</b> clients received a CSF in relation to the
@@ -238,6 +246,8 @@ $this->params['breadcrumbs'][] = $this->title;
     new Vue({
         el: "#mainVue",
         data: {
+            fromPeriod: null,
+            toPeriod: null,
             csf: {
 
                 clarity: [],
@@ -252,6 +262,8 @@ $this->params['breadcrumbs'][] = $this->title;
         methods: {
 
             apiCsfData() {
+                this.fromPeriod = this.formattedPeriod($("#from_period").val())
+                this.toPeriod = this.formattedPeriod($("#to_period").val())
                 const url = window.location.href
                 const data = {
                     from_period: $("#from_period").val(),
@@ -291,10 +303,25 @@ $this->params['breadcrumbs'][] = $this->title;
             computeCsfRating(type) {
                 return (this.computeCsfScore(type) / 4) * 100
             },
+            formattedPeriod(period) {
+                // Split the date into year and month
+                const [year, month] = period.split('-');
 
+                // Create a Date object using the year and month
+                const dateObject = new Date(`${year}-${month}-01`);
+
+                // Format the date using the toLocaleString method
+                const formattedDateString = dateObject.toLocaleString('en-US', {
+                    month: 'long',
+                    year: 'numeric',
+                });
+
+                return formattedDateString;
+            },
 
         },
         computed: {
+
             computeCsfScoreAve() {
 
                 let ave =
