@@ -46,6 +46,13 @@ class RapidReportsController extends \yii\web\Controller
                         'allow' => true,
                         'roles' => ['@']
                     ],
+                    [
+                        'actions' => [
+                            'rapid-mg-summary'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ],
                 ]
             ]
         ];
@@ -124,5 +131,13 @@ class RapidReportsController extends \yii\web\Controller
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
         ]);
+    }
+    public function actionRapidMgSummary()
+    {
+        if (Yii::$app->request->post()) {
+            $reportingPeriod = Yii::$app->request->post('reportingPeriod');
+            return json_encode(Mgrfrs::getSummaryByPeriod($reportingPeriod));
+        }
+        return $this->render('rapid_mg_summary');
     }
 }

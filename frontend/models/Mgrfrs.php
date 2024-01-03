@@ -374,4 +374,54 @@ class Mgrfrs extends \yii\db\ActiveRecord
             ->asArray()
             ->all();
     }
+    public static function getSummaryByPeriod($reportingPeriod)
+    {
+        $liquidatedFilters = [
+            [
+                'value' => $reportingPeriod,
+                'operator' => '<=',
+                'column' => 'tbl_mg_liquidations.reporting_period'
+            ]
+        ];
+        $cashDepositFilter = [
+            [
+                'value' => $reportingPeriod,
+                'operator' => '<=',
+                'column' => 'cash_deposits.reporting_period'
+            ]
+        ];
+
+        return self::find()
+            ->addSelect([
+                "provinces.province_name",
+                "municipalities.municipality_name",
+                "barangays.barangay_name",
+                "mgrfrs.organization_name",
+                "mgrfrs.purok",
+                "mgrfrs.investment_type",
+                "mgrfrs.investment_description",
+                new Expression('COALESCE(deposit.total_deposit_equity,0) - COALESCE(liquidated.total_liquidation_equity,0) as balance_equity'),
+                new Expression('COALESCE(deposit.total_deposit_grant,0) - COALESCE(liquidated.total_liquidation_grant,0) as balance_grant'),
+                new Expression('COALESCE(deposit.total_deposit_other_amount,0) - COALESCE(liquidated.total_liquidation_other_amount,0) as balance_other_amount')
+
+            ])
+            ->leftJoin(
+                ['liquidated' => static::buildLiquidationQuery($liquidatedFilters)],
+                'mgrfrs.id = liquidated.fk_mgrfr_id'
+            )
+            ->leftJoin(
+                ['deposit' => static::buildDepositQuery($cashDepositFilter)],
+                'mgrfrs.id = deposit.fk_mgrfr_id'
+            )
+            ->join("LEFT JOIN", "provinces", "mgrfrs.fk_office_id = provinces.id")
+            ->join("LEFT JOIN", "municipalities", "mgrfrs.fk_municipality_id = municipalities.id")
+            ->join("LEFT JOIN", "barangays", "mgrfrs.fk_barangay_id = barangays.id")
+            ->andWhere("
+            (COALESCE(deposit.total_deposit_equity,0) - COALESCE(liquidated.total_liquidation_equity,0)) +
+            (COALESCE(deposit.total_deposit_grant,0) - COALESCE(liquidated.total_liquidation_grant,0))+
+            (COALESCE(deposit.total_deposit_other_amount,0) - COALESCE(liquidated.total_liquidation_other_amount,0)) !=0
+            ")
+            ->asArray()
+            ->all();
+    }
 }

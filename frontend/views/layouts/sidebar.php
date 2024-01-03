@@ -328,7 +328,8 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                 Yii::$app->user->can('view_rapid_mg_liquidation') ?     ['label' => 'MG Liquidations', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/mg-liquidations/index'],] : null,
             ];
             $rapidMgReports = [
-                Yii::$app->user->can('super-user') ?     ['label' => 'MG SORD', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rapid-mg-sord/index'],] : null,
+                Yii::$app->user->can('view_rapid_mg_sord') ?     ['label' => 'MG SORD', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rapid-mg-sord/index'],] : null,
+                Yii::$app->user->can('super-user') ?     ['label' => 'Summary', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rapid-reports/rapid-mg-summary'],] : null,
                 Yii::$app->user->can('super-user') ?     ['label' => 'Database', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rapid-reports/mg-database'],] : null,
 
             ];
@@ -349,7 +350,7 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
 
             ];
             $rapidFmiReports = [
-                Yii::$app->user->can('super-user') ?     ['label' => 'FMI SORD', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rapid-fmi-sord/index'],] : null,
+                Yii::$app->user->can('view_rapid_fmi_sord') ?     ['label' => 'FMI SORD', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rapid-fmi-sord/index'],] : null,
                 Yii::$app->user->can('super-user') ?     ['label' => 'Database', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rapid-reports/fmi-database'],] : null,
             ];
 

@@ -804,7 +804,7 @@ class SupplementalPpmpController extends Controller
                     $mode_of_procurement_id = Yii::$app->db->createCommand("SELECT id FROM `pr_mode_of_procurement` WHERE pr_mode_of_procurement.mode_name = :mode_of_procurement")
                         ->bindValue(':mode_of_procurement', $mode_of_procurement)->queryScalar();
                     if (empty($mode_of_procurement_id)) {
-                        throw new ErrorException($fund_source . ' Fund Source Does not exists in line' . $key);
+                        throw new ErrorException($mode_of_procurement . 'Mode of Procurement not exists in line' . $key);
                     }
                     $fund_source_id = Yii::$app->db->createCommand("SELECT id FROM fund_source WHERE fund_source.name = :fund_source")->bindValue(':fund_source', $fund_source)->queryScalar();
                     if (empty($fund_source_id)) {
@@ -827,12 +827,12 @@ class SupplementalPpmpController extends Controller
                     $stock_id = Yii::$app->db->createCommand("SELECT id FROM pr_stock WHERE pr_stock.stock_title = :stock_name")
                         ->bindValue(':stock_name', $stock_name)->queryScalar();
                     if (empty($stock_id)) {
-                        throw new ErrorException($stock_name . ' Does not exists in line' . $key);
+                        throw new ErrorException($stock_name . ' Stock Name Does not exists in line' . $key);
                     }
                     $unit_of_measure_id = Yii::$app->db->createCommand("SELECT id FROM unit_of_measure WHERE unit_of_measure.unit_of_measure = :unit_of_measure")
                         ->bindValue(':unit_of_measure', $unit_of_measure)->queryScalar();
                     if (empty($unit_of_measure_id)) {
-                        throw new ErrorException($unit_of_measure . 'unit of measure Does not exists in line' . $key);
+                        throw new ErrorException($unit_of_measure . ' unit of measure Does not exists in line' . $key);
                     }
                     $exists_act = Yii::$app->db->createCommand("SELECT supplemental_ppmp_non_cse.id FROM supplemental_ppmp_non_cse
                     JOIN supplemental_ppmp ON supplemental_ppmp_non_cse.fk_supplemental_ppmp_id = supplemental_ppmp.id
