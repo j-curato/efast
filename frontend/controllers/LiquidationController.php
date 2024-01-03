@@ -200,10 +200,10 @@ class LiquidationController extends Controller
             // echo $this->validateReportingPeriod($reporting_period, $province, $bank_account_id);
             $curYear = date('Y');
             $rpYear = DateTime::createFromFormat('Y-m', $reporting_period)->format('Y');
-            if (intval($rpYear) < intval($curYear)) {
-                return "Year $rpYear is Locked";
-                die();
-            }
+            // if (intval($rpYear) < intval($curYear)) {
+            //     return "Year $rpYear is Locked";
+            //     die();
+            // }
             $q = $this->validateReportingPeriod($reporting_period, $province, $bank_account_id);
             // echo $q;
             if ($q !== true) {
