@@ -32,20 +32,7 @@ class PropertyController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => [
-                    'index',
-                    'view',
-                    'create',
-                    'update',
-                    'delete',
-                    'search-property',
-                    'get-property',
-                    'import',
-                    'create-blank',
-                    'property-database',
-                    'blank-sticker',
-                    'search-ssf-category',
-                ],
+
                 'rules' => [
                     [
                         'actions' => [
@@ -162,8 +149,6 @@ class PropertyController extends Controller
             $model->fk_office_id = $office_id;
         }
         if ($model->load(Yii::$app->request->post())) {
-            $model->property_number = $this->getPropertyNumber($model->fk_office_id);
-            $model->id = Yii::$app->db->createCommand('SELECT UUID_SHORT() % 9223372036854775807')->queryScalar();
             $model->ppe_year = date('Y');
             $model->article = !empty($model->fk_property_article_id) ? PropertyArticles::findOne($model->fk_property_article_id)->article_name : '';
             try {

@@ -2,7 +2,10 @@
 
 namespace app\models;
 
+use app\behaviors\GenerateIdBehavior;
+use app\behaviors\HistoryLogsBehavior;
 use Yii;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "property".
@@ -22,6 +25,13 @@ use Yii;
  */
 class Property extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            HistoryLogsBehavior::class,
+            GenerateIdBehavior::class,
+        ];
+    }
     /**
      * {@inheritdoc}
      */
@@ -37,7 +47,7 @@ class Property extends \yii\db\ActiveRecord
     {
         return [
             [[
-                'property_number',
+                // 'property_number',
                 'date',
                 'unit_of_measure_id',
                 'acquisition_amount',
@@ -159,5 +169,35 @@ class Property extends \yii\db\ActiveRecord
     public function getPropertyArticle()
     {
         return $this->hasOne(PropertyArticles::class, ['id' => 'fk_property_article_id']);
+    }
+
+
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            if ($this->isNewRecord) {
+                if (empty($this->property_number)) {
+
+                    $this->property_number = $this->generatePropertyNumber();
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+    private function generatePropertyNumber()
+    {
+
+        $lastNum = self::find()
+            ->addSelect([
+                new Expression("CAST(SUBSTRING_INDEX(property_number,'-',-1)AS UNSIGNED) as last_num")
+            ])
+            ->andWhere(['fk_office_id' => $this->fk_office_id])
+            ->andWhere('property_number LIKE :property_number', ['property_number' => $this->office->office_name . '-PPE%'])
+            ->orderBy("last_num DESC")
+            ->limit(1)
+            ->scalar();
+        $num = !empty($lastNum) ? $lastNum + 1 : 1;
+        return $this->office->office_name . '-PPE-' . str_pad($num, 4, '0', STR_PAD_LEFT);
     }
 }
