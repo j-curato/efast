@@ -3,15 +3,16 @@
 namespace frontend\controllers;
 
 use Yii;
+use DateTime;
 use app\models\Rci;
+use ErrorException;
+use yii\base\Security;
+use yii\web\Controller;
 use app\models\RciItems;
 use app\models\RciSearch;
-use DateTime;
-use ErrorException;
-use yii\filters\AccessControl;
-use yii\web\Controller;
-use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
+use yii\web\NotFoundHttpException;
 
 /**
  * RciController implements the CRUD actions for Rci model.
@@ -67,6 +68,7 @@ class RciController extends Controller
             ],
         ];
     }
+
     private function getItemsPerCheck($id)
     {
         return Yii::$app->db->createCommand("WITH 
@@ -179,27 +181,7 @@ AND rci_items.is_deleted  =0
             return $e->getMessage();
         }
     }
-    private function getSerialNum($period)
-    {
-        $yr = DateTime::createFromFormat('Y-m', $period)->format('Y');
-        $qry  = Yii::$app->db->createCommand("SELECT 
-            CAST(SUBSTRING_INDEX(rci.serial_number,'-',-1)AS UNSIGNED) +1 as ser_num
-            FROM rci  
-            WHERE 
-            rci.serial_number LIKE :yr
-            ORDER BY ser_num DESC LIMIT 1")
-            ->bindValue(':yr', $yr . '%')
-            ->queryScalar();
-        if (empty($qry)) {
-            $qry = 1;
-        }
-        $num = '';
-        if (strlen($qry) < 5) {
-            $num .= str_repeat(0, 5 - strlen($qry));
-        }
-        $num .= $qry;
-        return $period . '-' . $num;
-    }
+
     /**
      * Lists all Rci models.
      * @return mixed
@@ -240,13 +222,11 @@ AND rci_items.is_deleted  =0
         $model = new Rci();
 
         if ($model->load(Yii::$app->request->post())) {
-
+     
             try {
                 $txn = Yii::$app->db->beginTransaction();
                 $items = Yii::$app->request->post('items') ?? [];
                 $uniqItems = array_map("unserialize", array_unique(array_map("serialize", $items)));
-                $model->id = Yii::$app->db->createCommand('SELECT UUID_SHORT()')->queryScalar();
-                $model->serial_number = $this->getSerialNum($model->reporting_period);
                 if (empty($items)) {
                     throw new ErrorException('Items Cannot be Empty');
                 }
@@ -267,6 +247,7 @@ AND rci_items.is_deleted  =0
                 return json_encode($e->getMessage());
             }
         }
+
 
         return $this->render('create', [
             'model' => $model,

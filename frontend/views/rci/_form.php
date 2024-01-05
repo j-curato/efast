@@ -1,17 +1,19 @@
 <?php
 
 use app\models\Books;
-use app\models\VwDvsInBank;
-use app\models\VwDvsInBankSearch;
-use app\models\VwGdNoRciChecks;
-use app\models\VwGdNoRciChecksSearch;
-use kartik\date\DatePicker;
-use kartik\grid\GridView;
+use yii\helpers\Html;
 use kartik\icons\Icon;
+use yii\base\Security;
+use kartik\grid\GridView;
+use app\models\VwDvsInBank;
+use kartik\date\DatePicker;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
 use yii\bootstrap4\ActiveForm;
+use app\models\VwGdNoRciChecks;
+use app\models\VwDvsInBankSearch;
+use app\models\VwGdNoRciChecksSearch;
+use aryelds\sweetalert\SweetAlertAsset;
 
 
 /* @var $this yii\web\View */
@@ -19,11 +21,17 @@ use yii\bootstrap4\ActiveForm;
 /* @var $form yii\widgets\ActiveForm */
 
 $itmRow = 0;
+
+
+
 ?>
 
 <div class="rci-form card">
 
-    <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin([
+        'id' => $model->formName()
+    ]); ?>
+
 
     <ul class="notes">
         <li>Notes:</li>
@@ -107,7 +115,7 @@ $itmRow = 0;
     <div class="row justify-content-center">
 
         <div class="form-group col-sm-2">
-            <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success submit-button', 'style' => 'width:100%']) ?>
         </div>
     </div>
 
@@ -172,7 +180,7 @@ $itmRow = 0;
         ],
         'pjax' => true,
         'columns' => $cols,
-        'export'=>false
+        'export' => false
     ]); ?>
 
 
@@ -232,3 +240,33 @@ $itmRow = 0;
 
     })
 </script>
+<?php
+SweetAlertAsset::register($this);
+$js = <<< JS
+$("#Rci").on("beforeSubmit", function (event) {
+    event.preventDefault();
+    var form = $(this);
+    $.ajax({
+        url: form.attr("action"),
+        type: form.attr("method"),
+        data: form.serialize(),
+        success: function (data) {
+
+            swal({
+                icon: 'error',
+                title: data,
+                type: "error",
+                timer: 3000,
+                closeOnConfirm: false,
+                closeOnCancel: false
+            })
+        },
+        error: function (data) {
+     
+        }
+    });
+    return false;
+});
+JS;
+$this->registerJs($js);
+?>
