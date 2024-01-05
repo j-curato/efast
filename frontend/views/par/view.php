@@ -379,7 +379,7 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
                     <tr>
                         <td class='foot no-border center' colspan="3">
                             <span style="text-decoration:underline">
-                                <b class="text-capitalize"><?= strtolower($received_by['employee_name']) ?></b>
+                                <b class="text-uppercase"><?= strtolower($received_by['employee_name']) ?></b>
                             </span>
                             <br>
 
@@ -387,7 +387,7 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
                         </td>
                         <td class='foot no-border center' colspan="3">
                             <span style="text-decoration:underline">
-                                <b class="text-capitalize">
+                                <b class="text-uppercase">
                                     <?= strtolower($issued_by['employee_name']) ?>
                                 </b>
 
@@ -401,7 +401,7 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
                     </tr>
                     <tr>
                         <td class='foot no-border center' colspan="3">
-                            <span style="text-decoration: underline;">
+                            <span style="text-decoration: underline;" >
                                 <?= $received_by['position'] ?>
                             </span>
                             <br>
@@ -438,7 +438,7 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
                         <tr>
                             <td class='foot no-border' colspan='3' style='text-align:center;padding-top:5rem;border-bottom: 1px solid black;'>
                                 <span style='text-decoration:underline'>
-                                    <b> <span><?= $actual_user['employee_name'] ?></span></b>
+                                    <b> <span class="text-uppercase"><?= $actual_user['employee_name'] ?></span></b>
                                 </span>
                                 <br>
                                 <span> Signatue over Printed Name of Actual User</span>
