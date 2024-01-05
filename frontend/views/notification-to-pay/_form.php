@@ -1,7 +1,8 @@
 <?php
 
-use app\models\Office;
+use yii\helpers\Url;
 use yii\helpers\Html;
+use app\models\Office;
 use yii\web\JsExpression;
 use kartik\date\DatePicker;
 use kartik\money\MaskMoney;
@@ -75,7 +76,7 @@ $col = 8;
                         'ajax' => [
 
                             'type' => 'GET',
-                            'url' => Yii::$app->request->baseUrl . '?r=due-diligence-reports/search-due-diligence-report',
+                            'url' => Url::to(['due-diligence-reports/search-due-diligence-report']),
                             'dataType' => 'json',
                             'delay' => 250,
                             'data' => new JsExpression('function(params) { return {text:params.term,page:params.page}; }'),
@@ -102,7 +103,7 @@ $col = 8;
                             'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
                         ],
                         'ajax' => [
-                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                            'url' => Url::to(['employee/search-employee']),
                             'dataType' => 'json',
                             'delay' => 250,
                             'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
@@ -127,7 +128,7 @@ $col = 8;
                             'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
                         ],
                         'ajax' => [
-                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                            'url' => Url::to(['employee/search-employee']),
                             'dataType' => 'json',
                             'delay' => 250,
                             'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),

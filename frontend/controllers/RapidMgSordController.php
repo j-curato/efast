@@ -34,7 +34,7 @@ class RapidMgSordController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['view_rapid_mg_sord']
                     ],
                     [
                         'actions' => [
@@ -43,7 +43,7 @@ class RapidMgSordController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['update_rapid_mg_sord']
                     ],
                     [
                         'actions' => [
@@ -51,15 +51,14 @@ class RapidMgSordController extends Controller
 
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['create_rapid_mg_sord']
                     ],
                     [
                         'actions' => [
                             'generate',
-
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['create_rapid_mg_sord', 'update_rapid_mg_sord']
                     ],
                 ]
             ],

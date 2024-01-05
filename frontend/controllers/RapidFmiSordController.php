@@ -32,21 +32,21 @@ class RapidFmiSordController extends Controller
                             'index',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['view_rapid_fmi_sord']
                     ],
                     [
                         'actions' => [
                             'update',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['update_rapid_fmi_sord']
                     ],
                     [
                         'actions' => [
                             'create',
                         ],
                         'allow' => true,
-                        'roles' => ['@']
+                        'roles' => ['create_rapid_fmi_sord']
                     ],
                     [
                         'actions' => [
@@ -68,7 +68,7 @@ class RapidFmiSordController extends Controller
 
     /**
      * Lists all RapidFmiSord models.
-     * @return mixed
+     * rapid_fmi_sordreturn mixed
      */
     public function actionIndex()
     {
@@ -190,6 +190,7 @@ class RapidFmiSordController extends Controller
         if (Yii::$app->request->post()) {
             $id = Yii::$app->request->post('id');
             $reportingPeriod = Yii::$app->request->post('reporting_period');
+            $model = FmiSubprojects::findOne($id);
             return $this->getSord($id, $reportingPeriod);
         }
     }

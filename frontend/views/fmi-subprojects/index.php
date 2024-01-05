@@ -17,7 +17,6 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Yii::$app->user->can('create_fmi_subprojects') ? Html::a('<i class="fa fa-plus"></i> Create ', ['create'], ['class' => 'btn btn-success']) : '' ?>
     </p>
 
-
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
@@ -31,19 +30,33 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'fk_office_id',
                 'value' => 'office.office_name'
             ],
-            'fk_province_id',
-            'fk_municipality_id',
-            'fk_barangay_id',
+            'serial_number',
+            'project_name',
+            [
+                'attribute' => 'fk_province_id',
+                'value' => 'province.province_name',
+            ],
+            [
+                'attribute' => 'fk_municipality_id',
+                'value' => 'municipality.municipality_name',
+            ],
+            [
+                'attribute' => 'fk_barangay_id',
+                'value' => 'barangay.barangay_name',
+            ],
             'purok:ntext',
-            //'fk_fmi_batch_id',
-            //'project_duration',
-            //'project_road_length',
-            //'project_start_date',
-            //'grant_amount',
-            //'equity_amount',
-            //'bank_account_name',
-            //'bank_account_number',
-            //'created_at',
+            'project_duration',
+            'project_road_length',
+            'project_start_date',
+            [
+                'attribute' => 'grant_amount',
+                'format' => ['decimal', 2]
+            ],
+            [
+                'attribute' => 'equity_amount',
+                'format' => ['decimal', 2]
+            ],
+
             [
                 'label' => 'Actions',
                 'format' => 'raw',

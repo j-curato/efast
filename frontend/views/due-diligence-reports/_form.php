@@ -1,12 +1,13 @@
 <?php
 
-use app\models\Office;
-use aryelds\sweetalert\SweetAlertAsset;
+use yii\helpers\Url;
 use yii\helpers\Html;
+use app\models\Office;
 use yii\web\JsExpression;
 use kartik\widgets\Select2;
 use yii\helpers\ArrayHelper;
 use yii\bootstrap4\ActiveForm;
+use aryelds\sweetalert\SweetAlertAsset;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\DueDiligenceReports */
@@ -63,7 +64,7 @@ $items  = $model->getItemsA();
                                 'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
                             ],
                             'ajax' => [
-                                'url' => Yii::$app->request->baseUrl . '?r=mgrfrs/search-mgrfr',
+                                'url' => Url::to(['mgrfrs/search-mgrfr']),
                                 'dataType' => 'json',
                                 'delay' => 250,
                                 'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
@@ -82,7 +83,7 @@ $items  = $model->getItemsA();
 
                 <div class="col-sm-4"> <?= $form->field($model, 'supplier_contact_number')->textInput() ?></div>
                 <div class="col-sm-4"> <?= $form->field($model, 'supplier_contact_person')->textInput() ?></div>
-                <div class="col-sm-4"> <?= $form->field($model, 'supplier_address')->textarea(['rows'=>1]) ?></div>
+                <div class="col-sm-4"> <?= $form->field($model, 'supplier_address')->textarea(['rows' => 1]) ?></div>
                 <div class="col-sm-6">
                     <?= $form->field($model, 'fk_conducted_by')->widget(Select2::class, [
                         'data' => ArrayHelper::map($conductedBy, 'employee_id', 'fullName'),
@@ -94,7 +95,7 @@ $items  = $model->getItemsA();
                                 'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
                             ],
                             'ajax' => [
-                                'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                                'url' => Url::to(['employee/search-employee']),
                                 'dataType' => 'json',
                                 'delay' => 250,
                                 'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
@@ -119,7 +120,7 @@ $items  = $model->getItemsA();
                                 'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
                             ],
                             'ajax' => [
-                                'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                                'url' => Url::to(['employee/search-employee']),
                                 'dataType' => 'json',
                                 'delay' => 250,
                                 'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),

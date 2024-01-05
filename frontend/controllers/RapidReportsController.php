@@ -53,6 +53,13 @@ class RapidReportsController extends \yii\web\Controller
                         'allow' => true,
                         'roles' => ['@']
                     ],
+                    [
+                        'actions' => [
+                            'rapid-fmi-summary'
+                        ],
+                        'allow' => true,
+                        'roles' => ['@']
+                    ],
                 ]
             ]
         ];
@@ -106,7 +113,7 @@ class RapidReportsController extends \yii\web\Controller
             $id = Yii::$app->request->post('id');
             $reportingPeriod = Yii::$app->request->post('reporting_period');
             $model = FmiSubprojects::findOne($id);
-            // return      $model->getGrantByPeriod($reportingPeriod);
+
             return json_encode(
                 [
                     'beginningBalance' => $model->getBeginningBalance($reportingPeriod),
@@ -139,5 +146,13 @@ class RapidReportsController extends \yii\web\Controller
             return json_encode(Mgrfrs::getSummaryByPeriod($reportingPeriod));
         }
         return $this->render('rapid_mg_summary');
+    }
+    public function actionRapidFmiSummary()
+    {
+        if (Yii::$app->request->post()) {
+            $reportingPeriod = Yii::$app->request->post('reportingPeriod');
+            return json_encode(FmiSubprojects::getSummary($reportingPeriod));
+        }
+        return $this->render('rapid_fmi_summary');
     }
 }

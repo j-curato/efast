@@ -2,7 +2,8 @@
 
 use kartik\date\DatePicker;
 
-$this->title = "MG Summary";
+
+$this->title = "FMi Summary";
 ?>
 
 <div class="rapid-mg-sord-form" id="mainVue">
@@ -29,21 +30,11 @@ $this->title = "MG Summary";
         </form>
     </div>
     <div class="card p-3 mt-3">
-        <!-- province_name
-        municipality_name
-        barangay_name
-        organization_name
-        purok
-        investment_type
-        investment_description
-        balance_equity
-        balance_grant
-        balance_other_amount -->
         <table>
             <thead>
                 <tr>
-                    <th>Investment Type</th>
-                    <th>Investment Description</th>
+                    <th>Project Name</th>
+
                     <th>Province</th>
                     <th>Municipality/City</th>
                     <th>Barangay</th>
@@ -56,8 +47,7 @@ $this->title = "MG Summary";
             </thead>
             <tbody>
                 <tr v-for="item in items">
-                    <th>{{item.investment_type}}</th>
-                    <th>{{item.investment_description}}</th>
+                    <th>{{item.project_name}}</th>
                     <th>{{item.province_name}}</th>
                     <th>{{item.municipality_name}}</th>
                     <th>{{item.barangay_name}}</th>
@@ -68,6 +58,9 @@ $this->title = "MG Summary";
                     <th>{{formatAmount(parseFloat(item.balance_grant)
                     + parseFloat(item.balance_equity)
                     + parseFloat(item.balance_other_amount))}}</th>
+
+
+
                 </tr>
             </tbody>
         </table>
@@ -90,26 +83,7 @@ $this->title = "MG Summary";
 </style>
 
 <script>
-    function findFirstRepeated(gifts) {
-        const seen = new Set();
-        for (const element of gifts) {
-
-            if (seen.has(element)) {
-                return element;
-            } else {
-                seen.add(element);
-            }
-        }
-
-        // If no repeated elements are found
-        return null;
-    }
-
     $(document).ready(function() {
-        const giftIds = [2, 1, 3, 5, 3, 2]
-        const firstRepeatedId = findFirstRepeated(giftIds)
-        console.log(firstRepeatedId)
-
         new Vue({
             el: '#mainVue',
             data: {
@@ -121,8 +95,6 @@ $this->title = "MG Summary";
             },
             methods: {
                 apiMgSummary() {
-                    let q = "123"
-                    console.log(typeof + q)
                     const url = window.location.href
                     const data = {
                         _csrf: "<?= Yii::$app->request->getCsrfToken() ?>",

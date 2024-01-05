@@ -26,7 +26,7 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
     <!-- Brand Logo -->
     <a href="index.php" class="brand-link">
         <img src="<?= $assetDir ?>/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-        <span class="brand-text font-weight-light">eFAST</span>
+        <span class="brand-text font-weight-light">EFASt</span>
     </a>
 
     <!-- Sidebar -->
@@ -86,7 +86,7 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
                 Yii::$app->user->can('view_routing_slip') ? ['label' => 'Routing Slip', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/dv-aucs/routing-slip-index'],] : null,
                 Yii::$app->user->can('view_dv_aucs') ? ['label' => 'Process Dv', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/dv-aucs/index'],] : null,
                 Yii::$app->user->can('ro_jev') ?  ['label' => 'Jev', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/jev-preparation/index'],] : null,
-                Yii::$app->user->can('ro_turn_arround_time') ? ['label' => 'Turn Arround Time', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/dv-aucs/turnarround-time'],] : null,
+                Yii::$app->user->can('ro_turn_arround_time') ? ['label' => 'Turn Around Time', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/dv-aucs/turnarround-time'],] : null,
                 Yii::$app->user->can('ro_transmittal') ? ['label' => 'Transmittal', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/transmittal/index'],] : null,
                 Yii::$app->user->can('super-user') ? ['label' => 'Document Tracking', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/document-tracker/index'],] : null,
                 Yii::$app->user->can('ro_jev_beginning_balance') ? ['label' => 'JEV Beginning Balance', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/jev-beginning-balance/index'],] : null,
@@ -351,6 +351,7 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
             ];
             $rapidFmiReports = [
                 Yii::$app->user->can('view_rapid_fmi_sord') ?     ['label' => 'FMI SORD', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rapid-fmi-sord/index'],] : null,
+                Yii::$app->user->can('super-user') ?     ['label' => 'Summary', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rapid-reports/rapid-fmi-summary'],] : null,
                 Yii::$app->user->can('super-user') ?     ['label' => 'Database', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/rapid-reports/fmi-database'],] : null,
             ];
 
