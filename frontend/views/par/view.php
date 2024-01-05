@@ -379,7 +379,7 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
                     <tr>
                         <td class='foot no-border center' colspan="3">
                             <span style="text-decoration:underline">
-                                <b><?= $received_by['employee_name'] ?></b>
+                                <b class="text-capitalize"><?= strtolower($received_by['employee_name']) ?></b>
                             </span>
                             <br>
 
@@ -387,9 +387,8 @@ $unit_of_measure = !empty($model->property->unitOfMeasure->unit_of_measure) ? $m
                         </td>
                         <td class='foot no-border center' colspan="3">
                             <span style="text-decoration:underline">
-                                <b><?php
-                                    echo $issued_by['employee_name'];
-                                    ?>
+                                <b class="text-capitalize">
+                                    <?= strtolower($issued_by['employee_name']) ?>
                                 </b>
 
                             </span>
