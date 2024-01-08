@@ -51,6 +51,12 @@ class ProcessOrsIndexSearch extends ProcessOrsIndex
         $query->where('type = :type', ['type' => $type]);
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => [
+                'defaultOrder' => [
+                    'reporting_period' => SORT_DESC, // Set the default sorting for attribute1 to descending
+                ],
+            ],
+
         ]);
 
 
