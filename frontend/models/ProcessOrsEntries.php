@@ -31,7 +31,7 @@ class ProcessOrsEntries extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['chart_of_account_id', 'process_ors_id', 'amount'], 'required'],
+            [['chart_of_account_id', 'process_ors_id', 'amount','reporting_period'], 'required'],
             [['chart_of_account_id', 'process_ors_id'], 'integer'],
             [['amount'], 'number'],
 

@@ -423,7 +423,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depend
         }
 
         let row = `<tr>
-            <td><input type='month' name='orsItems[${orsRowNum}][reporting_period]' ${isDisable} class='reporting_period'></td>
+            <td><input type='month' name='orsItems[${orsRowNum}][reporting_period]' ${isDisable} class='reporting_period' required></td>
             <td style='display:none'>
                 <input type='text' name='orsItems[${orsRowNum}][allotment_id]' value='${allotment_id}'>
                 <span class='allotment_id'>${allotment_id}</span>
