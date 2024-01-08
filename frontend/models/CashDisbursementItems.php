@@ -63,7 +63,7 @@ class CashDisbursementItems extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getFkCashDisbursement()
+    public function getCashDisbursement()
     {
         return $this->hasOne(CashDisbursement::class, ['id' => 'fk_cash_disbursement_id']);
     }
@@ -73,7 +73,7 @@ class CashDisbursementItems extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getFkChartOfAccount()
+    public function getChartOfAccount()
     {
         return $this->hasOne(ChartOfAccounts::class, ['id' => 'fk_chart_of_account_id']);
     }
@@ -83,7 +83,7 @@ class CashDisbursementItems extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getFkDvAucs()
+    public function getDvAucs()
     {
         return $this->hasOne(DvAucs::class, ['id' => 'fk_dv_aucs_id']);
     }

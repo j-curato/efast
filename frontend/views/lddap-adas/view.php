@@ -217,16 +217,16 @@ $accounting_head = !empty($model->fk_accounting_head) ?  $accounting_head =  $em
 
                     <th colspan="8" style="border-top: 0;">
                         <br>
-                        <div class='blnk-sgnatory'>
+                        <div class='blank-signatory'>
                             <span>Signature verified by</span>
                         </div>
-                        <div class='blnk-sgnatory'>
+                        <div class='blank-signatory'>
                             <span>Posted by</span>
                         </div>
-                        <div class='blnk-sgnatory'>
+                        <div class='blank-signatory'>
                             <span>Checked by</span>
                         </div>
-                        <div class='blnk-sgnatory'>
+                        <div class='blank-signatory'>
                             <span>Approved by</span>
                         </div>
                     </th>
@@ -255,7 +255,7 @@ $accounting_head = !empty($model->fk_accounting_head) ?  $accounting_head =  $em
                 <tr>
                     <td colspan="4" class="no-bdr" style="padding: 0;"></td>
                     <td colspan="2" class="no-bdr" style="padding: 0;"> <span>ACIC #</span><br></td>
-                    <td colspan="2" class="no-bdr" style="padding: 0;">:<?= $acic_no ?? '' ?></td>
+                    <td colspan="2" class="no-bdr" style="padding: 0;">:<?= $model->cashDisbursement->getAcicNum() ?? '' ?></td>
                 </tr>
             </tbody>
         </table>
@@ -292,7 +292,7 @@ $accounting_head = !empty($model->fk_accounting_head) ?  $accounting_head =  $em
         margin-top: 3rem;
     }
 
-    .blnk-sgnatory {
+    .blank-signatory {
         width: 25%;
         float: left;
         text-align: center;

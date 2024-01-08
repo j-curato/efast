@@ -4,6 +4,7 @@ namespace app\models;
 
 
 use Yii;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "cash_disbursement".
@@ -136,6 +137,87 @@ class CashDisbursement extends \yii\db\ActiveRecord
     }
     public function getAcicItem()
     {
-        return $this->hasMany(AcicsCashItems::class, ['fk_cash_disbursement_id' => 'id']);
+        return $this->hasOne(AcicsCashItems::class, ['fk_cash_disbursement_id' => 'id'])
+            ->andWhere(['is_deleted' => false]);
+    }
+    public function getCashDisbursementItems()
+    {
+        return $this->hasMany(CashDisbursementItems::class, ['fk_cash_disbursement_id' => 'id'])
+            ->andWhere(['is_deleted' => false]);
+    }
+
+    public static function searchCheckNumber($text = null, $page = 1,  $id = null)
+    {
+        $limit = 5;
+        $offset = ($page - 1) * $limit;
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        $out = ['results' => ['id' => '', 'text' => '']];
+        if ($id > 0) {
+            $out['results'] = ['id' => $id, 'text' => self::findOne($id)->serial_number];
+        } else if (!is_null($text)) {
+            $query = self::find()
+                ->addSelect([
+                    new Expression("CAST(id AS CHAR(50)) as id"),
+                    new Expression("check_or_ada_no as text"),
+                ])
+                ->where(['like', 'cash_disbursement.check_or_ada_no', $text])
+                ->offset($offset)
+                ->limit($limit);
+            $data =  $query->asArray()->all();
+            $out['results'] = array_values($data);
+            $out['pagination'] = ['more' => !empty($data) ? true : false];
+        }
+        return $out;
+    }
+    public function getDetails()
+    {
+
+        return self::find()
+            ->addSelect([
+                new Expression(" cash_disbursement.check_or_ada_no as check_number"),
+                "cash_disbursement.issuance_date",
+                new Expression("books.`name` as book_name")
+            ])
+            ->joinWith('book')
+            ->andWhere(['cash_disbursement.id' => $this->id])
+            ->asArray()
+            ->one();
+    }
+    public function getItems()
+    {
+        $subQryDvEntries = DvAucsEntries::find()
+            ->addSelect([
+                "dv_aucs_entries.dv_aucs_id",
+                new Expression("SUM(dv_aucs_entries.amount_disbursed)  as total_disbursed")
+            ])
+            ->andWhere(['is_deleted' => false])
+            ->groupBy(" dv_aucs_entries.dv_aucs_id");
+
+        return CashDisbursementItems::find()
+            ->addSelect([
+                "dv_aucs.dv_number",
+                new Expression("payee.registered_name as payee_name"),
+                "dv_aucs.particular",
+                "dv_entries.total_disbursed"
+            ])
+            ->andWhere(['fk_cash_disbursement_id' => $this->id])
+            ->join("LEFT JOIN", "dv_aucs", "cash_disbursement_items.fk_dv_aucs_id = dv_aucs.id")
+            ->join("LEFT JOIN", "payee", "dv_aucs.payee_id = payee.id")
+            ->leftJoin(
+                ['dv_entries' => $subQryDvEntries],
+                'dv_aucs.id = dv_entries.dv_aucs_id'
+            )
+            ->asArray()
+            ->all();
+    }
+    public function getAcicNum()
+    {
+        return self::find()
+            ->addSelect(["acics.serial_number"])
+            ->join("JOIN", "acics_cash_items", "cash_disbursement.id = acics_cash_items.fk_cash_disbursement_id")
+            ->join("JOIN", "acics", "acics_cash_items.fk_acic_id = acics.id")
+            ->andWhere(["acics_cash_items.is_deleted" => false])
+            ->andWhere(["cash_disbursement.id" => $this->id])
+            ->scalar();
     }
 }
