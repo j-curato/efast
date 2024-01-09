@@ -171,8 +171,13 @@ class PoTransactionController extends Controller
                 return $e->getMessage();
             }
         }
+        $requestedBy = [];
+        if (!empty($model->fk_requested_by)) {
+            $requestedBy[] =  $model->requestedBy->getEmployeeDetails();
+        }
         return $this->renderAjax('update', [
             'model' => $model,
+            'requestedBy' => $requestedBy,
         ]);
     }
 
