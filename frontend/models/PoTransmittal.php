@@ -27,13 +27,22 @@ class PoTransmittal extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['transmittal_number', 'date', 'fk_office_id'], 'required'],
+            [[
+                'transmittal_number',
+                'date',
+                'fk_office_id',
+                'fk_approved_by'
+            ], 'required'],
             [['date', 'created_at'], 'safe'],
-            [['fk_office_id', 'is_accepted'], 'integer'],
+            [[
+                'fk_office_id',
+                'is_accepted',
+                'fk_approved_by',
+                'fk_officer_in_charge'
+            ], 'integer'],
             [['transmittal_number', 'status'], 'string', 'max' => 255],
             [['transmittal_number'], 'unique'],
             [[
-
                 'transmittal_number',
                 'date',
 
@@ -53,6 +62,8 @@ class PoTransmittal extends \yii\db\ActiveRecord
             'status' => 'Status',
             'fk_office_id' => 'Office',
             'is_accepted' => 'is Accepted',
+            'fk_approved_by' => 'Approved By',
+            'fk_officer_in_charge' => 'Officer In-Charge',
         ];
     }
     public function getPoTransmittalEntries()
@@ -62,5 +73,13 @@ class PoTransmittal extends \yii\db\ActiveRecord
     public function getPoTransmittalToCoa()
     {
         return $this->hasOne(PoTransmittalToCoaEntries::class, ['fk_po_transmittal_id' => 'id']);
+    }
+    public function getApprovedBy()
+    {
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_approved_by']);
+    }
+    public function getOfficerInCharge()
+    {
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_officer_in_charge']);
     }
 }

@@ -14,6 +14,9 @@ $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 $user_data = User::getUserDetails();
 // $query->where('province = :province', ['province' => $user_data->employee->office->office_name]);
+$approvedBy  = !empty($model->fk_approved_by) ? $model->approvedBy->getEmployeeDetails() : [];
+$officerInCharge  = !empty($model->fk_officer_in_charge) ? $model->officerInCharge->getEmployeeDetails() : [];
+
 ?>
 <div class="po-transmittal-view">
 
@@ -69,7 +72,10 @@ $user_data = User::getUserDetails();
         </div>
 
         <div class="row" style="float:right">
-            <?= Html::img(Yii::$app->request->baseUrl . '/frontend/web/dti3.png', ['alt' => 'some', 'class' => 'pull-left img-responsive', 'style' => 'width: 100px;height:100px;margin-left:auto']); ?>
+            <?= Html::img(Yii::$app->request->baseUrl . '/frontend/web/images/dti_header.png', [
+                'alt' => 'some', 'class' => 'pull-left img-responsive float-right',
+                'style' => 'width: 14em;margin-left:auto'
+            ]); ?>
         </div>
 
         <table id="header" style="border:none">
@@ -231,55 +237,48 @@ $user_data = User::getUserDetails();
                 <tr>
 
                     <td colspan="6" style="font-weight: bold;text-align:center"> Total</td>
-                    <td style='text-align:right'> <?php echo number_format($total, 2); ?></td>
+                    <td class="text-right"> <?php echo number_format($total, 2); ?></td>
+
                 </tr>
+                <tr>
+                    <td colspan="8" class="border-bottom-0 border-right-0 border-left-0">
+                        <br>
+                        Thank you.
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8" class="border-0 pt-0">
+                        <p class="mt-4">Very truly yours,</p>
+                        <br>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8" class="border-0">
+                        <u class="font-weight-bold"><?= !empty($approvedBy['fullName']) ? strtoupper($approvedBy['fullName']) : '' ?></u>
+                        <span>
+                            <p><?= !empty($approvedBy['position']) ? $approvedBy['position'] : '' ?></p>
+                        </span>
+                    </td>
+                </tr>
+
+                <?php if (!empty($model->fk_officer_in_charge)) : ?>
+                    <tr>
+                        <td colspan="8" class="border-0">
+                            <br>
+                            <p> For the Regional Director</p>
+                            <br>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="8" class="border-0">
+                            <u class="font-weight-bold"><?= !empty($officerInCharge['fullName']) ? strtoupper($officerInCharge['fullName']) : '' ?></u>
+                            <br> <span><?= !empty($officerInCharge['position']) ? $officerInCharge['position'] : '' ?></span>
+                        </td>
+                    </tr>
+                <?php endif; ?>
             </tbody>
         </table>
-        <div class="row head" style="margin-top:1rem;">Thank you.</div>
-        <!-- <div class="row head" style="margin-top:4rem">Very truly yours,</div> -->
-        <div class="row head" style="margin-top:2rem">
 
-        </div>
-        <div class="row" style="margin-top:2rem">
-            <div class="head" id="for_rd"></div>
-        </div>
-        <div class="" style="margin-top: 2rem;">
-            <div class="head" id='ass' style="font-weight: bold;"></div>
-            <div class="head" id='position' style="font-size:12px"></div>
-        </div>
-        <div class="row" style="margin-top: 20px;">
-
-            <div class="col-sm-3 as">
-                <label for="assignatory_1">Provincial Director </label>
-                <select name="" id="assignatory_1" class="asignatory" onchange="regionalDirector(this)" style="width: 100%;">
-                    <option value=""></option>
-                </select>
-            </div>
-            <div class="col-sm-4 as">
-                <label for="qwe">OIC</label>
-                <select id="assignatory" onchange="sample(this)" name="" class=" asignatory" style="width: 100%">
-                    <option></option>
-                </select>
-                <?php
-                // echo Select2::widget([
-                //     'data' => ArrayHelper::map(Assignatory::find()->asArray()->all(), 'name', 'name'),
-                //     'name' => 'ass',
-                //     'options' => ['id' => 'assignatory', 'onChange' => 'sample(this)'],
-                //     'pluginOptions' => [
-                //         'placeholder' => 'select',
-                //         'allowClear' => true,
-
-                //     ],
-                // ])
-                ?>
-            </div>
-            <!-- <div class="col-sm-3 as">
-                <label for="oic">Provincial Director </label>
-                <select name="" id="oic_rd" onchange="oicRd(this)" style="width: 100%;">
-                    <option value=""></option>
-                </select>
-            </div> -->
-        </div>
     </div>
 </div>
 <style>
@@ -306,7 +305,6 @@ $user_data = User::getUserDetails();
         padding: 50px;
     }
 
-    table,
     td,
     th {
         background-color: white;
@@ -428,7 +426,7 @@ $user_data = User::getUserDetails();
     }
 </style>
 <?php
- 
+
 Select2Asset::register($this);
 ?>
 
