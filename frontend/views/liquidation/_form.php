@@ -1,18 +1,20 @@
 <?php
 
-use app\models\AdvancesEntriesForLiquidationSearch;
-use app\models\AdvancesEntriesSearch;
+use yii\helpers\Url;
 use app\models\Payee;
-use app\models\PoTransaction;
-use aryelds\sweetalert\SweetAlertAsset;
+use yii\helpers\Html;
+use yii\widgets\Pjax;
+use kartik\grid\GridView;
+use yii\web\JsExpression;
 use kartik\date\DatePicker;
 use kartik\form\ActiveForm;
-use kartik\grid\GridView;
 use kartik\money\MaskMoney;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
-use yii\widgets\Pjax;
+use app\models\PoTransaction;
+use app\models\AdvancesEntriesSearch;
+use aryelds\sweetalert\SweetAlertAsset;
+use app\models\AdvancesEntriesForLiquidationSearch;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\Liquidation */
@@ -146,6 +148,57 @@ use yii\widgets\Pjax;
 
 
 
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <?= Select2::widget([
+                        'name' => 'fk_certified_by',
+                        // 'data' => ArrayHelper::map($requested_by, 'employee_id', 'employee_name'),
+                        'options' => ['placeholder' => 'Search for a Employee ...'],
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                            'minimumInputLength' => 1,
+                            'language' => [
+                                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                            ],
+                            'ajax' => [
+                                'url' => Url::to(['employee/search-employee']),
+                                'dataType' => 'json',
+                                'delay' => 250,
+                                'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
+                                'cache' => true
+                            ],
+                            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                        ],
+
+                    ]) ?>
+                </div>
+                <div class="col-sm-6">
+                    <?= Select2::widget([
+                        'name' => 'fk_approved_by',
+                        // 'data' => ArrayHelper::map($approved_by, 'employee_id', 'employee_name'),
+                        'options' => ['placeholder' => 'Search for a Employee ...'],
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                            'minimumInputLength' => 1,
+                            'language' => [
+                                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                            ],
+                            'ajax' => [
+                                'url' => Url::to(['employee/search-employee']),
+                                'dataType' => 'json',
+                                'delay' => 250,
+                                'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
+                                'cache' => true
+                            ],
+                            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                        ],
+                    ]) ?>
+                </div>
             </div>
             <div class="row">
 

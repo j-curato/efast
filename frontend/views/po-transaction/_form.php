@@ -1,11 +1,12 @@
 <?php
 
+use yii\helpers\Url;
 use yii\helpers\Html;
 use common\models\User;
 use yii\web\JsExpression;
 use kartik\date\DatePicker;
-use kartik\money\MaskMoney;
 
+use kartik\money\MaskMoney;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
 use yii\bootstrap4\ActiveForm;
@@ -88,6 +89,27 @@ $iarItems = $model->getIarItemsA();
 
     <?= $form->field($model, 'payee')->textInput() ?>
     <?= $form->field($model, 'particular')->textarea(['rows' => 4]) ?>
+    <?= $form->field($model, 'fk_requested_by')->widget(Select2::class, [
+        'data' => ArrayHelper::map($requestedBy, 'employee_id', 'fullName'),
+        'options' => ['placeholder' => 'Search for a Employee ...'],
+        'pluginOptions' => [
+            'allowClear' => true,
+            'minimumInputLength' => 1,
+            'language' => [
+                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+            ],
+            'ajax' => [
+                'url' => Url::to(['employee/search-employee']),
+                'dataType' => 'json',
+                'delay' => 250,
+                'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
+                'cache' => true
+            ],
+            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+        ],
+    ]) ?>
     <div class="row">
         <div class="col-sm-6">
             <?= $form->field($model, 'amount')->widget(MaskMoney::class, [
@@ -100,6 +122,7 @@ $iarItems = $model->getIarItemsA();
                 ],
             ]) ?>
         </div>
+
         <div class="col-sm-6">
             <?= $form->field($model, 'payroll_number')->textInput(['maxlength' => true]) ?>
         </div>

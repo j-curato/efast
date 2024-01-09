@@ -16,7 +16,10 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'update_type' => $update_type,
         'searchModel' => $searchModel,
-        'dataProvider' => $dataProvider
+        'dataProvider' => $dataProvider,
+
+        'certified_by' => [],
+        'approved_by' => [],
     ]) ?>
 
 </div>

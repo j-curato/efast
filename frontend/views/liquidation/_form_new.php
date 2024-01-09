@@ -1,5 +1,6 @@
 <?php
 
+use yii\helpers\Url;
 use common\models\User;
 use kartik\helpers\Html;
 use kartik\grid\GridView;
@@ -48,7 +49,6 @@ if (!empty($model->id)) {
         $transaction_id =  [$model->po_transaction_id];
     }
 }
-
 
 
 ?>
@@ -145,7 +145,63 @@ if (!empty($model->id)) {
             </div>
         </div>
 
+        <div class="row">
+            <div class="col-sm-6">
+                <label for="po_transaction">Certified By</label>
+                <?= Select2::widget([
+                    'name' => 'fk_certified_by',
+                    'data' => ArrayHelper::map($certified_by, 'employee_id', 'fullName'),
+                    'value' => $model->fk_certified_by,
+                    'options' => ['placeholder' => 'Search for a Employee ...'],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                        'minimumInputLength' => 1,
+                        'language' => [
+                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                        ],
+                        'ajax' => [
+                            'url' => Url::to(['employee/search-employee']),
+                            'dataType' => 'json',
+                            'delay' => 250,
+                            'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
+                            'cache' => true
+                        ],
+                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                    ],
 
+                ]) ?>
+                <div class="fk_certified_by_error error-block"></div>
+            </div>
+            <div class="col-sm-6">
+                <label for="po_transaction">Approved By</label>
+                <?= Select2::widget([
+                    'name' => 'fk_approved_by',
+                    'data' => ArrayHelper::map($approved_by, 'employee_id', 'fullName'),
+                    'value' => $model->fk_approved_by,
+                    'options' => ['placeholder' => 'Search for a Employee ...'],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                        'minimumInputLength' => 1,
+                        'language' => [
+                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                        ],
+                        'ajax' => [
+                            'url' => Url::to(['employee/search-employee']),
+                            'dataType' => 'json',
+                            'delay' => 250,
+                            'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
+                            'cache' => true
+                        ],
+                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                    ],
+                ]) ?>
+                <div class="fk_approved_by_error error-block"></div>
+            </div>
+        </div>
         <table id="transaction_details" class="table">
             <thead>
 
@@ -784,11 +840,14 @@ SweetAlertAsset::register($this);
                 }
             })
         })
-
+        // window.onload = function() {
+        //     $('input[name^="AdvancesEntriesForLiquidationSearch[bank_account_id]').val('').trigger('change')
+        // };
         $("#check_range_id").on('change', function(e) {
             e.preventDefault()
-            console.log($(this).val())
-            console.log(window.location.href)
+            // console.log($(this).val())
+            // console.log(window.location.href)
+            // $('input[name^="AdvancesEntriesForLiquidationSearch[bank_account_id]"]').val(1).trigger('change')
             $.pjax({
                 container: "#pjax_advances",
                 url: window.location.href,
@@ -828,7 +887,7 @@ SweetAlertAsset::register($this);
                 data: $('#liquidation_form').serialize(),
                 success: function(data) {
                     var res = JSON.parse(data)
-
+                    console.log(res)
                     if (!jQuery.isEmptyObject(res.form_error)) {
                         $('#save_btn').attr('disabled', false)
                         $.each(res.form_error, function(key, val) {

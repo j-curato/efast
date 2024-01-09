@@ -2,10 +2,11 @@
 
 namespace app\models;
 
-use app\components\helpers\MyHelper;
-use ErrorException;
 use Yii;
+use ErrorException;
+use app\models\Employee;
 use yii\helpers\ArrayHelper;
+use app\components\helpers\MyHelper;
 
 /**
  * This is the model class for table "po_transaction".
@@ -35,23 +36,14 @@ class PoTransaction extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['po_responsibility_center_id'], 'integer'],
-            [['po_responsibility_center_id', 'amount', 'particular', 'reporting_period'], 'required'],
+            [['po_responsibility_center_id', 'fk_requested_by'], 'integer'],
+            [['po_responsibility_center_id', 'amount', 'particular', 'reporting_period', 'fk_requested_by'], 'required'],
             [['payee', 'particular'], 'string'],
             [['amount'], 'number'],
             [['payroll_number', 'tracking_number', 'reporting_period'], 'string', 'max' => 100],
             [[
-                'id',
                 'payee',
                 'particular',
-                'amount',
-                'payroll_number',
-                'tracking_number',
-                'po_responsibility_center_id',
-                'province',
-                'created_at',
-                'reporting_period',
-
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
             [['po_responsibility_center_id'], 'exist', 'skipOnError' => true, 'targetClass' => PoResponsibilityCenter::class, 'targetAttribute' => ['po_responsibility_center_id' => 'id']],
         ];
@@ -71,6 +63,7 @@ class PoTransaction extends \yii\db\ActiveRecord
             'payroll_number' => 'Payroll Number',
             'tracking_number' => 'Tracking Number',
             'reporting_period' => 'Reporting Period',
+            'fk_requested_by' => 'Requested By',
         ];
     }
 
@@ -82,6 +75,10 @@ class PoTransaction extends \yii\db\ActiveRecord
     public function getPoResponsibilityCenter()
     {
         return $this->hasOne(PoResponsibilityCenter::class, ['id' => 'po_responsibility_center_id']);
+    }
+    public function getRequestedBy()
+    {
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_requested_by']);
     }
     public function insertIars($iars)
     {

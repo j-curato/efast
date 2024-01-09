@@ -526,14 +526,6 @@ Select2Asset::register($this);
         }
     }
 </style>
-<?php
-$this->registerJsFile(
-    '@web/frontend/web/js/globalFunctions.js',
-    [
-        'depends' => [JqueryAsset::class]
-    ]
-);
-?>
 
 <script>
     function setPosition(q, pos) {

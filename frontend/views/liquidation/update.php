@@ -17,7 +17,10 @@ $this->params['breadcrumbs'][] = 'Update';
         'model' => $model,
         'update_type' => $update_type,
         'searchModel' => $searchModel,
-        'dataProvider' => $dataProvider
+        'dataProvider' => $dataProvider,
+
+        'certified_by' => $certified_by,
+        'approved_by' => $approved_by,
     ]) ?>
 
 </div>

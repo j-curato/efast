@@ -144,8 +144,12 @@ class LiquidationController extends Controller
     public function actionView($id)
     {
         // $q = LiquidationEntries::findOne(($id));
+        $model = $this->findModel($id);
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
+            "certifiedBy" => !empty($model->fk_certified_by) ? $model->certifiedBy->getEmployeeDetails() : [],
+            "approvedBy" => !empty($model->fk_approved_by) ? $model->approvedBy->getEmployeeDetails() : [],
+            "requestedBy" => !empty($model->poTransaction->fk_requested_by) ? $model->poTransaction->requestedBy->getEmployeeDetails() : []
         ]);
     }
 
@@ -330,6 +334,8 @@ class LiquidationController extends Controller
             $check_range_id = $_POST['check_range_id'];
             $check_number = $_POST['check_number'];
             $po_transaction_id = $_POST['po_transaction_id'];
+            $fk_certified_by = $_POST['fk_certified_by'];
+            $fk_approved_by = $_POST['fk_approved_by'];
             $province = strtolower($user_data->employee->office->office_name);
             $model->dv_number = $this->getDvNumber($reporting_period);
             $model->reporting_period = $reporting_period;
@@ -342,6 +348,8 @@ class LiquidationController extends Controller
             $model->status = 'at_po';
             $model->particular = null;
             $model->payee = null;
+            $model->fk_certified_by = $fk_certified_by;
+            $model->fk_approved_by = $fk_approved_by;
             try {
                 if (!$model->validate()) {
                     $transaction->rollBack();
@@ -383,6 +391,7 @@ class LiquidationController extends Controller
             }
         }
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
         $dataProvider->pagination = ['pageSize' => 10];
 
         return $this->render('create', [
@@ -440,6 +449,10 @@ class LiquidationController extends Controller
 
             // if ($province)
             // $model->province = $province;
+            $fk_certified_by = $_POST['fk_certified_by'];
+            $fk_approved_by = $_POST['fk_approved_by'];
+            $model->fk_certified_by = $fk_certified_by;
+            $model->fk_approved_by = $fk_approved_by;
             $model->check_date = $check_date;
             $model->check_range_id = $check_range_id;
             $model->check_number = $check_number;
@@ -510,11 +523,21 @@ class LiquidationController extends Controller
 
         $dataProvider->pagination = ['pageSize' => 10];
 
+        $certifiedBy = [];
+        if (!empty($model->fk_certified_by)) {
+            $certifiedBy[] = $model->certifiedBy->getEmployeeDetails();
+        }
+        $approvedBy = [];
+        if (!empty($model->fk_approved_by)) {
+            $approvedBy[] =  $model->approvedBy->getEmployeeDetails();
+        }
         return $this->render('update', [
             'model' => $model,
             'update_type' => 'update',
             'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider
+            'dataProvider' => $dataProvider,
+            'certified_by' => $certifiedBy,
+            'approved_by' =>  $approvedBy,
         ]);
     }
 
@@ -698,7 +721,7 @@ class LiquidationController extends Controller
             // }
 
             // }
-            $user_data =User::getUserDetails();
+            $user_data = User::getUserDetails();
             $liq_r_period = (new \yii\db\Query())
                 ->select('reporting_period')
                 ->from('liquidation_reporting_period')

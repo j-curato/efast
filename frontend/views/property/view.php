@@ -151,8 +151,6 @@ $qrcode_filename = Yii::$app->request->baseurl . "/frontend/views/property/qrcod
 
 </div>
 <?php
-$this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['depends' => [\yii\web\JqueryAsset::class]]);
-$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => JqueryAsset::class])
 ?>
 <style>
     .container {
