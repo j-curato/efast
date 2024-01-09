@@ -48,8 +48,9 @@ class Liquidation extends \yii\db\ActiveRecord
                 'reporting_period',
                 'check_date',
                 'check_number',
-                'check_range_id', 'fk_certified_by',
-                'fk_approved_by'
+                'check_range_id', 
+                // 'fk_certified_by',
+                // 'fk_approved_by'
             ], 'required'],
             [['check_range_id',], 'required', 'when' => function ($model) {
                 return strtotime($model->reporting_period) > strtotime('2021-10');
@@ -67,6 +68,13 @@ class Liquidation extends \yii\db\ActiveRecord
             //     'province',
             //     'cancel_reporting_period',
             // ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+            [[
+                'fk_certified_by',
+                'fk_approved_by'
+            ], 'required', 'when' => function ($model) {
+
+                return $model->is_cancelled == false ? true : false;
+            }],
         ];
     }
 
