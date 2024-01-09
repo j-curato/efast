@@ -69,6 +69,11 @@ class LiquidationViewSearch extends LiquidationView
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
+            'sort' => [
+                'defaultOrder' => [
+                    'check_date' => SORT_DESC,
+                ]
+            ]
         ]);
 
         $this->load($params);

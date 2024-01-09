@@ -371,7 +371,7 @@ $total_ewt = 0;
                                 <span class="float-right"> <?= number_format($totalExpanded, 2) ?></span>
                             </div>
                         <?php endif; ?>
-                        <?php if ($totalLiquidationDamage == 0) : ?>
+                        <?php if ($totalLiquidationDamage != 0) : ?>
                             <div>
                                 <span>Liquidation Damages:</span>
                                 <span class="float-right"> <?= number_format($totalLiquidationDamage, 2) ?></span>
