@@ -286,19 +286,25 @@ $total_ewt = 0;
                         <span>Entity Name</span><br>
                         <b>DISBURSEMENT VOUCHER</b>
                     </td>
-                    <th colspan="2">
+                    <th colspan="2" class="min-width:200px">
 
-                        <div>
+                        <div class="float-left w-50">
                             <span>Fund Cluster:</span>
-                            <span class="float-right"> ________________</span>
                         </div>
-                        <div>
+                        <div class="w-50 float-left border-bottom border-dark">
+                            &nbsp;
+                        </div>
+                        <div class="w-50 float-left">
                             <span>Date:</span>
-                            <span class="float-right">_________________</span>
                         </div>
-                        <div>
+                        <div class="w-50 float-left border-bottom border-dark">
+                            &nbsp;
+                        </div>
+                        <div class="w-25 float-left">
                             <span>DV No.:</span>
-                            <span class="float-right">_________________</span>
+                        </div>
+                        <div class="w-75 float-left border-bottom border-dark">
+                            <?= $model->dv_number ?>
                         </div>
                     </th>
                 </tr>
@@ -390,7 +396,7 @@ $total_ewt = 0;
                 <tr>
                     <td colspan="7">
                         <h6 class="mt-1">A: Certified: Expenses/Cash Advance necessary, lawful and incurred under my direct supervision.</h6>
-                        <div class="text-center mt-5 mb-5">
+                        <div class="text-center mt-5 mb-3">
                             <u class="text-uppercase font-weight-bold"><?= $requestedBy['fullName'] ?? '' ?></u><br>
                             <span><?= $requestedBy['position'] ?? '' ?></span>
                         </div>
@@ -502,7 +508,7 @@ $total_ewt = 0;
                     <th>Check/ADA No.:</th>
                     <td class="text-center"><?= $model->check_number ?></td>
                     <th>Date:</th>
-                    <td style="width:100px"></td>
+                    <td style="width:100px"><?= $model->check_date ?></td>
                     <th colspan="">Bank Name & Account Number:</th>
                     <td></td>
 
@@ -566,6 +572,7 @@ $total_ewt = 0;
         #dv-form td,
         #dv-form th {
             padding: 8px;
+            font-size: 15px;
         }
     }
 </style>
