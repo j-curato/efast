@@ -242,8 +242,9 @@ class EmployeeController extends Controller
             $query->select('CAST(employee_id as CHAR(50)) as id, UPPER(employee_name) AS text,employee_search_view.position ')
                 ->from('employee_search_view')
                 ->andWhere(['like', 'employee_name', $q]);
-            if (!Yii::$app->user->can('ro_procurement_admin')) {
-                $user_data = User::getUserDetails();
+            $user_data = User::getUserDetails();
+
+            if ($user_data->employee->office->office_name != 'ro') {
                 $query->andWhere('employee_search_view.office_name = :office_name', ['office_name' => $user_data->employee->office->office_name]);
             }
 
