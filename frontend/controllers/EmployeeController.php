@@ -244,7 +244,7 @@ class EmployeeController extends Controller
                 ->andWhere(['like', 'employee_name', $q]);
             $user_data = User::getUserDetails();
 
-            if ($user_data->employee->office->office_name != 'ro') {
+            if (strtolower($user_data->employee->office->office_name) != 'ro') {
                 $query->andWhere('employee_search_view.office_name = :office_name', ['office_name' => $user_data->employee->office->office_name]);
             }
 
