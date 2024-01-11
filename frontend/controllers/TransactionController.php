@@ -260,7 +260,16 @@ class TransactionController extends Controller
             ->queryAll();
         return $query;
     }
+    public function  checkAllotmentBalance($allotmentId, $amount, $oldAmount = 0)
+    {
+        $balance = Yii::$app->db->createCommand("SELECT balance FROM record_allotment_detailed WHERE allotment_entry_id = :allotmentId")
+            ->bindValue(':allotmentId', $allotmentId)
+            ->queryScalar();
 
+        $totalBalance = ($balance + $oldAmount);
+        $finalBalance =  $totalBalance - $amount;
+        return  $finalBalance < 0 ? "Allotment Amount Cannot be more than " . number_format($totalBalance, 2) : true;
+    }
     private function insertItems($transaction_id, $items = [], $isUpdate = false)
     {
         try {
@@ -285,12 +294,13 @@ class TransactionController extends Controller
                 } else {
                     $transaction_item = new TransactionItems();
                 }
-                $vlt = MyHelper::checkAllotmentBalance(
-                    $item['allotment_id'],
-                    $item['gross_amount'],
-                    null,
-                    $item_id
-                );
+                $vlt =  $this->checkAllotmentBalance($item['allotment_id'],   $item['gross_amount'], !empty($transaction_item->amount) ? $transaction_item->amount : 0);
+                // $vlt = MyHelper::checkAllotmentBalance(
+                //     $item['allotment_id'],
+                //     $item['gross_amount'],
+                //     null,
+                //     $item_id
+                // );
                 if ($vlt !== true) {
                     throw new ErrorException($vlt);
                 }
@@ -364,15 +374,19 @@ class TransactionController extends Controller
     public function actionCreate()
     {
         $model = new Transaction();
-        if (Yii::$app->request->post()) {
+
+        $model->fk_certified_budget_by = 99684622555676844;
+        $model->fk_certified_cash_by = 99684622555676801;
+        $model->fk_approved_by = 99684622555676858;
+        if ($model->load(Yii::$app->request->post())) {
             try {
                 $txn = Yii::$app->db->beginTransaction();
-                $model->type = Yii::$app->request->post('Transaction')['type'];
-                $model->fk_book_id = Yii::$app->request->post('Transaction')['fk_book_id'];
-                $model->payee_id = Yii::$app->request->post('Transaction')['payee_id'];
-                $model->particular = Yii::$app->request->post('Transaction')['particular'];
-                $model->transaction_date = Yii::$app->request->post('Transaction')['transaction_date'];
-                $model->responsibility_center_id = Yii::$app->request->post('Transaction')['responsibility_center_id'] ?? '';
+                // $model->type = Yii::$app->request->post('Transaction')['type'];
+                // $model->fk_book_id = Yii::$app->request->post('Transaction')['fk_book_id'];
+                // $model->payee_id = Yii::$app->request->post('Transaction')['payee_id'];
+                // $model->particular = Yii::$app->request->post('Transaction')['particular'];
+                // $model->transaction_date = Yii::$app->request->post('Transaction')['transaction_date'];
+                // $model->responsibility_center_id = Yii::$app->request->post('Transaction')['responsibility_center_id'] ?? '';
                 $prItems = Yii::$app->request->post('prItems') ?? [];
                 $allotmentItems = Yii::$app->request->post('items') ?? [];
                 if (empty($allotmentItems)) {
@@ -401,7 +415,7 @@ class TransactionController extends Controller
                         ->queryScalar();
                     $model->responsibility_center_id = $r_center;
                 }
-                $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id,  $model->transaction_date);
+                // $model->tracking_number = $this->getTrackingNumber($model->responsibility_center_id,  $model->transaction_date);
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
@@ -900,5 +914,19 @@ class TransactionController extends Controller
             $out['pagination'] = ['more' => !empty($data) ? true : false];
         }
         return $out;
+    }
+    public function actionCancel($id)
+    {
+
+        try {
+            $model = $this->findModel($id);
+            $cancel = $model->cancel();
+            if ($cancel !== true) {
+                throw new ErrorException($cancel);
+            }
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
     }
 }

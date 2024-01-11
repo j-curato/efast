@@ -44,6 +44,13 @@ if ($model->type == 'single' || $model->type == 'multiple') {
 
 $payee = !empty($model->payee_id) ? ArrayHelper::map(MyHelper::getPayee($model->payee_id), 'id', 'account_name') : [];
 $iarItems = $model->getIarItemsA();
+
+$certifiedBy  = !empty($model->fk_certified_by) ? $model->certifiedBy->getEmployeeDetails() : [];
+$certifiedBudgetBy  = !empty($model->fk_certified_budget_by) ? $model->certifiedBudgetBy->getEmployeeDetails() : [];
+$certifiedCashBy  = !empty($model->fk_certified_cash_by) ? $model->certifiedCashBy->getEmployeeDetails() : [];
+$approvedBy = !empty($model->fk_approved_by) ? $model->approvedBy->getEmployeeDetails() : [];
+
+
 ?>
 
 
@@ -84,7 +91,7 @@ $iarItems = $model->getIarItemsA();
     ]); ?>
 
 
-    <div class="row">
+    <div class="row pt-4">
         <div class="col-sm-3">
             <?= $form->field($model, 'type')->widget(Select2::class, [
                 'data' => ['no-iar' => 'No IAR', 'single' => 'Single IAR', 'multiple' => 'Multiple Iar'],
@@ -206,12 +213,115 @@ $iarItems = $model->getIarItemsA();
                 'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
                 'pluginOptions' => [
                     'autoclose' => true,
-                    'format' => 'mm-dd-yyyy'
+                    'format' => 'mm-dd-yyyy',
+                    'todayHighlight' =>true
                 ]
             ]) ?>
         </div>
-    </div>
 
+
+
+
+
+    </div>
+    <div class="row">
+        <div class="col-sm-3">
+            <?= $form->field($model, 'fk_certified_by')->widget(Select2::class, [
+                'data' => ArrayHelper::map([$certifiedBy], 'employee_id', 'fullName'),
+                'options' => ['placeholder' => 'Search for a Employee ...'],
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'minimumInputLength' => 1,
+                    'language' => [
+                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                    ],
+                    'ajax' => [
+                        'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                        'dataType' => 'json',
+                        'delay' => 250,
+                        'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
+                        'cache' => true
+                    ],
+                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                ],
+
+            ]) ?>
+        </div>
+        <div class="col-sm-3">
+            <?= $form->field($model, 'fk_certified_budget_by')->widget(Select2::class, [
+                'data' => ArrayHelper::map([$certifiedBudgetBy], 'employee_id', 'fullName'),
+                'options' => ['placeholder' => 'Search for a Employee ...'],
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'minimumInputLength' => 1,
+                    'language' => [
+                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                    ],
+                    'ajax' => [
+                        'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                        'dataType' => 'json',
+                        'delay' => 250,
+                        'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
+                        'cache' => true
+                    ],
+                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                ],
+
+            ]) ?>
+        </div>
+        <div class="col-sm-3">
+            <?= $form->field($model, 'fk_certified_cash_by')->widget(Select2::class, [
+                'data' => ArrayHelper::map([$certifiedCashBy], 'employee_id', 'fullName'),
+                'options' => ['placeholder' => 'Search for a Employee ...'],
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'minimumInputLength' => 1,
+                    'language' => [
+                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                    ],
+                    'ajax' => [
+                        'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                        'dataType' => 'json',
+                        'delay' => 250,
+                        'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
+                        'cache' => true
+                    ],
+                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                ],
+
+            ]) ?>
+        </div>
+        <div class="col-sm-3">
+            <?= $form->field($model, 'fk_approved_by')->widget(Select2::class, [
+                'data' => ArrayHelper::map([$approvedBy], 'employee_id', 'fullName'),
+                'options' => ['placeholder' => 'Search for a Employee ...'],
+                'pluginOptions' => [
+                    'allowClear' => true,
+                    'minimumInputLength' => 1,
+                    'language' => [
+                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                    ],
+                    'ajax' => [
+                        'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                        'dataType' => 'json',
+                        'delay' => 250,
+                        'data' => new JsExpression('function(params) { return {q:params.term,page:params.page}; }'),
+                        'cache' => true
+                    ],
+                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                ],
+
+            ]) ?>
+        </div>
+    </div>
     <div class="row">
 
         <div class="col-sm-12">

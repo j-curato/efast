@@ -2,12 +2,15 @@
 
 namespace app\models;
 
+use app\behaviors\GenerateIdBehavior;
 use Yii;
 use ErrorException;
 use ParentIterator;
 use yii\helpers\ArrayHelper;
 use app\components\helpers\MyHelper;
 use app\behaviors\HistoryLogsBehavior;
+use DateTime;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "transaction".
@@ -31,7 +34,8 @@ class Transaction extends \yii\db\ActiveRecord
     public function behaviors()
     {
         return [
-            HistoryLogsBehavior::class
+            HistoryLogsBehavior::class,
+            GenerateIdBehavior::class
         ];
     }
     /**
@@ -48,8 +52,28 @@ class Transaction extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['responsibility_center_id', 'payee_id', 'particular',  'transaction_date', 'type', 'fk_book_id'], 'required'],
-            [['responsibility_center_id', 'payee_id', 'is_local', 'fk_book_id', 'is_cancelled'], 'integer'],
+            [[
+                'responsibility_center_id',
+                'payee_id',
+                'particular',
+                'transaction_date', 'type',
+                'fk_book_id',
+                'fk_certified_by',
+                'fk_certified_budget_by',
+                'fk_certified_cash_by',
+                'fk_approved_by'
+            ], 'required'],
+            [[
+                'responsibility_center_id',
+                'payee_id',
+                'is_local',
+                'fk_book_id',
+                'is_cancelled',
+                'fk_certified_by',
+                'fk_certified_budget_by',
+                'fk_certified_cash_by',
+                'fk_approved_by'
+            ], 'integer'],
             [['gross_amount'], 'number'],
             [['tracking_number', 'earmark_no', 'payroll_number', 'type'], 'string', 'max' => 255],
             [['transaction_date'], 'string', 'max' => 50],
@@ -81,21 +105,12 @@ class Transaction extends \yii\db\ActiveRecord
             'is_local' => 'is Local',
             'fk_book_id' => 'Book',
             'is_cancelled' => 'is Cancelled',
+
+            'fk_certified_by' => 'Certified By',
+            'fk_certified_budget_by' => 'Certified Budget By',
+            'fk_certified_cash_by' => 'Certified Cash Available  By',
+            'fk_approved_by' => 'Approved By',
         ];
-    }
-    public function beforeSave($insert)
-    {
-        if (parent::beforeSave($insert)) {
-
-            if ($this->isNewRecord) {
-
-                if (empty($this->id)) {
-                    $this->id = Yii::$app->db->createCommand('SELECT UUID_SHORT() % 9223372036854775807')->queryScalar();
-                }
-            }
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -124,6 +139,56 @@ class Transaction extends \yii\db\ActiveRecord
     public function getBook()
     {
         return $this->hasOne(Books::class, ['id' => 'fk_book_id']);
+    }
+    public function getCertifiedBy()
+    {
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_certified_by']);
+    }
+    public function getCertifiedBudgetBy()
+    {
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_certified_budget_by']);
+    }
+    public function getCertifiedCashBy()
+    {
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_certified_cash_by']);
+    }
+    public function getApprovedBy()
+    {
+        return $this->hasOne(Employee::class, ['employee_id' => 'fk_approved_by']);
+    }
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($insert)) {
+            if ($this->isNewRecord) {
+                if (empty($this->tracking_number)) {
+                    $this->tracking_number = $this->generateSerialNumber();
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private function generateSerialNumber()
+    {
+
+        $date  = DateTime::createFromFormat('m-d-Y', $this->transaction_date);
+        $year = $date->format('Y');
+        $lastNum =  self::find()
+            ->addSelect([
+                new Expression(" CAST(SUBSTRING_INDEX(`transaction`.tracking_number,'-',-1)AS UNSIGNED) as last_number ")
+            ])
+            ->join("LEFT JOIN", "responsibility_center", "`transaction`.responsibility_center_id = responsibility_center.id")
+            ->andWhere(['responsibility_center.`id`' => $this->responsibility_center_id])
+            ->andWhere("`transaction`.tracking_number LIKE :year", ['year' => "%$year%"])
+            ->orderBy(" last_number DESC")
+            ->limit(1)
+            ->scalar();
+        // echo $lastNum;
+        // die();
+        $num = !empty($lastNum) ? $lastNum + 1 : 1;
+
+        return $this->responsibilityCenter->name . '-' . $year . '-' . str_pad($num, 4, '0', STR_PAD_LEFT);
     }
     public function getIarItemsA()
     {

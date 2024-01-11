@@ -20,6 +20,13 @@ $this->title =  $title;
 $this->params['breadcrumbs'][] = ['label' => 'Transactions', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $title;
 $iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number'));
+
+
+$certifiedBy  = !empty($model->fk_certified_by) ? $model->certifiedBy->getEmployeeDetails() : [];
+$certifiedBudgetBy  = !empty($model->fk_certified_budget_by) ? $model->certifiedBudgetBy->getEmployeeDetails() : [];
+$certifiedCashBy  = !empty($model->fk_certified_cash_by) ? $model->certifiedCashBy->getEmployeeDetails() : [];
+$approvedBy = !empty($model->fk_approved_by) ? $model->approvedBy->getEmployeeDetails() : [];
+
 ?>
 <div class="jev-preparation-index" id='doc'>
 
@@ -30,8 +37,8 @@ $iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number
     $division = strtolower($model->responsibilityCenter->name);
     ?>
     <!-- FORM 1 -->
-    <div class="container card">
-        <p>
+    <div class="card p-2 container">
+        <span>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
             <?= !$model->is_cancelled ?
                 Html::a('Cancel', ['cancel', 'id' => $model->id], [
@@ -40,95 +47,69 @@ $iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number
                 ])
                 : '' ?>
             <button class="btn btn-success" type="button" id="print">Print</button>
-        </p>
-        <?php Pjax::begin(['id' => 'journal', 'clientOptions' => ['method' => 'POST']]) ?>
+        </span>
+    </div>
+    <div class="container card">
+
+        <?php
+        //  Pjax::begin(['id' => 'journal', 'clientOptions' => ['method' => 'POST']])
+        ?>
         <div style="float: right;">
             <h6>
-                <?php
-                echo $model->tracking_number;
-                ?>
+                <?= $model->tracking_number ?>
             </h6>
         </div>
 
-        <table style="margin-top:30px" id="ors_form">
+        <table id="ors_form">
             <tbody>
-
                 <tr>
 
-                    <td colspan="5" style="text-align: center;">
-                        <h5 class="head">
-                            OBLIGATION REQUEST AND STATUS
-                        </h5>
-                        <div>
-                            <h5 style="font-weight: bold;">Department of Trade and Industry - Caraga</h5>
-                        </div>
-                        <h5 class="head">
-                            ENTITY NAME
-                        </h5>
+                    <th colspan="5" class="text-center">
+                        <h5 class="font-weight-bold">OBLIGATION REQUEST AND STATUS</h5>
+                        <h5 class="font-weight-bold">Department of Trade and Industry - Caraga</h5>
+                        <h5 class="font-weight-bold">ENTITY NAME</h5>
 
-                    </td>
+                    </th>
                     <td colspan="3">
                         <div class="serial">
                             <span><b>Serial No.:</b></span>
-                            <span style="float: right;"> _______________</span>
+                            <span class="float-right"> _______________</span>
                         </div>
                         <div class="serial">
                             <span><b>Date:</b></span>
-                            <span style="float: right;">_______________</span>
+                            <span class="float-right">_______________</span>
                         </div>
                         <div class="serial">
                             <span><b>Fund Cluster:</b></span>
-                            <span style="float: right;">_______________</span>
+                            <span class="float-right">_______________</span>
                         </div>
                     </td>
                 </tr>
                 <tr>
-                    <th colspan="2">
-                        Payee
-                    </th>
-                    <td colspan="6">
-                        <?php echo $model->payee->registered_name; ?>
-                    </td>
+                    <th colspan="2">Payee</th>
+                    <td colspan="6"><?= $model->payee->registered_name ?></td>
                 </tr>
                 <tr>
-                    <th colspan="2">
-                        Office
-                    </th>
-                    <td colspan="6">
-                    </td>
+                    <th colspan="2">Office</th>
+                    <td colspan="6"></td>
                 </tr>
                 <tr class="header">
-                    <th colspan="2">
-                        Address
-                    </th>
-                    <td colspan="6">
-                    </td>
+                    <th colspan="2">Address</th>
+                    <td colspan="6"></td>
                 </tr>
-                <tr class="header">
-                    <th colspan="1" style="width:100px">
-                        Responsibility Center
-                    </th>
-                    <th colspan="2">
-                        Particulars
-                    </th>
-                    <th colspan="2" style="min-width: 150px;">
-                        MFO/PAP
-                    </th>
-                    <th colspan="2" style="min-width: 150px;">
-                        UACS Object Code
-                    </th>
-                    <th colspan="1" style="width: 30px">
-                        Amount
-                    </th>
+                <tr>
+                    <th colspan="1" class="text-center">Responsibility Center</th>
+                    <th colspan="2" class="text-center">Particulars</th>
+                    <th colspan="2" class="text-center" style="min-width: 150px;">MFO/PAP</th>
+                    <th colspan="2" class="text-center" style="min-width: 150px;">UACS Object Code</th>
+                    <th colspan="1" class="text-center" style="width: 30px">Amount</th>
                 </tr>
                 <tr>
                     <?php
                     $row_cnt = count($items) + 1;
                     ?>
-                    <td colspan='1' rowspan="<?= $row_cnt ?>" style="vertical-align: top;">
-                        <?php
-                        echo !empty($model->responsibilityCenter->name) ? $model->responsibilityCenter->name : '';
-                        ?>
+                    <td colspan='1' rowspan="<?= $row_cnt ?>" style="vertical-align: top;" class="text-center">
+                        <?= !empty($model->responsibilityCenter->name) ? $model->responsibilityCenter->name : '' ?>
                     </td>
                     <td colspan='2' rowspan="<?= $row_cnt ?>" style="padding-bottom: 10rem;max-width:250px">
                         <?php
@@ -162,107 +143,61 @@ $iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number
 
                 ?>
                 <tr>
-                    <td colspan="7" style="text-align: center;"><b>Total</b> </td>
-                    <td style="text-align: right;"><?= number_format($total, 2) ?></td>
+                    <th colspan="7" class="text-center">Total</th>
+                    <th class="text-right"><?= number_format($total, 2) ?></th>
                 </tr>
-                <tr style="border-top:1px solid black">
-                    <td class="" style="border-top:1px solid white ;
-                    border-bottom:1px solid white ;
-                    padding:20px" colspan="3">A. Certified: Charges to appropriation/alloment arenecessary, lawful and under my direct
+                <tr>
+                    <td class="p-3 border-bottom-0" colspan="3">A. Certified: Charges to appropriation/allotment
+                        are necessary, lawful and under my direct
                         supervision;and supporting documents valid, proper and legal
                     </td>
-                    <td colspan="5" style="border-top:1px solid white;
-                    border-bottom:1px solid white;
-                    padding:20px">
+                    <td colspan="5" class="p-3 border-bottom-0">
                         B. Certified: Allotment available and obligated for the
                         purpose/adjustment necessary as indicated above
-
                     </td>
                 </tr>
                 <tr>
-                    <td class="ors_a" style="vertical-align:top;">
-                        Signature
+                    <td class="border-0" style="vertical-align:top;">Signature</td>
+                    <td colspan="2" class="border-top-0 border-left-0 border-bottom-0 text-center pt-4">______________________________________</td>
+                    <td colspan="1" class=" border-0">Signature</td>
+                    <td colspan="4" class="text-center border-0 pt-4">_______________________________</td>
+                </tr>
+                <tr>
+                    <td style="width: 130px;" class="border-0" style="vertical-align:top;padding:0">Printed Name</td>
+                    <td colspan="2" class=" text-center border-bottom-0 border-top-0 border-left-0">
+                        <u class="font-weight-bold text-uppercase"> <?= $certifiedBy['fullName'] ?></u> <br>
                     </td>
-                    <td colspan="2" class="" style="border-bottom: 1px solid white;vertical-align:bottom;text-align:center">
-                        ______________________________________
-                    </td>
-                    <td colspan="1" class=" ors_b">
-                        Signature
-                    </td>
-                    <td colspan="4" style="border-bottom: 1px solid white;text-align:center">
-                        _______________________________
+                    <td style="width: 130px;" class="border-0">Printed Name</td>
+                    <td colspan="4" class="text-center border-0">
+                        <u class="font-weight-bold text-uppercase"> <?= $certifiedBudgetBy['fullName'] ?></u> <br>
                     </td>
                 </tr>
                 <tr>
-                    <td style="width: 130px;" class="ors_a" style="vertical-align:top;padding:0">
-                        Printed Name
+                    <td class="border-right-0 border-0">Position:</td>
+                    <td colspan="2" class="text-center border-bottom-0 border-top-0 border-left-0">
+                        <span> <?= $certifiedBy['position'] ?></span>
                     </td>
-                    <td colspan="2" class="" style="border-bottom: 1px solid white;padding:0">
-
-
-                        <!-- FORM 1 BOX A SIGNATORY -->
-                        <select class="asignatory " data-pos='form1_box_a_signatory' id='form1_box_a_signatory' style="width: 100%;">
-                            <option value=""></option>
-                        </select>
-                    </td>
-                    <td style="width: 130px;" class="ors_b">
-                        Printed Name
-                    </td>
-                    <td colspan="4" style="border-bottom:1px solid white;">
-
-                        <!-- FORM 1 BOX B SIGNATORY -->
-                        <select class="asignatory" style="width: 100%;" data-pos='form1_box_b_signatory' id="form1_box_b_signatory">
-                            <option value=""></option>
-                        </select>
+                    <td class="border-0">Position:</td>
+                    <td colspan="4" class="border-0 text-center">
+                        <span> <?= $certifiedBudgetBy['position'] ?></span>
                     </td>
                 </tr>
-                <tr>
-                    <td class="ors_a">
-                        Position:
-                    </td>
-                    <td colspan="2" style="text-align:center;border-bottom: 1px solid white;vertical-align:text-top" class=" form1_box_a_signatory">
-
-                    </td>
-                    <td class="ors_b">
-                        Position:
-                    </td>
-                    <td colspan="4" style="text-align:center;border-bottom:1px solid white;" class="form1_box_b_signatory">
-
-
-                    </td>
-                    </tr=>
                 <tr>
                     <!-- style="border-top:1px solid white;border-right:1px solid white;" -->
-                    <td style="border-top:1px solid white;border-right:1px solid white;">
-                        Date:
-                    </td>
-                    <td colspan="2" style="text-align:center">
+                    <td class="border-0">Date:</td>
+                    <td colspan="2" class="text-center border-left-0 border-top-0">
                         ______________________________________
 
                     </td>
-                    <td style="border-left:1px solid white;border-right:1px solid white;">
-                        Date:
-                    </td>
-                    <td colspan="4" style="text-align:center">
-                        _______________________________
-
-                    </td>
+                    <td class="border-0">Date:</td>
+                    <td colspan="4" class="text-center border-0">_______________________________</td>
                 </tr>
                 <tr>
-                    <td colspan="8">
-                        <h6 class="head">
-                            STATUS OF OBLIGATION
-                        </h6>
-                    </td>
+                    <th colspan="8" class="text-center ">STATUS OF OBLIGATION</th>
                 </tr>
                 <tr>
-                    <td colspan="4" class="head">
-                        REFERENCE
-
-                    </td>
-                    <td colspan="4" class="head">
-                        AMOUNT
-                    </td>
+                    <th class="text-center" colspan="4">REFERENCE</th>
+                    <th colspan="4" class="text-center">AMOUNT</th>
                 </tr>
                 <tr>
                     <th rowspan="2">Date</th>
@@ -274,20 +209,16 @@ $iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number
                     <th colspan="2" class="center">Balance</th>
                 </tr>
                 <tr>
-                    <th>
-                        Not Yet Due
-                    </th>
-                    <th>
-                        Due and Demandable
-                    </th>
+                    <th>Not Yet Due</th>
+                    <th>Due and Demandable</th>
                 </tr>
 
                 <?php
                 $x = 0;
-                while ($x < 7) {
+                foreach (range(1, 6) as $number) {
                     echo "
                     <tr>
-                        <td style='padding:10px'></td>
+                        <td class='p-3'></td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -295,9 +226,7 @@ $iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number
                         <td></td>
                         <td></td>
                         <td></td>
-                    </tr>
-                    ";
-                    $x++;
+                    </tr>";
                 }
                 ?>
 
@@ -305,7 +234,9 @@ $iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number
 
             </tbody>
         </table>
-        <?php Pjax::end() ?>
+        <?php
+        // Pjax::end() 
+        ?>
 
     </div>
 
@@ -314,114 +245,76 @@ $iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number
     <p style='page-break-after:always;'></p>
     <!-- FORM 2-->
     <div class="container card">
-        <div style="float:right">
-            <h6>
-                <?php
-                echo $model->tracking_number;
-                ?>
-            </h6>
-        </div>
-        <table style="margin-top:30px" id="dv_form">
+        <div style="float:right"><?= $model->tracking_number ?></div>
+        <table id="dv_form">
             <tbody>
-
                 <tr>
 
-                    <td colspan="5" style="text-align:center">
-                        <div>
-                            <h5 style="font-weight: bold;">Department of Trade and Industry - Caraga</h5>
-                        </div>
-                        <h5 class="head">
-                            ENTITY NAME
-                        </h5>
-                        <h5 class="head">
-                            DISBURSEMENT VOUCHER
-                        </h5>
+                    <th colspan="5" class="text-center">
+                        <h5 class='font-weight-bold'>Department of Trade and Industry - Caraga</h5>
+                        <h5 class='font-weight-bold'>ENTITY NAME</h5>
+                        <h5 class='font-weight-bold'>DISBURSEMENT VOUCHER</h5>
 
-                    </td>
-                    <th colspan="2">
-
-                        <div class="serial">
-                            <span>Fund Cluster:</span>
-                            <span style="float: right;"> _________________</span>
-                        </div>
-                        <div class="serial">
-                            <span>Date:</span>
-                            <span style="float: right;">_________________</span>
-                        </div>
-                        <div class="serial">
-                            <span>DV No.:</span>
-                            <span style="float: right;">_________________</span>
-                        </div>
+                    </th>
+                    <th class="text-left border-0">
+                        <span>Fund Cluster:</span><br>
+                        <span>Date:</span><br>
+                        <span>DV No.:</span><br>
+                    </th>
+                    <th colspan="1" class="border-0">
+                        <span class="float-right"> _________________</span>
+                        <span class="float-right">_________________</span>
+                        <span class="float-right">_________________</span>
                     </th>
                 </tr>
                 <tr>
-                    <th>
-                        Mode of Payment
-                    </th>
-                    <td colspan="6" style="padding: 0;">
+                    <th>Mode of Payment</th>
+                    <td colspan="6">
                         <div style="display: flex;width:100%;justify-content:space-evenly">
-                            <div style="padding:0;margin:0">
-                                <div>
-                                    <span><i class="fa-square-o square-icon"></i>MDS Check</span>
-                                </div>
+                            <div class="p-0 m-0">
+                                <span class='check_box'></span>
+                                <span>MDS Check</span>
                             </div>
-                            <div style="padding:0;margin:0">
-                                <span><i class="fa-square-o square-icon"></i>Commercial Check</span>
+                            <div class="p-0 m-0">
+                                <span class='check_box'></span>
+                                <span>Commercial Check</span>
                             </div>
-                            <div style="padding:0;margin:0">
-                                <span><i class="fa-square-o square-icon"></i>ADA</span>
+                            <div class="p-0 m-0">
+                                <span class='check_box'></span>
+                                <span>ADA</span>
                             </div>
-                            <div style="padding:0;margin:0">
-                                <span><i class="fa-square-o square-icon"></i>Others (Please specify)</span>
+                            <div class="p-0 m-0">
+                                <span class='check_box'></span>
+                                <span>Others (Please specify)</span>
                             </div>
                         </div>
                     </td>
-
                 </tr>
                 <tr>
-                    <th colspan="1" class="head" rowspan="2">
-                        Payee
-                    </th>
-                    <th colspan="4" rowspan="2">
-                        <?php echo $model->payee->account_name; ?>
-                    </th>
-                    <th rowspan="1">
-                        TIN/Employee No.
-                    </th>
-                    <th rowspan="1">
-                        ORS/BURS No.
-                    </th>
+                    <th rowspan="2">Payee</th>
+                    <th colspan="4" rowspan="2"><?= $model->payee->account_name ?></th>
+                    <th>TIN/Employee No.</th>
+                    <th>ORS/BURS No.</th>
                 </tr>
                 <tr>
-                    <td style="padding: 10px;" colspan=""></td>
+                    <td class="p-3"></td>
                     <td></td>
                 </tr>
 
-                <tr class="header">
-                    <th colspan="1" class="head">
-                        Address
-                    </th>
-                    <td colspan="6">
-                    </td>
+                <tr>
+                    <th>Address</th>
+                    <td colspan="6"></td>
                 </tr>
                 <tr>
 
-                    <th colspan="2" class="center">
-                        Particulars
-                    </th>
-                    <th colspan="3" class="center">
-                        MFO/PAP
-                    </th>
-                    <th class="center">
-                        Responsibility center
-                    </th>
-                    <th style="text-align: center;" class="center">
-                        Amount
-                    </th>
+                    <th colspan="4" class="text-center">Particulars</th>
+                    <th colspan="1" class="text-center">MFO/PAP</th>
+                    <th class="text-center">Responsibility center</th>
+                    <th class="text-center">Amount</th>
                 </tr>
                 <tr>
 
-                    <td colspan='2' rowspan="<?= $row_cnt ?>" style='padding-bottom:10rem'>
+                    <td colspan='4' rowspan="<?= $row_cnt ?>" style='padding-bottom:10rem'>
                         <?php echo $model->particular . ' ';
                         echo !empty($iars) ? 'IAR#: ' : '';
                         echo $iars;
@@ -440,7 +333,7 @@ $iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number
                     }
                     if ($k === 0) {
                         echo "<tr>
-                        <td colspan='3' style='vertical-align: top;min-width: 150px;$bdr'>
+                        <td colspan='1' style='vertical-align: top;min-width: 150px;$bdr'>
                             {$item['mfo_name']}
                         </td>
                         <td style='vertical-align: top; text-align: center;' rowspan=' $r '>
@@ -467,40 +360,31 @@ $iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number
 
 
                 <tr>
-                    <th class="head" style="text-align: center; font-size:12px" colspan="6">
+                    <th class="text-center" colspan="6">
                         Amount Due
                     </th>
-                    <th style="text-align: right;padding-right:10px"> <?php echo number_format($total, 2) ?></th>
+                    <th class="text-right"> <?= number_format($total, 2) ?></th>
                 </tr>
                 <tr>
-                    <td colspan="7" style="padding: 12;">
-                        <h6 style="margin-top:8px">A: Certified: Expenses/Cash Advance necessary, lawful and incurred under my direct supervision.</h6>
-
-                        <div style="text-align: center;
-                        margin-top:2.5rem;
-                        margin-bottom:2rem;
-                        font-size:10pt">
-                            <select class="asignatory" style="width: 300px;padding:0;" data-pos='form2_box_a_signatory' id="form2_box_a_signatory">
-                                <option value=""></option>
-                            </select>
-                            <div style="padding:0;font-weight:normal;margin-top:12px" class="pos form2_box_a_signatory">
-                            </div>
-                        </div>
+                    <td colspan="7" class="border-0">
+                        <h6 class="mt-2">A: Certified: Expenses/Cash Advance necessary, lawful and incurred under my direct supervision.</h6>
 
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="7">
-                        <h6 class="head">
-                            B. Accounting Entry
-                        </h6>
+                    <td colspan="7" class="border-0 text-center pt-5 pb-4">
+                        <u class="font-weight-bold text-uppercase"> <?= $certifiedBy['fullName'] ?></u> <br>
+                        <span> <?= $certifiedBy['position'] ?></span>
                     </td>
                 </tr>
                 <tr>
-                    <th class="center" style='padding:10px' colspan='3'> Account Title</th>
-                    <th class="center" colspan="2">UACS Code</th>
-                    <th class="center">Debit</th>
-                    <th class="center">Credit</th>
+                    <th colspan="7" class="text-center">B. Accounting Entry</th>
+                </tr>
+                <tr>
+                    <th class="text-center" colspan='4'> Account Title</th>
+                    <th class="text-center" colspan="1">UACS Code</th>
+                    <th class="text-center">Debit</th>
+                    <th class="text-center">Credit</th>
                 </tr>
                 <?php
                 $y = 0;
@@ -508,8 +392,8 @@ $iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number
 
                     echo "
                     <tr>
-                        <td style='padding:10px' colspan='3'></td>
-                        <td colspan='2'></td>
+                        <td class='p-3' colspan='4'></td>
+                        <td colspan='1'></td>
                         <td></td>
                         <td></td>
                     </tr>
@@ -519,29 +403,27 @@ $iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number
 
                 ?>
                 <tr>
-                    <td colspan="3" style="border-bottom: none;font-weight:bold"> C. Certified</td>
-                    <td colspan="4" style="border-bottom: none;font-weight:bold">D:Approved for Payment</td>
+                    <th colspan="4" class="text-left border-bottom-0"> C. Certified</th>
+                    <th colspan="3" class="text-left border-0">D. Approved for Payment</th>
                 </tr>
                 <tr>
-                    <td colspan="3" style="padding-left:10px;">
-
-
+                    <td colspan="4" class="pl-3 border-bottom-0 border-top-0">
 
                         <div>
-                            <span style="height: 4px;border:1px solid black;padding-left:15px;margin:4px"></span>
+                            <span class='check_box'></span>
                             <span>
                                 Cash Available
                             </span>
                         </div>
 
                         <div>
-                            <span style="height: 4px;border:1px solid black;padding-left:15px;margin:4px"></span>
+                            <span class='check_box'></span>
                             <span>
                                 Subject to Authority to Debit Account (when applicable)
                             </span>
                         </div>
                         <div>
-                            <span style="height: 4px;border:1px solid black;padding-left:15px;margin:4px"></span>
+                            <span class='check_box'></span>
                             <span>
                                 Supporting documents complete and amount claimed
                             </span>
@@ -550,113 +432,75 @@ $iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number
 
 
                     </td>
-                    <td colspan="4" style="padding:0;">
-                        <!-- <h6 style="margin:0" style="float:left" class="head">D:Approved for Payment</h6> -->
-                        <!-- <h5 style="text-align: center; margin:4rem">
-                        </h5> -->
-
-                    </td>
+                    <td colspan="3" class="border-0"></td>
                 </tr>
                 <tr>
 
                     <td>Signature</td>
-                    <td colspan="2"></td>
-                    <td>Signature</td>
+                    <td colspan="3"></td>
+                    <td style="width: 150px;">Signature</td>
                     <td colspan="3"></td>
                 </tr>
                 <tr>
 
                     <td>Printed Name</td>
-                    <td colspan="2">
-                        <div>
-                            <select class="asignatory" style="width: 100%;" data-pos='form2_box_c_signatory' id="form2_box_c_signatory">
-                                <option value=""></option>
-                            </select>
-                        </div>
+                    <td colspan="3" class="text-center">
+                        <u class="font-weight-bold text-uppercase"> <?= $certifiedCashBy['fullName'] ?></u> <br>
                     </td>
                     <td>Printed Name</td>
-                    <td colspan="3">
-                        <div>
-                            <select class="asignatory" style="width: 100%;" data-pos='form2_box_d_signatory' id="form2_box_d_signatory">
-                                <option value=""></option>
-                            </select>
-                        </div>
+                    <td colspan="3" class="text-center">
+                        <u class="font-weight-bold text-uppercase"> <?= $approvedBy['fullName'] ?></u> <br>
                     </td>
                 </tr>
                 <tr>
-                    <td>Postion</td>
-                    <td colspan="2" style="text-align: center;" class="form2_box_c_signatory">
-
-                    </td>
-                    <td>Postion</td>
-                    <td colspan="3" style="text-align: center;" class="form2_box_d_signatory ">
-                    </td>
+                    <td>Position</td>
+                    <td colspan="3" class="text-center"><span> <?= $certifiedCashBy['position'] ?></span></td>
+                    <td>Position</td>
+                    <td colspan="3" class="text-center"> <span> <?= $approvedBy['position'] ?></span></td>
                 </tr>
                 <tr>
                     <td>Date</td>
-                    <td colspan="2">
-                    </td>
+                    <td colspan="3"></td>
                     <td>Date</td>
-                    <td colspan='3'>
-                    </td>
+                    <td colspan='3'></td>
                 </tr>
                 <!-- LETTER E -->
                 <tr>
-                    <td colspan="6" class="head">
-                        E. Receipt Payment
-                    </td>
-                    <td rowspan="2" style="width: 100px;vertical-align:top">JEV No.</td>
+                    <th colspan="6">E. Receipt Payment</th>
+                    <th rowspan="2" class="text-left" style="width: 100px;vertical-align:top">JEV No.</th>
                 </tr>
                 <tr>
 
                     <td>Check/ADA No.:</td>
-                    <td style="width:200px"></td>
+                    <td style="width:170px"></td>
                     <td>Date:</td>
-                    <td></td>
-                    <td colspan="">Bank Name & Account Number:</td>
+                    <td style="width:120px"></td>
+                    <td>Bank Name & Account Number:</td>
                     <td></td>
 
                 </tr>
                 <tr>
-                    <td>
-                        Signature :
-                    </td>
-                    <td>
-
-                    </td>
-                    <td>
-                        Date:
-                    </td>
-                    <td style="width:70px">
-
-                    </td>
-                    <td>
-                        Printed Name:
-                    </td>
+                    <td>Signature :</td>
                     <td></td>
-
-                    <td rowspan="2" style="vertical-align:top">
-                        Date:
-                    </td>
+                    <td>Date:</td>
+                    <td style="width:70px"></td>
+                    <td>Printed Name:</td>
+                    <td></td>
+                    <td rowspan="2" style="vertical-align:top">Date:</td>
                 </tr>
                 <tr>
                     <td colspan="6">Official Receipt No. & Date/Other Documents</td>
-
                 </tr>
-
-
-
-
 
             </tbody>
         </table>
 
     </div>
     <div class="card container allotmentTable" style="padding:2rem">
-        <table class="table " id="allotmentTable">
+        <table class=" " id="allotmentTable">
             <thead>
-                <tr class="info">
-                    <th colspan="6" style="text-align: center;">
+                <tr class="table-info">
+                    <th colspan="6" class="text-center">
                         <h4>Allotments</h4>
                     </th>
                 </tr>
@@ -674,7 +518,7 @@ $iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number
             </thead>
             <tbody>
                 <?php
-                $alltmntTtl = 0;
+                $allotmentTotal = 0;
                 foreach ($items as $item) {
                     echo "<tr>
                     <td>{$item['allotmentNumber']}</td>
@@ -683,18 +527,18 @@ $iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number
                     <td>{$item['mfo_code']}-{$item['mfo_name']}</td>
                     <td>{$item['fund_source_name']}</td>
                     <td>{$item['account_title']}</td>
-                    <td class='amount'>" . number_format($item['amount'], 2) . "</td>
+                    <td class='text-right'>" . number_format($item['amount'], 2) . "</td>
                     </tr>";
-                    $alltmntTtl += floatval($item['amount']);
+                    $allotmentTotal += floatval($item['amount']);
                 }
 
                 ?>
                 <tr>
-                    <th colspan="5" class="center">
+                    <th colspan="5" class="text-center">
                         Total
                     </th>
-                    <th class="amount">
-                        <?= number_format($alltmntTtl, 2) ?>
+                    <th class="text-right">
+                        <?= number_format($allotmentTotal, 2) ?>
                     </th>
                 </tr>
             </tbody>
@@ -705,11 +549,11 @@ $iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number
 
 
     ?>
-        <div class="container card links" style="background-color: white;">
+        <div class="container card links">
 
-            <table class="table " id='ors_links'>
-                <tr class="info">
-                    <th colspan="3">
+            <table class=" " id='ors_links'>
+                <tr class="table-info">
+                    <th colspan="3" class="text-center">
                         <h4>Obligation Links</h4>
                     </th>
                 </tr>
@@ -752,72 +596,11 @@ $iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number
 </div>
 
 <style>
-    #ors_links>td,
-    th {
-        text-align: center;
+    .check_box {
+        height: 4px;
         border: 1px solid black;
-    }
-
-    #ors_links {
-        border: 1px solid black;
-    }
-
-    .center {
-        text-align: center;
-    }
-
-    .amount {
-        text-align: right;
-    }
-
-    .select2-selection--single {
-        /* border: 1px solid #d2d6de; */
-        border-radius: 0;
-        /* padding: 6px ; */
-        height: 34px;
-
-    }
-
-    #allotmentTable th {
-        border: 1px solid black;
-    }
-
-    #allotmentTable {
-        margin-top: 2rem;
-    }
-
-    .select2-container--default .select2-selection--single {
-        display: none;
-    }
-
-
-    .pos {
-        text-align: center;
-        /* font-weight: bold; */
-    }
-
-    .select2 {
-        margin: 0;
-    }
-
-
-    .select2-container--default .select2-selection--single,
-    .select2-selection .select2-selection--single {
-        /* border: 1px solid #d2d6de; */
-        /* border-radius: 0; */
-        padding: 6px;
-        text-align: center;
-        vertical-align: bottom;
-        /* height: 34px; */
-        font-weight: bold;
-        border: none;
-    }
-
-
-
-
-    .select2-container .select2-selection--single .select2-selection__rendered {
-        padding-right: 0;
+        padding-left: 15px;
+        margin: 4px
     }
 
 
@@ -825,87 +608,30 @@ $iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number
         padding: 12px;
     }
 
-    .square-icon {
-        font-size: 18px;
-    }
 
-    .serial {
-        margin-top: 8px;
-    }
-
-    .head {
-        text-align: center;
-        font-weight: bold;
-    }
-
+    table,
     td,
     th {
         border: 1px solid black;
         padding: .5rem;
     }
 
-    table {
-        margin: 12px;
-        margin-left: auto;
-        margin-right: auto;
-        width: 100%;
-    }
 
-    .ors_a {
-        border-top: 1px solid white;
-        border-right: 1px solid white;
-        border-bottom: 1px solid white;
-    }
-
-    .ors_b {
-        border-top: 1px solid white;
-        border-right: 1px solid white;
-        border-bottom: 1px solid white;
-        border-left: 1px solid white;
-    }
-
-    #ors_form>.select2-container--default .select2-selection--single {
-        border: none;
-    }
-
-
-    .select2-selection {
-        border: none;
-    }
 
     @media print {
 
-        .select2-container {
-            height: 20px;
-        }
-
-        .select2-selection__arrow {
-            display: none !important;
-        }
-
-        .select2-container--default .select2-selection--single {
-            border: none !important;
-            text-decoration: underline;
-        }
 
 
-        .links {
-            display: none;
-        }
-
+        .links,
         .btn,
-        .allotmentTable {
+        .allotmentTable,
+        .main-footer {
             display: none;
         }
 
-
-
-
-        table,
         th,
         td {
-            border: 1px solid black;
-            padding: 3px;
+            padding: 5px;
             font-size: 16px;
         }
 
@@ -916,23 +642,9 @@ $iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number
         }
 
 
-
-        .container {
-            margin: 0;
-            top: 0;
-        }
-
         .entity_name {
             font-size: 5pt;
         }
-
-
-
-        .container {
-
-            border: none;
-        }
-
 
         table {
             page-break-after: auto
@@ -948,13 +660,7 @@ $iars =  implode(',', ArrayHelper::getColumn($model->getIarItemsA(), 'iar_number
             page-break-after: auto
         }
 
-        /* thead {
-                display: table-header-group
-            } */
 
-        .main-footer {
-            display: none;
-        }
     }
 </style>
 <?php
