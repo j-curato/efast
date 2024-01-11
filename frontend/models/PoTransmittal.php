@@ -85,7 +85,7 @@ class PoTransmittal extends \yii\db\ActiveRecord
         return $this->hasOne(Employee::class, ['employee_id' => 'fk_officer_in_charge']);
     }
 
-    private function queryLiquidationAmountTotals()
+    private static function queryLiquidationAmountTotals()
     {
         return (new Query())
             ->select([
@@ -102,7 +102,7 @@ class PoTransmittal extends \yii\db\ActiveRecord
             ->from('liquidation_entries')
             ->groupBy(['liquidation_entries.liquidation_id']);
     }
-    private function queryUnTransmittedDvs($year)
+    private static function queryUnTransmittedDvs($year)
     {
 
         return (new Query())
@@ -119,7 +119,7 @@ class PoTransmittal extends \yii\db\ActiveRecord
             ->andWhere(['>', 'cte_liquidation_amount_totals.gross_amount', 0])
             ->andWhere(['NOT EXISTS', (new Query())->select('po_transmittal_entries.liquidation_id')->from('po_transmittal_entries')->where(['po_transmittal_entries.is_deleted' => 0, 'po_transmittal_entries.is_returned' => 0, 'po_transmittal_entries.liquidation_id' => new \yii\db\Expression('liquidation.id')])]);
     }
-    private  function queryDvsAtRo()
+    private  static function queryDvsAtRo()
     {
         return (new Query())
             ->select(['po_transmittal_entries.liquidation_id'])
@@ -142,7 +142,7 @@ class PoTransmittal extends \yii\db\ActiveRecord
             ])
             ->groupBy(['po_transmittal_entries.liquidation_id']);
     }
-    private function queryDvsPendingAtRo()
+    private static function queryDvsPendingAtRo()
     {
         return (new Query())
             ->select(['po_transmittal_entries.liquidation_id'])
@@ -164,7 +164,7 @@ class PoTransmittal extends \yii\db\ActiveRecord
             ])
             ->groupBy(['po_transmittal_entries.liquidation_id']);
     }
-    private function queryDvsAtCoa()
+    private static function queryDvsAtCoa()
     {
         return (new Query())
             ->select(['po_transmittal_entries.liquidation_id'])
