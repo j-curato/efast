@@ -465,7 +465,7 @@ class TransactionController extends Controller
         $model = $this->findModel($id);
         $oldModel = $this->findModel($id);
         $items = $model->getItems();
-        if ((Yii::$app->request->post())) {
+        if ($model->load(Yii::$app->request->post())) {
             try {
                 $transaction = Yii::$app->db->beginTransaction();
                 $model->type = Yii::$app->request->post('Transaction')['type'];
