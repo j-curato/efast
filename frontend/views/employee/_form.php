@@ -41,10 +41,10 @@ use yii\bootstrap4\ActiveForm;
     <?= $form->field($model, 'f_name')->textInput(['class' => 'capitalize-input form-control']) ?>
     <?= $form->field($model, 'l_name')->textInput(['class' => 'capitalize-input form-control']) ?>
     <?= $form->field($model, 'm_name')->textInput(['class' => 'capitalize-input form-control']) ?>
-    <?= $form->field($model, 'suffix')->textInput(['class' => 'capitalize-input form-control']) ?>
+    <?= $form->field($model, 'suffix')->textInput(['class' => 'form-control']) ?>
     <?= $form->field($model, 'mobile_number')->textInput() ?>
     <?= $form->field($model, 'status')->textInput(['class' => 'capitalize-input form-control']) ?>
-    <?= $form->field($model, 'position')->textInput(['class' => 'capitalize-input form-control']) ?>
+    <?= $form->field($model, 'position')->textInput(['class' => ' form-control']) ?>
     <?= $form->field($model, 'property_custodian')->widget(Select2::class, [
         'data' => [0 => 'False', 1 => 'True'],
     ]) ?>
