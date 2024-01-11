@@ -165,21 +165,21 @@ $approvedBy = !empty($model->fk_approved_by) ? $model->approvedBy->getEmployeeDe
                 <tr>
                     <td style="width: 130px;" class="border-0" style="vertical-align:top;padding:0">Printed Name</td>
                     <td colspan="2" class=" text-center border-bottom-0 border-top-0 border-left-0">
-                        <u class="font-weight-bold text-uppercase"> <?= $certifiedBy['fullName'] ?></u> <br>
+                        <u class="font-weight-bold text-uppercase"> <?= $certifiedBy['fullName'] ?? '' ?></u> <br>
                     </td>
                     <td style="width: 130px;" class="border-0">Printed Name</td>
                     <td colspan="4" class="text-center border-0">
-                        <u class="font-weight-bold text-uppercase"> <?= $certifiedBudgetBy['fullName'] ?></u> <br>
+                        <u class="font-weight-bold text-uppercase"> <?= $certifiedBudgetBy['fullName'] ?? '' ?></u> <br>
                     </td>
                 </tr>
                 <tr>
                     <td class="border-right-0 border-0">Position:</td>
                     <td colspan="2" class="text-center border-bottom-0 border-top-0 border-left-0">
-                        <span> <?= $certifiedBy['position'] ?></span>
+                        <span> <?= $certifiedBy['position'] ?? ''  ?></span>
                     </td>
                     <td class="border-0">Position:</td>
                     <td colspan="4" class="border-0 text-center">
-                        <span> <?= $certifiedBudgetBy['position'] ?></span>
+                        <span> <?= $certifiedBudgetBy['position'] ?? '' ?></span>
                     </td>
                 </tr>
                 <tr>
@@ -373,7 +373,7 @@ $approvedBy = !empty($model->fk_approved_by) ? $model->approvedBy->getEmployeeDe
                 </tr>
                 <tr>
                     <td colspan="7" class="border-0 text-center pt-5 pb-4">
-                        <u class="font-weight-bold text-uppercase"> <?= $certifiedBy['fullName'] ?></u> <br>
+                        <u class="font-weight-bold text-uppercase"> <?= $certifiedBy['fullName'] ?? '' ?></u> <br>
                         <span> <?= $certifiedBy['position'] ?></span>
                     </td>
                 </tr>
@@ -445,11 +445,11 @@ $approvedBy = !empty($model->fk_approved_by) ? $model->approvedBy->getEmployeeDe
 
                     <td>Printed Name</td>
                     <td colspan="3" class="text-center">
-                        <u class="font-weight-bold text-uppercase"> <?= $certifiedCashBy['fullName'] ?></u> <br>
+                        <u class="font-weight-bold text-uppercase"> <?= $certifiedCashBy['fullName'] ?? '' ?></u> <br>
                     </td>
                     <td>Printed Name</td>
                     <td colspan="3" class="text-center">
-                        <u class="font-weight-bold text-uppercase"> <?= $approvedBy['fullName'] ?></u> <br>
+                        <u class="font-weight-bold text-uppercase"> <?= $approvedBy['fullName'] ?? '' ?></u> <br>
                     </td>
                 </tr>
                 <tr>
