@@ -168,7 +168,7 @@ if (!empty($model->fk_certified_funds_available_by)) {
                 </tr>
           ";
                 } else if ($model->cse_type === 'non_cse') {
-                    $colspan = 4;
+                    $colspan = 5;
                     $grand_total = 0;
                     echo "<tr  class='head'>
                         <th>Budget Year</th>
@@ -225,7 +225,7 @@ if (!empty($model->fk_certified_funds_available_by)) {
                     <td colspan="<?= $colspan ?>" style="text-align: center;padding-top:7rem">
 
 
-                        <u class="bold"><?= !empty($prepared_by) ? $prepared_by['employee_name'] : ''  ?></u>
+                        <u class="font-weight-bold text-uppercase "><?= !empty($prepared_by) ? $prepared_by['employee_name'] : ''  ?></u>
                         <br>
                         <span><?= !empty($prepared_by) ? $prepared_by['position'] : ''  ?></span>
                         <br>
@@ -233,7 +233,7 @@ if (!empty($model->fk_certified_funds_available_by)) {
 
                     </td>
                     <td colspan="<?= $colspan ?>" style="text-align: center;padding-top:7rem">
-                        <u class="bold"><?= !empty($reviewed_by) ? $reviewed_by['employee_name'] : ''  ?></u>
+                        <u class="font-weight-bold text-uppercase"><?= !empty($reviewed_by) ? $reviewed_by['employee_name'] : ''  ?></u>
                         <br>
                         <span><?= !empty($reviewed_by) ? $reviewed_by['position'] : ''  ?></span>
                         <br>
@@ -244,7 +244,7 @@ if (!empty($model->fk_certified_funds_available_by)) {
 
                 <tr>
                     <td colspan="<?= $colspan ?>" style="text-align: center;padding-top:7rem">
-                        <u class="bold"><?= !empty($certified_funds_available_by) ? $certified_funds_available_by['employee_name'] : ''  ?></u>
+                        <u class="font-weight-bold text-uppercase"><?= !empty($certified_funds_available_by) ? $certified_funds_available_by['employee_name'] : ''  ?></u>
                         <br>
                         <span><?= !empty($certified_funds_available_by) ? $certified_funds_available_by['position'] : ''  ?></span>
                         <br>
@@ -252,7 +252,7 @@ if (!empty($model->fk_certified_funds_available_by)) {
 
                     </td>
                     <td colspan="<?= $colspan ?>" style="text-align: center;padding-top:7rem">
-                        <u class="bold"><?= !empty($approved_by) ? $approved_by['employee_name'] : ''  ?></u>
+                        <u class="font-weight-bold text-uppercase"><?= !empty($approved_by) ? $approved_by['employee_name'] : ''  ?></u>
                         <br>
                         <span><?= !empty($approved_by) ? $approved_by['position'] : ''  ?></span>
                         <br>
