@@ -77,7 +77,7 @@ class Employee extends \yii\db\ActiveRecord
 
         return Employee::find()
             ->select([
-                "CONCAT(f_name,' ',
+                "UPPER(CONCAT(f_name,' ',
                     (CASE
                         WHEN m_name !='' THEN CONCAT(LEFT(m_name,1),'. ')
                         ELSE ''
@@ -87,7 +87,7 @@ class Employee extends \yii\db\ActiveRecord
                         WHEN employee.suffix !='' THEN CONCAT(', ',employee.suffix)
                         ELSE ''
                     END)
-                    ) as `fullName`",
+                    )) as `fullName`",
                 "employee.position",
                 "employee.property_custodian",
                 "office.office_name",
