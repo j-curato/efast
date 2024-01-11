@@ -454,9 +454,9 @@ $approvedBy = !empty($model->fk_approved_by) ? $model->approvedBy->getEmployeeDe
                 </tr>
                 <tr>
                     <td>Position</td>
-                    <td colspan="3" class="text-center"><span> <?= $certifiedCashBy['position'] ?></span></td>
+                    <td colspan="3" class="text-center"><span> <?= $certifiedCashBy['position'] ?? '' ?></span></td>
                     <td>Position</td>
-                    <td colspan="3" class="text-center"> <span> <?= $approvedBy['position'] ?></span></td>
+                    <td colspan="3" class="text-center"> <span> <?= $approvedBy['position'] ?? '' ?></span></td>
                 </tr>
                 <tr>
                     <td>Date</td>
