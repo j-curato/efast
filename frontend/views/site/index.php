@@ -8,54 +8,45 @@ use yii\helpers\Html;
 use kartik\date\DatePicker;
 use dosamigos\chartjs\ChartJsAsset;
 use aryelds\sweetalert\SweetAlertAsset;
-
+use common\models\User;
 
 $this->title = 'Dashboard';
+$user_data = User::getUserDetails();
 ?>
 <?= \yii\helpers\Html::csrfMetaTags() ?>
 <div class="site-index ">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card">
-                    <div class="card-header border-0">
-                        <div class="d-flex justify-content-between">
-                            <h3 class="card-title">Links</h3>
+    <?php
+    if (strtolower($user_data->employee->office->office_name) == 'ro') :
+    ?>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-header border-0">
+                            <div class="d-flex justify-content-between">
+                                <h3 class="card-title">Links</h3>
+                            </div>
                         </div>
-                    </div>
-                    <div class="card-body m-0 pt-0">
-                        <div class="row">
-                            <div class="col-1">
-                                <?= Html::a(
-                                    'NAS Drive',
-                                    Url::to('http://dtinas/drive', true),
-                                    ['target' => '_blank', 'class' => 'btn btn-danger']
-                                );
-                                ?>
+                        <div class="card-body m-0 pt-0">
+                            <div class="row">
+                                <div class="col-1">
+                                    <?= Html::a(
+                                        'NAS Drive',
+                                        Url::to('http://dtinas/drive', true),
+                                        ['target' => '_blank', 'class' => 'btn btn-danger']
+                                    );
+                                    ?>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        <?php endif ?>
         <div class="row">
 
 
-            <div class="col-lg-6">
-                <div class="card">
-                    <div class="card-header border-0">
-                        <div class="d-flex justify-content-between">
-                            <h3 class="card-title">Calendar of Events</h3>
-                            <a href="javascript:void(0);">View Report</a>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex">
-                            <div style="height:350;width:100%" id="calendar"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
             <?php if (YIi::$app->user->can('ro_accounting_admin') || YIi::$app->user->can('ro_cash_admin')) { ?>
                 <div class="col-lg-6">
                     <div class="card">
@@ -87,9 +78,29 @@ $this->title = 'Dashboard';
                     </div>
                 </div>
             <?php } ?>
+            <div class="col-lg-6">
+                <div class="card">
+                    <?= $this->render('@app/views/po-transmittal/monthly_transmittal_chart', ['defaultData' => []]) ?>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header border-0">
+                        <div class="d-flex justify-content-between">
+                            <h3 class="card-title">Calendar of Events</h3>
+                            <a href="javascript:void(0);">View Report</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex">
+                            <div style="height:350;width:100%" id="calendar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-    </div>
+        </div>
 </div>
 
 <div id="dots5">
@@ -212,9 +223,16 @@ $script = <<<JS
      const csrfToken = $('meta[name="csrf-token"]').attr("content");
     async function BarChart(year =''){
         const data = await getData(year)
-        document.getElementById("chartContainer").innerHTML = '&nbsp;';
-        document.getElementById("chartContainer").innerHTML = '<canvas id="myChart"></canvas>';
-        const ctx = document.getElementById('myChart').getContext('2d');
+        let chartContainer = document.getElementById("chartContainer")
+        if(  chartContainer ){
+            chartContainer.innerHTML = '&nbsp;';
+        chartContainer.innerHTML = '<canvas id="myChart"></canvas>';
+        }
+
+        let ctx = document.getElementById('myChart');
+        if(ctx){
+
+        ctx.getContext('2d')
         const myChart = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -274,6 +292,8 @@ $script = <<<JS
             var activePoints = myLineChart.getElementsAtEvent(evt);
             // => activePoints is an array of points on the canvas that are at the same position as the click event.
         };
+    }
+
    
     }
    

@@ -359,7 +359,7 @@ $total_ewt = 0;
                 <tr>
                     <td colspan='3'><?= $model->poTransaction->particular ?></td>
                     <td></td>
-                    <td><?= $model->poTransaction->poResponsibilityCenter->name ?></td>
+                    <td class='text-center'><?= $model->poTransaction->poResponsibilityCenter->name ?></td>
                     <td colspan="2">
                         <div>
                             <span>Withdrawals:</span>

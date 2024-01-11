@@ -514,4 +514,30 @@ class PoTransmittalController extends Controller
             'model' => $model,
         ]);
     }
+    public function actionMonthlyTransmittalCount()
+    {
+        $user_data = User::getUserDetails();
+        $DEFAULT_YEAR = date('Y');
+        $DEFAULT_OFFICE = $user_data->employee->office->id;
+        if (Yii::$app->request->post()) {
+            $year = !empty(Yii::$app->request->post('year')) ? Yii::$app->request->post('year') : $DEFAULT_YEAR;
+            $office_id = Yii::$app->user->can('ro_accounting_admin') ? Yii::$app->request->post('office_id') : $DEFAULT_OFFICE;
+
+            return json_encode(PoTransmittal::getMonthlyTransmittalCountByYear($year, $office_id));
+        }
+        // return $this->render('monthly_transmittal_chart', ['defaultData' => $defaultData]);
+    }
+    public function actionMonthlyTransmittalList($reportingPeriod, $officeId = null)
+    {
+
+
+        $user_data = User::getUserDetails();
+        $DEFAULT_OFFICE = $user_data->employee->office->id;
+
+        $officeId = Yii::$app->user->can('ro_accounting_admin') ? $officeId : $DEFAULT_OFFICE;
+
+        $data = PoTransmittal::getMonthlyTransmittalListByYear($reportingPeriod, $officeId);
+
+        return $this->render('monthly_transmittal_list', ['defaultData' => $data]);
+    }
 }
