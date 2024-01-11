@@ -374,7 +374,7 @@ $approvedBy = !empty($model->fk_approved_by) ? $model->approvedBy->getEmployeeDe
                 <tr>
                     <td colspan="7" class="border-0 text-center pt-5 pb-4">
                         <u class="font-weight-bold text-uppercase"> <?= $certifiedBy['fullName'] ?? '' ?></u> <br>
-                        <span> <?= $certifiedBy['position'] ?></span>
+                        <span> <?= $certifiedBy['position'] ?? '' ?></span>
                     </td>
                 </tr>
                 <tr>
