@@ -142,6 +142,7 @@ class PropertyReportsController extends \yii\web\Controller
         $book_name = Books::findOne($book_id)->name;
         $qry = new Query();
         $qry->select([
+            'detailed_property_database.property_number',
             'detailed_property_database.pc_num',
             'detailed_property_database.uacs',
             'detailed_property_database.general_ledger',
