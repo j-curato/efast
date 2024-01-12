@@ -222,7 +222,7 @@ class RpcppeController extends Controller
         ])
             ->from('detailed_property_database')
             ->join('JOIN', 'detailed_other_property_details', 'detailed_property_database.property_id = detailed_other_property_details.property_id')
-            ->andWhere(" detailed_property_database.isUnserviceable = 'serviceable'")
+            // ->andWhere(" detailed_property_database.isUnserviceable = 'serviceable'")
             ->andWhere("detailed_property_database.is_current_user = 1")
             ->andWhere("detailed_property_database.uacs = :uacs", ['uacs' => $uacs])
             ->andWhere("detailed_other_property_details.book_name = :book_name", ['book_name' => $book_name])
