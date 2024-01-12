@@ -338,7 +338,9 @@ if (!empty($model->date_completed)) {
                                     <span><?= $payee_tin_number ?></span>
                                 </td>
                                 <td colspan="3">
-                                    <span>Division:</span><br>
+                                    <span>Division: </span>
+                                    <span class="text-uppercase"><?=$model->getDivision()?></span>
+                                    <br>
                                     <span>P.O No.:</span>
                                     <span><?= $po_number ?></span>
                                     <br>

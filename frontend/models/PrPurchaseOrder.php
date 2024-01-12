@@ -217,4 +217,10 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
     {
         return $this->hasOne(PrAoq::class, ['id' => 'fk_pr_aoq_id']);
     }
+    public function getDivision()
+    {
+        return Yii::$app->db->createCommand("SELECT division FROM vw_purchase_order_index WHERE id = :id")
+            ->bindValue(":id", $this->id)
+            ->queryScalar();
+    }
 }
