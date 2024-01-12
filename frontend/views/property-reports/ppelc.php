@@ -163,7 +163,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
                 <tr>
                     <td>Qty</td>
-                    <td>Unit Cost</td>
+                    <td>Book Value</td>
                     <td>Total Cost</td>
                     <td>Nature of Repair</td>
                     <td>Amount</td>
