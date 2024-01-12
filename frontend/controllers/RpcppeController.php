@@ -198,6 +198,8 @@ class RpcppeController extends Controller
 
     private function query($uacs_id, $emp_id = null, $book_id, $office_id = null, $reporting_period)
     {
+        $lastDay = date('Y-m-t', strtotime("$reporting_period-01"));
+      
         $uacs  = Yii::$app->db->createCommand("SELECT uacs FROM chart_of_accounts WHERE id = :id")->bindValue(':id', $uacs_id)->queryScalar();
         $book_name  = Yii::$app->db->createCommand("SELECT `name` FROM books WHERE id = :id")->bindValue(':id', $book_id)->queryScalar();
 
@@ -226,7 +228,7 @@ class RpcppeController extends Controller
             ->andWhere("detailed_property_database.is_current_user = 1")
             ->andWhere("detailed_property_database.uacs = :uacs", ['uacs' => $uacs])
             ->andWhere("detailed_other_property_details.book_name = :book_name", ['book_name' => $book_name])
-            ->andWhere("detailed_property_database.strt_mnth <=:reporting_period", ['reporting_period' => $reporting_period])
+            ->andWhere("detailed_property_database.date_acquired <=:_date", ['_date' => $lastDay])
             ->andWhere("DATE_FORMAT(detailed_property_database.derecognition_date,'%Y-%m') >= :reporting_period OR detailed_property_database.derecognition_num IS NULL", ['reporting_period' => $reporting_period]);
         if (!empty($emp_id)) {
             $qry->andWhere("detailed_property_database.rcv_by_id = :emp_id", ['emp_id' => $emp_id]);
