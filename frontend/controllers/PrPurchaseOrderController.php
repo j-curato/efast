@@ -10,6 +10,7 @@ use app\models\PrPurchaseOrder;
 use app\models\PrPurchaseOrderItem;
 use app\models\PrPurchaseOrderItemsAoqItems;
 use app\models\PrPurchaseOrderSearch;
+use app\models\PurchaseOrderIndexSearch;
 use DateTime;
 use ErrorException;
 use yii\db\Query;
@@ -88,7 +89,7 @@ class PrPurchaseOrderController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new PrPurchaseOrderSearch();
+        $searchModel = new PurchaseOrderIndexSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -197,7 +198,6 @@ class PrPurchaseOrderController extends Controller
             foreach ($result as $key => $val) {
 
                 $pr_purchase_order_item = new PrPurchaseOrderItem();
-                $pr_purchase_order_item->id = YIi::$app->db->createCommand("SELECT UUID_SHORT()   % 9223372036854775807")->queryScalar();
                 $pr_purchase_order_item->fk_pr_purchase_order_id = $po_id;
 
                 if (count($result) > 1) {
@@ -208,7 +208,6 @@ class PrPurchaseOrderController extends Controller
                 if ($pr_purchase_order_item->save(false)) {
                     foreach ($val as $val2) {
                         $aoq_items = new PrPurchaseOrderItemsAoqItems();
-                        $aoq_items->id  = Yii::$app->db->createCommand("SELECT UUID_SHORT()   % 9223372036854775807")->queryScalar();
                         $aoq_items->fk_purchase_order_item_id = $pr_purchase_order_item->id;
                         $aoq_items->fk_aoq_entries_id = $val2['id'];
                         if ($aoq_items->save(false)) {
@@ -233,7 +232,6 @@ class PrPurchaseOrderController extends Controller
         if ($model->load(Yii::$app->request->post())) {
             try {
                 $txn = MyHelper::beginTxn();
-                $model->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()   % 9223372036854775807")->queryScalar();
                 $model->po_number = $this->generatePoNumber($model->fk_contract_type_id, $model->po_date, $model->fk_office_id);
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));

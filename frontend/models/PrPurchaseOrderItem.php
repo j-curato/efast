@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use app\behaviors\GenerateIdBehavior;
+use app\behaviors\HistoryLogsBehavior;
 use Yii;
 
 /**
@@ -16,6 +18,13 @@ use Yii;
  */
 class PrPurchaseOrderItem extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            HistoryLogsBehavior::class,
+            GenerateIdBehavior::class
+        ];
+    }
     /**
      * {@inheritdoc}
      */
@@ -30,7 +39,7 @@ class PrPurchaseOrderItem extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['fk_pr_purchase_order_id', 'fk_pr_aoq_entries_id', 'is_lowest'], 'integer'],
+            [['fk_pr_purchase_order_id', 'fk_pr_aoq_entries_id', 'is_lowest', 'is_cancelled'], 'integer'],
             [[
                 'id',
                 'fk_pr_purchase_order_id',
@@ -52,6 +61,7 @@ class PrPurchaseOrderItem extends \yii\db\ActiveRecord
             'fk_pr_purchase_order_id' => 'Fk Pr Purchase Order ID',
             'fk_pr_aoq_entries_id' => 'Fk Pr Aoq Entries ID',
             'is_lowest' => 'Is Lowest',
+            'is_cancelled' => 'Cancelled',
         ];
     }
 

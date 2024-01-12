@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use app\behaviors\GenerateIdBehavior;
+use app\behaviors\HistoryLogsBehavior;
 use Yii;
 use yii\helpers\ArrayHelper;
 
@@ -23,6 +25,13 @@ use yii\helpers\ArrayHelper;
  */
 class PrPurchaseOrder extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            HistoryLogsBehavior::class,
+            GenerateIdBehavior::class
+        ];
+    }
     /**
      * {@inheritdoc}
      */
@@ -105,6 +114,7 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
     public function getItems()
     {
         $query = Yii::$app->db->createCommand("SELECT 
+            pr_purchase_order_item.id,
             pr_purchase_order_item.serial_number,
             payee.registered_name as payee,
             payee.account_name,

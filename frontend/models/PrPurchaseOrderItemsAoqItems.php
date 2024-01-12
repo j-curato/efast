@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use app\behaviors\GenerateIdBehavior;
 use Yii;
 
 /**
@@ -13,6 +14,12 @@ use Yii;
  */
 class PrPurchaseOrderItemsAoqItems extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            GenerateIdBehavior::class
+        ];
+    }
     /**
      * {@inheritdoc}
      */
