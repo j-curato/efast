@@ -222,7 +222,7 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 </style>
 <?php
- 
+
 $this->registerJsFile("@web/js/moment.min.js", ['depends' => [JqueryAsset::class]]);
 $this->registerCssFile("@web/frontend/web/css/site.css");
 ?>
@@ -262,7 +262,7 @@ $this->registerCssFile("@web/frontend/web/css/site.css");
             <td>${val.date_acquired}</td>
             <td>${val.pc_num}</td>
             <td>1</td>
-            <td class='amt'>${thousands_separators(val.acquisition_amount)}</td>
+            <td class='amt'>${thousands_separators(val.book_val)}</td>
             <td class='amt'>${thousands_separators(val.acquisition_amount)}</td>
             <td class='amt'>${thousands_separators(val.depreciated_amt)}</td>
             <td></td>
