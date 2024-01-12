@@ -127,7 +127,9 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
             pr_stock.stock_title as `description`,
             pr_stock.bac_code,
             unit_of_measure.unit_of_measure,
-            pr_aoq_entries.amount * pr_purchase_request_item.quantity as total_cost
+            pr_aoq_entries.amount * pr_purchase_request_item.quantity as total_cost,
+            pr_purchase_order_item.is_cancelled as is_cancelled_item
+            
             
             FROM pr_purchase_order
             LEFT JOIN pr_purchase_order_item ON pr_purchase_order.id = pr_purchase_order_item.fk_pr_purchase_order_id

@@ -1,7 +1,9 @@
 <?php
 
-use aryelds\sweetalert\SweetAlertAsset;
+use yii\helpers\Url;
 use yii\helpers\Html;
+use aryelds\sweetalert\SweetAlertAsset;
+use app\components\helpers\SweetAlertHelper;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\PrPurchaseOrder */
@@ -46,37 +48,36 @@ if (!empty($model->date_work_begun)) {
 if (!empty($model->date_completed)) {
     $date_completed  = DateTime::createFromFormat('Y-m-d', $model->date_completed)->format('F d, Y');
 }
+// echo json_encode($model->getItems());
 ?>
 <div class="pr-purchase-order-view">
 
     <div class="container">
         <div class="card p-2">
 
-            <p>
+            <span>
                 <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-                <?php
-                if (!$model->is_cancelled) {
-                    echo  Html::a('Cancel', ['cancel', 'id' => $model->id], [
+                <?= Html::a('AOQ Link ', ['pr-aoq/view', 'id' => $model->fk_pr_aoq_id], ['class' => 'btn btn-link ', 'style' => 'margin:3px']) ?>
+
+                <?= !$model->is_cancelled ?
+                    Html::a('Cancel', ['cancel', 'id' => $model->id], [
                         'class' => 'btn btn-danger',
                         'id' => 'cancel'
-
-                    ]);
-                }
-                echo   Html::a('AOQ Link ', ['pr-aoq/view', 'id' => $model->fk_pr_aoq_id], ['class' => 'btn btn-link ', 'style' => 'margin:3px'])
-                ?>
-            </p>
+                    ]) : '<span class="text-danger">This Purchase Order is Cancelled</span>' ?>
+            </span>
         </div>
 
-        <div class="card p-2">
+        <?php
+        $row_number = 0;
+        foreach ($model->getItems() as $index => $val) {
+        ?>
+            <div class="card p-2">
 
-            <?php
-            $row_number = 0;
-
-            foreach ($model->getItems() as $index => $val) {
-            ?>
                 <?php
                 $po_number = $index;
                 $payee =  $val[0]['payee'];
+                $poItemId =  $val[0]['id'];
+                $is_cancelled_item =  $val[0]['is_cancelled_item'];
                 $payee_address =   !empty($val[0]['address']) ? $val[0]['address'] : '';
                 $payee_tin_number =   !empty($val[0]['tin_number']) ? $val[0]['tin_number'] : '';
                 $total_amount = intval($val[0]['quantity']) * floatval($val[0]['unit_cost']);
@@ -307,10 +308,20 @@ if (!empty($model->date_completed)) {
                     <table id="purchase_order">
                         <tbody>
                             <tr>
-                                <th style="text-align: center;" colspan="6">
+                                <?php if (!$model->is_cancelled) : ?>
+                                    <th colspan="6" class="text-left text-danger border-0 p-0">
+                                        <?= !$is_cancelled_item ? Html::a('Cancel Item', ['cancel', 'id' => $model->id], [
+                                            'class' => 'btn btn-danger',
+                                            'onclick' => SweetAlertHelper::getCancelConfirmation(Url::to(['cancel-item', 'id' => $poItemId]))
+                                        ]) : "$po_number is  Cancelled" ?>
+                                    </th>
+                                <?php endif ?>
+                            </tr>
+                            <tr>
+                                <th class="text-center" colspan="6">
                                     <span>PURCHASE ORDER</span>
                                     <br>
-                                    <span>Department of Trade and Industy</span>
+                                    <span>Department of Trade and Industry</span>
                                     <br>
                                     <span>Entity Name</span>
                                 </th>
@@ -318,32 +329,24 @@ if (!empty($model->date_completed)) {
                             <tr>
                                 <td colspan="3">
                                     <span>Supplier:</span>
-                                    <span><?php
-                                            echo $payee;
-
-                                            ?></span>
+                                    <span><?= $payee ?></span>
                                     <br>
                                     <span>Address:</span>
-                                    <span><?php
-                                            echo $payee_address
-                                            ?></span>
+                                    <span><?= $payee_address ?></span>
                                     <br>
                                     <span>TIN:</span>
-                                    <span><?php
-                                            echo $payee_tin_number
-                                            ?></span>
+                                    <span><?= $payee_tin_number ?></span>
                                 </td>
                                 <td colspan="3">
+                                    <span>Division:</span><br>
                                     <span>P.O No.:</span>
-                                    <span><?php echo $po_number ?></span>
+                                    <span><?= $po_number ?></span>
                                     <br>
                                     <span>Date:</span>
-                                    <span><?php
-                                            echo $po_date;
-                                            ?></span>
+                                    <span><?= $po_date ?></span>
                                     <br>
                                     <span>Mode of Procurement:</span>
-                                    <span><?php echo $model->modeOfProcurement->mode_name ?></span>
+                                    <span><?= $model->modeOfProcurement->mode_name ?></span>
                                 </td>
                             </tr>
                             <tr>
@@ -355,20 +358,20 @@ if (!empty($model->date_completed)) {
                             <tr>
                                 <td colspan="3">
                                     <span>Place of Delivery:</span>
-                                    <span><?php echo $model->place_of_delivery ?></span>
+                                    <span><?= $model->place_of_delivery ?></span>
                                     <br>
                                     <span>Date of Delivery:</span>
-                                    <span><?php echo $model->delivery_date ?></span>
+                                    <span><?= $model->delivery_date ?></span>
 
                                 </td>
                                 <td colspan="3">
                                     <span>Delivery Term:</span>
-                                    <span><?php echo $model->delivery_term ?></span>
+                                    <span><?= $model->delivery_term ?></span>
 
 
                                     <br>
                                     <span>Payment Term:</span>
-                                    <span><?php echo $model->payment_term ?></span>
+                                    <span><?= $model->payment_term ?></span>
 
 
                                 </td>
@@ -393,7 +396,7 @@ if (!empty($model->date_completed)) {
                                 <td>{$val2['unit_of_measure']}</td>
                                 <td>
                                 
-                                    <span style='font-weight:bold'>  {$val2['description']}</span>
+                                    <span class='font-weight-bold'>  {$val2['description']}</span>
                                     <br>
                                     <span style='font-style:italic'>
                                     {$val2['specification']}
@@ -409,25 +412,21 @@ if (!empty($model->date_completed)) {
                             ?>
                             <tr>
                                 <th colspan="5">Grand Total</th>
-                                <th style="text-align: right;"><?php echo number_format($grand_total) ?></th>
+                                <th class="text-right"><?php echo number_format($grand_total) ?></th>
                             </tr>
                             <tr>
                                 <td colspan="6">
                                     <span>Purpose: </span>
-                                    <span style="font-weight: bold;">
-                                        <?php
-                                        echo $purpose;
-                                        ?>
+                                    <span class="font-weight-bold">
+                                        <?= $purpose ?>
                                     </span>
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="6">
                                     <span>(Total Amount in Words): </span>
-                                    <span style="font-weight: bold;">
-                                        <?php
-                                        echo strtoupper(Yii::$app->memem->convertNumberToWord($grand_total));
-                                        ?>
+                                    <span class="font-weight-bold">
+                                        <?= strtoupper(Yii::$app->memem->convertNumberToWord($grand_total)) ?>
                                     </span>
                                 </td>
                             </tr>
@@ -437,13 +436,12 @@ if (!empty($model->date_completed)) {
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="3" style="text-align: center; border-right:none">
-                                    <span style="float: left;">Conforme:</span>
+                                <td colspan="3" class="text-center  border-right-0">
+                                    <span class="float-left">Conforme:</span>
                                     <br>
                                     <br>
                                     <br>
-                                    <span style="text-decoration:underline;font-weight:bold"><?= $payee ?></span>
-
+                                    <u class="font-weight-bold"><?= $payee ?></u>
                                     <br>
                                     <span>Signature over Printed Name of Supplier</span>
                                     <br>
@@ -452,39 +450,36 @@ if (!empty($model->date_completed)) {
                                     <br>
                                     <span>Date</span>
                                 </td>
-                                <td colspan="3" style="text-align: center; border-left:none">
-                                    <span style="float: left;">Very truly yours,</span>
+                                <td colspan="3" class="text-center border-left-0">
+                                    <span class="float-left">Very truly yours,</span>
                                     <br>
                                     <br>
                                     <br>
-                                    <span style="text-decoration: underline; font-weight:bold">
-                                        <?php
-                                        echo strtoupper($model->authorizedOfficial->f_name . ' ' . $model->authorizedOfficial->m_name[0] . '. ' . $model->authorizedOfficial->l_name)
-                                        ?>
-                                    </span>
+                                    <u class=" font-weight-bold">
+                                        <?= strtoupper($model->authorizedOfficial->f_name . ' ' . $model->authorizedOfficial->m_name[0] . '. ' . $model->authorizedOfficial->l_name) ?>
+                                    </u>
                                     <br>
                                     <span>Signature over Printed Name of Authorized Official</span>
                                     <br>
                                     <br>
-                                    <span><?php echo $model->authorizedOfficial->position ?></span>
+                                    <span><?= $model->authorizedOfficial->position ?></span>
                                     <br>
                                     <span>Designation</span>
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="3" style="text-align: center;">
-                                    <span style="float: left;">Fund Cluster:</span>
-                                    <span style="float: left;">_______________________</span>
+                                <td colspan="3" class="text-center">
+                                    <span class="float-left">Fund Cluster:</span>
+                                    <span class="float-left">_______________________</span>
                                     <br>
-                                    <span style="float: left;">Funds Available:</span>
-                                    <span style="float: left;">_______________________</span>
+                                    <span class="float-left">Funds Available:</span>
+                                    <span class="float-left">_______________________</span>
                                     <br>
                                     <br>
                                     <br>
-                                    <span style="text-decoration:underline; font-weight:bold;">
-                                        <?php
-                                        echo strtoupper($model->accountingUnit->f_name . ' ' . $model->accountingUnit->m_name[0] . '. ' . $model->accountingUnit->l_name)
-                                        ?></span>
+                                    <u class=" font-weight-bold">
+                                        <?= strtoupper($model->accountingUnit->f_name . ' ' . $model->accountingUnit->m_name[0] . '. ' . $model->accountingUnit->l_name) ?>
+                                    </u>
                                     <br>
                                     <span style="margin-left:auto;width:100%">Signature over Printed Name of Chief Accountant/Head of </span>
                                     <br>
@@ -506,8 +501,8 @@ if (!empty($model->date_completed)) {
                     </table>
                 <?php } ?>
                 <p style='page-break-after:always;'></p>
-            <?php } ?>
-        </div>
+            </div>
+        <?php } ?>
 
         <div class="card p-2">
             <table id="rfi_links" class="table table-hover">

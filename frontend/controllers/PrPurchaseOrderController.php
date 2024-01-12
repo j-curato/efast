@@ -540,4 +540,19 @@ class PrPurchaseOrderController extends Controller
             }
         }
     }
+    public function actionCancelItem($id)
+    {
+        if (Yii::$app->request->post()) {
+            try {
+                $model = PrPurchaseOrderItem::findOne($id);
+                $model->is_cancelled =  $model->is_cancelled ? 0 : 1;
+                if (!$model->save(false)) {
+                    throw new ErrorException('Save Failed');
+                }
+                return true;
+            } catch (ErrorException $e) {
+                return  $e->getMessage();
+            }
+        }
+    }
 }
