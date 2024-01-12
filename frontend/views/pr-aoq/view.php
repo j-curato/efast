@@ -371,7 +371,7 @@ $this->params['breadcrumbs'][] = $this->title;
 </style>
 
 <?php
-$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+// $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 SweetAlertAsset::register($this);
 ?>
 <script>
@@ -515,7 +515,7 @@ SweetAlertAsset::register($this);
 
                 },
                 formatAmount(amount) {
-                    amount = parseInt(amount)
+                    // amount = parseInt(amount)
                     if (typeof amount === 'number' && !isNaN(amount)) {
                         return amount.toLocaleString(); // Formats with commas based on user's locale
                     }
