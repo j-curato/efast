@@ -309,7 +309,7 @@ if (!empty($model->date_completed)) {
                         <tbody>
                             <tr>
                                 <?php if (!$model->is_cancelled) : ?>
-                                    <th colspan="6" class="text-left text-danger border-0 p-0">
+                                    <th colspan="6" class="text-left text-danger border-0 p-1">
                                         <?= !$is_cancelled_item ? Html::a('Cancel Item', ['cancel', 'id' => $model->id], [
                                             'class' => 'btn btn-danger',
                                             'onclick' => SweetAlertHelper::getCancelConfirmation(Url::to(['cancel-item', 'id' => $poItemId]))
