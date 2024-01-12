@@ -260,7 +260,7 @@ $this->registerCssFile("@web/frontend/web/css/site.css");
             // useful_life
             const data_row = `<tr>
             <td>${val.date_acquired}</td>
-            <td>${val.property_number}</td>
+            <td>${val.pc_num}</td>
             <td>1</td>
             <td class='amt'>${thousands_separators(val.book_val)}</td>
             <td class='amt'>${thousands_separators(val.acquisition_amount)}</td>
