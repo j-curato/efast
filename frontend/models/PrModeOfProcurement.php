@@ -28,8 +28,10 @@ class PrModeOfProcurement extends \yii\db\ActiveRecord
         return [
             [['mode_name'], 'string', 'max' => 255],
             [['description'], 'string'],
+            [['is_bidding'], 'integer'],
+            [['is_bidding', 'mode_name'], 'required'],
             [[
-                'id',
+
                 'mode_name',
 
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
@@ -45,6 +47,15 @@ class PrModeOfProcurement extends \yii\db\ActiveRecord
             'id' => 'ID',
             'mode_name' => 'Mode Name',
             'description' => 'Description',
+            'is_bidding' => 'Is BIdling',
         ];
+    }
+
+    public static function getModeOfProcurementsA()
+    {
+        return self::find()
+            ->addSelect(['id', 'mode_name','is_bidding'])
+            ->asArray()
+            ->all();
     }
 }
