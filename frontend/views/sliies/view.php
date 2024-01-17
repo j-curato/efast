@@ -109,7 +109,7 @@ $accounting_head = !empty($model->fk_accounting_head) ?  $accounting_head =  $em
                 </tr>
                 <tr>
                     <th colspan="9" class="no-bdr">
-                        <span>To: MR. AUGUSTUS MANUEL E. MANTUA</span><br>
+                        <span>To: MRS. EMELITA I. ESCALANTE</span><br>
                         &emsp;&nbsp; <span>LAND BANK MANAGER,Butuan Branch</span><br>
                         &emsp; &nbsp;<span>Onghoc Bldg. Montilla Blvd, Butuan City</span>
 
