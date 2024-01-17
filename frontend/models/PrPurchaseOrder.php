@@ -47,7 +47,7 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
     {
         return [
             [[
-                'id', 'po_number',
+                'po_number',
                 'fk_contract_type_id',
                 'fk_mode_of_procurement_id',
                 'fk_pr_aoq_id', 'delivery_term',
