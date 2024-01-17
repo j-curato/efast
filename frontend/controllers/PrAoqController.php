@@ -145,6 +145,7 @@ class PrAoqController extends Controller
             try {
                 $transaction  = Yii::$app->db->beginTransaction();
                 $items = call_user_func_array('array_merge',  Yii::$app->request->post('items') ?? []);
+                // return json_encode($items);
                 $nopToDate = $model->rfq->getNopToDate();
                 $aoqDeadline =  !empty($nopToDate) ? DateTime::createFromFormat('Y-m-d H:i:s', $nopToDate)->format('Y-m-d')
                     : DateTime::createFromFormat('Y-m-d H:i:s', $model->rfq->deadline)->format('Y-m-d');
@@ -379,7 +380,7 @@ class PrAoqController extends Controller
             $id = Yii::$app->request->post('id');
             $rfqItems = PrRfq::findOne($id)->getItems();
             foreach ($rfqItems as $index => $item) {
-                $rfqItems[$index]['rfq_item_id'] = $item['item_id'];
+                $rfqItems[$index]['rfq_item_id'] = $item['id'];
             }
             return json_encode($rfqItems);
         }

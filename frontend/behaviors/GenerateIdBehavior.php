@@ -17,6 +17,9 @@ class GenerateIdBehavior extends Behavior
 
     public function generateId()
     {
-        $this->owner->id = Yii::$app->db->createCommand('SELECT UUID_SHORT() % 9223372036854775807')->queryScalar();
+
+        if ($this->owner->isNewRecord) {
+            $this->owner->id = Yii::$app->db->createCommand('SELECT UUID_SHORT() % 9223372036854775807')->queryScalar();
+        }
     }
 }

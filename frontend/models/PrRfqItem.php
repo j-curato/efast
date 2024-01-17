@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use app\behaviors\GenerateIdBehavior;
+use app\behaviors\HistoryLogsBehavior;
 use Yii;
 
 /**
@@ -13,6 +15,13 @@ use Yii;
  */
 class PrRfqItem extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            HistoryLogsBehavior::class,
+            GenerateIdBehavior::class
+        ];
+    }
     /**
      * {@inheritdoc}
      */
@@ -27,13 +36,8 @@ class PrRfqItem extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['pr_rfq_id', 'pr_purchase_request_item_id'], 'integer'],
-            [[
-                'id',
-                'pr_rfq_id',
-                'pr_purchase_request_item_id',
-
-            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+            [['pr_rfq_id', 'pr_purchase_request_item_id', 'is_deleted'], 'integer'],
+            [['pr_rfq_id', 'pr_purchase_request_item_id'], 'required'],
         ];
     }
 
@@ -44,6 +48,7 @@ class PrRfqItem extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
+            'is_deleted' => 'is Deleted',
             'pr_rfq_id' => 'Pr Rfq ID',
             'pr_purchase_request_item_id' => 'Pr Purchase Request Item ID',
         ];

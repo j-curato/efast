@@ -16,28 +16,22 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="pr-aoq-view">
 
     <div class="card p-2">
-        <p>
+        <span>
             <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-
-            <?php
-            // if (Yii::$app->user->can('po_procurement_admin') || Yii::$app->user->can('ro_procurement_admin')) {
-            $btn_color = $model->is_cancelled ? 'btn btn-success' : 'btn btn-danger';
-            $cncl_txt = $model->is_cancelled ? 'UnCancel' : 'Cancel';
-            if (!$model->is_cancelled) {
-                echo  Html::a($cncl_txt, ['cancel', 'id' => $model->id], [
-                    'class' => $btn_color,
+            <?= !$model->is_cancelled ?
+                Html::a('Cancel', ['cancel', 'id' => $model->id], [
+                    'class' => "btn btn-danger",
                     'id' => 'cancel',
                     'type' => 'button'
 
-                ]);
-            }
-            // }
-            echo   Html::a('RFQ Link ', ['pr-rfq/view', 'id' => $model->pr_rfq_id], ['class' => 'btn btn-link ', 'style' => 'margin:3px'])
+                ])
+                : 'Cancelled'
             ?>
-        </p>
+            <?= Html::a('RFQ Link ', ['pr-rfq/view', 'id' => $model->pr_rfq_id], ['class' => 'btn btn-link ', 'style' => 'margin:3px']) ?>
+        </span>
     </div>
 
-    <div id="main">
+    <div id="mainVue">
         <div class="card p-2">
 
 
@@ -435,7 +429,7 @@ SweetAlertAsset::register($this);
 <script>
     $(document).ready(function() {
         new Vue({
-            el: "#main",
+            el: "#mainVue",
             data: {
                 items: <?= json_encode($model->getViewItems()) ?>,
                 payees: <?= json_encode(ArrayHelper::getColumn($model->getItemPayees(), 'payee')) ?>,

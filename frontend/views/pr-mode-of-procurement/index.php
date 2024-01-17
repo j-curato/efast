@@ -1,10 +1,7 @@
 <?php
 
-use yii\helpers\Url;
 use yii\helpers\Html;
-use yii\web\JqueryAsset;
 use kartik\grid\GridView;
-use app\components\helpers\MyHelper;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\PrModeOfProcurementSearch */
@@ -18,11 +15,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Yii::$app->user->can('create_mode_of_procurement') ? Html::a('<i class="fa fa-plus"></i> Create ', ['create'], ['class' => 'btn btn-success mdModal']) : '' ?>
-
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); 
-    ?>
+
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -47,15 +42,4 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]); ?>
 
-
 </div>
-<?php
-
-$this->registerJsFile(
-    '@web/frontend/web/js/globalFunctions.js',
-    [
-        'depends' => [JqueryAsset::class]
-    ]
-);
-
-?>

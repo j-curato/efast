@@ -8,16 +8,23 @@ use app\models\Office;
 use kartik\date\DatePicker;
 use kartik\select2\Select2;
 use yii\helpers\ArrayHelper;
-use dosamigos\chartjs\ChartJsAsset;
-use aryelds\sweetalert\SweetAlertAsset;
+use yii\helpers\Html;
 
 $this->title = 'Dashboard';
 ?>
 <?= \yii\helpers\Html::csrfMetaTags() ?>
-<div class="site-index p-0" id="mainVue" >
+<div class="site-index p-0" id="mainVue">
     <div class="card-header border-0">
         <div class="d-flex justify-content-between">
             <h3 class="card-title">PO DV Transmittals</h3>
+            <div>
+                <?= Html::a(
+                    '<i class="fa fa-question-circle"></i>Help',
+                    '@web/module_guides/po_dv_transmittal_summary.pdf',
+                    ['target' => '_blank', 'class' => '']
+                ) ?>
+            </div>
+
         </div>
     </div>
     <div class="card-body">

@@ -2,8 +2,13 @@
 
 namespace app\models;
 
+use app\behaviors\GenerateIdBehavior;
+use app\behaviors\HistoryLogsBehavior;
 use DateTime;
+use ErrorException;
 use Yii;
+use yii\db\Expression;
+use yii\db\Query;
 
 /**
  * This is the model class for table "pr_rfq".
@@ -18,6 +23,13 @@ use Yii;
  */
 class PrRfq extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            HistoryLogsBehavior::class,
+            GenerateIdBehavior::class
+        ];
+    }
     /**
      * {@inheritdoc}
      */
@@ -36,11 +48,23 @@ class PrRfq extends \yii\db\ActiveRecord
                 'pr_purchase_request_id',
                 '_date',
                 'deadline',
-                'fk_office_id'
+                'fk_office_id',
+                'is_early_procurement',
+                'source_of_fund',
+                'mooe_amount',
+                'co_amount',
+                'fk_mode_of_procurement_id',
             ], 'required'],
-            [['id', 'pr_purchase_request_id', 'bac_composition_id', 'is_cancelled', 'fk_office_id', 'is_deleted'], 'integer'],
+            [[
+                'id', 'pr_purchase_request_id', 'bac_composition_id', 'is_cancelled', 'fk_office_id', 'is_deleted',
+
+                'is_early_procurement',
+
+                'fk_mode_of_procurement_id'
+            ], 'integer'],
+            [['mooe_amount', 'co_amount'], 'number'],
             [['_date', 'created_at', 'deadline', 'project_location', 'cancelled_at'], 'safe'],
-            [['rfq_number', 'employee_id', 'province'], 'string', 'max' => 255],
+            [['rfq_number', 'employee_id', 'province', 'source_of_fund'], 'string', 'max' => 255],
             [['rfq_number'], 'unique'],
             [['id'], 'unique'],
             [[
@@ -48,62 +72,7 @@ class PrRfq extends \yii\db\ActiveRecord
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
         ];
     }
-    public function beforeSave($insert)
-    {
-        if (parent::beforeSave($this)) {
-            if ($this->isNewRecord) {
-                if (empty($this->rfq_number)) {
-                    $this->rfq_number = $this->generateRfqNumber();
-                }
-                if (empty($this->id)) {
-                    $this->id =  Yii::$app->db->createCommand("SELECT UUID_SHORT()  % 9223372036854775807")->queryScalar();
-                }
-            }
-            return true;
-        }
-        return false;
-    }
 
-    public function getAoqLinks()
-    {
-        return Yii::$app->db->createCommand("SELECT id, aoq_number,pr_aoq.is_cancelled  FROM pr_aoq WHERE pr_rfq_id = :id")
-            ->bindValue(':id', $this->id)
-            ->queryAll();
-    }
-    public function getItems()
-    {
-
-        return Yii::$app->db->createCommand("SELECT 
-            CAST(pr_rfq_item.id AS CHAR(50)) as item_id,
-            CAST(pr_purchase_request_item.id as CHAR(50)) as prItemId,
-            pr_purchase_request_item.specification,
-            pr_purchase_request_item.quantity,
-            pr_purchase_request_item.unit_cost,
-            pr_stock.stock_title,
-            pr_stock.bac_code,
-            unit_of_measure.unit_of_measure
-            FROM pr_rfq_item
-            JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
-            JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id
-            JOIN pr_stock ON pr_purchase_request_item.pr_stock_id = pr_stock.id
-            LEFT JOIN unit_of_measure ON pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id
-            WHERE pr_rfq_item.pr_rfq_id = :id")
-            ->bindValue(':id', $this->id)
-            ->queryAll();
-    }
-    private function generateRfqNumber()
-    {
-        $d  = DateTime::createFromFormat('Y-m-d', $this->_date);
-        $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(pr_rfq.rfq_number,'-',-1) AS UNSIGNED)  as last_num FROM pr_rfq 
-                WHERE rfq_number LIKE :_date 
-                AND fk_office_id = :office_id
-                ORDER BY last_num DESC LIMIT 1")
-            ->bindValue('_date', '%' . $d->format('Y') . '%')
-            ->bindValue('office_id', $this->fk_office_id)
-            ->queryScalar();
-        $num = !empty($query) ? intval($query) + 1 : 1;
-        return strtoupper($this->office->office_name) . '-' . $this->_date . '-' . str_pad($num, 4, '0', STR_PAD_LEFT);
-    }
 
     /**
      * {@inheritdoc}
@@ -125,7 +94,11 @@ class PrRfq extends \yii\db\ActiveRecord
             'is_cancelled' => 'is Cancelled',
             'fk_office_id' => 'Office',
             'is_deleted' => 'is Deleted',
-
+            'is_early_procurement' => 'is Early Procurement',
+            'source_of_fund' => 'Source of Fund',
+            'mooe_amount' => 'MOOE Amount',
+            'co_amount' => 'CO Amount',
+            'fk_mode_of_procurement_id' => 'Mode of Procurement',
 
         ];
     }
@@ -139,7 +112,7 @@ class PrRfq extends \yii\db\ActiveRecord
     }
     public function getCanvasser()
     {
-        return $this->hasOne(Employee::class, ['id' => 'employee_id']);
+        return $this->hasOne(Employee::class, ['employee_id' => 'employee_id']);
     }
     public function getOffice()
     {
@@ -148,6 +121,11 @@ class PrRfq extends \yii\db\ActiveRecord
     public function getNoticeOfPostponement()
     {
         return $this->hasOne(NoticeOfPostponementItems::class, ['fk_rfq_id' => 'id']);
+    }
+    public function getObservers()
+    {
+        return $this->hasMany(RfqObservers::class, ['fk_rfq_id' => 'id'])
+            ->andWhere(['is_deleted' => false]);
     }
     public function getNopToDate()
     {
@@ -161,5 +139,150 @@ class PrRfq extends \yii\db\ActiveRecord
                     AND notice_of_postponement_items.fk_rfq_id = :id")
             ->bindValue(':id', $this->id)
             ->queryScalar();
+    }
+    public function beforeSave($insert)
+    {
+        if (parent::beforeSave($this)) {
+            if ($this->isNewRecord) {
+                if (empty($this->rfq_number)) {
+                    $this->rfq_number = $this->generateRfqNumber();
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+
+    public function getAoqLinks()
+    {
+        return Yii::$app->db->createCommand("SELECT id, aoq_number,pr_aoq.is_cancelled  FROM pr_aoq WHERE pr_rfq_id = :id")
+            ->bindValue(':id', $this->id)
+            ->queryAll();
+    }
+    public function getItems()
+    {
+        return PrRfqItem::find()
+            ->addSelect([
+                new Expression("CAST(pr_rfq_item.id AS CHAR(50)) as id"),
+                new Expression("CAST(pr_purchase_request_item.id as CHAR(50)) as pr_item_id"),
+                "pr_purchase_request_item.specification",
+                "pr_purchase_request_item.quantity",
+                "pr_purchase_request_item.unit_cost",
+                "pr_stock.stock_title",
+                "pr_stock.bac_code",
+                "unit_of_measure.unit_of_measure"
+            ])
+
+            ->join("JOIN", "pr_purchase_request_item", "pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id")
+            ->join("JOIN", "pr_purchase_request", "pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id")
+            ->join("JOIN", "pr_stock", "pr_purchase_request_item.pr_stock_id = pr_stock.id")
+            ->join("LEFT JOIN", "unit_of_measure", "pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id")
+            ->andWhere([
+                "pr_rfq_item.pr_rfq_id" => $this->id
+            ])
+            ->asArray()
+            ->all();
+    }
+    private function generateRfqNumber()
+    {
+        $d  = DateTime::createFromFormat('Y-m-d', $this->_date);
+        $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(pr_rfq.rfq_number,'-',-1) AS UNSIGNED)  as last_num FROM pr_rfq 
+                WHERE rfq_number LIKE :_date 
+                AND fk_office_id = :office_id
+                ORDER BY last_num DESC LIMIT 1")
+            ->bindValue('_date', '%' . $d->format('Y') . '%')
+            ->bindValue('office_id', $this->fk_office_id)
+            ->queryScalar();
+        $num = !empty($query) ? intval($query) + 1 : 1;
+        return strtoupper($this->office->office_name) . '-' . $this->_date . '-' . str_pad($num, 4, '0', STR_PAD_LEFT);
+    }
+
+    public function insertItems($items)
+    {
+
+
+        try {
+            $itemModels = [];
+            foreach ($items as $item) {
+                if (empty($item['id'])) {
+
+                    // $model = !empty($item['id']) ? PrRfqItem::findOne($item['id']) : new PrRfqItem();
+                    $model =  new PrRfqItem();
+                    $model->attributes = $item;
+                    $model->pr_rfq_id = $this->id;
+                    $itemModels[] = $model;
+                }
+            }
+            foreach ($itemModels as $model) {
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException("Item Model Save Failed");
+                }
+            }
+            // CHECK IF THE PURCHASE REQUEST ID ALREADY EXISTS IN PR_RFQ_ITEM_TABLE WITH THE SAME RFQ_ID
+            // $check = Yii::$app->db->createCommand("SELECT EXISTS(SELECT 1 FROM pr_rfq_item WHERE pr_rfq_id = :rfq_id AND pr_purchase_request_item_id  = :pr_item_id)")
+            //     ->bindValue(':rfq_id', $model_id)
+            //     ->bindValue(':pr_item_id', $itm['pr_id'])
+            //     ->queryScalar();
+            // if ($check != 1) {
+            //     $rfq_item = new PrRfqItem();
+            //     $rfq_item->pr_rfq_id = $model_id;
+            //     $rfq_item->pr_purchase_request_item_id = $itm['pr_id'];
+            //     if (!$rfq_item->validate()) {
+            //         return $rfq_item->errors;
+            //     }
+            //     if (!$rfq_item->save(false)) {
+            //         return 'RFQ Item save failed';
+            //     }
+            // }
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
+    }
+    public function insertObservers($observers)
+    {
+        try {
+            $this->deletedObservers($observers);
+            $observerModels  = [];
+            foreach ($observers as $observer) {
+
+                $model = !empty($observer['id']) ? RfqObservers::findOne($observer['id']) : new RfqObservers();
+                $model->attributes = $observer;
+                $model->fk_rfq_id = $this->id;
+                $observerModels[] = $model;
+            }
+
+            foreach ($observerModels as $model) {
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException("Observer Item Save Failed");
+                }
+            }
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
+    }
+    private function deletedObservers($observers)
+    {
+        $params=[];
+        $ids = array_column($observers, 'id');
+        if (!empty($ids)) {
+            $sql  = ' AND ';
+            $sql .= Yii::$app->db->queryBuilder->buildCondition(['NOT IN', 'id', $ids], $params);
+        }
+        Yii::$app->db->createCommand("UPDATE tbl_rfq_observers
+            SET tbl_rfq_observers.is_deleted = 1 
+            WHERE tbl_rfq_observers.fk_rfq_id = :id
+            AND tbl_rfq_observers.is_deleted= 0
+            $sql", $params)
+            ->bindValue(':id', $this->id)
+            ->execute();
     }
 }

@@ -109,33 +109,14 @@ class PrRfqController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    private function insertItems($model_id, $items)
+
+    private function getSelectedItems($items)
     {
-        // var_dump($items);
-        // die();
-        foreach ($items as $itm) {
-
-            // CHECK IF THE PURCHASE REQUEST ID ALREADY EXISTS IN PR_RFQ_ITEM_TABLE WITH THE SAME RFQ_ID
-            $check = Yii::$app->db->createCommand("SELECT EXISTS(SELECT 1 FROM pr_rfq_item WHERE pr_rfq_id = :rfq_id AND pr_purchase_request_item_id  = :pr_item_id)")
-                ->bindValue(':rfq_id', $model_id)
-                ->bindValue(':pr_item_id', $itm['pr_id'])
-                ->queryScalar();
-            if ($check != 1) {
-                $rfq_item = new PrRfqItem();
-                $rfq_item->id = Yii::$app->db->createCommand("SELECT UUID_SHORT()  % 9223372036854775807")->queryScalar();
-                $rfq_item->pr_rfq_id = $model_id;
-                $rfq_item->pr_purchase_request_item_id = $itm['pr_id'];
-                if (!$rfq_item->validate()) {
-                    return $rfq_item->errors;
-                }
-                if (!$rfq_item->save(false)) {
-                    return 'RFQ Item save failed';
-                }
-            }
-        }
-        return true;
+        $filterFunction = function ($item) {
+            return isset($item['is_selected']) && $item['is_selected'] === 'on';
+        };
+        return $filterFunction;
     }
-
     public function actionCreate()
     {
 
@@ -145,6 +126,9 @@ class PrRfqController extends Controller
         $model->fk_office_id  = $user_data->employee->office->id;
         if ($model->load(Yii::$app->request->post())) {
             $items = Yii::$app->request->post('items');
+            $observers = Yii::$app->request->post('observers') ?? [];
+            $selectedItems = array_filter($items, $this->getSelectedItems($items));
+
             try {
                 $transaction = Yii::$app->db->beginTransaction();
                 $province  = 'RO';
@@ -182,8 +166,14 @@ class PrRfqController extends Controller
                 if (!$model->save(false)) {
                     throw new ErrorException('Save Failed');
                 }
-                if (!$ins = $this->insertItems($model->id, $items)) {
-                    throw new ErrorException($ins);
+
+                $insertItems = $model->insertItems($selectedItems);
+                if ($insertItems !== true) {
+                    throw new ErrorException($insertItems);
+                }
+                $insertObservers = $model->insertObservers($observers);
+                if ($insertObservers !== true) {
+                    throw new ErrorException($insertObservers);
                 }
                 $transaction->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
@@ -207,14 +197,16 @@ class PrRfqController extends Controller
      */
     public function actionUpdate($id)
     {
+
         $model = $this->findModel($id);
         $oldmodel = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post())) {
-            $items = Yii::$app->request->post('items');
-
             try {
                 $transaction = Yii::$app->db->beginTransaction();
+                $items = Yii::$app->request->post('items');
+                $selectedItems = array_filter($items, $this->getSelectedItems($items));
+                $observers = Yii::$app->request->post('observers') ?? [];
                 $province  = 'RO';
                 $pr_date  = Yii::$app->db->createCommand("SELECT `date`  FROM pr_purchase_request  WHERE id = :id")
                     ->bindValue(':id', $model->pr_purchase_request_id)
@@ -246,8 +238,13 @@ class PrRfqController extends Controller
                 if (!$model->save(false)) {
                     throw new ErrorException('Save Failed');
                 }
-                if (!$ins = $this->insertItems($model->id, $items)) {
-                    throw new ErrorException($ins);
+                $insertItems = $model->insertItems($selectedItems);
+                if ($insertItems !== true) {
+                    throw new ErrorException($insertItems);
+                }
+                $insertObservers = $model->insertObservers($observers);
+                if ($insertObservers !== true) {
+                    throw new ErrorException($insertObservers);
                 }
                 $transaction->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
@@ -257,9 +254,34 @@ class PrRfqController extends Controller
                 return json_encode(['errors' => $e->getMessage()]);
             }
         }
+        $items = $model->getItems();
+
+        $prItems = $this->formatPrItems($model->purchaseRequest->getPrItems());
+        $prItemIds = array_column($items, 'pr_item_id');
+        $itemsNotSelected = array_filter($prItems, function ($item) use ($prItemIds) {
+            return  !in_array($item['pr_item_id'], $prItemIds);
+        });
+        $items = array_merge($items, $itemsNotSelected);
         return $this->render('update', [
             'model' => $model,
+            'items' => $items,
         ]);
+    }
+    private function formatPrItems($items)
+    {
+        $res = [];
+        foreach ($items as $item) {
+            $res[] = [
+                "pr_item_id" => $item['item_id'],
+                "specification" => $item['specification'],
+                "quantity" => $item['quantity'],
+                "unit_cost" => $item['unit_cost'],
+                "stock_title" => $item['stock_title'],
+                "bac_code" => $item['bac_code'],
+                "unit_of_measure" => $item['unit_of_measure'],
+            ];
+        }
+        return $res;
     }
 
     /**
@@ -369,7 +391,7 @@ class PrRfqController extends Controller
             $id = Yii::$app->request->post('id');
             $pr = PrPurchaseRequest::findOne($id);
             return json_encode([
-                'prItems' => $pr->getPrItems(),
+                'prItems' =>   $this->formatPrItems($pr->getPrItems()),
                 'prDetails' => $pr->getPrDetails()
             ]);
         }

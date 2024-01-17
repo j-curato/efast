@@ -16,6 +16,12 @@ use yii\bootstrap4\ActiveForm;
     <?= $form->field($model, 'mode_name')->textInput(['maxlength' => true]) ?>
     <?= $form->field($model, 'description')->textarea() ?>
 
+    <?= $form->field($model, 'is_bidding')->dropDownList(
+        [
+            '0' => 'No',
+            '1' => 'Yes',
+        ],
+    ) ?>
     <div class="row justify-content-center">
         <div class="form-group">
             <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>

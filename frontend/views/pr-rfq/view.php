@@ -25,23 +25,17 @@ SweetAlertAsset::register($this);
 
     <div class="container p-2">
         <div class="card p-2">
-            <p>
+            <span>
                 <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-                <?php
-                // if (Yii::$app->user->can('po_procurement_admin') || Yii::$app->user->can('ro_procurement_admin')) {
-                $btn_color = $model->is_cancelled ? 'btn btn-success' : 'btn btn-danger';
-                $cncl_txt = $model->is_cancelled ? 'UnCancel' : 'Cancel';
-                if (!$model->is_cancelled) {
-                    echo  Html::a($cncl_txt, ['cancel', 'id' => $model->id], [
-                        'class' => $btn_color,
+                <?= !$model->is_cancelled ?
+                    Html::a('Cancel', ['cancel', 'id' => $model->id], [
+                        'class' => "btn btn-danger",
                         'id' => 'cancel'
 
-                    ]);
-                }
-                // }
-                echo   Html::a('Purchase Request Link ', ['pr-purchase-request/view', 'id' => $model->pr_purchase_request_id], ['class' => 'btn btn-link ', 'style' => 'margin:3px'])
+                    ]) : '<span class="text-danger p-2">This RFQ is Cancelled</span>'
                 ?>
-            </p>
+                <?= Html::a('Purchase Request Link ', ['pr-purchase-request/view', 'id' => $model->pr_purchase_request_id], ['class' => 'btn btn-link ', 'style' => 'margin:3px']) ?>
+            </span>
 
         </div>
         <div class="card p-2">
