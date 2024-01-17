@@ -414,7 +414,7 @@ if (!empty($model->date_completed)) {
                             ?>
                             <tr>
                                 <th colspan="5">Grand Total</th>
-                                <th class="text-right"><?php echo number_format($grand_total) ?></th>
+                                <th class="text-right"><?php echo number_format($grand_total,2) ?></th>
                             </tr>
                             <tr>
                                 <td colspan="6">
