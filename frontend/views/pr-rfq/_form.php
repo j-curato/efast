@@ -313,7 +313,7 @@ $observers = $model->getObservers()->asArray()->all();
         new Vue({
             el: '#mainVue',
             data: {
-                'isBidding': <?= !empty($observers) ? true : false ?>,
+                'isBidding': <?= !empty($observers) ? 1 : 0 ?>,
                 'observers': <?= !empty($observers) ? json_encode($observers, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : json_encode([]) ?>,
                 'fk_mode_of_procurement_id': '<?= $model->fk_mode_of_procurement_id ?>',
                 "prItemsDetails": {
