@@ -406,7 +406,7 @@ if (!empty($model->date_completed)) {
                                 </td>
                                 <td> {$val2['quantity']}</td>
                                 <td class='amount'> {$unit_cost} </td>
-                                <td class='amount'>" . number_format($total_amount) . " </td>
+                                <td class='amount'>" . number_format($total_amount,2) . " </td>
                             </tr>";
                                 $grand_total += $total_amount;
                             }
