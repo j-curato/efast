@@ -535,11 +535,12 @@ $user_data = User::getUserDetails();
                     return  Html::button(Icon::show('plus', ['framework' => Icon::FA]), ['class' => 'btn-xs btn-primary  add', 'onClick' => 'addAllotment(this)']);
                 },
             ],
-            [
-                'attribute' => 'budget_year',
-                // 'hidden' => true
+            // [
+            //     'attribute' => 'budget_year',
+            //     'hidden' => true
 
-            ], [
+            // ], 
+            [
                 'attribute' => 'office_name',
                 'filterType' => GridView::FILTER_SELECT2,
                 'filter' => ArrayHelper::map(Office::getOfficesA(), 'office_name', 'office_name'),
