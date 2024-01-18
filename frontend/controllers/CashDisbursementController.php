@@ -495,14 +495,18 @@ class CashDisbursementController extends Controller
         ]);
     }
 
-    private function hasAcic($id)
+    private function hasAcicInBank($id)
     {
-        return Yii::$app->db->createCommand("SELECT EXISTS(SELECT 
-        acics_cash_items.id
-        FROM acics_cash_items WHERE fk_cash_disbursement_id = :id
-        AND
-        acics_cash_items.is_deleted = 0
-        )")
+        return Yii::$app->db->createCommand("SELECT EXISTS(
+        SELECT 
+        acic_in_bank_items.id
+        FROM acics_cash_items 
+		JOIN acics ON acics_cash_items.fk_acic_id = acics.id
+	    JOIN acic_in_bank_items ON acics.id = acic_in_bank_items.fk_acic_id
+		WHERE 
+        fk_cash_disbursement_id = :id
+        AND acics_cash_items.is_deleted = 0
+		AND acic_in_bank_items.is_deleted = 0)")
             ->bindValue(':id', $id)
             ->queryScalar();
     }
@@ -531,8 +535,8 @@ class CashDisbursementController extends Controller
                 $txn = Yii::$app->db->beginTransaction();
                 $model->begin_time =  DateTime::createFromFormat('h:i a', $model->begin_time)->format('H:i');
                 $model->out_time =  DateTime::createFromFormat('h:i a', $model->out_time)->format('H:i');
-                if ($this->hasAcic($model->id) && !Yii::$app->user->can('super-user')) {
-                    throw new ErrorException('Cannot Update this Check is already in ACIC');
+                if ($this->hasAcicInBank($model->id) && !Yii::$app->user->can('super-user')) {
+                    throw new ErrorException('Cannot Update this Check is already in ACIC in bank');
                 }
                 if ($model->is_cancelled == true) {
                     throw new ErrorException('Cancelled Check Cannot be Updated');
@@ -1105,6 +1109,28 @@ class CashDisbursementController extends Controller
             $command = $query->createCommand();
             $data = $command->queryAll();
             return json_encode($data);
+        }
+    }
+    public function actionSearchCheckNumber()
+    {
+
+        if (Yii::$app->request->get()) {
+
+            $text = Yii::$app->request->get('text');
+            $page = Yii::$app->request->get('page');
+            return  CashDisbursement::searchCheckNumber($text, $page);
+        }
+    }
+    public function actionGetDetails()
+    {
+        if (Yii::$app->request->post()) {
+            $id = Yii::$app->request->post('id');
+            $model  = CashDisbursement::findOne($id);
+            return
+                json_encode([
+                    'cashDisbursementDetails' => $model->getDetails(),
+                    'cashDisbursementItems' => $model->getItems()
+                ]);
         }
     }
 }
