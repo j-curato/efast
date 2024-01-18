@@ -17,8 +17,8 @@ class RoCheckRangesSearch extends RoCheckRanges
     public function rules()
     {
         return [
-            [['id', 'fk_book_id', 'from', 'to'], 'integer'],
-            [['created_at'], 'safe'],
+            [['id'], 'integer'],
+            [['created_at', 'fk_book_id', 'from', 'to'], 'safe'],
         ];
     }
 
@@ -59,11 +59,11 @@ class RoCheckRangesSearch extends RoCheckRanges
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'from' => $this->from,
-            'to' => $this->to,
             'created_at' => $this->created_at,
         ]);
         $query->andFilterWhere(['like', 'books.name', $this->fk_book_id]);
+        $query->andFilterWhere(['like', 'from', $this->from]);
+        $query->andFilterWhere(['like', 'to', $this->to]);
 
         return $dataProvider;
     }

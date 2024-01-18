@@ -262,8 +262,7 @@ class RoCheckRangesController extends Controller
                 ->where(['like', 'ro_check_ranges.from', $q])
                 ->orWhere(['like', 'ro_check_ranges.to', $q])
                 ->andWhere('ro_check_ranges.check_type = :check_type', ['check_type' => $check_type])
-                ->andWhere(['like', 'ro_check_ranges.fk_book_id', $book_id]);
-
+                ->andWhere(['ro_check_ranges.fk_book_id' => $book_id]);
             if (!empty($page)) {
 
                 $query->offset($offset)
