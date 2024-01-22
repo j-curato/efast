@@ -54,8 +54,14 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
                 'fk_auth_official',
                 'fk_accounting_unit',
                 'po_date',
-                'fk_office_id'
+                'fk_office_id',
+                // 'mooe_amount',
+                // 'co_amount',
             ], 'required'],
+            [[
+                'mooe_amount',
+                'co_amount',
+            ], 'number'],
             [[
                 'id', 'fk_contract_type_id',
                 'fk_mode_of_procurement_id',
@@ -74,7 +80,18 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
                 'fk_inspected_by',
                 'date_work_begun',
                 'date_completed',
-                'cancelled_at'
+                'cancelled_at',
+                'pre_proc_conference',
+                'philgeps_reference_num',
+                'pre_bid_conf',
+                'eligibility_check',
+                'opening_of_bids',
+                'bid_evaluation',
+                'post_qual',
+                'bac_resolution_award',
+                'notice_of_award',
+                'contract_signing',
+                'notice_to_proceed',
 
             ], 'safe'],
             [['po_number', 'payment_term', 'delivery_term', 'po_date'], 'string', 'max' => 255],
@@ -86,8 +103,92 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
                 'delivery_term',
                 'payment_term',
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+            [[
+                'pre_proc_conference',
+                'philgeps_reference_num',
+                'pre_bid_conf',
+                'eligibility_check',
+                'opening_of_bids',
+                'bid_evaluation',
+                'post_qual',
+                'bac_resolution_award',
+                'notice_of_award',
+                'contract_signing',
+                'notice_to_proceed',
+            ], 'required', 'when' => function ($model) {
+
+                if (!empty($model->aoq->rfq->modeOfProcurement->is_bidding)) {
+                    return $model->aoq->rfq->modeOfProcurement->is_bidding == 1;
+                }
+                return false;
+            }, 'whenClient' => "function (attribute, value,model) {}"],
+            [[
+                'date_work_begun',
+                'date_completed'
+            ], 'required', 'when' => function ($model) {
+                if (!empty($model->contractType->contract_name)) {
+                    return strtolower($model->contractType->contract_name) == 'jo';
+                }
+                return false;
+            }, 'whenClient' => "function (attribute, value) {}"],
+
+            [['mooe_amount', 'co_amount'], 'validateAmount'],
         ];
     }
+    public function validateAmount($attribute, $params)
+    {
+        $totalContractCost = floatval($this->mooe_amount) + (floatval($this->co_amount));
+        if (floatval($this->aoq->itemsGrandTotal) != $totalContractCost) {
+            $this->addError($attribute, 'The sum of CO and MOOE Amount must be equal to the grand total amount of selected AOQ.');
+        }
+    }
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'po_number' => 'PO Number',
+            'fk_contract_type_id' => ' Contract Type ',
+            'fk_mode_of_procurement_id' => ' Mode Of Procurement ',
+            'fk_pr_aoq_id' => ' AOQ Number',
+            'place_of_delivery' => 'Place Of Delivery',
+            'delivery_date' => 'Delivery Date',
+            'payment_term' => 'Payment Term',
+            'delivery_term' => 'Delivery Term',
+            'fk_auth_official' => ' Authorize Official',
+            'fk_accounting_unit' => ' Accounting Unit',
+            'fk_bac_composition_id' => 'BAC RSO Number',
+            'bac_date' => 'BAC Date',
+            'po_date' => 'Date',
+            'fk_requested_by' => 'Requested By',
+            'fk_inspected_by' => 'Inspected By',
+            'date_work_begun' => 'Date Work Begun',
+            'date_completed' => 'Date Completed',
+            'is_cancelled' => 'Is Cancelled',
+            'cancelled_at' => 'Cancelled At',
+            'fk_office_id' => 'Office',
+
+            'pre_proc_conference' => 'Pre Proc Conference',
+            'philgeps_reference_num' => 'Philgheps Reference',
+            'pre_bid_conf' => 'Pre Bid Conf',
+            'eligibility_check' => 'Eligibility Check',
+            'opening_of_bids' => 'Opening of Bids',
+            'bid_evaluation' => 'Bid Evaluation',
+            'post_qual' => 'Post Qual',
+            'bac_resolution_award' => 'BAC Resolution Award',
+            'notice_of_award' => 'Notice of Award',
+            'contract_signing' => 'Contract Signing',
+            'notice_to_proceed' => 'Notice to Proceed',
+            'mooe_amount' => 'MOOE Amount',
+            'co_amount' => 'CO Amount',
+
+
+
+        ];
+    }
+
     public function getRfiLinks()
     {
         return Yii::$app->db->createCommand("SELECT 
@@ -144,38 +245,6 @@ class PrPurchaseOrder extends \yii\db\ActiveRecord
             ->bindValue(':id', $this->id)
             ->queryAll();
         return  ArrayHelper::index($query, null, 'serial_number');
-    }
-    /**
-     * {@inheritdoc}
-     */
-    public function attributeLabels()
-    {
-        return [
-            'id' => 'ID',
-            'po_number' => 'PO Number',
-            'fk_contract_type_id' => ' Contract Type ',
-            'fk_mode_of_procurement_id' => ' Mode Of Procurement ',
-            'fk_pr_aoq_id' => ' AOQ Number',
-            'place_of_delivery' => 'Place Of Delivery',
-            'delivery_date' => 'Delivery Date',
-            'payment_term' => 'Payment Term',
-            'delivery_term' => 'Delivery Term',
-            'fk_auth_official' => ' Authorize Official',
-            'fk_accounting_unit' => ' Accounting Unit',
-            'fk_bac_composition_id' => 'BAC RSO Number',
-            'bac_date' => 'BAC Date',
-            'po_date' => 'Date',
-            'fk_requested_by' => 'Requested By',
-            'fk_inspected_by' => 'Inspected By',
-            'date_work_begun' => 'Date Work Begun',
-            'date_completed' => 'Date Completed',
-            'is_cancelled' => 'Is Cancelled',
-            'cancelled_at' => 'Cancelled At',
-            'fk_office_id' => 'Office'
-
-
-
-        ];
     }
 
     /**

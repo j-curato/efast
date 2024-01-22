@@ -2,23 +2,27 @@
 
 namespace frontend\controllers;
 
-use app\components\helpers\MyHelper;
-use app\models\Office;
-use app\models\PrAoqEntries;
 use Yii;
+use DateTime;
+use yii\db\Query;
+use ErrorException;
+use yii\web\Response;
+use app\models\Office;
+use yii\web\Controller;
+use yii\filters\VerbFilter;
+use yii\widgets\ActiveForm;
+use app\models\PrAoqEntries;
+use yii\helpers\ArrayHelper;
+use yii\filters\AccessControl;
 use app\models\PrPurchaseOrder;
+use yii\web\NotFoundHttpException;
 use app\models\PrPurchaseOrderItem;
-use app\models\PrPurchaseOrderItemsAoqItems;
+use app\components\helpers\MyHelper;
+use app\models\PrAoq;
 use app\models\PrPurchaseOrderSearch;
 use app\models\PurchaseOrderIndexSearch;
-use DateTime;
-use ErrorException;
-use yii\db\Query;
-use yii\filters\AccessControl;
-use yii\web\Controller;
-use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
-use yii\helpers\ArrayHelper;
+use app\models\PrPurchaseOrderItemsAoqItems;
+use common\models\User;
 
 /**
  * PrPurchaseOrderController implements the CRUD actions for PrPurchaseOrder model.
@@ -221,31 +225,40 @@ class PrPurchaseOrderController extends Controller
             return $e->getMessage();
         }
     }
-    public function actionCreate()
+    public function actionCreate($aoqId = null)
     {
+        $userDetails = User::getUserDetails();
+
         $model = new PrPurchaseOrder();
-        $model->payment_term = 'credit';
+        $model->payment_term = 'Credit';
         $model->delivery_term = 'FOB Destination';
-        $model->fk_office_id = YIi::$app->user->identity->fk_office_id;
+        $model->fk_office_id = $userDetails->employee->office->id;
         $model->fk_auth_official = 99684622555676858;
         $model->fk_accounting_unit = 99684622555676801;
-        if ($model->load(Yii::$app->request->post())) {
+        $model->fk_pr_aoq_id = $aoqId;
+
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             try {
                 $txn = MyHelper::beginTxn();
                 $model->po_number = $this->generatePoNumber($model->fk_contract_type_id, $model->po_date, $model->fk_office_id);
                 if (!$model->validate()) {
+                    Yii::$app->response->format = Response::FORMAT_JSON;
+                    return ActiveForm::validate($model);
                     throw new ErrorException(json_encode($model->errors));
                 }
+
                 if (!$model->save()) {
                     throw new ErrorException('Model Save Failed');
                 }
                 // if (!empty(array_unique($_POST['aoq_id']))) {
                 //     $this->newLowest(array_unique($_POST['aoq_id']), $model->fk_pr_aoq_id);
                 // }
+
                 $insItems =  $this->insertItems($model->id, $model->po_number, $model->fk_pr_aoq_id);
                 if ($insItems !== true) {
                     throw new ErrorException($insItems);
                 }
+
                 $txn->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
@@ -273,7 +286,7 @@ class PrPurchaseOrderController extends Controller
         $model = $this->findModel($id);
         $old_office_id = $this->findModel($id)->fk_office_id;
 
-        if ($model->load(Yii::$app->request->post())) {
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
 
             try {
                 $txn = MyHelper::beginTxn();
@@ -281,6 +294,8 @@ class PrPurchaseOrderController extends Controller
                 //     $model->po_number = $this->generatePoNumber($model->fk_contract_type_id, $model->po_date, $model->fk_office_id);
                 // }
                 if (!$model->validate()) {
+                    Yii::$app->response->format = Response::FORMAT_JSON;
+                    return ActiveForm::validate($model);
                     throw new ErrorException(json_encode($model->errors));
                 }
                 if (!$model->save()) {
@@ -534,7 +549,7 @@ class PrPurchaseOrderController extends Controller
                 if (!$model->save(false)) {
                     throw new ErrorException('Save Failed');
                 }
-                return json_encode(['error' => false, 'message' => 'Successfuly Save']);
+                return json_encode(['error' => false, 'message' => 'Successfully Save']);
             } catch (ErrorException $e) {
                 return json_encode(['error' => true, 'message' => $e->getMessage()]);
             }
@@ -553,6 +568,25 @@ class PrPurchaseOrderController extends Controller
             } catch (ErrorException $e) {
                 return  $e->getMessage();
             }
+        }
+    }
+    public function actionRfqIsBidding()
+    {
+        if (Yii::$app->request->post()) {
+            $id = Yii::$app->request->post('id');
+            $model = PrAoq::findOne($id);
+            $isBidding  = !empty($model->rfq->modeOfProcurement->is_bidding) && $model->rfq->modeOfProcurement->is_bidding == 1 ? true : false;
+            return json_encode([
+                'isBidding' => $isBidding,
+                'aoqDetails' => $model->aoqDetailsForPoA
+            ]);
+        }
+    }
+    public function actionGetAoqDetails()
+    {
+        if (Yii::$app->request->post()) {
+            $id = Yii::$app->request->post('id');
+            return  json_encode(PrAoq::findOne($id)->aoqDetailsForPoA);
         }
     }
 }

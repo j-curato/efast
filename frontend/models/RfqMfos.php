@@ -7,22 +7,23 @@ use app\behaviors\HistoryLogsBehavior;
 use Yii;
 
 /**
- * This is the model class for table "tbl_rfq_observers".
+ * This is the model class for table "tbl_rfq_mfos".
  *
  * @property int $id
- * @property int $fk_rfq_id
- * @property string $observer_name
+ * @property int|null $fk_rfq_id
+ * @property int|null $fk_mfo_pap_code_id
  * @property int|null $is_deleted
  *
+ * @property MfoPapCode $fkMfoPapCode
  * @property PrRfq $fkRfq
  */
-class RfqObservers extends \yii\db\ActiveRecord
+class RfqMfos extends \yii\db\ActiveRecord
 {
     public function behaviors()
     {
         return [
             HistoryLogsBehavior::class,
-            GenerateIdBehavior::class
+            GenerateIdBehavior::class,
         ];
     }
     /**
@@ -30,7 +31,7 @@ class RfqObservers extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'tbl_rfq_observers';
+        return 'tbl_rfq_mfos';
     }
 
     /**
@@ -39,9 +40,9 @@ class RfqObservers extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['fk_rfq_id', 'observer_name'], 'required'],
-            [['fk_rfq_id', 'is_deleted'], 'integer'],
-            [['observer_name'], 'string', 'max' => 255],
+            [['id', 'fk_rfq_id', 'fk_mfo_pap_code_id', 'is_deleted'], 'integer'],
+            [['id'], 'unique'],
+            [['fk_mfo_pap_code_id'], 'exist', 'skipOnError' => true, 'targetClass' => MfoPapCode::class, 'targetAttribute' => ['fk_mfo_pap_code_id' => 'id']],
             [['fk_rfq_id'], 'exist', 'skipOnError' => true, 'targetClass' => PrRfq::class, 'targetAttribute' => ['fk_rfq_id' => 'id']],
         ];
     }
@@ -54,9 +55,19 @@ class RfqObservers extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'fk_rfq_id' => 'Fk Rfq ID',
-            'observer_name' => 'Observer Name',
+            'fk_mfo_pap_code_id' => 'Fk Mfo Pap Code ID',
             'is_deleted' => 'Is Deleted',
         ];
+    }
+
+    /**
+     * Gets query for [[FkMfoPapCode]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getMfoPapCode()
+    {
+        return $this->hasOne(MfoPapCode::class, ['id' => 'fk_mfo_pap_code_id']);
     }
 
     /**

@@ -258,4 +258,50 @@ class PrAoq extends \yii\db\ActiveRecord
             ->bindValue(':id', $this->id)
             ->queryAll();
     }
+    // FOR PURCHASE ORDER 
+    public function getAoqDetailsForPoA()
+    {
+
+        return PrAoqEntries::find()
+            ->addSelect([
+                new Expression("IFNULL(payee.registered_name,payee.account_name) as payee"),
+                "pr_purchase_request.purpose",
+                new Expression("pr_stock.stock_title as `description`"),
+                new Expression("REPLACE(pr_purchase_request_item.specification,'[n]','<br>') as specification"),
+                new Expression("pr_purchase_request_item.quantity"),
+                new Expression("pr_purchase_request_item.quantity * COALESCE(pr_aoq_entries.amount,0) as gross_amount")
+            ])
+            ->join("LEFT JOIN", "payee", "pr_aoq_entries.payee_id = payee.id")
+            ->join("LEFT JOIN", "pr_rfq_item", "pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id")
+            ->join("LEFT JOIN", "pr_purchase_request_item", "pr_rfq_item.pr_purchase_request_item_id= pr_purchase_request_item.id")
+            ->join("LEFT JOIN", "pr_stock", "pr_purchase_request_item.pr_stock_id  = pr_stock.id")
+            ->join("LEFT JOIN", "pr_purchase_request", "pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id")
+            ->join("LEFT JOIN", "pr_rfq", "pr_rfq_item.pr_rfq_id = pr_rfq.id")
+            ->andWhere([
+                "pr_aoq_entries.is_deleted" => false
+            ])
+            ->andWhere([
+                "pr_aoq_entries.pr_aoq_id" => $this->id
+            ])
+            ->andWhere([
+                "pr_aoq_entries.is_lowest" => 1
+            ])
+            ->asArray()
+            ->all();
+    }
+    // get the lowest grand total price
+    public function getItemsGrandTotal()
+    {
+        return PrAoqEntries::find()
+            ->addSelect([
+                new Expression(" SUM(pr_purchase_request_item.quantity * COALESCE(pr_aoq_entries.amount,0)) as grand_total")
+            ])
+            ->join("LEFT JOIN", "pr_rfq_item", "pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id")
+            ->join("LEFT JOIN", "pr_purchase_request_item", "pr_rfq_item.pr_purchase_request_item_id= pr_purchase_request_item.id")
+            ->andWhere(["pr_aoq_entries.is_deleted" => false])
+            ->andWhere(["pr_aoq_entries.pr_aoq_id" => $this->id])
+            ->andWhere(["pr_aoq_entries.is_lowest" => 1])
+            ->asArray()
+            ->scalar();
+    }
 }

@@ -167,6 +167,7 @@ class PurchaseOrderTransmittal extends \yii\db\ActiveRecord
                 LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
                 LEFT JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id
                 WHERE purchase_order_transmittal_items.fk_purchase_order_transmittal_id = :id
+                AND purchase_order_transmittal_items.is_deleted = 0
                 GROUP BY 
                 purchase_order_transmittal_items.id,
                 pr_purchase_order_item.id,

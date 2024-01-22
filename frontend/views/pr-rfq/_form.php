@@ -1,5 +1,6 @@
 <?php
 
+use app\models\MfoPapCode;
 use app\models\Office;
 use app\models\PrModeOfProcurement;
 use aryelds\sweetalert\SweetAlert;
@@ -29,6 +30,7 @@ $pr = [
 $canvasser  = !empty($model->employee_id) ? $model->canvasser->getEmployeeDetails() : [];
 $modeOfProcurements = PrModeOfProcurement::getModeOfProcurementsA();
 $observers = $model->getObservers()->asArray()->all();
+
 ?>
 
 <div class="pr-rfq-form d-none" id="mainVue">
@@ -36,7 +38,6 @@ $observers = $model->getObservers()->asArray()->all();
         'id' => $model->formName()
     ]); ?>
     <div class="card" style="padding: 1rem;">
-
         <ul>
             <li>Note</li>
             <li>The RFQ number is updated every time the date changes.</li>
@@ -172,6 +173,22 @@ $observers = $model->getObservers()->asArray()->all();
                 ]) ?>
 
             </div>
+            <div class="col-3">
+                <label for="" class="w-100 ">MFO/PAPs</label>
+                <?= Select2::widget([
+                    'name' => 'mfoItems',
+                    'data' => ArrayHelper::map(MfoPapCode::getMfoPapCodesA(), 'id', 'name'),
+                    'value' => ArrayHelper::getColumn($model->mfosA, 'fk_mfo_pap_code_id'),
+                    'size' => Select2::SMALL,
+                    'options' => ['placeholder' => 'Select MFO/PAPs', 'multiple' => true,],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                        // 'maximumSelectionLength' => 20
+                    ],
+                ])
+                ?>
+            </div>
+
         </div>
         <?= $form->field($model, 'project_location')->textarea() ?>
 
@@ -276,10 +293,10 @@ $observers = $model->getObservers()->asArray()->all();
                     <td>{{item.bac_code}}</td>
                     <td>{{item.stock_title}}</td>
                     <td>{{item.unit_of_measure}}</td>
-                    <td>specs</td>
+                    <td>{{formatSpecs(item.specification)}}</td>
                     <td>{{item.unit_cost}}</td>
                     <td>{{item.quantity}}</td>
-                    <td>GRoss</td>
+                    <td>{{parseFloat(item.unit_cost) * parseFloat(item.quantity)}}</td>
                 </tr>
             </tbody>
         </table>
@@ -301,6 +318,35 @@ $observers = $model->getObservers()->asArray()->all();
 
     li {
         color: red;
+    }
+
+    .select2-search__field {
+        width: 100% !important;
+    }
+
+    .select2-container .select2-selection--multiple .select2-selection__rendered {
+        /* display: inline-grid; */
+        list-style: none;
+        padding: 0;
+    }
+
+
+
+    :not(.form-floating)>.input-sm.select2-container--krajee-bs4 .select2-selection--multiple .select2-selection__choice,
+    :not(.form-floating)>.input-group-sm .select2-container--krajee-bs4 .select2-selection--multiple .select2-selection__choice {
+        font-size: 0.8rem;
+        margin: 0.3rem 0 0.2rem 0.2rem;
+        /* padding: 0.05rem 0.05rem 0.05rem 0.2rem; */
+        max-width: fit-content;
+        float: left;
+        height: inherit;
+    }
+
+    :not(.form-floating)>.input-sm.select2-container--krajee-bs4 .select2-selection--multiple,
+    :not(.form-floating)>.input-group-sm .select2-container--krajee-bs4 .select2-selection--multiple {
+        min-height: calc(1.875rem - 1px);
+        display: inline-block;
+        width: 100%;
     }
 </style>
 <?php
@@ -326,7 +372,6 @@ $observers = $model->getObservers()->asArray()->all();
                 $('#prrfq-pr_purchase_request_id').on('change',
                     this.getRfqItems
                 )
-                console.log(this.observers)
             },
             methods: {
 
@@ -361,6 +406,9 @@ $observers = $model->getObservers()->asArray()->all();
                 },
                 removeObserver(index) {
                     this.observers.splice(index, 1)
+                },
+                formatSpecs(specs) {
+                    return specs.replace(/\[n\]/g, '\n')
                 }
 
 

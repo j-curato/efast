@@ -21,6 +21,7 @@ class m240117_022402_create_tbl_rfq_observers_table extends Migration
             'observer_name' => $this->string()->notNull(),
             'is_deleted' => $this->boolean()->defaultValue(false)
         ]);
+        $this->alterColumn('tbl_rfq_observers', 'id', $this->bigInteger());
 
         // creates index for column `fk_rfq_id`
         $this->createIndex(

@@ -9,6 +9,7 @@ use ErrorException;
 use Yii;
 use yii\db\Expression;
 use yii\db\Query;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "pr_rfq".
@@ -51,8 +52,8 @@ class PrRfq extends \yii\db\ActiveRecord
                 'fk_office_id',
                 'is_early_procurement',
                 'source_of_fund',
-                'mooe_amount',
-                'co_amount',
+                // 'mooe_amount',
+                // 'co_amount',
                 'fk_mode_of_procurement_id',
             ], 'required'],
             [[
@@ -70,7 +71,18 @@ class PrRfq extends \yii\db\ActiveRecord
             [[
                 'project_location',
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+            [['_date', 'deadline'], 'validateDateToPr'],
         ];
+    }
+    public function validateDateToPr($attribute, $params)
+    {
+        $selectedDate = $this->$attribute;
+        $pr_date  = Yii::$app->db->createCommand("SELECT `date`  FROM pr_purchase_request  WHERE id = :id")
+            ->bindValue(':id', $this->pr_purchase_request_id)
+            ->queryOne();
+        if (strtotime($selectedDate) < strtotime($pr_date['date'])) {
+            $this->addError($this->getAttributeLabel($attribute), 'The date should not precede the PR date.');
+        }
     }
 
 
@@ -125,6 +137,15 @@ class PrRfq extends \yii\db\ActiveRecord
     public function getObservers()
     {
         return $this->hasMany(RfqObservers::class, ['fk_rfq_id' => 'id'])
+            ->andWhere(['is_deleted' => false]);
+    }
+    public function getModeOfProcurement()
+    {
+        return $this->hasOne(PrModeOfProcurement::class, ['id' => 'fk_mode_of_procurement_id']);
+    }
+    public function getMfos()
+    {
+        return $this->hasMany(RfqMfos::class, ['fk_rfq_id' => 'id'])
             ->andWhere(['is_deleted' => false]);
     }
     public function getNopToDate()
@@ -271,8 +292,9 @@ class PrRfq extends \yii\db\ActiveRecord
     }
     private function deletedObservers($observers)
     {
-        $params=[];
+        $params = [];
         $ids = array_column($observers, 'id');
+        $sql = '';
         if (!empty($ids)) {
             $sql  = ' AND ';
             $sql .= Yii::$app->db->queryBuilder->buildCondition(['NOT IN', 'id', $ids], $params);
@@ -284,5 +306,45 @@ class PrRfq extends \yii\db\ActiveRecord
             $sql", $params)
             ->bindValue(':id', $this->id)
             ->execute();
+    }
+    private function deleteMfoItems($mfoItems)
+    {
+        Yii::$app->db->createCommand()
+            ->update('tbl_rfq_mfos', ['is_deleted' => 1], ['AND', ['NOT IN', 'fk_mfo_pap_code_id', $mfoItems], ['fk_rfq_id' => $this->id]])
+            ->execute();
+    }
+
+    public function insertMfoItems($mfoItems)
+    {
+        try {
+            if (empty($mfoItems)) {
+                throw new ErrorException("MFO/PAP Cannot be Empty");
+            }
+            $this->deleteMfoItems($mfoItems);
+            $toInsertMfoItems = array_diff($mfoItems, ArrayHelper::getColumn($this->getMfosA(), 'fk_mfo_pap_code_id'));
+            $mfoItemModels  = [];
+            foreach ($toInsertMfoItems as $mfoItem) {
+                $model = !empty($mfoItem['id']) ? RfqMfos::findOne($mfoItem['id']) : new RfqMfos();
+                $model->fk_mfo_pap_code_id = $mfoItem;
+                $model->fk_rfq_id = $this->id;
+                $mfoItemModels[] = $model;
+            }
+
+            foreach ($mfoItemModels as $model) {
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException("Observer Item Save Failed");
+                }
+            }
+            return true;
+        } catch (ErrorException $e) {
+            return $e->getMessage();
+        }
+    }
+    public function getMfosA()
+    {
+        return $this->getMfos()->addSelect(['fk_mfo_pap_code_id'])->asArray()->all();
     }
 }

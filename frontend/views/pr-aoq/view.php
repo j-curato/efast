@@ -28,6 +28,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 : 'Cancelled'
             ?>
             <?= Html::a('RFQ Link ', ['pr-rfq/view', 'id' => $model->pr_rfq_id], ['class' => 'btn btn-link ', 'style' => 'margin:3px']) ?>
+            <?= Html::a('Create PO ', ['pr-purchase-order/create', 'aoqId' => $model->id], ['class' => 'btn btn-success ', 'style' => 'margin:3px']) ?>
         </span>
     </div>
 

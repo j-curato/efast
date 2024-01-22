@@ -5,6 +5,7 @@ use app\models\Office;
 use app\models\PrContractType;
 use app\models\PrModeOfProcurement;
 use kartik\date\DatePicker;
+use kartik\money\MaskMoney;
 use kartik\select2\Select2;
 use kartik\widgets\DatePicker as WidgetsDatePicker;
 use yii\helpers\ArrayHelper;
@@ -22,59 +23,36 @@ use yii\bootstrap4\ActiveForm;
 
 
 
-$auth_official = '';
-$accounting_unit = '';
-$requested_by = '';
-$inspected_by = '';
-$aoq_id = '';
-$model_id = '';
-
-if (!empty($model->fk_auth_official)) {
-    $auth_official_query   = Yii::$app->db->createCommand("SELECT employee_id,UPPER(employee_name)  as employee_name FROM employee_search_view WHERE employee_id = :id")
-        ->bindValue(':id', $model->fk_auth_official)
-        ->queryAll();
-    $auth_official = ArrayHelper::map($auth_official_query, 'employee_id', 'employee_name');
+$aoq = [];
+if (!empty($model->fk_pr_aoq_id)) {
+    $aoq[] = [
+        'id' => $model->fk_pr_aoq_id,
+        'aoq_number' => $model->aoq->aoq_number
+    ];
 }
-if (!empty($model->fk_accounting_unit)) {
-    $accounting_unit_query   = Yii::$app->db->createCommand("SELECT employee_id,UPPER(employee_name)  as employee_name FROM employee_search_view WHERE employee_id = :id")
-        ->bindValue(':id', $model->fk_accounting_unit)
-        ->queryAll();
-    $accounting_unit = ArrayHelper::map($accounting_unit_query, 'employee_id', 'employee_name');
+$authOfficial[] = !empty($model->fk_auth_official) ? $model->authorizedOfficial->employeeDetails : [];
+$accountingUnit[] = !empty($model->fk_accounting_unit) ? $model->accountingUnit->employeeDetails : [];
+$modeOfProcurementOptions = PrModeOfProcurement::find()->asArray()->all();
+$contractTypeOptions = PrContractType::find()->asArray()->all();
+$isBidding = false;
+if (!empty($model->aoq->rfq->modeOfProcurement->is_bidding)) {
+    $isBidding =  $model->aoq->rfq->modeOfProcurement->is_bidding == 1;
 }
-if (!empty($model->id)) {
 
-
-    $requested_by_query   = Yii::$app->db->createCommand("SELECT employee_id,UPPER(employee_name)  as employee_name FROM employee_search_view WHERE employee_id = :id")
-        ->bindValue(':id', $model->fk_requested_by)
-        ->queryAll();
-    $requested_by = ArrayHelper::map($requested_by_query, 'employee_id', 'employee_name');
-
-    $inspected_query   = Yii::$app->db->createCommand("SELECT employee_id,UPPER(employee_name)  as employee_name FROM employee_search_view WHERE employee_id = :id")
-        ->bindValue(':id', $model->fk_inspected_by)
-        ->queryAll();
-    $inspected_by = ArrayHelper::map($inspected_query, 'employee_id', 'employee_name');
-
-
-    $aoq_id_query   = Yii::$app->db->createCommand("SELECT id, aoq_number FROM pr_aoq WHERE id = :id")
-        ->bindValue(':id', $model->fk_pr_aoq_id)
-        ->queryAll();
-
-
-    $aoq_id = ArrayHelper::map($aoq_id_query, 'id', 'aoq_number');
-    $model_id = $model->id;
-}
 ?>
 
-<div class="pr-purchase-order-form">
-    <div class="con">
+<div class="pr-purchase-order-form d-none" id="mainVue">
 
-        <input type="hidden" name="" id="model_id" value="<?= $model_id ?>">
-        <?php $form = ActiveForm::begin(); ?>
+    <?php $form = ActiveForm::begin([
+        'id' => $model->formName(),
+        'enableAjaxValidation' => true,
+        'validateOnChange' => false,
+        'validateOnBlur' => false,
+        'validateOnType' => false,
+    ]); ?>
+    <div class="card p-2">
         <div class="row">
-            <?php
-            if (Yii::$app->user->can('ro_procurement_admin')) {
-
-            ?>
+            <?php if (Yii::$app->user->can('ro_procurement_admin')) : ?>
                 <div class="col-sm-2">
                     <?= $form->field($model, 'fk_office_id')->widget(Select2::class, [
                         'data' => ArrayHelper::map(Office::find()->asArray()->all(), 'id', 'office_name'),
@@ -83,19 +61,20 @@ if (!empty($model->id)) {
                         ]
                     ]) ?>
                 </div>
-            <?php } ?>
+            <?php endif; ?>
             <div class="col-sm-2">
                 <?= $form->field($model, 'po_date')->widget(DatePicker::class, [
                     'pluginOptions' => [
                         'format' => 'yyyy-mm-dd',
-                        'autoclose' => true
+                        'autoclose' => true,
+                        'todayHighlight' => true
                     ]
                 ]) ?>
             </div>
-            <?php if (empty($model->id)) : ?>
-                <div class="col-sm-3">
+            <?php if ($model->isNewRecord) : ?>
+                <div class="col-sm-2">
                     <?= $form->field($model, 'fk_pr_aoq_id')->widget(Select2::class, [
-                        'data' => $aoq_id,
+                        'data' => ArrayHelper::map($aoq, 'id', 'aoq_number'),
                         'options' => ['placeholder' => 'Search for a AOQ Number'],
                         'pluginOptions' => [
                             'allowClear' => true,
@@ -119,251 +98,218 @@ if (!empty($model->id)) {
             <?php endif; ?>
 
             <div class="col-sm-2">
-                <?= $form->field($model, 'fk_contract_type_id')->widget(Select2::class, [
-                    'data' => ArrayHelper::map(PrContractType::find()->asArray()->all(), 'id', 'contract_name'),
-                    'pluginOptions' => [
-                        'placeholder' => 'Select Contract'
+                <?= $form->field($model, 'fk_contract_type_id')->dropDownList(
+                    ArrayHelper::map($contractTypeOptions, 'id', 'contract_name'),
+                    [
+                        'prompt' => 'Select Contract',
+                        '@change' => 'checkContractType',
+                        'v-model' => 'contractType'
                     ]
-                ]) ?>
+                ) ?>
             </div>
             <div class="col-sm-2">
                 <?= $form->field($model, 'fk_mode_of_procurement_id')->widget(Select2::class, [
-                    'data' => ArrayHelper::map(PrModeOfProcurement::find()->asArray()->all(), 'id', 'mode_name'),
+                    'data' => ArrayHelper::map($modeOfProcurementOptions, 'id', 'mode_name'),
                     'pluginOptions' => [
                         'placeholder' => 'Select Mode'
                     ]
                 ]) ?>
             </div>
-
-
-        </div>
-        <div class="row " id="jo_date">
-            <div class="col-sm-3">
-                <?= $form->field($model, 'date_work_begun')->widget(DatePicker::class, [
+            <div class="col-2" :class="{ 'd-none': !isBidding }">
+                <?= $form->field($model, 'philgeps_reference_num')->textInput() ?>
+            </div>
+            <div class="col-2" :class="{ 'd-none': !isBidding }">
+                <?= $form->field($model, 'pre_proc_conference', ['enableAjaxValidation' => true])->widget(DatePicker::class, [
                     'pluginOptions' => [
-                        'format' => 'yyyy-mm-dd',
-                        'autoclose' => true
-                    ]
-                ]) ?>
-            </div>
-            <div class="col-sm-3">
-                <?= $form->field($model, 'date_completed')->widget(DatePicker::class, [
-                    'pluginOptions' => [
-                        'format' => 'yyyy-mm-dd',
-                        'autoclose' => true
-                    ]
-                ]) ?>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-6">
-                <?= $form->field($model, 'place_of_delivery')->textInput() ?>
-            </div>
-            <div class="col-sm-6">
-                <?= $form->field($model, 'delivery_date')->textInput() ?>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-6">
-                <?= $form->field($model, 'delivery_term')->textInput() ?>
-
-            </div>
-            <div class="col-sm-6">
-
-                <?= $form->field($model, 'payment_term')->textInput(['maxlength' => true]) ?>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-sm-6">
-                <?= $form->field($model, 'fk_auth_official')->widget(Select2::class, [
-                    'data' => $auth_official,
-                    'options' => ['placeholder' => 'Search for a Employee ...'],
-                    'pluginOptions' => [
-                        'allowClear' => true,
-                        'minimumInputLength' => 1,
-                        'language' => [
-                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                        ],
-                        'ajax' => [
-                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
-                            'dataType' => 'json',
-                            'delay' => 250,
-                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                            'cache' => true
-                        ],
-                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                    ],
-
-                ]) ?>
-            </div>
-            <div class="col-sm-6">
-                <?= $form->field($model, 'fk_accounting_unit')->widget(Select2::class, [
-                    'data' => $accounting_unit,
-                    'options' => ['placeholder' => 'Search for a Employee ...'],
-                    'pluginOptions' => [
-                        'allowClear' => true,
-                        'minimumInputLength' => 1,
-                        'language' => [
-                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                        ],
-                        'ajax' => [
-                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
-                            'dataType' => 'json',
-                            'delay' => 250,
-                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                            'cache' => true
-                        ],
-                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                    ],
-
-                ]) ?>
-            </div>
-        </div>
-        <!-- <div class="row">
-            <div class="col-sm-6">
-                <?= $form->field($model, 'fk_requested_by')->widget(Select2::class, [
-                    'data' => $requested_by,
-                    'options' => ['placeholder' => 'Search for a Employee ...'],
-                    'pluginOptions' => [
-                        'allowClear' => true,
-                        'minimumInputLength' => 1,
-                        'language' => [
-                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                        ],
-                        'ajax' => [
-                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
-                            'dataType' => 'json',
-                            'delay' => 250,
-                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                            'cache' => true
-                        ],
-                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                    ],
-
-                ]) ?>
-            </div>
-            <div class="col-sm-6">
-                <?= $form->field($model, 'fk_inspected_by')->widget(Select2::class, [
-                    'data' => $inspected_by,
-                    'options' => ['placeholder' => 'Search for a Employee ...'],
-                    'pluginOptions' => [
-                        'allowClear' => true,
-                        'minimumInputLength' => 1,
-                        'language' => [
-                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                        ],
-                        'ajax' => [
-                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
-                            'dataType' => 'json',
-                            'delay' => 250,
-                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                            'cache' => true
-                        ],
-                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                    ],
-
-                ]) ?>
-            </div>
-        </div> -->
-
-
-
-        <input type="button" id="change_lowest" class="btn btn-info" value='Change'>
-        <?php $bac_display = 'display:none;';
-        if (!empty($model->bac_date) || !empty($model->fk_bac_composition_id)) {
-            $bac_display = '';
-        }
-        ?>
-        <div class="row" id="change_bac" style="<?= $bac_display ?>">
-            <div class="col-sm-3">
-
-                <?= $form->field($model, 'bac_date')->widget(DatePicker::class, [
-
-                    'options' => [
-                        'readonly' => true,
-                        'style' => 'background-color:white'
-                    ],
-                    'pluginOptions' =>
-                    [
                         'autoclose' => true,
+                        'todayHighlight' => true,
+                        'format' => 'yyyy-mm-dd',
+                    ]
+                ]) ?>
+            </div>
+
+            <div class="col-2" :class="{ 'd-none': !isBidding }">
+                <?= $form->field($model, 'pre_bid_conf')->widget(DatePicker::class, [
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'todayHighlight' => true,
                         'format' => 'yyyy-mm-dd'
                     ]
                 ]) ?>
-
             </div>
-            <div class="col-sm-3">
-
-
-                <?= $form->field($model, 'fk_bac_composition_id')->widget(Select2::class, [
-
-                    'data' => ArrayHelper::map(BacComposition::find()->asArray()->all(), 'id', 'rso_number'),
+            <div class="col-2" :class="{ 'd-none': !isBidding }">
+                <?= $form->field($model, 'eligibility_check')->widget(DatePicker::class, [
                     'pluginOptions' => [
-                        'placeholder' => 'Select RSO Number'
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                        'format' => 'yyyy-mm-dd'
                     ]
                 ]) ?>
-
             </div>
-        </div>
-        <div class="table-responsive">
+            <div class="col-2" :class="{ 'd-none': !isBidding }">
+                <?= $form->field($model, 'opening_of_bids')->widget(DatePicker::class, [
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                        'format' => 'yyyy-mm-dd'
+                    ]
+                ]) ?>
+            </div>
+            <div class="col-2" :class="{ 'd-none': !isBidding }">
+                <?= $form->field($model, 'bid_evaluation')->widget(DatePicker::class, [
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                        'format' => 'yyyy-mm-dd'
+                    ]
+                ]) ?>
+            </div>
+            <div class="col-2" :class="{ 'd-none': !isBidding }">
+                <?= $form->field($model, 'post_qual')->widget(DatePicker::class, [
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                        'format' => 'yyyy-mm-dd'
+                    ]
+                ]) ?>
+            </div>
+            <div class="col-2" :class="{ 'd-none': !isBidding }">
+                <?= $form->field($model, 'bac_resolution_award')->widget(DatePicker::class, [
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                        'format' => 'yyyy-mm-dd'
+                    ]
+                ]) ?>
+            </div>
+            <div class="col-2" :class="{ 'd-none': !isBidding }">
+                <?= $form->field($model, 'notice_of_award')->widget(DatePicker::class, [
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                        'format' => 'yyyy-mm-dd'
+                    ]
+                ]) ?>
+            </div>
+            <div class="col-2" :class="{ 'd-none': !isBidding }">
+                <?= $form->field($model, 'contract_signing')->widget(DatePicker::class, [
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                        'format' => 'yyyy-mm-dd'
+                    ]
+                ]) ?>
+            </div>
+            <div class="col-2" :class="{ 'd-none': !isBidding }">
+                <?= $form->field($model, 'notice_to_proceed')->widget(DatePicker::class, [
+                    'pluginOptions' => [
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                        'format' => 'yyyy-mm-dd'
+                    ]
+                ]) ?>
+            </div>
+            <div class="col-sm-2  " :class="{ 'd-none': !isJo }">
+                <?= $form->field($model, 'date_work_begun')->widget(DatePicker::class, [
+                    'pluginOptions' => [
+                        'format' => 'yyyy-mm-dd',
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                    ]
+                ]) ?>
+            </div>
+            <div class="col-sm-2  " :class="{ 'd-none': !isJo }">
+                <?= $form->field($model, 'date_completed')->widget(DatePicker::class, [
+                    'pluginOptions' => [
+                        'format' => 'yyyy-mm-dd',
+                        'autoclose' => true,
+                        'todayHighlight' => true,
+                    ]
+                ]) ?>
+            </div>
 
-            <table id='lowest_table' class="table table-hover table-striped">
-                <thead>
-                    <tr class="success">
-                        <th colspan="7">
-                            <h3>
-                                Lowest
 
-                            </h3>
-                        </th>
+            <div class="col-sm-2">
+                <?= $form->field($model, 'mooe_amount')->widget(MaskMoney::class, [
+                    'pluginOptions' => [
+                        'prefix' => '₱ ',
+                        'allowNegative' => false
+                    ]
+                ]) ?>
+            </div>
 
-                    </tr>
-                    <tr class="success">
-                        <th>Payee</th>
-                        <th>BAC Code</th>
-                        <th>Description</th>
-                        <th>Specification</th>
-                        <th>Remark</th>
-                        <th>Unit Cost</th>
-                        <th></th>
+            <div class="col-sm-2">
+                <?= $form->field($model, 'co_amount')->widget(MaskMoney::class, [
+                    'pluginOptions' => [
+                        'prefix' => '₱ ',
+                        'allowNegative' => false
+                    ]
+                ]) ?>
+            </div>
 
-                    </tr>
-                </thead>
-                <tbody></tbody>
+            <div class="col-sm-3">
+                <?= $form->field($model, 'place_of_delivery')->textInput() ?>
+            </div>
+            <div class="col-sm-3">
+                <?= $form->field($model, 'delivery_date')->textInput() ?>
+            </div>
+            <div class="col-sm-3">
+                <?= $form->field($model, 'delivery_term')->textInput() ?>
+            </div>
+            <div class="col-sm-3">
+                <?= $form->field($model, 'payment_term')->textInput(['maxlength' => true]) ?>
+            </div>
 
-            </table>
-            <table id="aoq_items_table" class="table table-hover ">
+            <div class="col-sm-3">
+                <?= $form->field($model, 'fk_auth_official')->widget(Select2::class, [
+                    'data' => ArrayHelper::map($authOfficial, 'employee_id', 'fullName'),
 
-                <thead>
-                    <tr>
-                        <th colspan="9" class="info">
-                            <h3>Abstract Items</h3>
-                        </th>
-                    </tr>
+                    'options' => ['placeholder' => 'Search for a Employee ...'],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                        'minimumInputLength' => 1,
+                        'language' => [
+                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                        ],
+                        'ajax' => [
+                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                            'dataType' => 'json',
+                            'delay' => 250,
+                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                            'cache' => true
+                        ],
+                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                    ],
 
-                    <tr class="info">
-                        <th></th>
-                        <th>Payee</th>
-                        <th>BAC Code</th>
-                        <th>Description</th>
-                        <th>Specification</th>
-                        <th>Remark</th>
-                        <th>Quantity</th>
-                        <th>Unit Cost</th>
-                        <th>Amount</th>
+                ]) ?>
+            </div>
+            <div class="col-sm-3">
+                <?= $form->field($model, 'fk_accounting_unit')->widget(Select2::class, [
+                    'data' => ArrayHelper::map($accountingUnit, 'employee_id', 'fullName'),
+                    'options' => ['placeholder' => 'Search for a Employee ...'],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                        'minimumInputLength' => 1,
+                        'language' => [
+                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                        ],
+                        'ajax' => [
+                            'url' => Yii::$app->request->baseUrl . '?r=employee/search-employee',
+                            'dataType' => 'json',
+                            'delay' => 250,
+                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                            'cache' => true
+                        ],
+                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                    ],
 
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+                ]) ?>
+            </div>
+
         </div>
 
         <div class="row justify-content-center">
@@ -371,193 +317,98 @@ if (!empty($model->id)) {
                 <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
             </div>
         </div>
+    </div>
+    <?php ActiveForm::end(); ?>
+    <div class="card p-2">
+        <table class="table">
 
+            <tr>
+                <th>Payee</th>
+                <th>Purpose</th>
+                <th>Description</th>
+                <th>Specification</th>
+                <th>Quantity</th>
+                <th>Gross Amount</th>
 
-        <?php ActiveForm::end(); ?>
+            </tr>
+            <tr v-for=" item in aoqDetails">
+                <td>{{item.payee}}</td>
+                <td>{{item.purpose}}</td>
+                <td>{{item.description}}</td>
+                <td>{{item.specification}}</td>
+                <td>{{item.quantity}}</td>
+                <td>{{item.gross_amount}}</td>
+            </tr>
+            <tr>
 
+                <th colspan="5" class="text-center">Grand Total </th>
+                <th>{{aoqGrandTotal}}</th>
+            </tr>
+        </table>
     </div>
 </div>
 
 <style>
-    .add_new_row {
-        display: none;
-    }
-
-    td,
-    th {
-        text-align: center;
-    }
-
-    .amount {
-        text-align: right;
-    }
-
-    #jo_date {
-        display: none;
-    }
-
-    .con {
-        background-color: white;
-        border: 1px solid black;
-        padding: 2em;
-    }
 </style>
-<?php
-$script = <<<JS
-    $(document).ready(function(){
-        if ($("#model_id").val() != '') {
-            $('#prpurchaseorder-fk_pr_aoq_id').trigger('change')
-        }
-    })
-JS;
-$this->registerJs($script);
-
-?>
 <script>
-    function contractTypeChange() {
-
-        const selected = $('#prpurchaseorder-fk_contract_type_id :selected').text().toLowerCase()
-        if (selected == 'jo') {
-            $('#jo_date').show()
-        } else {
-            $('#jo_date').hide()
-
-        }
-    }
     $(document).ready(function() {
-        contractTypeChange()
-        $('#prpurchaseorder-fk_contract_type_id').change(function() {
-            contractTypeChange()
-        })
-        $("#change_lowest").click(function(e) {
-            e.preventDefault()
-            changeLowest()
-        })
-        $('#prpurchaseorder-fk_pr_aoq_id').change(function() {
-            $.ajax({
-                type: 'POST',
-                url: window.location.pathname + '?r=pr-purchase-order/aoq-info',
-                data: {
-                    id: $(this).val()
+
+        $("#mainVue").removeClass('d-none')
+        new Vue({
+            el: "#mainVue",
+            data: {
+                isBidding: "<?= $isBidding ?>",
+                aoqId: "<?= !empty($model->fk_pr_aoq_id) ? $model->fk_pr_aoq_id : '' ?>",
+                isJo: false,
+                contractTypeOptions: <?= json_encode($contractTypeOptions) ?>,
+                contractType: "<?= !empty($model->fk_contract_type_id) ? $model->fk_contract_type_id : '' ?>",
+                aoqDetails: <?= !empty($model->fk_pr_aoq_id) ? json_encode($model->aoq->aoqDetailsForPoA) : json_encode([]) ?>
+            },
+            mounted() {
+                $("#prpurchaseorder-fk_pr_aoq_id").on('change', this.getAoqDetails)
+                this.checkContractType()
+            },
+            methods: {
+                getAoqDetails() {
+                    this.aoqId = $("#prpurchaseorder-fk_pr_aoq_id").val()
+                    const url = "?r=pr-purchase-order/rfq-is-bidding"
+                    if (!this.aoqId) {
+                        return
+                    }
+                    let data = {
+                        _csrf: '<?= Yii::$app->request->getCsrfToken() ?>',
+                        id: this.aoqId
+                    }
+                    axios.post(url, data)
+                        .then(res => {
+                            this.isBidding = res.data.isBidding
+                            this.aoqDetails = res.data.aoqDetails
+                        })
+                        .catch(err => {
+                            console.log(err)
+                        })
+
+
                 },
-                success: function(data) {
-                    var res = JSON.parse(data)
-                    console.log(res)
-                    displayLowest(res.lowest)
-                    displayAoqItems(res.aoq_items)
+                checkContractType() {
+                    if (!this.contractType) {
+                        return;
+                    }
+                    let x = this.contractTypeOptions.find(item => {
+                        return item.id == this.contractType
+                    })
+                    x.contract_name.toLowerCase() == 'jo' ? this.isJo = true : this.isJo = false
+                },
+
+            },
+            computed: {
+                aoqGrandTotal() {
+
+                    return this.aoqDetails.reduce((total, item) => total + parseFloat(item.gross_amount), 0)
                 }
-            })
+            }
         })
 
-        $('#lowest_table').on('click', '.remove_this_row', function(event) {
-            event.stopPropagation();
-            event.stopImmediatePropagation();
-            $(this).closest('tr').remove();
-        });
-        $('#aoq_items_table').on('click', '.add_new_row', function(event) {
-            event.stopPropagation();
-            event.stopImmediatePropagation();
-            var source = $(this).closest('tr');
-            var clone = source.clone(true);
-            clone.attr('class', 'success')
-            clone.children('td').find('.add_new_row').remove()
-            clone.children('td').find('.quantity').closest('td').remove()
-            clone.children('td').find('.quantity').remove()
-            clone.children('td').find('.total_amount').closest('td').remove()
-            clone.children('td').find('.total_amount').remove()
-            clone.children('td').find('.add_new_row').closest('td').remove()
-            const aoq_item_id = clone.children('td').find('.rfq_item_id').val()
-            clone.children('td').find('.qqq').attr('name', "aoq_id[" + aoq_item_id + "]")
-
-            clone.children('td').eq(0).remove()
-            clone.children('.total_amount').remove()
-            clone.children('.quantity').remove()
-            clone.append("<td><a class='remove_this_row btn btn-danger btn-xs ' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a></td>")
-            $('#lowest_table').append(clone);
-        });
 
     })
-
-    function changeLowest() {
-
-        if ($('#change_bac').is(":visible") && $("#prpurchaseorder-bac_date").val() == '') {
-            $('#change_bac').hide()
-            $('#change_lowest').val('Change')
-            $('#change_lowest').prop('class', 'btn btn-info')
-        } else {
-            $('#change_bac').show()
-        }
-        if ($('.add_new_row').is(":visible")) {
-            $('.add_new_row').hide()
-            // $(":add_new_row").attr("checked", true);
-            // $(":add_new_row").attr("checked", false);
-            // $(':add_new_row').each(function() {
-
-            //     this.checked = false;
-            // });
-        } else {
-
-            $('.add_new_row').show()
-        }
-
-
-        // $('#bac_date').prop('required', true)
-        // $('#bac_rso_number').prop('required', true)
-
-    }
-
-    function displayLowest(data) {
-
-        $('#lowest_table tbody').html('')
-        $.each(data, function(key, val) {
-            const pr_aoq_entries_id = val.aoq_entry_id
-            console.log(val.specification)
-
-            let row = `<tr class='success'>
-                <td style='display:none;'><input type='hidden' name='aoq_id[${val.rfq_item_id}]' value='${pr_aoq_entries_id}'></td>   
-                <td>${val.payee}</td>
-                <td>${val.bac_code}</td>
-
-                <td>${val.description}</td>
-                <td>${val.specification}</td>
-                <td>${val.remark}</td>
-                <td class='amount'>${val.unit_cost}</td>
-                <td><a class='remove_this_row btn btn-danger btn-xs ' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a></td>
-            </tr>`
-
-            $('#lowest_table tbody').append(row)
-        })
-    }
-
-
-
-    function displayAoqItems(data) {
-        $("#aoq_items_table tbody").html('')
-        $.each(data, function(key, val) {
-
-            let total_amount = parseFloat(val.unit_cost) * parseInt(val.quantity)
-            let q = ''
-            if (parseInt(val.is_lowest) == 1) {
-                q = 'checked'
-            }
-            let row = `<tr class='info'>
-                <td><input type='button' class='add_new_row btn-xs btn-warning' value='+'></td>
-                <td style='display:none;'>
-                <input type='hidden' class='qqq' value='${val.id}' >
-                <input type='hidden' class='rfq_item_id' value='${val.rfq_item_id}' >
-                </td>
-                <td>${val.payee}</td>
-                <td>${val.bac_code}</td>
-                <td>${val.description}</td>
-                <td>${val.specification}</td>
-                <td>${val.remark}</td>
-                <td class='quantity' ><span class='quantity'>${val.quantity}</span></td>
-                <td class='amount unit_cost'>${val.unit_cost}</td>
-                <td class='amount total_amount'><span class='total_amount'>${total_amount}</span></td>
-            </tr>`
-
-            $("#aoq_items_table tbody").append(row)
-        })
-
-    }
 </script>

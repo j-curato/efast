@@ -117,6 +117,10 @@ class PrRfqController extends Controller
         };
         return $filterFunction;
     }
+
+    private function validateDates()
+    {
+    }
     public function actionCreate()
     {
 
@@ -131,16 +135,9 @@ class PrRfqController extends Controller
 
             try {
                 $transaction = Yii::$app->db->beginTransaction();
+
+
                 $province  = 'RO';
-                $pr_date  = Yii::$app->db->createCommand("SELECT `date`  FROM pr_purchase_request  WHERE id = :id")
-                    ->bindValue(':id', $model->pr_purchase_request_id)
-                    ->queryOne();
-                if (
-                    strtotime($model->_date) < strtotime($pr_date['date'])
-                    || strtotime($model->deadline) < strtotime($pr_date['date'])
-                ) {
-                    throw new ErrorException('RFQ and Deadline date should not be before the PR Date.');
-                }
                 if (strtotime($model->deadline) < strtotime($model->_date)) {
                     throw new ErrorException('Deadline  must be greater than the RFQ date.');
                 }
@@ -155,11 +152,13 @@ class PrRfqController extends Controller
                 if (empty($rbac_id)) {
                     throw new ErrorException('No RBAC for selected Date');
                 }
-                // $model->id  = Yii::$app->db->createCommand("SELECT UUID_SHORT()  % 9223372036854775807")->queryScalar();
+
+                $validateTotal = $this->validateTotal($selectedItems, floatval($model->mooe_amount) + floatval($model->co_amount));
+                if ($validateTotal !== true) {
+                    throw new ErrorException($validateTotal);
+                }
                 $model->bac_composition_id = $rbac_id['id'];
                 $model->province = $province;
-                // $model->rfq_number = $this->getRfqNumber($model->_date, $model->fk_office_id);
-
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
@@ -179,7 +178,7 @@ class PrRfqController extends Controller
                 return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
                 $transaction->rollBack();
-                return json_encode(['errors' => $e->getMessage()]);
+                return json_encode($e->getMessage());
             }
         }
 
@@ -187,7 +186,17 @@ class PrRfqController extends Controller
             'model' => $model,
         ]);
     }
-
+    private function validateTotal($items, $abcAmount)
+    {
+        $query = (new Query())
+            ->select(['SUM(quantity * unit_cost) as total'])
+            ->from('pr_purchase_request_item')
+            ->where(['id' => array_column($items, 'pr_purchase_request_item_id')]);
+        if (floatval($query->scalar()) !== floatval($abcAmount)) {
+            return "The selected items and the sum of the CO amount and MOOE amount are not equal.";
+        }
+        return true;
+    }
     /**
      * Updates an existing PrRfq model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -200,23 +209,18 @@ class PrRfqController extends Controller
 
         $model = $this->findModel($id);
         $oldmodel = $this->findModel($id);
-
         if ($model->load(Yii::$app->request->post())) {
             try {
                 $transaction = Yii::$app->db->beginTransaction();
                 $items = Yii::$app->request->post('items');
                 $selectedItems = array_filter($items, $this->getSelectedItems($items));
                 $observers = Yii::$app->request->post('observers') ?? [];
-                $province  = 'RO';
-                $pr_date  = Yii::$app->db->createCommand("SELECT `date`  FROM pr_purchase_request  WHERE id = :id")
-                    ->bindValue(':id', $model->pr_purchase_request_id)
-                    ->queryOne();
+                $mfoItems = Yii::$app->request->post('mfoItems') ?? [];
 
-                if (
-                    strtotime($model->_date) < strtotime($pr_date['date'])
-                    || strtotime($model->deadline) < strtotime($pr_date['date'])
-                ) {
-                    throw new ErrorException('RFQ and Deadline date should not be before the PR Date.');
+                $province  = 'RO';
+                $validateTotal = $this->validateTotal($selectedItems, floatval($model->mooe_amount) + floatval($model->co_amount));
+                if ($validateTotal !== true) {
+                    throw new ErrorException($validateTotal);
                 }
 
                 // $rbac_id = Yii::$app->db->createCommand("SELECT id FROM bac_composition WHERE :_date  >= bac_composition.effectivity_date AND :_date<= bac_composition.expiration_date ")
@@ -230,8 +234,6 @@ class PrRfqController extends Controller
                 // }
                 // $model->bac_composition_id = $rbac_id['id'];
                 $model->province = $province;
-
-
                 if (!$model->validate()) {
                     throw new ErrorException(json_encode($model->errors));
                 }
@@ -246,6 +248,10 @@ class PrRfqController extends Controller
                 if ($insertObservers !== true) {
                     throw new ErrorException($insertObservers);
                 }
+                $insertMfoItems = $model->insertMfoItems($mfoItems);
+                if ($insertMfoItems !== true) {
+                    throw new ErrorException($insertMfoItems);
+                }
                 $transaction->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
@@ -255,7 +261,6 @@ class PrRfqController extends Controller
             }
         }
         $items = $model->getItems();
-
         $prItems = $this->formatPrItems($model->purchaseRequest->getPrItems());
         $prItemIds = array_column($items, 'pr_item_id');
         $itemsNotSelected = array_filter($prItems, function ($item) use ($prItemIds) {
