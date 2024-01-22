@@ -89,10 +89,9 @@ $officerInCharge  = !empty($model->fk_officer_in_charge) ? $model->officerInChar
                     </td>
                     <td>
                         <span class="head bold">
-
-                            GAY A. TIDALGO,CESO IV
+                            GAY A. TIDALGO, CESO IV
                         </span> <br>
-                        <span style="font-size:12px">
+                        <span>
                             Regional Director, DTI-CARAGA
                         </span>
                     </td>
@@ -102,13 +101,11 @@ $officerInCharge  = !empty($model->fk_officer_in_charge) ? $model->officerInChar
                         From
                     </td>
                     <td>
-                        <span class="head bold" id='asig_1'>
 
-                            <!-- BRENDA B. CORVERA -->
 
-                        </span> <br>
-                        <span class="head" id='asig_1_position' style="font-size:12px">
-                            <!-- Position -->
+                        <b class="font-weight-bold"><?= !empty($approvedBy['fullName']) ? strtoupper($approvedBy['fullName']) : '' ?></b>
+                        <span>
+                            <p><?= !empty($approvedBy['position']) ? $approvedBy['position'] : '' ?></p>
                         </span>
 
                     </td>
