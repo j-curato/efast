@@ -18,7 +18,7 @@ class PurchaseOrderTransmittalSearch extends PurchaseOrderTransmittal
     {
         return [
             [['id'], 'integer'],
-            [['serial_number', 'created_at'], 'safe'],
+            [['serial_number', 'created_at', 'date'], 'safe'],
         ];
     }
 
@@ -60,6 +60,7 @@ class PurchaseOrderTransmittalSearch extends PurchaseOrderTransmittal
         $query->andFilterWhere([
             'id' => $this->id,
             'created_at' => $this->created_at,
+            'date' => $this->date,
         ]);
 
         $query->andFilterWhere(['like', 'serial_number', $this->serial_number]);
