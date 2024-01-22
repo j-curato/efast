@@ -135,7 +135,7 @@ $monthlyTransmittalListUrl = Url::toRoute(['po-transmittal/monthly-transmittal-l
                                     borderWidth: 1
                                 },
                                 {
-                                    label: '# of Dv Pending at RO',
+                                    label: '# of Dvs In Transit From PO to RO',
                                     data: extract(this.transmittalData, 'total_dvs_pending_at_ro'),
                                     backgroundColor: '#f6fa1b',
                                     borderColor: '#e0e336',

@@ -30,7 +30,7 @@ $this->title = 'Transmittal List';
             </tr>
 
             <tr class="table-info">
-                <th class="text-center " colspan="5">DVs Pending at RO</th>
+                <th class="text-center " colspan="5">In Transit From PO to RO</th>
             </tr>
             <tr>
                 <th>DV No.</th>
