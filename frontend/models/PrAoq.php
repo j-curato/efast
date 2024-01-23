@@ -108,7 +108,8 @@ class PrAoq extends \yii\db\ActiveRecord
                 CAST(payee.id AS CHAR(50)) as payee_id,
                 pr_aoq_entries.amount,
                 pr_aoq_entries.remark,
-                pr_aoq_entries.is_lowest
+                pr_aoq_entries.is_lowest,
+                pr_purchase_request_item.unit_cost
                 FROM pr_aoq_entries
                 LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
                 LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id

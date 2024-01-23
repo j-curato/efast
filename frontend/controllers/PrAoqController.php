@@ -216,6 +216,7 @@ class PrAoqController extends Controller
                 return json_encode($e->getMessage());
             }
         }
+        // return json_encode($this->formatUpdateItems(ArrayHelper::index($model->getItems(), null, 'rfq_item_id')));
         return $this->render('update', [
             'model' => $model,
             'items' => $this->formatUpdateItems(ArrayHelper::index($model->getItems(), null, 'rfq_item_id'))
@@ -245,6 +246,7 @@ class PrAoqController extends Controller
                 'rfq_item_id' => $itm[0]['rfq_item_id'],
                 'stock_title' => $itm[0]['stock_title'],
                 'unit_of_measure' => $itm[0]['unit_of_measure'],
+                'unit_cost' => $itm[0]['unit_cost'],
                 'bidders' => $bidders,
             ];
         }

@@ -24,6 +24,7 @@ if (!empty($model->id)) {
     $pr_rfq = ArrayHelper::map($pr_rfq_query, 'id', 'rfq_number');
 }
 $row = 1;
+
 ?>
 
 <div class="pr-aoq-form" id="main">
@@ -86,6 +87,8 @@ $row = 1;
                 <th>Specification</th>
                 <th>Unit of Measure</th>
                 <th>Quantity</th>
+                <th>Unit Cost</th>
+                <th>Gross Amount</th>
             </thead>
             <tbody>
 
@@ -150,6 +153,7 @@ $row = 1;
                         <td>{{formatSpecification(rfqItem.specification)}}</td>
                         <td>{{rfqItem.unit_of_measure}}</td>
                         <td>{{rfqItem.quantity}}</td>
+                        <td>{{formatAmount(rfqItem.unit_cost)}}</td>
                     </tr>
                     <tr v-for="(bidder,bidderIndex) in rfqItem.bidders" :key="rfqItem.rfq_item_id+'-'+bidderIndex">
 
@@ -212,7 +216,7 @@ $row = 1;
 </style>
 <?php
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
- 
+
 Select2Asset::register($this);
 ?>
 <script type="text/javascript">
@@ -228,9 +232,18 @@ Select2Asset::register($this);
                 $('#praoq-pr_rfq_id').on('change',
                     this.getRfqItems
                 )
+                console.log(this.rfqItems)
 
             },
             methods: {
+                formatAmount(amount) {
+
+                    amount = parseFloat(amount)
+                    if (typeof amount === 'number' && !isNaN(amount)) {
+                        return amount.toLocaleString()
+                    }
+                    return 0;
+                },
 
                 changeMainAmount(event, item, index) {
                     // item.unit_cost = $(event.target).maskMoney('unmasked')[0]
@@ -247,7 +260,6 @@ Select2Asset::register($this);
                     axios.post(url, data)
                         .then(response => {
                             this.rfqItems = response.data
-                            console.log(this.rfqItems)
                         })
                         .catch(error => {
                             console.error('Error:', error);
