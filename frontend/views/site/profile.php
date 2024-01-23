@@ -99,13 +99,13 @@ $fieldOptions2 = [
                         <p class="text-muted text-center"><?= !empty($employee['position']) ? $employee['position'] : '' ?></p>
                         <ul class="list-group list-group-unbordered mb-3">
                             <li class="list-group-item">
-                                <b>Followers</b> <a class="float-right">1,322</a>
+                                <b>Followers</b> <a class="float-right"><?= number_format(rand(1000, 1000000)) ?></a>
                             </li>
                             <li class="list-group-item">
-                                <b>Following</b> <a class="float-right">543</a>
+                                <b>Following</b> <a class="float-right"><?= number_format(rand(1000, 1000000)) ?></a>
                             </li>
                             <li class="list-group-item">
-                                <b>Friends</b> <a class="float-right">13,287</a>
+                                <b>Friends</b> <a class="float-right"><?= number_format(rand(1000, 1000000)) ?></a>
                             </li>
                         </ul>
 
