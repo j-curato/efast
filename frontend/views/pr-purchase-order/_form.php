@@ -111,104 +111,13 @@ if (!empty($model->aoq->rfq->modeOfProcurement->is_bidding)) {
                 <?= $form->field($model, 'fk_mode_of_procurement_id')->widget(Select2::class, [
                     'data' => ArrayHelper::map($modeOfProcurementOptions, 'id', 'mode_name'),
                     'pluginOptions' => [
-                        'placeholder' => 'Select Mode'
-                    ]
-                ]) ?>
-            </div>
-            <div class="col-2" :class="{ 'd-none': !isBidding }">
-                <?= $form->field($model, 'philgeps_reference_num')->textInput() ?>
-            </div>
-            <div class="col-2" :class="{ 'd-none': !isBidding }">
-                <?= $form->field($model, 'pre_proc_conference', ['enableAjaxValidation' => true])->widget(DatePicker::class, [
-                    'pluginOptions' => [
-                        'autoclose' => true,
-                        'todayHighlight' => true,
-                        'format' => 'yyyy-mm-dd',
+                        'placeholder' => 'Select Mode of Procurement',
                     ]
                 ]) ?>
             </div>
 
-            <div class="col-2" :class="{ 'd-none': !isBidding }">
-                <?= $form->field($model, 'pre_bid_conf')->widget(DatePicker::class, [
-                    'pluginOptions' => [
-                        'autoclose' => true,
-                        'todayHighlight' => true,
-                        'format' => 'yyyy-mm-dd'
-                    ]
-                ]) ?>
-            </div>
-            <div class="col-2" :class="{ 'd-none': !isBidding }">
-                <?= $form->field($model, 'eligibility_check')->widget(DatePicker::class, [
-                    'pluginOptions' => [
-                        'autoclose' => true,
-                        'todayHighlight' => true,
-                        'format' => 'yyyy-mm-dd'
-                    ]
-                ]) ?>
-            </div>
-            <div class="col-2" :class="{ 'd-none': !isBidding }">
-                <?= $form->field($model, 'opening_of_bids')->widget(DatePicker::class, [
-                    'pluginOptions' => [
-                        'autoclose' => true,
-                        'todayHighlight' => true,
-                        'format' => 'yyyy-mm-dd'
-                    ]
-                ]) ?>
-            </div>
-            <div class="col-2" :class="{ 'd-none': !isBidding }">
-                <?= $form->field($model, 'bid_evaluation')->widget(DatePicker::class, [
-                    'pluginOptions' => [
-                        'autoclose' => true,
-                        'todayHighlight' => true,
-                        'format' => 'yyyy-mm-dd'
-                    ]
-                ]) ?>
-            </div>
-            <div class="col-2" :class="{ 'd-none': !isBidding }">
-                <?= $form->field($model, 'post_qual')->widget(DatePicker::class, [
-                    'pluginOptions' => [
-                        'autoclose' => true,
-                        'todayHighlight' => true,
-                        'format' => 'yyyy-mm-dd'
-                    ]
-                ]) ?>
-            </div>
-            <div class="col-2" :class="{ 'd-none': !isBidding }">
-                <?= $form->field($model, 'bac_resolution_award')->widget(DatePicker::class, [
-                    'pluginOptions' => [
-                        'autoclose' => true,
-                        'todayHighlight' => true,
-                        'format' => 'yyyy-mm-dd'
-                    ]
-                ]) ?>
-            </div>
-            <div class="col-2" :class="{ 'd-none': !isBidding }">
-                <?= $form->field($model, 'notice_of_award')->widget(DatePicker::class, [
-                    'pluginOptions' => [
-                        'autoclose' => true,
-                        'todayHighlight' => true,
-                        'format' => 'yyyy-mm-dd'
-                    ]
-                ]) ?>
-            </div>
-            <div class="col-2" :class="{ 'd-none': !isBidding }">
-                <?= $form->field($model, 'contract_signing')->widget(DatePicker::class, [
-                    'pluginOptions' => [
-                        'autoclose' => true,
-                        'todayHighlight' => true,
-                        'format' => 'yyyy-mm-dd'
-                    ]
-                ]) ?>
-            </div>
-            <div class="col-2" :class="{ 'd-none': !isBidding }">
-                <?= $form->field($model, 'notice_to_proceed')->widget(DatePicker::class, [
-                    'pluginOptions' => [
-                        'autoclose' => true,
-                        'todayHighlight' => true,
-                        'format' => 'yyyy-mm-dd'
-                    ]
-                ]) ?>
-            </div>
+
+
             <div class="col-sm-2  " :class="{ 'd-none': !isJo }">
                 <?= $form->field($model, 'date_work_begun')->widget(DatePicker::class, [
                     'pluginOptions' => [
@@ -312,10 +221,183 @@ if (!empty($model->aoq->rfq->modeOfProcurement->is_bidding)) {
 
         </div>
 
-        <div class="row justify-content-center">
-            <div class="form-group col-sm-2">
-                <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
+
+    </div>
+    <div class="card p-2 " v-if="isBidding">
+        <div class="card-header text-center">
+            <h6 class="font-weight-bold">Actual Procurement Activity</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+
+                <div class="col-2" :class="{ 'd-none': !isBidding }">
+                    <?= $form->field($model, 'philgeps_reference_num')->textInput() ?>
+                </div>
+                <div class="col-2" :class="{ 'd-none': !isBidding }">
+                    <?= $form->field($model, 'pre_proc_conference', ['enableAjaxValidation' => true])->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'todayHighlight' => true,
+                            'format' => 'yyyy-mm-dd',
+                        ]
+                    ]) ?>
+                </div>
+
+                <div class="col-2" :class="{ 'd-none': !isBidding }">
+                    <?= $form->field($model, 'actual_proc_pre_bid_conf')->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'todayHighlight' => true,
+                            'format' => 'yyyy-mm-dd'
+                        ]
+                    ]) ?>
+                </div>
+
+                <div class="col-2" :class="{ 'd-none': !isBidding }">
+                    <?= $form->field($model, 'post_of_ib')->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'todayHighlight' => true,
+                            'format' => 'yyyy-mm-dd'
+                        ]
+                    ]) ?>
+                </div>
+                <div class="col-2" :class="{ 'd-none': !isBidding }">
+                    <?= $form->field($model, 'actual_proc_eligibility_check')->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'todayHighlight' => true,
+                            'format' => 'yyyy-mm-dd'
+                        ]
+                    ]) ?>
+                </div>
+                <div class="col-2" :class="{ 'd-none': !isBidding }">
+                    <?= $form->field($model, 'actual_proc_opening_of_bids')->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'todayHighlight' => true,
+                            'format' => 'yyyy-mm-dd'
+                        ]
+                    ]) ?>
+                </div>
+                <div class="col-2" :class="{ 'd-none': !isBidding }">
+                    <?= $form->field($model, 'actual_proc_bid_evaluation')->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'todayHighlight' => true,
+                            'format' => 'yyyy-mm-dd'
+                        ]
+                    ]) ?>
+                </div>
+                <div class="col-2" :class="{ 'd-none': !isBidding }">
+                    <?= $form->field($model, 'actual_proc_post_qual')->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'todayHighlight' => true,
+                            'format' => 'yyyy-mm-dd'
+                        ]
+                    ]) ?>
+                </div>
+                <div class="col-2" :class="{ 'd-none': !isBidding }">
+                    <?= $form->field($model, 'bac_resolution_award')->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'todayHighlight' => true,
+                            'format' => 'yyyy-mm-dd'
+                        ]
+                    ]) ?>
+                </div>
+                <div class="col-2" :class="{ 'd-none': !isBidding }">
+                    <?= $form->field($model, 'notice_of_award')->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'todayHighlight' => true,
+                            'format' => 'yyyy-mm-dd'
+                        ]
+                    ]) ?>
+                </div>
+                <div class="col-2" :class="{ 'd-none': !isBidding }">
+                    <?= $form->field($model, 'contract_signing')->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'todayHighlight' => true,
+                            'format' => 'yyyy-mm-dd'
+                        ]
+                    ]) ?>
+                </div>
+                <div class="col-2" :class="{ 'd-none': !isBidding }">
+                    <?= $form->field($model, 'notice_to_proceed')->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'todayHighlight' => true,
+                            'format' => 'yyyy-mm-dd'
+                        ]
+                    ]) ?>
+                </div>
             </div>
+        </div>
+    </div>
+    <div class="card p-2 " v-if="isBidding">
+        <div class="card-header text-center">
+            <h6 class="font-weight-bold">Date of Receipt of Invitation</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+
+                <div class="col-2" :class="{ 'd-none': !isBidding }">
+                    <?= $form->field($model, 'invitation_pre_bid_conf', ['enableAjaxValidation' => true])->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'todayHighlight' => true,
+                            'format' => 'yyyy-mm-dd',
+                        ]
+                    ]) ?>
+                </div>
+
+                <div class="col-2" :class="{ 'd-none': !isBidding }">
+                    <?= $form->field($model, 'invitation_eligibility_check')->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'todayHighlight' => true,
+                            'format' => 'yyyy-mm-dd'
+                        ]
+                    ]) ?>
+                </div>
+
+                <div class="col-2" :class="{ 'd-none': !isBidding }">
+                    <?= $form->field($model, 'invitation_opening_of_bids')->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'todayHighlight' => true,
+                            'format' => 'yyyy-mm-dd'
+                        ]
+                    ]) ?>
+                </div>
+                <div class="col-2" :class="{ 'd-none': !isBidding }">
+                    <?= $form->field($model, 'invitation_bid_evaluation')->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'todayHighlight' => true,
+                            'format' => 'yyyy-mm-dd'
+                        ]
+                    ]) ?>
+                </div>
+                <div class="col-2" :class="{ 'd-none': !isBidding }">
+                    <?= $form->field($model, 'invitation_post_qual')->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'todayHighlight' => true,
+                            'format' => 'yyyy-mm-dd'
+                        ]
+                    ]) ?>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="form-group col-sm-2">
+            <?= Html::submitButton('Save', ['class' => 'btn btn-success', 'style' => 'width:100%']) ?>
         </div>
     </div>
     <?php ActiveForm::end(); ?>
