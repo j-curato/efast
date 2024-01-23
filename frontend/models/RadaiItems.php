@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use app\behaviors\HistoryLogsBehavior;
 
 /**
  * This is the model class for table "radai_items".
@@ -17,6 +18,12 @@ use Yii;
  */
 class RadaiItems extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            HistoryLogsBehavior::class
+        ];
+    }
     /**
      * {@inheritdoc}
      */

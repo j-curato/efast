@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use app\behaviors\HistoryLogsBehavior;
 
 /**
  * This is the model class for table "record_allotment_entries".
@@ -14,6 +15,12 @@ use Yii;
  */
 class RecordAllotmentEntries extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            HistoryLogsBehavior::class
+        ];
+    }
     public $isMaf = false;
     /**
      * {@inheritdoc}

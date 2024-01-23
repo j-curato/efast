@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\db\Expression;
+use app\behaviors\HistoryLogsBehavior;
 
 /**
  * This is the model class for table "{{%divisions}}".
@@ -15,6 +16,12 @@ use yii\db\Expression;
  */
 class Divisions extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            HistoryLogsBehavior::class
+        ];
+    }
     /**
      * {@inheritdoc}
      */

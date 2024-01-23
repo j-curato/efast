@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use app\behaviors\HistoryLogsBehavior;
 
 /**
  * This is the model class for table "ro_check_range".
@@ -17,6 +18,12 @@ use Yii;
  */
 class RoCheckRanges extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            HistoryLogsBehavior::class
+        ];
+    }
     /**
      * {@inheritdoc}
      */

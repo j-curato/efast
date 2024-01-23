@@ -5,6 +5,7 @@ namespace app\models;
 
 use Yii;
 use yii\db\Expression;
+use app\behaviors\HistoryLogsBehavior;
 
 /**
  * This is the model class for table "cash_disbursement".
@@ -23,6 +24,12 @@ use yii\db\Expression;
  */
 class CashDisbursement extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            HistoryLogsBehavior::class
+        ];
+    }
     /**
      * {@inheritdoc}
      */

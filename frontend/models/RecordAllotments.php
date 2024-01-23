@@ -2,8 +2,9 @@
 
 namespace app\models;
 
-use ErrorException;
 use Yii;
+use ErrorException;
+use app\behaviors\HistoryLogsBehavior;
 
 /**
  * This is the model class for table "record_allotments".
@@ -32,6 +33,12 @@ use Yii;
  */
 class RecordAllotments extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            HistoryLogsBehavior::class
+        ];
+    }
     /**
      * {@inheritdoc}
      */

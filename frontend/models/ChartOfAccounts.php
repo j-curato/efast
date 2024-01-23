@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\db\Query;
+use app\behaviors\HistoryLogsBehavior;
 
 /**
  * This is the model class for table "chart_of_accounts".
@@ -23,6 +24,12 @@ use yii\db\Query;
  */
 class ChartOfAccounts extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            HistoryLogsBehavior::class
+        ];
+    }
     /**
      * {@inheritdoc}
      */

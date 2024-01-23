@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use app\behaviors\HistoryLogsBehavior;
 
 /**
  * This is the model class for table "{{%office}}".
@@ -13,6 +14,12 @@ use Yii;
  */
 class Office extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            HistoryLogsBehavior::class
+        ];
+    }
     /**
      * {@inheritdoc}
      */

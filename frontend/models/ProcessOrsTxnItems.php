@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use app\behaviors\HistoryLogsBehavior;
 
 /**
  * This is the model class for table "{{%process_ors_txn_items}}".
@@ -19,6 +20,12 @@ use Yii;
  */
 class ProcessOrsTxnItems extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            HistoryLogsBehavior::class
+        ];
+    }
     /**
      * {@inheritdoc}
      */
