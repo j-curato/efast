@@ -136,8 +136,9 @@ if (!empty($model->aoq->rfq->modeOfProcurement->is_bidding)) {
                     ]
                 ]) ?>
             </div>
-
-
+            <div class="col-2">
+                <?= $form->field($model, 'philgeps_reference_num')->textInput() ?>
+            </div>
             <div class="col-sm-2">
                 <?= $form->field($model, 'mooe_amount')->widget(MaskMoney::class, [
                     'pluginOptions' => [
@@ -230,9 +231,7 @@ if (!empty($model->aoq->rfq->modeOfProcurement->is_bidding)) {
         <div class="card-body">
             <div class="row">
 
-                <div class="col-2" :class="{ 'd-none': !isBidding }">
-                    <?= $form->field($model, 'philgeps_reference_num')->textInput() ?>
-                </div>
+
                 <div class="col-2" :class="{ 'd-none': !isBidding }">
                     <?= $form->field($model, 'pre_proc_conference', ['enableAjaxValidation' => true])->widget(DatePicker::class, [
                         'pluginOptions' => [
