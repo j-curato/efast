@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use app\behaviors\HistoryLogsBehavior;
 
 /**
  * This is the model class for table "acic_cancelled_items".
@@ -17,6 +18,13 @@ use Yii;
  */
 class AcicCancelledItems extends \yii\db\ActiveRecord
 {
+
+    public function behaviors()
+    {
+        return [
+            HistoryLogsBehavior::class
+        ];
+    }
     /**
      * {@inheritdoc}
      */

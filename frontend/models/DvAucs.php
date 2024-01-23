@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use app\behaviors\HistoryLogsBehavior;
 
 /**
  * This is the model class for table "dv_aucs".
@@ -19,6 +20,12 @@ use Yii;
  */
 class DvAucs extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            HistoryLogsBehavior::class
+        ];
+    }
     /**
      * {@inheritdoc}
      */
@@ -154,5 +161,22 @@ class DvAucs extends \yii\db\ActiveRecord
     public function getDvTransactionType()
     {
         return $this->hasOne(DvTransactionType::class, ['id' => 'fk_dv_transaction_type_id']);
+    }
+
+
+    public  function getDvCeckNum()
+    {
+        return Yii::$app->db->createCommand("SELECT
+            `cash_disbursement`.`check_or_ada_no`
+            FROM `cash_disbursement` 
+            JOIN `cash_disbursement_items` ON cash_disbursement.id = cash_disbursement_items.fk_cash_disbursement_id
+            WHERE `cash_disbursement`.`is_cancelled`=0
+            AND `cash_disbursement_items`.`is_deleted`=0
+            AND NOT EXISTS (SELECT `c`.`parent_disbursement` 
+            FROM `cash_disbursement` `c` 
+            WHERE `c`.`is_cancelled`=1 AND `c`.`parent_disbursement`=cash_disbursement.id)
+            AND cash_disbursement_items.fk_dv_aucs_id = :id")
+            ->bindValue(':id', $this->id)
+            ->queryScalar();
     }
 }

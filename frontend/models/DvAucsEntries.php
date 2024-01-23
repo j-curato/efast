@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use app\behaviors\HistoryLogsBehavior;
 
 /**
  * This is the model class for table "dv_aucs_entries".
@@ -22,6 +23,13 @@ use Yii;
  */
 class DvAucsEntries extends \yii\db\ActiveRecord
 {
+
+    public function behaviors()
+    {
+        return [
+            HistoryLogsBehavior::class
+        ];
+    }
     /**
      * {@inheritdoc}
      */

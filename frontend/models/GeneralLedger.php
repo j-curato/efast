@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use DateTime;
+use app\behaviors\HistoryLogsBehavior;
 
 /**
  * This is the model class for table "general_ledger".
@@ -16,6 +17,12 @@ use DateTime;
  */
 class GeneralLedger extends \yii\db\ActiveRecord
 {
+    public function behaviors()
+    {
+        return [
+            HistoryLogsBehavior::class
+        ];
+    }
     /**
      * {@inheritdoc}
      */

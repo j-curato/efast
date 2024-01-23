@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use app\behaviors\HistoryLogsBehavior;
 
 /**
  * This is the model class for table "{{%supplemental_ppmp}}".
@@ -26,6 +27,13 @@ use Yii;
  */
 class SupplementalPpmp extends \yii\db\ActiveRecord
 {
+
+    public function behaviors()
+    {
+        return [
+            HistoryLogsBehavior::class
+        ];
+    }
     /**
      * {@inheritdoc}
      */
