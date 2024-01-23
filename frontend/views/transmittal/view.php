@@ -92,15 +92,11 @@ $date = DateTime::createFromFormat('Y-m-d', $model->date)->format('F d, Y');
                 </tr>
                 <tr>
                     <td colspan="8" class="border-bottom-0 border-right-0 border-left-0 head">
-                        <br>
                         Thank you.
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="8" class="border-0 pt-2 head">
-                        <br>
-                        <br>
-                        <br>
+                    <td colspan="8" class="border-0 pt-1 head">
                         <p class="mt-5">Very truly yours,</p>
                         <br>
                         <br>
