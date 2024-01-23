@@ -177,7 +177,7 @@ $observers = $model->getObservers()->asArray()->all();
                 <label for="" class="w-100 ">MFO/PAPs</label>
                 <?= Select2::widget([
                     'name' => 'mfoItems',
-                    'data' => ArrayHelper::map(MfoPapCode::getMfoPapCodesA(), 'id', 'name'),
+                    'data' => ArrayHelper::map(MfoPapCode::getMfoPapCodesA(), 'id', 'code_name',),
                     'value' => ArrayHelper::getColumn($model->mfosA, 'fk_mfo_pap_code_id'),
                     'size' => Select2::SMALL,
                     'options' => ['placeholder' => 'Select MFO/PAPs', 'multiple' => true,],

@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\db\Expression;
 use app\behaviors\HistoryLogsBehavior;
 
 /**
@@ -58,6 +59,16 @@ class MfoPapCode extends \yii\db\ActiveRecord
     }
     public static function getMfoPapCodesA()
     {
-        return MfoPapCode::find()->asArray()->all();
+        return self::find()
+            ->addSelect([
+                "id",
+                "code",
+                "name",
+                "description",
+                "division",
+                new Expression("CONCAT(code,'-',name) as code_name")
+
+            ])
+            ->asArray()->all();
     }
 }
