@@ -262,7 +262,7 @@ $officerInCharge  = !empty($model->fk_officer_in_charge) ? $model->officerInChar
                     <tr>
                         <td colspan="8" class="border-0">
                             <br>
-                            <p> For the Regional Director</p>
+                            <p> For the Provincial Director</p>
                             <br>
                         </td>
                     </tr>
