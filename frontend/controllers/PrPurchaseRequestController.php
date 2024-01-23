@@ -495,9 +495,14 @@ class PrPurchaseRequestController extends Controller
                 $transaction = Yii::$app->db->beginTransaction();
                 $pr_items = Yii::$app->request->post('pr_items') ?? [];
                 $allotment_items = Yii::$app->request->post('allotment_items') ?? [];
+
                 if (!Yii::$app->user->can('change_purchase_request_date')) {
                     $date_now = new DateTime();
                     $model->date = $date_now->format('Y-m-d');
+                    // to delete in future
+                    // if (intval($model->budget_year) == 2024) {
+                    //     $model->date = '2024-01-03';
+                    // }
                 }
                 // $model->pr_number = $this->getPrNumber($model->date, $model->fk_office_id, $model->fk_division_id);
 
@@ -645,9 +650,14 @@ class PrPurchaseRequestController extends Controller
         if ($model->is_final && !Yii::$app->user->can('super-user')) {
             return $this->goHome();
         }
-        if (strtotime(date('Y-m-d')) > strtotime(date('2023-11-28')) && !Yii::$app->user->can('super-user')) {
-            return $this->redirect(['index']);
-        }
+
+        // if (
+        //     strtotime(date('Y-m-d')) > strtotime(date('2023-11-28'))
+        //     && intval($model->budget_year) < 2024
+        //     && !Yii::$app->user->can('super-user')
+        // ) {
+        //     return $this->redirect(['index']);
+        // }
         if ($model->load(Yii::$app->request->post())) {
 
             try {
