@@ -5,6 +5,7 @@ namespace app\models;
 use Yii;
 use DateTime;
 use ErrorException;
+use yii\db\Expression;
 use app\components\helpers\MyHelper;
 use app\behaviors\HistoryLogsBehavior;
 
@@ -180,17 +181,66 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
     }
     public function hasRfq()
     {
-        $qry =  Yii::$app->db->createCommand("SELECT EXISTS (SELECT id FROM pr_rfq WHERE pr_purchase_request_id = :id)")
+        $qry =  Yii::$app->db->createCommand("SELECT EXISTS (SELECT id FROM pr_rfq WHERE pr_purchase_request_id = :id AND pr_rfq.is_cancelled = 0)")
             ->bindValue(':id', $this->id)
             ->queryScalar();
 
         return intval($qry) === 1 ? true : false;
     }
+    // public function getPrItems()
+    // {
+    //     return Yii::$app->db->createCommand("CALL GetPrItems(:id)")
+    //         ->bindValue(':id', $this->id)
+    //         ->queryAll();
+    // }
     public function getPrItems()
     {
         return Yii::$app->db->createCommand("CALL GetPrItems(:id)")
             ->bindValue(':id', $this->id)
             ->queryAll();
+        return PrPurchaseRequestItem::find()
+            ->addSelect([
+                new Expression("(CASE 
+                        WHEN pr_purchase_request_item.fk_ppmp_cse_item_id IS NOT NULL THEN 'cse_item_id'
+                        WHEN     pr_purchase_request_item.fk_ppmp_non_cse_item_id IS NOT NULL THEN 'non_cse_item_id'
+                        END
+                        ) as cse_type"),
+                new Expression("(CASE 
+                        WHEN pr_purchase_request_item.fk_ppmp_cse_item_id IS NOT NULL THEN pr_purchase_request_item.fk_ppmp_cse_item_id 
+                        WHEN     pr_purchase_request_item.fk_ppmp_non_cse_item_id IS NOT NULL THEN  pr_purchase_request_item.fk_ppmp_non_cse_item_id 
+                        END
+                        ) as  ppmp_item_id"),
+
+                new Expression("(CASE 
+                        WHEN pr_purchase_request_item.fk_ppmp_cse_item_id IS NOT NULL THEN pr_stock.stock_title
+                        WHEN     pr_purchase_request_item.fk_ppmp_non_cse_item_id IS NOT NULL THEN  supplemental_ppmp_non_cse.activity_name 
+                        END
+                        ) as project_name"),
+                "pr_purchase_request_item.id as item_id",
+                "pr_stock.id as stock_id",
+                "pr_stock.stock_title",
+                "unit_of_measure.id as unit_of_measure_id",
+                "unit_of_measure.unit_of_measure",
+                "pr_purchase_request_item.unit_cost",
+                "pr_purchase_request_item.quantity",
+                "pr_stock.bac_code",
+                new Expression("pr_purchase_request_item.unit_cost * pr_purchase_request_item.quantity as total_cost"),
+                "pr_purchase_request_item.specification",
+                "supplemental_ppmp.is_supplemental"
+            ])
+            ->join("LEFT JOIN", "unit_of_measure", " pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id")
+            ->join("LEFT JOIN", "supplemental_ppmp_non_cse_items", " pr_purchase_request_item.fk_ppmp_non_cse_item_id = supplemental_ppmp_non_cse_items.id")
+            ->join("LEFT JOIN", "supplemental_ppmp_cse", " pr_purchase_request_item.fk_ppmp_cse_item_id = supplemental_ppmp_cse.id")
+            ->join("LEFT JOIN", "supplemental_ppmp_non_cse", " supplemental_ppmp_non_cse_items.fk_supplemental_ppmp_non_cse_id = supplemental_ppmp_non_cse.id")
+            ->join("LEFT JOIN", "supplemental_ppmp", " supplemental_ppmp_cse.fk_supplemental_ppmp_id = supplemental_ppmp_cse.id or supplemental_ppmp_non_cse . fk_supplemental_ppmp_id = supplemental_ppmp . id")
+            ->join("LEFT JOIN", "pr_stock", " pr_purchase_request_item.pr_stock_id = pr_stock.id")
+            ->andWhere([
+                "pr_purchase_request_item.pr_purchase_request_id" => $this->id
+            ])
+            ->andWhere(["pr_purchase_request_item.is_deleted" => false])
+            ->asArray()
+            ->all();
+        // ->createCommand()->getRawSql();
     }
     public function getPrAllotments()
     {
