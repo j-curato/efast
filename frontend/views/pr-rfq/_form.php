@@ -439,7 +439,7 @@ $('#PrRfq').on('beforeSubmit', function(e) {
             let res = JSON.parse(data)
             swal({
                 icon: 'error',
-                title: res.errors,
+                title: res,
                 type: "error",
                 timer: 3000,
                 closeOnConfirm: false,
