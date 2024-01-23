@@ -339,7 +339,7 @@ if (!empty($model->date_completed)) {
                                 </td>
                                 <td colspan="3">
                                     <span>Division: </span>
-                                    <span class="text-uppercase"><?=$model->getDivision()?></span>
+                                    <span class="text-uppercase"><?= $model->getDivision() ?></span>
                                     <br>
                                     <span>P.O No.:</span>
                                     <span><?= $po_number ?></span>
@@ -406,7 +406,7 @@ if (!empty($model->date_completed)) {
                                 </td>
                                 <td> {$val2['quantity']}</td>
                                 <td class='amount'> {$unit_cost} </td>
-                                <td class='amount'>" . number_format($total_amount,2) . " </td>
+                                <td class='amount'>" . number_format($total_amount, 2) . " </td>
                             </tr>";
                                 $grand_total += $total_amount;
                             }
@@ -414,7 +414,7 @@ if (!empty($model->date_completed)) {
                             ?>
                             <tr>
                                 <th colspan="5">Grand Total</th>
-                                <th class="text-right"><?php echo number_format($grand_total,2) ?></th>
+                                <th class="text-right"><?php echo number_format($grand_total, 2) ?></th>
                             </tr>
                             <tr>
                                 <td colspan="6">
@@ -480,7 +480,7 @@ if (!empty($model->date_completed)) {
                                     <br>
                                     <br>
                                     <u class=" font-weight-bold">
-                                        <?= strtoupper($model->accountingUnit->f_name . ' ' . $model->accountingUnit->m_name[0] . '. ' . $model->accountingUnit->l_name) ?>
+                                        <?= mb_strtoupper($model->accountingUnit->f_name . ' ' . $model->accountingUnit->m_name[0] . '. ' . $model->accountingUnit->l_name, 'UTF-8') ?>
                                     </u>
                                     <br>
                                     <span style="margin-left:auto;width:100%">Signature over Printed Name of Chief Accountant/Head of </span>
