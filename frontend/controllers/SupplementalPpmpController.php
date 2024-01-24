@@ -90,6 +90,7 @@ class SupplementalPpmpController extends Controller
         supplemental_ppmp.budget_year,
         UPPER(REPLACE(supplemental_ppmp.cse_type,'_','-')) as cse_type,
         mfo_pap_code.`code` as mfo_code,
+        mfo_pap_code.`name` as mfo_name,
         supplemental_ppmp_non_cse.activity_name,
         pr_stock.bac_code,
         pr_stock.stock_title,

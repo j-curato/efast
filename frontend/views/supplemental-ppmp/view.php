@@ -187,6 +187,7 @@ if (!empty($model->fk_certified_funds_available_by)) {
                         $budget_year = $item['budget_year'];
                         $cse_type = $item['cse_type'];
                         $mfo_code = $item['mfo_code'];
+                        $mfo_name = $item['mfo_name'];
                         $activity_name = $item['activity_name'];
                         $bac_code = $item['bac_code'];
                         $stock_title = $item['stock_title'];
@@ -200,7 +201,7 @@ if (!empty($model->fk_certified_funds_available_by)) {
 
                         echo "<tr class='r'>
                             <td>$budget_year</td>
-                            <td>$mfo_code</td>
+                            <td>$mfo_code - $mfo_name</td>
                             <td>$activity_name</td>
                             <td>$bac_code</td>
                             <td>$stock_title</td>
