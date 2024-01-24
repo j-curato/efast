@@ -67,6 +67,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'po_date',
             "po_is_cancelled",
             'iar_number',
+            'rfq_mfos',
             // [
             //     'attribute' => 'pr_date',
             //     'filter' => DatePicker::widget([

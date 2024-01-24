@@ -28,10 +28,17 @@ class m240123_024326_update_vw_procurement_to_iar_tracking_view extends Migratio
                                 ELSE 'Good'
                             END) as rfq_is_cancelled,
                             pr_rfq_item.pr_purchase_request_item_id,
-                            pr_rfq_item.id as rfq_item_id
+                            pr_rfq_item.id as rfq_item_id,
+                            mfos.rfq_mfos
                             FROM pr_rfq
-                            JOIN pr_rfq_item ON pr_rfq.id = pr_rfq_item.pr_rfq_id),
-                                    
+                            JOIN pr_rfq_item ON pr_rfq.id = pr_rfq_item.pr_rfq_id
+                            LEFT JOIN (SELECT 
+                                tbl_rfq_mfos.fk_rfq_id,
+                                GROUP_CONCAT(CONCAT(mfo_pap_code.`code`,'-',mfo_pap_code.`name`))  as rfq_mfos
+                                FROM tbl_rfq_mfos
+                                JOIN mfo_pap_code ON tbl_rfq_mfos.fk_mfo_pap_code_id = mfo_pap_code.id
+                                GROUP BY tbl_rfq_mfos.fk_rfq_id) as mfos ON pr_rfq.id =mfos.fk_rfq_id
+                            ),       
                             cte_aoqToPoDetails as (SELECT 
                             pr_aoq.aoq_number,
                             (CASE 
@@ -223,6 +230,7 @@ class m240123_024326_update_vw_procurement_to_iar_tracking_view extends Migratio
                         cte_rfqDetails.rfq_date,
                         cte_rfqDetails.rfq_deadline,
                         cte_rfqDetails.rfq_is_cancelled,
+                        cte_rfqDetails.rfq_mfos,
                         cte_aoqToPoDetails.aoq_number,
                         cte_aoqToPoDetails.aoq_is_cancelled,
                         cte_aoqToPoDetails.payee_name,
