@@ -115,6 +115,15 @@ class VwProcurementToIarTracking extends \yii\db\ActiveRecord
             'pr_date' => 'PR Date',
             'iarTransmittalNumber' => 'IAR Transmittal No.',
             'iarTransmittalDate' => 'IAR Transmittal Date',
+
+            'pre_proc_conference' => 'Pre-Proc Conference',
+            'post_of_ib' => 'Ads/Post of IB',
+            'philgeps_reference_num' => 'PhilGEPS ref. No.',
+            'actual_proc_pre_bid_conf' => 'PRe-bid Conf',
+            'actual_proc_eligibility_check' => 'Eligibility Check',
+            'actual_proc_opening_of_bids' => 'Submission /Opening of Bids',
+            'actual_proc_bid_evaluation' => 'Bid Evaluation',
+            'actual_proc_post_qual' => 'Post Qual',
         ];
     }
 }

@@ -5,6 +5,7 @@ namespace frontend\controllers;
 use Yii;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use yii\data\ActiveDataProvider;
 use app\models\VwProcurementToIarTracking;
 use app\models\VwProcurementToIarTrackingSearch;
 
@@ -15,9 +16,7 @@ class ProcurementReportsController extends \yii\web\Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => [
-                    'procurement-to-inspection-tracking'
-                ],
+         
                 'rules' => [
                     [
 
@@ -26,6 +25,13 @@ class ProcurementReportsController extends \yii\web\Controller
                         ],
                         'allow' => true,
                         'roles' => ['pr_to_iar_tracking']
+                    ],
+                    [
+                        'actions' => [
+                            'pmr'
+                        ],
+                        'allow' => true,
+                        'roles' => ['pmr']
                     ],
 
                 ]
@@ -123,5 +129,14 @@ class ProcurementReportsController extends \yii\web\Controller
         return  json_encode($fileSaveLoc);
 
         exit();
+    }
+    public function actionPmr()
+    {
+        $searchModel = new VwProcurementToIarTrackingSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        return $this->render('pmr_view', [
+            'dataProvider' => $dataProvider,
+            'searchModel' => $searchModel,
+        ]);
     }
 }
