@@ -229,7 +229,7 @@ if (file_exists($realFilePathPng) && is_file($realFilePathPng)) {
             $procurementReports = [
 
                 Yii::$app->user->can('pr_to_iar_tracking') ?     ['label' => 'PR to IAR Tracking', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/procurement-reports/procurement-to-inspection-tracking'],] : null,
-                Yii::$app->user->can('pmr') ?     ['label' => 'PMR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/procurement-reports/pmr'],] : null,
+                Yii::$app->user->can('pmr') ?     ['label' => 'PMR', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/pmr/index'],] : null,
                 // Yii::$app->user->can('super-user') ?     ['label' => 'PO Summary', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/pr-summary'],] : null,
                 // Yii::$app->user->can('super-user') ?     ['label' => 'Procurement Search', 'icon' => 'dot-circle', 'iconStyle' => 'far', 'url' => ['/report/proc-summary'],] : null,
             ];

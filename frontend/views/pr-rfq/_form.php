@@ -35,7 +35,11 @@ $observers = $model->getObservers()->asArray()->all();
 
 <div class="pr-rfq-form d-none" id="mainVue">
     <?php $form = ActiveForm::begin([
-        'id' => $model->formName()
+        'id' => $model->formName(),
+        'enableAjaxValidation' => true,
+        'validateOnChange' => false,
+        'validateOnBlur' => false,
+        'validateOnType' => false,
     ]); ?>
     <div class="card" style="padding: 1rem;">
         <ul>
@@ -190,10 +194,89 @@ $observers = $model->getObservers()->asArray()->all();
             </div>
 
         </div>
+        <div class="col-2">
+            <?= $form->field($model, 'philgeps_reference_num')->textInput() ?>
+        </div>
+
         <?= $form->field($model, 'project_location')->textarea() ?>
 
 
 
+    </div>
+    <div class="card p-2 " :class="{ 'd-none': !isBidding }">
+        <div class="card-header text-center">
+            <h6 class="font-weight-bold">Actual Procurement Activity</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-3" :class="{ 'd-none': !isBidding }">
+                    <?= $form->field($model, 'pre_proc_conference', ['enableAjaxValidation' => true])->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'todayHighlight' => true,
+                            'format' => 'yyyy-mm-dd',
+                        ]
+                    ]) ?>
+                </div>
+
+                <div class="col-3" :class="{ 'd-none': !isBidding }">
+                    <?= $form->field($model, 'pre_bid_conf')->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'todayHighlight' => true,
+                            'format' => 'yyyy-mm-dd'
+                        ]
+                    ]) ?>
+                </div>
+
+                <div class="col-3" :class="{ 'd-none': !isBidding }">
+                    <?= $form->field($model, 'post_of_ib')->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'todayHighlight' => true,
+                            'format' => 'yyyy-mm-dd'
+                        ]
+                    ]) ?>
+                </div>
+                <div class="col-3" :class="{ 'd-none': !isBidding }">
+                    <?= $form->field($model, 'eligibility_check')->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'todayHighlight' => true,
+                            'format' => 'yyyy-mm-dd'
+                        ]
+                    ]) ?>
+                </div>
+                <div class="col-3" :class="{ 'd-none': !isBidding }">
+                    <?= $form->field($model, 'opening_of_bids')->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'todayHighlight' => true,
+                            'format' => 'yyyy-mm-dd'
+                        ]
+                    ]) ?>
+                </div>
+                <div class="col-3" :class="{ 'd-none': !isBidding }">
+                    <?= $form->field($model, 'bid_evaluation')->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'todayHighlight' => true,
+                            'format' => 'yyyy-mm-dd'
+                        ]
+                    ]) ?>
+                </div>
+                <div class="col-3" :class="{ 'd-none': !isBidding }">
+                    <?= $form->field($model, 'post_qual')->widget(DatePicker::class, [
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'todayHighlight' => true,
+                            'format' => 'yyyy-mm-dd'
+                        ]
+                    ]) ?>
+                </div>
+
+            </div>
+        </div>
     </div>
     <div class="card p-2" v-if="isBidding">
         <table class="w-100">
@@ -372,6 +455,7 @@ $observers = $model->getObservers()->asArray()->all();
                 $('#prrfq-pr_purchase_request_id').on('change',
                     this.getRfqItems
                 )
+                this.checkIfBidding()
             },
             methods: {
 
@@ -395,13 +479,14 @@ $observers = $model->getObservers()->asArray()->all();
                     if (parseInt(mode.is_bidding) === 1) {
                         this.addObserver()
                         this.isBidding = true
+                    } else {
+                        this.isBidding = false
                     }
                 },
                 addObserver() {
                     this.observers.push({
                         'observer_name': ''
                     })
-
 
                 },
                 removeObserver(index) {
@@ -424,13 +509,6 @@ $js = <<<JS
 $(document)
 $('#PrRfq').on('beforeSubmit', function(e) {
     var \$form = $(this);
-    // if (\$form.yiiActiveForm('validate')) {
-    //     console.log('true')
-    //     return true;
-    // } else {
-    //     console.log('false')
-    //     return false;
-    // }
     $.ajax({
         url: \$form.attr("action"),
         type: \$form.attr("method"),

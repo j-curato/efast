@@ -8,12 +8,14 @@ use yii\db\Query;
 use ErrorException;
 use app\models\PrRfq;
 use app\models\Office;
-use common\models\User;
+use yii\web\Response;
 
+use common\models\User;
 use yii\web\Controller;
 use app\models\PrRfqItem;
 use app\models\PrRfqSearch;
 use yii\filters\VerbFilter;
+use kartik\widgets\ActiveForm;
 use yii\filters\AccessControl;
 use app\models\PrPurchaseRequest;
 use yii\web\NotFoundHttpException;
@@ -128,10 +130,11 @@ class PrRfqController extends Controller
 
         $user_data = User::getUserDetails();
         $model->fk_office_id  = $user_data->employee->office->id;
-        if ($model->load(Yii::$app->request->post())) {
+
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             $items = Yii::$app->request->post('items');
             $observers = Yii::$app->request->post('observers') ?? [];
-            $selectedItems = array_filter($items, $this->getSelectedItems($items));
+            $selectedItems = !empty($items) ? array_filter($items, $this->getSelectedItems($items)) : [];
 
             try {
                 $transaction = Yii::$app->db->beginTransaction();
@@ -153,13 +156,12 @@ class PrRfqController extends Controller
                     throw new ErrorException('No RBAC for selected Date');
                 }
 
-                $validateTotal = $this->validateTotal($selectedItems, floatval($model->mooe_amount) + floatval($model->co_amount));
-                if ($validateTotal !== true) {
-                    throw new ErrorException($validateTotal);
-                }
+
                 $model->bac_composition_id = $rbac_id['id'];
                 $model->province = $province;
                 if (!$model->validate()) {
+                    Yii::$app->response->format = Response::FORMAT_JSON;
+                    return  ActiveForm::validate($model);
                     throw new ErrorException(json_encode($model->errors));
                 }
                 if (!$model->save(false)) {
@@ -170,15 +172,15 @@ class PrRfqController extends Controller
                 if ($insertItems !== true) {
                     throw new ErrorException($insertItems);
                 }
-                $insertObservers = $model->insertObservers($observers);
-                if ($insertObservers !== true) {
-                    throw new ErrorException($insertObservers);
-                }
+                // $insertObservers = $model->insertObservers($observers);
+                // if ($insertObservers !== true) {
+                //     throw new ErrorException($insertObservers);
+                // }
                 $transaction->commit();
                 return $this->redirect(['view', 'id' => $model->id]);
             } catch (ErrorException $e) {
                 $transaction->rollBack();
-                return json_encode($e->getMessage());
+                return $e->getMessage();
             }
         }
 
@@ -234,7 +236,10 @@ class PrRfqController extends Controller
                 // }
                 // $model->bac_composition_id = $rbac_id['id'];
                 $model->province = $province;
+
                 if (!$model->validate()) {
+                    Yii::$app->response->format = Response::FORMAT_JSON;
+                    return  ActiveForm::validate($model);
                     throw new ErrorException(json_encode($model->errors));
                 }
                 if (!$model->save(false)) {
@@ -257,7 +262,7 @@ class PrRfqController extends Controller
             } catch (ErrorException $e) {
 
                 $transaction->rollBack();
-                return json_encode(['errors' => $e->getMessage()]);
+                return json_encode($e->getMessage());
             }
         }
         $items = $model->getItems();

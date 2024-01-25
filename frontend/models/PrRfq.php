@@ -64,7 +64,21 @@ class PrRfq extends \yii\db\ActiveRecord
                 'fk_mode_of_procurement_id'
             ], 'integer'],
             [['mooe_amount', 'co_amount'], 'number'],
-            [['_date', 'created_at', 'deadline', 'project_location', 'cancelled_at'], 'safe'],
+            [[
+                '_date', 'created_at',
+                'deadline',
+                'project_location',
+                'cancelled_at',
+                'pre_proc_conference',
+                'philgeps_reference_num',
+                'pre_bid_conf',
+                'eligibility_check',
+                'opening_of_bids',
+                'bid_evaluation',
+                'post_qual',
+                'post_of_ib',
+
+            ], 'safe'],
             [['rfq_number', 'employee_id', 'province', 'source_of_fund'], 'string', 'max' => 255],
             [['rfq_number'], 'unique'],
             [['id'], 'unique'],
@@ -72,6 +86,24 @@ class PrRfq extends \yii\db\ActiveRecord
                 'project_location',
             ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
             [['_date', 'deadline'], 'validateDateToPr'],
+            [[
+                'pre_proc_conference',
+                'philgeps_reference_num',
+                'pre_bid_conf',
+                'eligibility_check',
+                'opening_of_bids',
+                'bid_evaluation',
+                'post_qual',
+                'post_of_ib',
+
+            ], 'required', 'when' => function ($model) {
+
+                if (!empty($model->modeOfProcurement->is_bidding)) {
+
+                    return $model->modeOfProcurement->is_bidding == 1;
+                }
+                return false;
+            }, 'whenClient' => "function (attribute, value,model) {}"],
         ];
     }
     public function validateDateToPr($attribute, $params)
@@ -111,6 +143,14 @@ class PrRfq extends \yii\db\ActiveRecord
             'mooe_amount' => 'MOOE Amount',
             'co_amount' => 'CO Amount',
             'fk_mode_of_procurement_id' => 'Mode of Procurement',
+            'pre_proc_conference' => 'Pre Proc Conference',
+            'philgeps_reference_num' => 'Philgheps Reference',
+            'pre_bid_conf' => 'Pre Bid Conf',
+            'eligibility_check' => 'Eligibility Check',
+            'opening_of_bids' => 'Opening of Bids',
+            'bid_evaluation' => 'Bid Evaluation',
+            'post_qual' =>  'Post Qual',
+            'post_of_ib' => 'Ads/Post of IB',
 
         ];
     }
@@ -267,10 +307,10 @@ class PrRfq extends \yii\db\ActiveRecord
     public function insertObservers($observers)
     {
         try {
+ 
             $this->deletedObservers($observers);
             $observerModels  = [];
             foreach ($observers as $observer) {
-
                 $model = !empty($observer['id']) ? RfqObservers::findOne($observer['id']) : new RfqObservers();
                 $model->attributes = $observer;
                 $model->fk_rfq_id = $this->id;
