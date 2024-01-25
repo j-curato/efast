@@ -546,22 +546,23 @@ SweetAlertAsset::register($this);
         $(".expanded_tax_main").each(function() {
             total_expanded += parseFloat($(this).val())
         });
-        total_liquidation = total_liquidation.toFixed(2)
-        total_withdrawal = total_withdrawal.toFixed(2)
-        total_vat = total_vat.toFixed(2)
-        total_expanded = total_expanded.toFixed(2)
-        grand_total = grand_total.toFixed(2)
+        total_liquidation = !isNaN(total_liquidation) ? total_liquidation.toFixed(2) : 0
+        total_withdrawal = !isNaN(total_withdrawal) ? total_withdrawal.toFixed(2) : 0
+        total_vat = !isNaN(total_vat) ? total_vat.toFixed(2) : 0
+        total_expanded = !isNaN(total_expanded) ? total_expanded.toFixed(2) : 0 || 0
+        grand_total = !isNaN(grand_total) ? grand_total.toFixed(2) : 0
 
         $("#total_liquidation").text(thousands_separators(total_liquidation))
         $("#total_withdrawal").text(thousands_separators(total_withdrawal))
         $("#total_vat").text(thousands_separators(total_vat))
         $("#total_expanded").text(thousands_separators(total_expanded))
-        grand_total = total_liquidation + total_withdrawal + total_vat + total_expanded
+        grand_total = parseFloat(total_liquidation) + parseFloat(total_withdrawal) + parseFloat(total_vat) + parseFloat(total_expanded)
         $("#grand_total").text(thousands_separators(grand_total))
 
     }
 
     function insertEntries(data) {
+        grand_total
 
         $.each(data, function(key, val) {
             let disabled_input = ''
