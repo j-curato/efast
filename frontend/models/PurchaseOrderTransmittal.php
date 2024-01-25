@@ -95,7 +95,9 @@ class PurchaseOrderTransmittal extends \yii\db\ActiveRecord
         $year = DateTime::createFromFormat('Y-m-d', $this->date)->format('Y');
         $last_num = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(serial_number,'-',-1) AS UNSIGNED) as last_num 
         FROM purchase_order_transmittal
+        WHERE purchase_order_transmittal.serial_number LIKE :yr
         ORDER BY last_num DESC LIMIT 1")
+            ->bindValue(':yr', $year . '%')
             ->queryScalar();
         $num = !empty($last_num) ? intval($last_num) + 1 : 1;
 
