@@ -307,14 +307,14 @@ $approvedBy = !empty($model->fk_approved_by) ? $model->approvedBy->getEmployeeDe
                 </tr>
                 <tr>
 
-                    <th colspan="4" class="text-center">Particulars</th>
-                    <th colspan="1" class="text-center">MFO/PAP</th>
+                    <th colspan="3" class="text-center">Particulars</th>
+                    <th colspan="2" class="text-center">MFO/PAP</th>
                     <th class="text-center">Responsibility center</th>
                     <th class="text-center">Amount</th>
                 </tr>
                 <tr>
 
-                    <td colspan='4' rowspan="<?= $row_cnt ?>" style='padding-bottom:10rem'>
+                    <td colspan='3' rowspan="<?= $row_cnt ?>" style='padding-bottom:10rem'>
                         <?php echo $model->particular . ' ';
                         echo !empty($iars) ? 'IAR#: ' : '';
                         echo $iars;
@@ -333,7 +333,7 @@ $approvedBy = !empty($model->fk_approved_by) ? $model->approvedBy->getEmployeeDe
                     }
                     if ($k === 0) {
                         echo "<tr>
-                        <td colspan='1' style='vertical-align: top;min-width: 150px;$bdr'>
+                        <td colspan='2' style='vertical-align: top;min-width: 150px;$bdr'>
                             {$item['mfo_name']}
                         </td>
                         <td style='vertical-align: top; text-align: center;' rowspan=' $r '>
