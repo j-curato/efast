@@ -54,7 +54,7 @@ class Pmr extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getFkOffice()
+    public function getOffice()
     {
         return $this->hasOne(Office::class, ['id' => 'fk_office_id']);
     }

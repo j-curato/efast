@@ -6,21 +6,22 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\Pmr */
 
-$this->title = $model->id;
+$this->title = $model->office->office_name . '-' . $model->reporting_period;
 $this->params['breadcrumbs'][] = ['label' => 'Pmrs', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
+$excelFileName  = "PMR " . $model->office->office_name . "-" . $model->reporting_period;
 ?>
-<div class="pmr-view" id="mainVue">
+<div class="pmr-view d-none" id="mainVue">
+    <div class="card p-2">
+        <span>
+            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+            <button type="button" class="btn btn-success" @click='exportData'><i class="fa fa-file-export"></i> Export</button>
+        </span>
+    </div>
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-    </p>
-
-    <div class="card p-2 table-container w-100" >
-        <table >
+    <div class="card p-2 table-container">
+        <table id="pmr">
             <tr>
                 <th rowspan="2">Office</th>
                 <th rowspan="2">MFO/PAP</th>
@@ -120,17 +121,19 @@ $this->params['breadcrumbs'][] = $this->title;
         text-align: center;
     }
 
+
+
     .table-container {
         width: 100%;
         max-width: 100%;
         overflow-x: auto;
         /* Enable horizontal scrollbar when table exceeds screen width */
-        margin: 20px;
         /* Add some margin for better appearance */
     }
 </style>
 <script>
     $(document).ready(function() {
+        $("#mainVue").removeClass("d-none");
 
         new Vue({
             el: "#mainVue",
@@ -138,7 +141,11 @@ $this->params['breadcrumbs'][] = $this->title;
                 pmrDetails: <?= $pmrDetails ?>
             },
             methods: {
-
+                exportData() {
+                    var wb = XLSX.utils.table_to_book(document.getElementById("pmr"));
+                    /* Export to file (start a download) */
+                    XLSX.writeFile(wb, "<?= $excelFileName ?>.xlsx");
+                }
             }
         })
     })
