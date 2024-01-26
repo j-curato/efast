@@ -60,7 +60,7 @@ $excelFileName  = "PMR " . $model->office->office_name . "-" . $model->reporting
                 <th>CO</th>
                 <th>Pre-bid Conf</th>
                 <th>Eligibility Check</th>
-                <th>"Sub/Open of Bids" </th>
+                <th>Sub/Open of Bids</th>
                 <th>Bid Evaluation </th>
                 <th>Post Qual</th>
                 <th>"Delivery/ Completion/Acceptance"</th>
@@ -68,10 +68,10 @@ $excelFileName  = "PMR " . $model->office->office_name . "-" . $model->reporting
             </tr>
             <tr v-for="item in pmrDetails">
 
-                <td>{{item.office_name}}</td>
+                <td class="text-uppercase">{{item.office_name}}</td>
                 <td>{{item.mfo_codes}}</td>
                 <td>{{item.purpose}}</td>
-                <td>{{item.division_name}}</td>
+                <td class="text-uppercase">{{item.division_name}}</td>
                 <td>{{item.mode_of_procurement_name}}</td>
                 <td>{{item.rfq_created_at}}</td>
                 <td>{{item.pr_number}}</td>
@@ -88,9 +88,9 @@ $excelFileName  = "PMR " . $model->office->office_name . "-" . $model->reporting
                 <td>{{item.contract_notice_of_awards}}</td>
                 <td>{{item.contract_signing}}</td>
                 <td>{{item.notice_to_proceed}}</td>
-                <td></td>
                 <td>{{item.rfq_iars}}</td>
-                <td>{{item.source_of_fund}}</td>
+                <td>{{item.rfq_iars}}</td>
+                <td class="text-uppercase">{{item.source_of_fund}}</td>
                 <td>{{parseFloat(item.mooe_amount) + parseFloat(item.co_amount)}}</td>
                 <td>{{item.mooe_amount}}</td>
                 <td>{{item.co_amount}}</td>
@@ -105,7 +105,8 @@ $excelFileName  = "PMR " . $model->office->office_name . "-" . $model->reporting
                 <td>{{item.invitation_opening_of_bids}}</td>
                 <td>{{item.invitation_bid_evaluation}}</td>
                 <td>{{item.invitation_post_qual}}</td>
-                <td>{{item.purchase_orders}}</td>
+                <td></td>
+                <!-- <td>{{item.purchase_orders}}</td> -->
 
 
 

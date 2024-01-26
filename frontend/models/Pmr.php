@@ -84,17 +84,17 @@ class Pmr extends \yii\db\ActiveRecord
             pr_purchase_order.invitation_post_qual,
             (CASE pr_mode_of_procurement.is_bidding
             WHEN 1 THEN pr_purchase_order.notice_of_award
-            ELSE CONCAT(pr_purchase_order_item.serial_number,':',pr_purchase_order.po_date)
+            ELSE CONCAT(payee.registered_name,':',pr_purchase_order_item.serial_number,':',pr_purchase_order.po_date)
             END 
             ) as notice_of_award,
             (CASE pr_mode_of_procurement.is_bidding
             WHEN 1 THEN pr_purchase_order.contract_signing
-            ELSE CONCAT(pr_purchase_order_item.serial_number,':',pr_purchase_order.po_date)
+            ELSE CONCAT(payee.registered_name,':',pr_purchase_order_item.serial_number,':',pr_purchase_order.po_date)
             END 
             ) as contract_signing,
             (CASE pr_mode_of_procurement.is_bidding
             WHEN 1 THEN pr_purchase_order.notice_to_proceed
-            ELSE NULL
+            ELSE CONCAT(payee.registered_name,':',pr_purchase_order_item.serial_number,':',pr_purchase_order.po_date)
             END 
             ) as notice_to_proceed
              FROM pr_purchase_order
@@ -125,17 +125,17 @@ class Pmr extends \yii\db\ActiveRecord
             pr_purchase_order.invitation_post_qual,
             (CASE pr_mode_of_procurement.is_bidding
             WHEN 1 THEN pr_purchase_order.notice_of_award
-            ELSE CONCAT(pr_purchase_order_item.serial_number,':',pr_purchase_order.po_date)
+            ELSE CONCAT(payee.registered_name,':',pr_purchase_order_item.serial_number,':',pr_purchase_order.po_date)
             END 
             ),
             (CASE pr_mode_of_procurement.is_bidding
             WHEN 1 THEN pr_purchase_order.contract_signing
-            ELSE CONCAT(pr_purchase_order_item.serial_number,':',pr_purchase_order.po_date)
+            ELSE CONCAT(payee.registered_name,':',pr_purchase_order_item.serial_number,':',pr_purchase_order.po_date)
             END 
             ) ,
             (CASE pr_mode_of_procurement.is_bidding
             WHEN 1 THEN pr_purchase_order.notice_to_proceed
-            ELSE NULL
+              ELSE CONCAT(payee.registered_name,':',pr_purchase_order_item.serial_number,':',pr_purchase_order.po_date)
             END 
             ) 
             
@@ -143,7 +143,8 @@ class Pmr extends \yii\db\ActiveRecord
             pr_rfq_item.pr_rfq_id,
             iar.iar_number,
             request_for_inspection_items.`from` as from_date,
-            request_for_inspection_items.`to` as to_date
+            request_for_inspection_items.`to` as to_date,
+            pr_purchase_order_item.serial_number
             FROM 
             request_for_inspection
             JOIN request_for_inspection_items ON request_for_inspection.id = request_for_inspection_items.fk_request_for_inspection_id
@@ -153,6 +154,7 @@ class Pmr extends \yii\db\ActiveRecord
             LEFT JOIN inspection_report_items ON request_for_inspection_items.id = inspection_report_items.fk_request_for_inspection_item_id
             LEFT JOIN inspection_report ON inspection_report_items.fk_inspection_report_id = inspection_report.id
             LEFT JOIN iar ON inspection_report.id = iar.fk_ir_id
+            JOIN pr_purchase_order_item ON pr_purchase_order_items_aoq_items.fk_purchase_order_item_id = pr_purchase_order_item.id
             WHERE 
              request_for_inspection_items.`from` <= :lastDayOfMonth
             AND request_for_inspection_items.`from` LIKE :yr
@@ -160,7 +162,8 @@ class Pmr extends \yii\db\ActiveRecord
             pr_rfq_item.pr_rfq_id,
             iar.iar_number,
             request_for_inspection_items.`from`,
-            request_for_inspection_items.`to` 
+            request_for_inspection_items.`to`,
+            pr_purchase_order_item.serial_number 
             )
             
             
@@ -179,11 +182,27 @@ class Pmr extends \yii\db\ActiveRecord
             pr_rfq.rfq_number,
             COALESCE(pr_rfq.mooe_amount,0) as mooe_amount ,
             COALESCE(pr_rfq.co_amount,0) as co_amount ,
-            pr_rfq.pre_proc_conference,
+            (CASE pr_mode_of_procurement.is_bidding
+                WHEN 1 THEN   pr_rfq.pre_proc_conference
+                ELSE 'N/A'
+                END 
+            ) as pre_proc_conference,
+            (CASE pr_mode_of_procurement.is_bidding
+                WHEN 1 THEN   pr_rfq.pre_bid_conf
+                ELSE 'N/A'
+                END 
+            ) as pre_bid_conf,
             pr_rfq.philgeps_reference_num,
-            pr_rfq.pre_bid_conf,
-            pr_rfq.post_qual,
-            pr_rfq.post_of_ib,
+            (CASE pr_mode_of_procurement.is_bidding
+                WHEN 1 THEN   pr_rfq.post_qual
+                ELSE 'N/A'
+                END 
+            ) as post_qual,
+            (CASE pr_mode_of_procurement.is_bidding
+                WHEN 1 THEN   pr_rfq.post_of_ib
+                ELSE 'N/A'
+                END 
+            ) as post_of_ib,
             pr_rfq._date as rfq_date,
             pr_rfq.source_of_fund,
             COALESCE(contract_amount.contract_mooe_amount,0) as contract_mooe_amount ,
@@ -211,11 +230,32 @@ class Pmr extends \yii\db\ActiveRecord
                 poContract.contract_notice_of_awards,
                 poContract.contract_signing,
                 poContract.notice_to_proceed,
-                poContract.invitation_pre_bid_conf,
-                poContract.invitation_eligibility_check,
-                poContract.invitation_opening_of_bids ,
-                poContract.invitation_bid_evaluation,
-                 poContract.invitation_post_qual,
+
+                 (CASE pr_mode_of_procurement.is_bidding
+                    WHEN 1 THEN   poContract.invitation_pre_bid_conf
+                    ELSE 'N/A'
+                    END 
+                ) as invitation_pre_bid_conf,
+                 (CASE pr_mode_of_procurement.is_bidding
+                    WHEN 1 THEN   poContract.invitation_eligibility_check
+                    ELSE 'N/A'
+                    END 
+                ) as invitation_eligibility_check,
+                 (CASE pr_mode_of_procurement.is_bidding
+                    WHEN 1 THEN   poContract.invitation_opening_of_bids
+                    ELSE 'N/A'
+                    END 
+                ) as invitation_opening_of_bids,
+                 (CASE pr_mode_of_procurement.is_bidding
+                    WHEN 1 THEN   poContract.invitation_bid_evaluation
+                    ELSE 'N/A'
+                    END 
+                ) as invitation_bid_evaluation,
+                 (CASE pr_mode_of_procurement.is_bidding
+                    WHEN 1 THEN   poContract.invitation_post_qual
+                    ELSE 'N/A'
+                    END 
+                ) as invitation_post_qual,
                  rfq_iars.rfq_iars,
                  rfq_mfos.mfo_codes
             FROM pr_rfq
@@ -262,13 +302,13 @@ class Pmr extends \yii\db\ActiveRecord
             GROUP BY pr_aoq.pr_rfq_id) as contract_amount ON pr_rfq.id = contract_amount.pr_rfq_id
             LEFT JOIN (SELECT 
             cte_rfq_iars.pr_rfq_id,
-            GROUP_CONCAT(cte_rfq_iars.iar_number) as rfq_iars
+            GROUP_CONCAT(CONCAT('PO#',cte_rfq_iars.serial_number,':IAR#',cte_rfq_iars.iar_number)) as rfq_iars
             FROM cte_rfq_iars 
             GROUP BY
             cte_rfq_iars.pr_rfq_id) as rfq_iars ON pr_rfq.id = rfq_iars.pr_rfq_id
             LEFT JOIN (SELECT 
                 tbl_rfq_mfos.fk_rfq_id,
-                GROUP_CONCAT(mfo_pap_code.`code`) as mfo_codes
+                GROUP_CONCAT(CONCAT(mfo_pap_code.`code`,'-',mfo_pap_code.`name`)) as mfo_codes
                 FROM tbl_rfq_mfos
                 JOIN mfo_pap_code ON tbl_rfq_mfos.fk_mfo_pap_code_id = mfo_pap_code.id
                 WHERE tbl_rfq_mfos.is_deleted = 0
