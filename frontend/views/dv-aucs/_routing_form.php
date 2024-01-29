@@ -207,6 +207,8 @@ if (strtolower($model->transaction_type) === 'remittance' || $dvType === 'remitt
                 <th>2307 (EWT Goods/Services)</th>
                 <th>1601C (Compensation)</th>
                 <th>Other Trust Liabilities</th>
+                <th>Liquidation Damage</th>
+                <th>Tax Portion of Pos</th>
             </thead>
             <tbody>
                 <?php
@@ -271,6 +273,14 @@ if (strtolower($model->transaction_type) === 'remittance' || $dvType === 'remitt
                             <td> 
                                 <input type='text'  class='form-control mask-amount' onkeyup='UpdateMainAmount(this)' value='{$val['other_trust_liabilities']}'/>
                                 <input  type='hidden' name='items[$itemRow][other_trust_liabilities]' class='liabilities main-amount' value='{$val['other_trust_liabilities']}'/>
+                            </td>
+                            <td> 
+                                <input type='text'  class='form-control mask-amount' onkeyup='UpdateMainAmount(this)' value='{$val['liquidation_damage']}'/>
+                                <input  type='hidden' name='items[$itemRow][liquidation_damage]' class='liabilities main-amount' value='{$val['liquidation_damage']}'/>
+                            </td>
+                            <td> 
+                                <input type='text'  class='form-control mask-amount' onkeyup='UpdateMainAmount(this)' value='{$val['tax_portion_of_post']}'/>
+                                <input  type='hidden' name='items[$itemRow][tax_portion_of_post]' class='liabilities main-amount' value='{$val['tax_portion_of_post']}'/>
                             </td>
                             <td>
                                 <button  type='button' class='btn-xs btn-danger' onclick='RemoveItem(this)'>
@@ -456,7 +466,7 @@ if (strtolower($model->transaction_type) === 'remittance' || $dvType === 'remitt
 </style>
 
 <?php
- 
+
 $this->registerJsFile("@web/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $csrfToken = Yii::$app->request->csrfToken;
 ?>
@@ -543,7 +553,9 @@ $csrfToken = Yii::$app->request->csrfToken;
         vat = 0,
         ewt = 0,
         compensation = 0,
-        liabilities = 0
+        liabilities = 0,
+        liquidation_damage = 0,
+        tax_portion_of_post = 0
     ) {
         let row = `<tr>`
         if (process_ors_id) {
@@ -574,6 +586,14 @@ $csrfToken = Yii::$app->request->csrfToken;
                             <td> 
                                 <input type='text'  class='form-control mask-amount' onkeyup='UpdateMainAmount(this)' value='${liabilities}'/>
                                 <input  type='hidden' name='items[${itemRow}][other_trust_liabilities]' class='liabilities main-amount' value='${liabilities}'/>
+                            </td>
+                            <td> 
+                                <input type='text'  class='form-control mask-amount' onkeyup='UpdateMainAmount(this)' value='${liquidation_damage}'/>
+                                <input  type='hidden' name='items[${itemRow}][liquidation_damage]' class='liquidation_damage main-amount' value='${liquidation_damage}'/>
+                            </td>
+                            <td> 
+                                <input type='text'  class='form-control mask-amount' onkeyup='UpdateMainAmount(this)' value='${tax_portion_of_post}'/>
+                                <input  type='hidden' name='items[${itemRow}][tax_portion_of_post]' class='tax_portion_of_post main-amount' value='${liquidation_damage}'/>
                             </td>
                             <td>
                                 <button  type='button' class='btn-xs btn-danger' onclick='RemoveItem(this)'>

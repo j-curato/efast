@@ -1,15 +1,10 @@
 <?php
 
-use app\models\Raouds;
-use app\models\SubAccounts1;
-use app\models\SubAccounts2;
+
 use aryelds\sweetalert\SweetAlertAsset;
-use kartik\file\FileInput;
-use kartik\form\ActiveForm;
+
 use yii\helpers\Html;
-use yii\helpers\Url;
-use yii\widgets\DetailView;
-use yii\widgets\Pjax;
+
 
 /* @var $this yii\web\View */
 /* @var $model app\models\DvAucs */
@@ -36,8 +31,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
                         <input type="text " class="form-control" name="link" value='<?= $model->dv_link ?? '' ?>'>
                     </div>
-                    <div class="row" style="margin: 10px;padding:12px">
-                        <div class="col-sm-1 col-sm-offset-5">
+                    <div class="row justify-content-center">
+                        <div class="col-sm-1 ">
                             <button type="submit" class="btn btn-success">Save</button>
                         </div>
                     </div>
@@ -71,24 +66,18 @@ $this->params['breadcrumbs'][] = $this->title;
             </div>
         </div>
     </div>
-    <div class="container card">
-        <h3><?= Html::encode($this->title) ?></h3>
-
-        <p>
-            <?= Html::a('Print', ['dv-form', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
+    <div class=" card p-2">
+        <span>
+            <?= Html::a('<i class="fa fa-print"></i> Print', ['dv-form', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
             <?= Yii::$app->user->can('update_dv_aucs') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => ' btn btn-primary']) : '' ?>
             <?php
-
             if (!empty($cashIds)) {
-
-                // $t = yii::$app->request->baseUrl . "/index.php?r=cash-disbursement/view&id={$model->cashDisbursement->id}";
-                // echo  Html::a('Cash Disbursement Link', $t, ['class' => 'btn btn-success ']);
                 echo Html::button('Cash Disbursement Links', ['class' => 'btn btn-info', 'data-target' => "#cashLInksModal", 'data-toggle' => "modal"]);
             }
             if ($model->is_cancelled) {
-                echo "<button class='btn btn-success' id='cancel' style='margin:5px'>Activate</button>";
+                echo "<button class='btn btn-success' id='cancel' >Activate</button>";
             } else {
-                echo "<button class='btn btn-danger' id='cancel' style='margin:5px'>Cancel</button>";
+                echo "<button class='btn btn-danger' id='cancel' >Cancel</button>";
             }
             echo "<input type='text' id='cancel_id' value='$model->id' style='display:none;'/>";
             $dv_link = '';
@@ -102,7 +91,7 @@ $this->params['breadcrumbs'][] = $this->title;
             $jev_link = yii::$app->request->baseUrl . "/index.php?r=jev-preparation/dv-to-jev&id={$model->id}";
 
             if ($model->is_payable === 1) {
-                echo "<button class='btn btn-success' id='is_payable' style='margin:5px'>Not Payable</button>";
+                echo "<button class='btn btn-success' id='is_payable' >Not Payable</button>";
 
 
                 $exist  = Yii::$app->db->createCommand("SELECT id FROM jev_preparation WHERE dv_number = :dv_number
@@ -116,17 +105,10 @@ $this->params['breadcrumbs'][] = $this->title;
                     echo Html::a('To JEV', $jev_link, ['class' => 'btn btn-primary']);
                 }
             } else {
-                echo "<button class='btn btn-danger' id='is_payable' style='margin:5px'>Payable</button>";
+                echo "<button class='btn btn-danger' id='is_payable' >Payable</button>";
             }
-            // if (!empty($model->dvAucsFile->id)) {
-            //     $dv_number =  "/scanned-dv" . "/" . $model->dv_number;
-            //     $path =  Url::base() . "/frontend"  . $dv_number . "/" . $model->dvAucsFile->file_name;
-            //     echo Html::a('Download Soft Copy ', $path, ['class' => 'btn btn-link ']);
-            // } else {
-            //     echo '<button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Upload Soft Copy</button>';
-            // }
 
-            echo Html::a(empty($model->dv_link) ? 'Add File Link' : 'Update File Link', ['add-link', 'id' => $model->id], ['class' => 'btn btn-primary mdModal']);
+            echo Html::a(empty($model->dv_link) ? 'Add File Link' : 'Update File Link', ['add-link', 'id' => $model->id], ['class' => 'ml-1 btn btn-primary mdModal']);
             if (!empty($model->dv_link)) {
                 echo Html::a('DV Scanned Copy Link ', $model->dv_link, ['class' => 'btn btn-link', 'target' => '_blank']);
             }
@@ -136,7 +118,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
             ?>
 
-        </p>
+        </span>
+    </div>
+    <div class=" card p-2">
+        <h3><?= Html::encode($this->title) ?></h3>
 
         <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
             <div class="modal-dialog" role="document">
@@ -167,42 +152,20 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <tbody>
                 <thead>
-                    <th>
-                        Obligation Number
-                    </th>
-                    <th>
-                        DV Number
-                    </th>
-                    <th>
-                        Reporting Period
-                    </th>
-                    <th>
-                        Payee
-                    </th>
-                    <th>
-                        Particular
-                    </th>
-                    <th>
-                        Amount Disbursed
-                    </th>
-                    <th>
-                        2306
-                        (VAT / Non-Vat)
-                    </th>
-                    <th>
-                        2307
-                        (EWT Goods / Services)
-                    </th>
-                    <th>
-                        1601C
-                        (Compensation)
-                    </th>
-                    <th>
-                        Tax Withheld
-                    </th>
-                    <th>
-                        Other Trust Liabilities
-                    </th>
+                    <th>Obligation Number</th>
+                    <th>DV Number</th>
+                    <th>Reporting Period</th>
+                    <th>Payee</th>
+                    <th>Particular</th>
+                    <th>Amount Disbursed</th>
+                    <th>2306 (VAT / Non-Vat)</th>
+                    <th>2307 (EWT Goods / Services)</th>
+                    <th>1601C (Compensation)</th>
+                    <th>Tax Withheld</th>
+                    <th>Other Trust Liabilities</th>
+                    <th>Liquidation Damages</th>
+                    <th>Tax Portion of Pos</th>
+
                 </thead>
             <tbody>
 
@@ -215,14 +178,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         $ors_serial_number = '';
                         $ors_serial_number = !empty($val->process_ors_id) ? $val->processOrs->serial_number : '';
                         $t = '';
-                        if (!empty($val->process_ors_id)) {
 
-                            // $q = Raouds::find()
-                            //     ->where('raouds.process_ors_id = :process_ors_id', ['process_ors_id' =>  $val->process_ors_id])
-                            //     ->one();
-                            // $q = !empty($val->process_ors_id) ? $val->process_ors_id : '';
-                            $t = yii::$app->request->baseUrl . "/index.php?r=process-ors/view&id=$val->process_ors_id";
-                        }
 
                         echo "
                     <tr>
@@ -259,6 +215,12 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td class='amount'>
                         " . number_format($val->other_trust_liabilities, 2) . "
                     </td>
+                    <td class='amount'>
+                        " . number_format($val->liquidation_damage, 2) . "
+                    </td>
+                    <td class='amount'>
+                        " . number_format($val->tax_portion_of_post, 2) . "
+                    </td>
                     <td class='link'>" .
 
                             Html::a('ORS', $t, ['class' => ' btn btn-xs btn-success '])
@@ -269,13 +231,44 @@ $this->params['breadcrumbs'][] = $this->title;
                     ";
                     }
                 }
-                // echo $model->dvAucsEntries;
+
                 ?>
             </tbody>
 
             </tbody>
         </table>
 
+    </div>
+    <div class="card p-2 " id="vueContainer">
+        <table class="table">
+            <tr>
+                <th colspan="11" class="table-info">ORS Breakdown</th>
+            </tr>
+            <tr>
+                <th class="text-center">Object Code</th>
+                <th class="text-center">Account Title</th>
+                <th class="text-center">Amount Disbursed</th>
+                <th class="text-center">2306 (VAT / Non-Vat)</th>
+                <th class="text-center">2307 (EWT Goods / Services)</th>
+                <th class="text-center">1601C (Compensation)</th>
+                <th class="text-center">Tax Withheld</th>
+                <th class="text-center">Other Trust Liabilities</th>
+                <th class="text-center">Liquidation Damage</th>
+                <th class="text-center">Tax Portion of Pos</th>
+            </tr>
+            <tr v-for="item in orsBreakdown">
+                <td>{{item.uacs}}</td>
+                <td>{{item.general_ledger}}</td>
+                <td class="text-right">{{formatAmount(item.amount_disbursed)}}</td>
+                <td class="text-right">{{formatAmount(item.vat_nonvat)}}</td>
+                <td class="text-right">{{formatAmount(item.ewt_goods_services)}}</td>
+                <td class="text-right">{{formatAmount(item.compensation)}}</td>
+                <td class="text-center">{{formatAmount(parseFloat(item.vat_nonvat) + parseFloat(item.ewt_goods_services)+parseFloat(item.compensation)) }}</td>
+                <td class="text-right">{{formatAmount(item.other_trust_liabilities)}}</td>
+                <td class="text-right">{{formatAmount(item.liquidation_damage)}}</td>
+                <td class="text-right">{{formatAmount(item.tax_portion_of_post)}}</td>
+            </tr>
+        </table>
     </div>
     <?php
     $advances = Yii::$app->db->createCommand("SELECT 
@@ -301,7 +294,7 @@ $this->params['breadcrumbs'][] = $this->title;
     if (!empty($advances)) {
 
     ?>
-        <div class=" container card ">
+        <div class="  card p-2">
 
             <table class="">
                 <thead>
@@ -347,7 +340,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         </div>
     <?php } ?>
-    <div class=" container card panel-default">
+    <div class="  card ">
 
         <table class="">
             <thead>
@@ -483,9 +476,7 @@ $this->params['breadcrumbs'][] = $this->title;
         background-color: #cce6ff;
     }
 
-    .container {
-        padding: 15px
-    }
+
 
     .q {
         margin-top: 3rem;
@@ -552,10 +543,7 @@ $this->params['breadcrumbs'][] = $this->title;
             margin-top: 0.5cm;
         }
 
-        .container {
-            margin: 0;
-            top: 0;
-        }
+
 
         .entity_name {
             font-size: 5pt;
@@ -570,10 +558,6 @@ $this->params['breadcrumbs'][] = $this->title;
         }
 
 
-        .container {
-
-            border: none;
-        }
 
         .assig td {
             border: 0;
@@ -593,16 +577,27 @@ $this->params['breadcrumbs'][] = $this->title;
         }
     }
 </style>
-<?php
 
-$this->registerJsFile(
-    '@web/frontend/web/js/globalFunctions.js',
-    ['depends' => [\yii\web\JqueryAsset::class]]
-)
-?>
 <script>
     $(document).ready(function() {
-
+        new Vue({
+            el: "#vueContainer",
+            data: {
+                orsBreakdown: <?= json_encode($model->breakdownItems) ?>,
+            },
+            mounted() {
+                console.log(this.orsBreakdown)
+            },
+            methods: {
+                formatAmount(unitCost) {
+                    unitCost = parseFloat(unitCost)
+                    if (typeof unitCost === 'number' && !isNaN(unitCost)) {
+                        return unitCost.toLocaleString(); // Formats with commas based on user's locale
+                    }
+                    return 0; // If unitCost is not a number, return it as is
+                },
+            }
+        })
         $('#download_soft_copy').click((e) => {
             e.preventDefault()
             console.log($('#download_soft_copy').attr('file-url'))

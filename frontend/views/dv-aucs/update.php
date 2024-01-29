@@ -30,7 +30,7 @@ $payee = ArrayHelper::map($payee_query, 'id', 'account_name');
 
 
 
-    <?= $this->render('_form_new', [
+    <?= $this->render('_form', [
         'searchModel' => $searchModel,
         'dataProvider' => $dataProvider,
         'model' => $model,

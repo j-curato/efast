@@ -41,7 +41,7 @@ class Advances extends \yii\db\ActiveRecord
     {
         return [
             [['province', 'reporting_period'], 'string', 'max' => 50],
-            [['bank_account_id', 'reporting_period'], 'required'],
+            [['bank_account_id', 'reporting_period', 'dv_aucs_id', 'fk_office_id'], 'required'],
             [['bank_account_id'], 'integer'],
             [['fk_office_id'], 'integer'],
         ];

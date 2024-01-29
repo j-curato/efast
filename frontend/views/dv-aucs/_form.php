@@ -1,29 +1,22 @@
 <?php
 
 use app\models\Books;
-use app\models\DvTransactionType;
+use kartik\grid\GridView;
+use yii\web\JsExpression;
+use kartik\date\DatePicker;
+use kartik\money\MaskMoney;
+use kartik\select2\Select2;
+use yii\bootstrap4\ActiveForm;
+use yii\helpers\ArrayHelper;
 use app\models\MrdClassification;
 use app\models\NatureOfTransaction;
-use app\models\Payee;
-use kartik\date\DatePicker;
-use kartik\select2\Select2;
-use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
-use yii\web\JqueryAsset;
-use yii\web\JsExpression;
-use yii\bootstrap4\ActiveForm;
+use app\models\Office;
+use aryelds\sweetalert\SweetAlertAsset;
 
-
-/* @var $this yii\web\View */
-/* @var $model app\models\DvAucs */
-/* @var $form yii\widgets\ActiveForm */
-
-$payee = [];
-$accounting_entry_row = 0;
-$advancesItemRow = 1;
-if (!empty($model->payee_id)) {
-    $payee = ArrayHelper::map(Payee::find()->where('id = :id', ['id' => $model->payee_id])->asArray()->all(), 'id', 'account_name');
-}
+$row = 1;
+$advances_entries_row = 1;
+$accounting_entry_row  = 1;
+$dv_items_row = 1;
 $dv_object_code = [];
 
 if (!empty($model->object_code)) {
@@ -33,521 +26,1184 @@ if (!empty($model->object_code)) {
         ->queryAll();
     $dv_object_code = ArrayHelper::map($q, 'object_code', 'account_title');
 }
+
 ?>
+<div class="test d-none" id="mainVue">
 
-<div class="dv-aucs-form panel panel-dedfault">
+    <?php $form = ActiveForm::begin([
+        'id' => $model->formName()
+    ]); ?>
 
-    <?php $form = ActiveForm::begin(); ?>
+    <div class="card p-2">
+
+        <div class="row">
+
+            <div class="col-sm-3">
+                <?= $form->field($model, 'reporting_period')->widget(
+                    DatePicker::class,
+                    [
+                        'options' => ['required' => true],
+                        'pluginOptions' => [
+                            'autoclose' => true,
+                            'format' => 'yyyy-mm',
+                            'startView' => "year",
+                            'minViewMode' => "months",
+                        ]
+                    ]
+                );
+                ?>
+            </div>
 
 
 
-    <div class="row">
-        <div class="col-sm-3">
-            <?= $form->field($model, 'reporting_period')->widget(DatePicker::class, [
-                'pluginOptions' => [
-                    'format' => 'yyyy-mm',
-                    'minViewMode' => 'months',
-                    'autoclose' => true
-                ]
-            ]) ?>
+            <div class="col-sm-3">
+                <?= $form->field($model, 'nature_of_transaction_id')->dropDownList(
+                    ArrayHelper::map(NatureOfTransaction::find()->asArray()->all(), 'id', 'name'),
+                    [
+                        'prompt' => 'Select Nature of Transaction',
+                    ]
+                )
+                ?>
 
-        </div>
-        <div class="col-sm-3">
-            <?= $form->field($model, 'nature_of_transaction_id')->widget(Select2::class, [
-                'data' => ArrayHelper::map(NatureOfTransaction::find()->asArray()->all(), 'id', 'name'),
-                'pluginOptions' => [
-                    'placeholder' => 'Select Nature  of Transaction'
-                ]
-            ]) ?>
+            </div>
+            <div class="col-sm-3">
+                <?= $form->field($model, 'mrd_classification_id')->dropDownList(
+                    ArrayHelper::map(MrdClassification::find()->asArray()->all(), 'id', 'name'),
+                    [
+                        'prompt' => 'Select Nature of Transaction',
+                    ]
+                )
+                ?>
 
-        </div>
-        <div class="col-sm-3">
-            <?= $form->field($model, 'mrd_classification_id')->widget(Select2::class, [
-                'data' => ArrayHelper::map(MrdClassification::find()->asArray()->all(), 'id', 'name'),
-                'pluginOptions' => [
-                    'placeholder' => 'Select Nature  of MRD Classification'
-                ]
-            ]) ?>
-        </div>
-        <div class="col-sm-3">
-            <?= $form->field($model, 'object_code')->widget(Select2::class, [
-                'data' => $dv_object_code,
-                'value' => !empty($model->object_code) ?? '',
-                'options' => ['placeholder' => 'Search for a UACS ...'],
-                'pluginOptions' => [
-                    'allowClear' => true,
-                    'minimumInputLength' => 1,
-                    'language' => [
-                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+            </div>
+
+            <div class="col-sm-3" id="dv_object_code">
+
+                <?= $form->field($model, 'object_code')->widget(Select2::class, [
+                    'data' => $dv_object_code,
+                    'options' => ['placeholder' => 'Search for a UACS ...'],
+                    'pluginOptions' => [
+                        'allowClear' => true,
+                        'minimumInputLength' => 1,
+                        'language' => [
+                            'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                        ],
+                        'ajax' => [
+                            'url' => Yii::$app->request->baseUrl . '?r=chart-of-accounts/search-accounting-code',
+                            'dataType' => 'json',
+                            'delay' => 250,
+                            'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                            'cache' => true
+                        ],
+                        'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                        'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                        'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
                     ],
-                    'ajax' => [
-                        'url' => Yii::$app->request->baseUrl . '?r=chart-of-accounts/search-accounting-code',
-                        'dataType' => 'json',
-                        'delay' => 250,
-                        'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
-                        'cache' => true
-                    ],
-                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                ],
-            ]) ?>
 
+                ])
+
+                ?>
+            </div>
         </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <?= $form->field($model, 'payee_id')->widget(
+                    Select2::class,
+                    [
+                        'name' => 'payee',
+                        'data' => $payee,
+                        'pluginOptions' => [
+                            'allowClear' => true,
+                            'minimumInputLength' => 1,
+                            'language' => [
+                                'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                            ],
+                            'ajax' => [
+                                'url' => Yii::$app->request->baseUrl . '?r=payee/search-payee',
+                                'dataType' => 'json',
+                                'delay' => 250,
+                                'data' => new JsExpression('function(params) { return {q:params.term,province: params.province}; }'),
+                                'cache' => true
+                            ],
+                            'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
+                            'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
+                            'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
+                        ],
+
+                    ]
+                )
+
+                ?>
+            </div>
+            <div class="col-sm-3">
+                <?= $form->field($model, 'transaction_type')->widget(Select2::class, [
+                    'data' => [
+                        "single"  => "Single",
+                        "multiple" => "Multiple",
+                        "accounts payable"  => "Accounts Payable",
+                        "replacement to stale checks" =>  "Replacement to Stale Checks",
+                        'replacement of check issued' =>  'Replacement of Check Issued',
+                        'payroll' =>  'Payroll',
+                        'remittance' =>  'Remittance',
+                    ],
+                    'pluginOptions' => [
+                        'placeholder' => 'Select Transaction Type'
+                    ]
+                ])
+                ?>
+            </div>
+            <div class="col-sm-3">
+                <?= $form->field($model, 'book_id')->widget(Select2::class, [
+                    'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
+                    'value' => $book,
+                    'pluginOptions' => [
+                        'placeholder' => 'Select Book'
+                    ]
+                ])
+                ?>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <?= $form->field($model, 'particular')->textarea(['rows' => 3]) ?>
+            </div>
+        </div>
+
     </div>
-    <div class="row">
-        <div class="col-sm-3">
-            <?= $form->field($model, 'payee_id')->widget(Select2::class, [
-                'data' => $payee,
-                'pluginOptions' => [
-                    'allowClear' => true,
-                    'minimumInputLength' => 1,
-                    'placeholder' => 'Select Payee',
-                    'language' => [
-                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                    ],
-                    'ajax' => [
-                        'url' => Yii::$app->request->baseUrl . '?r=payee/search-payee',
-                        'dataType' => 'json',
-                        'delay' => 250,
-                        'data' => new JsExpression('function(params) { return {q:params.term,page: params.page||1 };}'),
-                        'cache' => true
-                    ],
-                    'escapeMarkup' => new JsExpression('function (markup) { return markup; }'),
-                    'templateResult' => new JsExpression('function(fund_source) { return fund_source.text; }'),
-                    'templateSelection' => new JsExpression('function (fund_source) { return fund_source.text; }'),
-                ],
-            ]) ?>
-        </div>
-        <div class="col-sm-3">
-            <?= $form->field($model, 'fk_dv_transaction_type_id')->widget(Select2::class, [
-                'data' => ArrayHelper::map(DvTransactionType::find()->asArray()->all(), 'id', 'name'),
-                'pluginOptions' => [
-                    'placeholder' => 'Select Transaction Type'
-                ]
-            ]) ?>
+    <div class="card p-3">
 
-        </div>
-        <div class="col-sm-3">
-            <?= $form->field($model, 'book_id')->widget(Select2::class, [
-                'data' => ArrayHelper::map(Books::find()->asArray()->all(), 'id', 'name'),
-                'pluginOptions' => [
-                    'placeholder' => 'Select Book'
-                ]
-            ]) ?>
-        </div>
+        <table id="dv_items_table" class="table table-striped">
+            <thead>
+                <th>Serial Number</th>
+                <th>Particular</th>
+                <th>Payee</th>
+                <th>Total Obligated</th>
+                <th>Amount Disbursed</th>
+                <th>2306 (VAT/ Non-Vat)</th>
+                <th>2307 (EWT Goods/Services)</th>
+                <th>1601C (Compensation)</th>
+                <th>Other Trust Liabilities</th>
+            </thead>
+            <tbody>
+
+                <?php
+                $total_disbursed = 0;
+                $total_vat = 0;
+                $total_ewt = 0;
+                $total_compensation = 0;
+                $total_liabilities = 0;
+
+
+                ?>
+                <tr v-for="(item,idx) in dvItems">
+                    <td class="d-none"> <input type="hidden" :name="'dvItems['+idx+'][id]'" v-model="item.id"></td>
+                    <td> {{item.serial_number}}</td>
+                    <td>
+                        {{item.particular}}
+                    </td>
+                    <td> {{item.payee}}</td>
+
+
+
+                    <td> </td>
+                    <td style="width: 300px;">
+                        <input type="text" class="amt mask-money form-control" v-money="moneyConfig" :value='item.amount_disbursed' @keyup="changeMainAmount($event,item,'amount_disbursed')" />
+                        <input type="hidden" :name="'dvItems['+idx+'][amount_disbursed]'" class="main-amount" v-model="item.amount_disbursed">
+                    </td>
+                    <td style="width: 300px;">
+                        <input type="text" class="amt mask-money form-control" v-money="moneyConfig" :value='item.vat_nonvat' @keyup="changeMainAmount($event,item,'vat_nonvat')" />
+                        <input type="hidden" :name="'dvItems['+idx+'][vat_nonvat]'" class="main-amount" v-model="item.vat_nonvat">
+                    </td>
+                    <td style="width: 300px;">
+                        <input type="text" class="amt mask-money form-control" v-money="moneyConfig" :value='item.ewt_goods_services' @keyup="changeMainAmount($event,item,'ewt_goods_services')" />
+                        <input type="hidden" :name="'dvItems['+idx+'][ewt_goods_services]'" class="main-amount" v-model="item.ewt_goods_services">
+                    </td>
+                    <td style="width: 300px;">
+                        <input type="text" class="amt mask-money form-control" v-money="moneyConfig" :value='item.compensation' @keyup="changeMainAmount($event,item,'compensation')" />
+                        <input type="hidden" :name="'dvItems['+idx+'][compensation]'" class="main-amount" v-model="item.compensation">
+                    </td>
+                    <td style="width: 300px;">
+                        <input type="text" class="amt mask-money form-control" v-money="moneyConfig" :value='item.other_trust_liabilities' @keyup="changeMainAmount($event,item,'other_trust_liabilities')" />
+                        <input type="hidden" :name="'dvItems['+idx+'][other_trust_liabilities]'" class="main-amount" v-model="item.other_trust_liabilities">
+                    </td>
+                    <td style="width: 300px;">
+                        <input type="text" class="amt mask-money form-control" v-money="moneyConfig" :value='item.liquidation_damage' @keyup="changeMainAmount($event,item,'liquidation_damage')" />
+                        <input type="hidden" :name="'dvItems['+idx+'][liquidation_damage]'" class="main-amount" v-model="item.liquidation_damage">
+                    </td>
+                    <td style="width: 300px;">
+                        <input type="text" class="amt mask-money form-control" v-money="moneyConfig" :value='item.tax_portion_of_post' @keyup="changeMainAmount($event,item,'tax_portion_of_post')" />
+                        <input type="hidden" :name="'dvItems['+idx+'][tax_portion_of_post]'" class="main-amount" v-model="item.tax_portion_of_post">
+                    </td>
+
+                    <!-- <td><button class='btn-xs btn-danger ' onclick='remove(this)'><i class='fa fa-times'></i></button></td> -->
+
+                </tr>
+            </tbody>
+            <tfoot>
+                <th colspan="4" class="text-center">Total</th>
+                <th>
+                    <div id="total_disbursed">
+                        <?php echo  number_format($total_disbursed, 2) ?>
+                    </div>
+                </th>
+                <th>
+                    <div id="total_vat">
+                        <?php echo  number_format($total_vat, 2) ?>
+                    </div>
+                </th>
+                <th>
+                    <div id="total_ewt">
+                        <?php echo  number_format($total_ewt, 2) ?>
+                    </div>
+                </th>
+                <th>
+                    <div id="total_compensation">
+                        <?php echo number_format($total_compensation, 2) ?>
+                    </div>
+                </th>
+                <th>
+                    <div id="total_liabilities">
+                        <?php echo number_format($total_liabilities, 2) ?>
+                    </div>
+                </th>
+
+            </tfoot>
+        </table>
     </div>
+    <div class="card p-2">
 
-    <?= $form->field($model, 'particular')->textarea(['rows' => 6]) ?>
-
-
-
-    <table id="items_table" class="table table-striped">
-        <thead>
-            <th>Serial Number</th>
-            <th>Particular</th>
-            <th>Payee</th>
-            <th>Total Obligated</th>
-            <th>Amount Disbursed</th>
-            <th>2306 (VAT/ Non-Vat)</th>
-            <th>2307 (EWT Goods/Services)</th>
-            <th>1601C (Compensation)</th>
-            <th>Other Trust Liabilities</th>
-        </thead>
-        <tbody>
-            <?php
-            $itemRow = 0;
-            $ttl_amount_disbursed = 0;
-            $ttl_vat_nonvat = 0;
-            $ttl_ewt_goods_services = 0;
-            $ttl_compensation = 0;
-            $ttl_other_trust_liabilities = 0;
-            foreach ($items as $val) {
-                $ttl_amount_disbursed += floatval($val['amount_disbursed']);
-                $ttl_vat_nonvat += floatval($val['vat_nonvat']);
-                $ttl_ewt_goods_services += floatval($val['ewt_goods_services']);
-                $ttl_compensation += floatval($val['compensation']);
-                $ttl_other_trust_liabilities += floatval($val['other_trust_liabilities']);
-                echo "<tr>
-                        <td style='display:none;'>
-                            <input  name='items[$itemRow][process_ors_id]' type='hidden'  value='{$val['process_ors_id']}'/>
-                            <input value='{$val['item_id']}' type='hidden' name='items[$itemRow][item_id]'/>
-                        </td>
-                        <td> {$val['serial_number']}</td>
-                        <td> {$val['particular']}</td>
-                        <td> {$val['payee_name']}</td>
-                        <td> {$val['total']}</td>
-                        <td>
-                            <input type='text'  class='form-control mask-amount' onkeyup='UpdateMainAmount(this)' value='" . number_format($val['amount_disbursed'], 2) . "'/>
-                            <input  name='items[$itemRow][amount_disbursed]' type='hidden'  class='amount_disbursed main-amount' value='{$val['amount_disbursed']}'/>
-                        </td>
-                        <td> 
-                                <input type='text' class='form-control mask-amount' onkeyup='UpdateMainAmount(this)' value='{$val['vat_nonvat']}'/>
-                                <input type='hidden' name='items[$itemRow][vat_nonvat]' class='vat main-amount' value='{$val['vat_nonvat']}'/>
-                        </td>
-                        <td> 
-                            <input type='text'  class='form-control mask-amount' onkeyup='UpdateMainAmount(this)' value='{$val['ewt_goods_services']}'/>
-                            <input  type='hidden' name='items[$itemRow][ewt_goods_services]' class='ewt main-amount' value='{$val['ewt_goods_services']}'/>
-                        </td>
-                        <td>
-                            <input type='text'  class='form-control mask-amount'onkeyup='UpdateMainAmount(this)'  value='{$val['compensation']}'/>
-                            <input  type='hidden' name='items[$itemRow][compensation]' class='compensation main-amount' value='{$val['compensation']}'/>
-                        </td>
-                            <td> 
-                                <input type='text'  class='form-control mask-amount' onkeyup='UpdateMainAmount(this)' value='{$val['other_trust_liabilities']}'/>
-                                <input  type='hidden' name='items[$itemRow][other_trust_liabilities]' class='liabilities main-amount' value='{$val['other_trust_liabilities']}'/>
-                            </td>
-                     
-                        </tr>";
-                $itemRow++;
-            }
-            ?>
-        </tbody>
-        <tfoot>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th>Total</th>
-            <th>
-                <span id="total_disbursed"><?= number_format($ttl_amount_disbursed, 2) ?></span>
-            </th>
-            <th>
-                <span id="total_vat"><?= number_format($ttl_vat_nonvat, 2) ?></span>
-            </th>
-            <th>
-                <span id="total_ewt"><?= number_format($ttl_ewt_goods_services, 2) ?></span>
-            </th>
-            <th>
-                <span id="total_compensation"><?= number_format($ttl_compensation, 2) ?></span>
-            </th>
-            <th>
-                <span id="total_liabilities"><?= number_format($ttl_other_trust_liabilities, 2) ?></span>
-            </th>
-
-        </tfoot>
-
-    </table>
-    <table class="table" id="entries_table">
-        <thead>
+        <table class="table">
+            <tr class="table-info">
+                <th class="text-center" colspan="12">ORS Breakdown</th>
+            </tr>
             <tr>
-                <td colspan="4" style="padding: 3em;">
-                    <a class="btn btn-primary insert_entry" onclick="addEntry()" type="button" style="float: right;">Insert Entry</a>
+                <td>
+                    <button class="btn btn-success" type="button" @click="generateOrsBreakdown">Generate</button>
                 </td>
             </tr>
+            <tr>
+                <th class="text-center">Ors Number</th>
+                <th class="text-center">Object Code</th>
+                <th class="text-center">Account Title</th>
+                <th class="text-center">Amount</th>
+                <th class="text-center">Amount Disbursed</th>
+                <th class="text-center">2306 (VAT / Non-Vat)</th>
+                <th class="text-center">2307 (EWT Goods / Services)</th>
+                <th class="text-center">1601C (Compensation)</th>
+                <th class="text-center">Tax Withheld</th>
+                <th class="text-center">Other Trust Liabilities</th>
+                <th class="text-center">Liquidation Damage</th>
+                <th class="text-center">Tax Portion of Pos</th>
+            </tr>
+            <tr v-for="(orsBreakdown,idx) in orsBreakdowns">
+                <td class="d-none">
+                    <input type="hidden" v-if="orsBreakdown.id" v-model="orsBreakdown.id" :name="'orsBreakdownItems['+idx+'][id]'">
+                    <input type="hidden" v-if="orsBreakdown.ors_entry_id" v-model="orsBreakdown.ors_entry_id" :name="'orsBreakdownItems['+idx+'][fk_process_ors_entry_id]'">
+                </td>
+                <td>{{orsBreakdown.ors_number}}</td>
+                <td>{{orsBreakdown.uacs}}</td>
+                <td>{{orsBreakdown.general_ledger}}</td>
+                <td>{{formatAmount(orsBreakdown.balance)}}</td>
+                <td class="text-right">
+                    <input type="text" class="amt mask-money form-control" v-money="moneyConfig" :value='orsBreakdown.amount_disbursed' @keyup="changeMainAmount($event,orsBreakdown,'amount_disbursed')" />
+                    <input type="hidden" :name="'orsBreakdownItems['+idx+'][amount_disbursed]'" class="main-amount" v-model="orsBreakdown.amount_disbursed">
+                </td>
+                <td class="text-right">
+                    <input type="text" class="amt mask-money form-control" v-money="moneyConfig" :value='orsBreakdown.vat_nonvat' @keyup="changeMainAmount($event,orsBreakdown,'vat_nonvat')" />
+                    <input type="hidden" :name="'orsBreakdownItems['+idx+'][vat_nonvat]'" class="main-amount" v-model="orsBreakdown.vat_nonvat">
+                </td>
+                <td class="text-right">
+                    <input type="text" class="amt mask-money form-control" v-money="moneyConfig" :value='orsBreakdown.ewt_goods_services' @keyup="changeMainAmount($event,orsBreakdown,'ewt_goods_services')" />
+                    <input type="hidden" :name="'orsBreakdownItems['+idx+'][ewt_goods_services]'" class="main-amount" v-model="orsBreakdown.ewt_goods_services">
 
-            <th>Object Code / Account Title</th>
-            <th>Debit</th>
-            <th>Credit</th>
-        </thead>
-        <tbody>
-            <?php
+                </td>
+                <td class="text-right">
+                    <input type="text" class="amt mask-money form-control" v-money="moneyConfig" :value='orsBreakdown.compensation' @keyup="changeMainAmount($event,orsBreakdown,'compensation')" />
+                    <input type="hidden" :name="'orsBreakdownItems['+idx+'][compensation]'" class="main-amount" v-model="orsBreakdown.compensation">
+                </td>
+                <td class="text-center">{{formatAmount(parseFloat(orsBreakdown.vat_nonvat) +parseFloat(orsBreakdown.ewt_goods_services)+parseFloat(orsBreakdown.compensation)) }}</td>
+                <td class="text-right">
+                    <input type="text" class="amt mask-money form-control" v-money="moneyConfig" :value='orsBreakdown.other_trust_liabilities' @keyup="changeMainAmount($event,orsBreakdown,'other_trust_liabilities')" />
+                    <input type="hidden" :name="'orsBreakdownItems['+idx+'][other_trust_liabilities]'" class="main-amount" v-model="orsBreakdown.other_trust_liabilities">
+                </td>
+                <td class="text-right">
+                    <input type="text" class="amt mask-money form-control" v-money="moneyConfig" :value='orsBreakdown.liquidation_damage' @keyup="changeMainAmount($event,orsBreakdown,'liquidation_damage')" />
+                    <input type="hidden" :name="'orsBreakdownItems['+idx+'][liquidation_damage]'" class="main-amount" v-model="orsBreakdown.liquidation_damage">
+                </td>
+                <td class="text-right">
+                    <input type="text" class="amt mask-money form-control" v-money="moneyConfig" :value='orsBreakdown.tax_portion_of_post' @keyup="changeMainAmount($event,orsBreakdown,'tax_portion_of_post')" />
+                    <input type="hidden" :name="'orsBreakdownItems['+idx+'][tax_portion_of_post]'" class="main-amount" v-model="orsBreakdown.tax_portion_of_post">
+                </td>
+            </tr>
+        </table>
 
-            foreach ($accItems as $itm) {
+    </div>
+    <div class="card p-2">
+        <table class="table">
+            <tr class="table-info">
+                <th colspan="5" class="text-center">Accounting Entry</th>
+            </tr>
+            <tr>
+                <th colspan="5">
+                    <button class="btn btn-primary " type="button" style="float: right;" @click="addEntry">
+                        <i class="fa fa-plus"></i> Insert Entry</button>
+                </th>
+            </tr>
+            <tr>
+                <th for='chart_of_account'> Chart of Account</th>
+                <th for='isCurrent'>Current/NonCurrent </th>
+                <th for='chart_of_account'> Debit</th>
+                <th for='chart_of_account'> Credit</th>
+                <th for='chart_of_account'> </th>
+            </tr>
+            <tbody>
+                <tr v-for="(item,idx) in accountingEntries">
+                    <td class="d-none">
+                        <input type='text' v-model='item.id' :name="'dvAccountingEntries['+idx+'][id]'" v-if="item.id">
+                    </td>
+                    <td class="w-25">
 
-
-
-                echo "<tr>
-                        <td>
-                        <input type='text' name='dvAccItems[$accounting_entry_row][acc_entry_id]' class='' value='{$itm['acc_entry_id']}'>
-                        <select required name='dvAccItems[$accounting_entry_row][object_code]' class='object-codes form-control' style='width: 100%'>
-                            <option value='{$itm['object_code']}'>{$itm['object_code']}-{$itm['account_title']}</option>
+                        <select :name="'dvAccountingEntries[' + idx + '][object_code]'" class="form-control chart-of-accounts" style="width: 100%;">
+                            <option disabled selected v-if="!item.object_code">Select Chart of Account</option>
+                            <option selected v-if="item.object_code" :value='item.object_code'>{{item.account_title}}</option>
                         </select>
                     </td>
                     <td>
-                        <input type='text' class='mask-amount form-control' placeholder='Debit' onkeyup='UpdateMainAmount(this)' value='{$itm['debit']}'>
-                        <input type='hidden' name='dvAccItems[$accounting_entry_row][debit]' class='debit main-amount' value='{$itm['debit']}'>
+                        <input type='text' :name="'dvAccountingEntries['+idx+'][current_noncurrent]'" placeholder='Current/NonCurrent' />
                     </td>
-                    <td>
-                        <input type='text' class='mask-amount form-control' placeholder='Credit' onkeyup='UpdateMainAmount(this)' value='{$itm['credit']}'>
-                        <input type='hidden' name='dvAccItems[$accounting_entry_row][credit]' class='credit main-amount' value='{$itm['credit']}'>
+                    <td style="width: 300px;">
+
+                        <input type="text" class="amt mask-money form-control" v-money="moneyConfig" :value='item.debit' @keyup="changeMainAmount($event,item,'debit')" />
+                        <input type="hidden" :name="'dvAccountingEntries['+idx+'][debit]'" class="main-amount" v-model="item.debit">
+                    </td>
+                    <td style="width: 300px;">
+
+                        <input type="text" class="amt mask-money form-control" v-money="moneyConfig" :value='item.credit' @keyup="changeMainAmount($event,item,'credit')" />
+                        <input type="hidden" :name="'dvAccountingEntries['+idx+'][credit]'" class="main-amount" v-model="item.credit">
                     </td>
                     <td style='float:right;'>
-                        <a class='add_accounting_entry_row btn btn-primary btn-xs' type='button' onclick='addEntry()' ><i class='fa fa-plus fa-fw'></i> </a>
-                        <a class='remove_this_accounting_entry_row btn btn-danger btn-xs ' type='button'  onclick='RemoveItem(this)' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
+                        <a class='  btn-primary btn-xs' type='button' @click="addEntry"><i class='fa fa-plus fa-fw'></i> </a>
+                        <a class=' btn-danger btn-xs ' type='button' @click="removeAccountingEntry(idx)"><i class='fa fa-times fa-fw'></i> </a>
                     </td>
-                </tr>";
-                $accounting_entry_row++;
-            }
-            ?>
-        </tbody>
-    </table>
-    <table id="advances_table" style=" margin-top:3rem;display:none;" class="table">
-        <thead>
-
-
-            <tr>
-                <th colspan="4">
-                    <hr>
-                </th>
-            </tr>
-            <tr class="info">
-
-                <th colspan="4" style="text-align: center;">
-                    <h4 style="font-weight:bold;">ADVANCES</h4>
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-
-            <tr>
-                <td>
-                    <div class="row">
-
-                        <?php
-                        $advances_province = '';
-                        $advances_parent_reporting_period = '';
-                        $advances_id = '';
-                        $bank_account_id = '';
-
-                        if (!empty($model->id)) {
-                            $advances_data = Yii::$app->db->createCommand("SELECT advances.province,advances.id,advances.reporting_period,
-                                    advances.bank_account_id
-                                                   FROM advances
-                                                   WHERE advances.dv_aucs_id = :dv_id")
-                                ->bindValue(":dv_id", $model->id)
-                                ->queryOne();
-                            if (!empty($advances_data)) {
-                                $advances_province = $advances_data['province'];
-                                $advances_parent_reporting_period = $advances_data['reporting_period'];
-                                $advances_id = $advances_data['id'];
-                                $bank_account_id = $advances_data['bank_account_id'];
-                            }
-                        }
-                        ?>
-                        <input type="hidden" value='<?= $advances_id ?>' name="advances_id">
-
-                        <div class="col-sm-3">
-                            <label for="advances_bank_account">Bank Account</label>
-                            <?php
-                            $bank_accounts_query = (new \yii\db\Query())
-                                ->select(['bank_account.id', "CONCAT(bank_account.account_number,'-',bank_account.province,'-',bank_account.account_name) as account_number"])
-                                ->from('bank_account');
-
-                            $bank_accounts = $bank_accounts_query->all();
-                            echo Select2::widget([
-                                'data' => ArrayHelper::map($bank_accounts, 'id', 'account_number'),
-                                'name' => 'advances[bank_account_id]',
-                                'value' => $advancesModel->bank_account_id,
-                                'pluginOptions' => [
-                                    'placeholder' => 'Select Bank Account'
-                                ]
-
-                            ]);
-                            ?>
-                        </div>
-                        <div class="col-sm-3">
-                            <label for="advances_parent_reporting_period">Reporting Period</label>
-                            <?php
-                            echo DatePicker::widget([
-                                'name' => 'advances[reporting_period]',
-                                'value' => $advancesModel->reporting_period,
-                                'pluginOptions' => [
-                                    'startView' => 'months',
-                                    'minViewMode' => 'months',
-                                    'format' => 'yyyy-mm',
-                                    'autoclose' => true
-                                ]
-                            ])
-                            ?>
-                        </div>
-                        <div class="col-sm-1 col-sm-offset-5">
-
-                            <button class="add-adv-item btn btn-success" type="button">Add Item</button>
-                        </div>
-                    </div>
-                </td>
-
-            </tr>
-            <?php
-            foreach ($advancesItems as $advItm) {
-                echo "<tr>
-                 <td>
-                     <div class='row'>
-                         <div class='col-sm-4'>
-                             <label>Reporting Period
-                                 <input  value='{$advItm['id']}' type='hidden' name='advancesItems[$advancesItemRow][item_id]' />
-                                 <input  value='{$advItm['reporting_period']}' type='month' name='advancesItems[$advancesItemRow][reporting_period]' class='advances_reporting_period' style='width: 100%;min-width:100%; max-width:100%'  />
-                             </label>
-                         </div>
-                         <div class='col-sm-4'>
-                             <label>Report Type
-                                 <select name='advancesItems[$advancesItemRow][report_type_id]' class='advances-report-type-select' style='width: 100%'>
-                                     <option value='{$advItm['fk_advances_report_type_id']}'>{$advItm['report_type']}</option>
-                                 </select>
-                             </label>
-                         </div>
-                         <div class='col-sm-4'>
-                             <label>Fund Source Type</label>
- 
-                             <select name='advancesItems[$advancesItemRow][fund_source_type_id]' class='fund-source-type-select' style='width: 100%;min-width:100%; max-width:100%'>
-                                <option value='{$advItm['fk_fund_source_type_id']}'>{$advItm['fund_source_type_name']}</option>
-                             </select>
-                         </div>
-                     </div>
-                     <div class='row'>
-                         <div class='col-sm-4'>
-                             <label>Fund Source
-                                 <textarea name='advancesItems[$advancesItemRow][fund_source]' class='advances_fund_source' cols='10' rows='2' style='width: 100%;min-width:100%; max-width:100%'>{$advItm['fund_source']}</textarea>
-                             </label>
-                         </div>
-                         <div class='col-sm-4'>
-                             <label> Sub Account
-                                 <select name='advancesItems[$advancesItemRow][advances_object_code]' class='chart-of-accounts' style='width: 100%'>
-                                    <option value='{$advItm['object_code']}'>{$advItm['object_code']}-{$advItm['account_title']}</option>
-                                 </select>
-                             </label>
-                         </div>
-                         <div class='col-sm-4'>
-                             <label> Amount
-                                 <input type='text' class='form-control mask-amount advances_amount'  value='{$advItm['amount']}'>
-                                 <input type='hidden' name='advancesItems[$advancesItemRow][amount]' class='advances_unmask_amount main-amount' value='{$advItm['amount']}'>
-                             </label>
-                         </div>
-                     </div>
-                 </td>
-                 <td style='  text-align: center;width:100px'>
-                     <div class='row pull-center'>
-                         <a class='add-adv-item btn btn-primary btn-xs' type='button'><i class='fa fa-plus fa-fw'></i> </a>
-                         <a class='remove_this_row btn btn-danger btn-xs ' title='Delete Row' onclick='RemoveItem(this)'><i class='fa fa-times fa-fw'></i> </a>
-                     </div>
- 
-                 </td>
-             </tr>";
-                $advancesItemRow++;
-            }
-            ?>
-
-            <tr>
-                <td colspan="2">
-                    <hr>
-                </td>
-            </tr>
-        </tbody>
-
-    </table>
-    <div class="row justify-content-center">
-        <div class="form-group">
-            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
-        </div>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th class="text-center" colspan="2">Total</th>
+                    <th>
+                        <span>Debit:</span>
+                        <br>
+                        <span>{{formatAmount(totalDebit)}}</span>
+                    </th>
+                    <th>
+                        <span>
+                            Credit:
+                        </span>
+                        <br>
+                        <span>{{formatAmount(totalCredit)}}</span>
+                    </th>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
     </div>
 
+    <?php
 
+    ?>
+    <div class="card p-2" id="advances_table">
+        <table class="table">
+            <thead>
+                <tr class="table-info">
+
+                    <th colspan="4" class="text-center">
+                        Advances
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <tr>
+                    <td class="card p-2">
+                        <div class="row">
+                            <?php
+                            $advances_province = '';
+                            $advances_parent_reporting_period = '';
+                            $advances_id = '';
+                            $bank_account_id = '';
+
+                            if (!empty($model->id)) {
+                                $advances_data = Yii::$app->db->createCommand("SELECT 
+                                advances.province,
+                                advances.id,
+                                advances.reporting_period,
+                                    advances.bank_account_id,
+                                    fk_office_id
+                                                   FROM advances
+                                                   WHERE advances.dv_aucs_id = :dv_id")
+                                    ->bindValue(":dv_id", $model->id)
+                                    ->queryOne();
+                                if (!empty($advances_data)) {
+                                    $advances_province = $advances_data['province'];
+                                    $advances_parent_reporting_period = $advances_data['reporting_period'];
+                                    $advances_id = $advances_data['id'];
+                                    $bank_account_id = $advances_data['bank_account_id'];
+                                }
+                            }
+                            $advances = $model->advances;
+                            ?>
+                            <input type="hidden" value='<?= $advances['advances']['id'] ?? '' ?>' name="advances[id]">
+                            <div class="col-sm-3">
+                                <label for="report"> Province</label>
+                                <?= Select2::widget([
+                                    'data' => ArrayHelper::map(Office::getOfficesA(), 'id', 'office_name'),
+                                    'name' => 'advances[fk_office_id]',
+                                    'value' => $advances['advances']['fk_office_id'] ?? null,
+                                    'pluginOptions' => [
+                                        'placeholder' => 'Select Province'
+                                    ],
+                                    'options' => []
+                                ])
+                                ?>
+                            </div>
+                            <div class="col-sm-3">
+                                <label for="advances_parent_reporting_period">Reporting Period</label>
+                                <?= DatePicker::widget([
+                                    'name' => 'advances[reporting_period]',
+                                    'value' => $advances['advances']['reporting_period'] ?? null,
+                                    'pluginOptions' => [
+                                        'startView' => 'months',
+                                        'minViewMode' => 'months',
+                                        'format' => 'yyyy-mm',
+                                        'autoclose' => true
+                                    ]
+                                ])
+                                ?>
+                            </div>
+                            <div class="col-sm-3">
+                                <label for="advances_bank_account">Bank Account</label>
+                                <?php
+                                $bank_accounts_query = (new \yii\db\Query())
+                                    ->select(['bank_account.id', "CONCAT(bank_account.account_number,'-',bank_account.province,'-',bank_account.account_name) as account_number"])
+                                    ->from('bank_account');
+
+                                $bank_accounts = $bank_accounts_query->all();
+                                echo Select2::widget([
+                                    'data' => ArrayHelper::map($bank_accounts, 'id', 'account_number'),
+                                    'name' => 'advances[bank_account_id]',
+                                    'value' =>  $advances['advances']['bank_account_id'] ?? null,
+                                    'pluginOptions' => [
+                                        'placeholder' => 'Select Bank Account'
+                                    ]
+
+                                ]);
+                                ?>
+                            </div>
+                            <div class="col-sm-3 text-right">
+                                <button class='btn-primary btn-xs' type='button' @click="addAdvancesItem"><i class='fa fa-plus '></i> Add</button>
+                            </div>
+                        </div>
+                    </td>
+
+
+                </tr>
+                <tr v-for="(item,idx) in advancesItems">
+                    <td class="card p-1">
+                        <input type='hidden' :name="'advancesItems['+idx+'][id]'" v-if="item.id" v-model="item.id" />
+
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label for="advances_reporting_period">Reporting Period</label>
+                                <input type='month' :name="'advancesItems['+idx+'][reporting_period]'" v-model="item.reporting_period" />
+                            </div>
+                            <div class="col-sm-4">
+                                <label for="advances_report_type">Report Type</label>
+                                <select :name="'advancesItems['+idx+'][fk_advances_report_type_id]'" v-model="item.fk_advances_report_type_id" class="form-control">
+                                    <option value=""> Select Report Type</option>
+                                    <option v-for=" reportType in advancesReportTypes" :value="reportType.id">{{reportType.name}}</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-4">
+                                <label for="advances_fund_source_type">Fund Source Type</label>
+                                <select :name="'advancesItems['+idx+'][fk_fund_source_type_id]'" class="advances_fund_source_type form-control">
+                                    <option disabled selected v-if="!item.fk_fund_source_type_id">Select Fund Source Type</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-1 text-right">
+                                <p>
+
+                                    <a class='  btn-primary btn-xs' type='button' @click="addAdvancesItem"><i class='fa fa-plus fa-fw'></i> </a>
+                                    <a class=' btn-danger btn-xs ' type='button' @click="removeAdvancesItem(idx)"><i class='fa fa-times fa-fw'></i> </a>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <label for="fund_source">Fund Source</label>
+                                <textarea v-model="item.fund_source" :name="'advancesItems['+idx+'][fund_source]'" class="fund_source" cols="10" rows="2"></textarea>
+                            </div>
+                            <div class="col-sm-4">
+                                <label for="advances_object-code">Sub Account</label>
+                                <select :name="'advancesItems['+idx+'][object_code]'" class="chart-of-accounts" style="width: 100%">
+                                    <option v-if="item.object_code" :value="item.object_code">{{item.account_title}}</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-4">
+                                <label for="advances_amount">Amount</label>
+
+                                <input type="text" class="amt mask-money form-control" v-money="moneyConfig" :value='item.amount' @keyup="changeMainAmount($event,item,'amount')" />
+                                <input type="hidden" :name="'advancesItems['+idx+'][amount]'" class="main-amount" v-model="item.amount">
+
+                            </div>
+                        </div>
+                    </td>
+
+                </tr>
+            </tbody>
+
+        </table>
+    </div>
+    <div class="row justify-content-center">
+        <div class="form-group col-sm-2">
+            <button type="submit" class="btn btn-success" style="width: 100%;" id="save" name="save"> SAVE</button>
+        </div>
+    </div>
     <?php ActiveForm::end(); ?>
 
 </div>
+
 <style>
-    label {
-        display: inherit;
+    #advances_table {
+        display: none;
+    }
+
+    .debit,
+    .credit,
+    .amount_disbursed,
+    .vat,
+    .ewt,
+    .compensation,
+    .liabilities {
+        display: none;
+    }
+
+    .form-error {
+        color: red;
+    }
+
+    #accountng_entry_table {
+        width: 100%;
+    }
+
+    #advances_table td {
+        padding: 1rem;
+    }
+
+    #advances_table {
+        width: 100%;
+    }
+
+    textarea {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .grid-view td {
+        white-space: normal;
+    }
+
+    .select {
+        width: 500px;
+        height: 2rem;
+    }
+
+    #submit {
+        margin: 10px;
+    }
+
+    input {
+        width: 100%;
+        font-size: 15px;
+        padding: 5px;
+        border-radius: 5px;
+        border: 1px solid black;
+
+    }
+
+    .row {
+        margin: 5px;
+    }
+
+    .container {
+        background-color: white;
+        height: auto;
+        padding: 10px;
+        border-radius: 2px;
+    }
+
+    .accounting_entries {
+        background-color: white;
+        padding: 2rem;
+        border: 1px solid black;
+        border-radius: 5px;
+    }
+
+    .swal-text {
+        background-color: #FEFAE3;
+        padding: 17px;
+        border: 1px solid #F0E1A1;
+        display: block;
+        margin: 22px;
+        text-align: center;
+        color: #61534e;
     }
 </style>
+
+
 <?php
- 
-$this->registerJsFile("@web/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
+$this->registerJsFile("@web/js/maskMoney.js", ['depends' => \yii\web\JqueryAsset::class]);
+$this->registerJsFile("@web/js/select2.min.js", ['depends' => \yii\web\JqueryAsset::class]);
+$this->registerJsFile("@web/js/v-money.min.js");
+$csrfToken = Yii::$app->request->csrfToken;
+SweetAlertAsset::register($this);
+
+// !empty($advances['advancesItems']) ? json_encode($advances['advancesItems']) : 
 ?>
+
 <script>
-    let accounting_entry_row = <?= $accounting_entry_row ?>;
-    let advancesItemRow = <?= $advancesItemRow ?>;
-    let reportTypes = []
-    let fundSourceTypes = []
-
-    function addEntry() {
-        const new_row = `<tr>
-                <td>
-                    <select required name="dvAccItems[${accounting_entry_row}][object_code]" class="object-codes form-control" style="width: 100%">
-                    </select>
-                </td>
-                <td>
-                    <input type="text" class="mask-amount form-control" placeholder="Debit" onkeyup='UpdateMainAmount(this)' >
-                    <input type="hidden" name="dvAccItems[${accounting_entry_row}][debit]" class="debit main-amount" >
-                </td>
-                <td>
-                    <input type="text" class="mask-amount form-control" placeholder="Credit" onkeyup='UpdateMainAmount(this)'>
-                    <input type="hidden" name="dvAccItems[${accounting_entry_row}][credit]" class="credit main-amount" >
-                </td>
-                <td style='float:right;'>
-                    <a class='add_accounting_entry_row btn btn-primary btn-xs' type='button' onclick='addEntry()' ><i class='fa fa-plus fa-fw'></i> </a>
-                    <a class='remove_this_accounting_entry_row btn btn-danger btn-xs ' onclick='RemoveItem()' type='button' title='Delete Row'><i class='fa fa-times fa-fw'></i> </a>
-                </td>
-            </tr>`;
-        $('#entries_table tbody').append(new_row)
-        maskAmount()
-        ObjectCodesSelect()
-        accounting_entry_row++;
-    }
-
-    async function GetAdvancesReportTypes() {
-        await $.getJSON(window.location.pathname + '?r=advances-report-types/get-report-types')
-            .then(function(data) {
-                reportTypes = data
+    let fund_source_type = []
+    $(document).ready(function() {
+        getFundSourceType().then((data) => {
+            var array = []
+            $.each(data, function(key, val) {
+                array.push({
+                    id: val.id,
+                    text: val.name
+                })
             })
-        AdvancesReportTypeSelect()
-    }
+            fund_source_type = array
+            advancesFundSourceTypeSelect()
+        })
+        $('#mainVue').removeClass('d-none')
+        new Vue({
+            el: "#mainVue",
+            data: {
+                dvItems: <?= json_encode($model->dvItems) ?>,
+                moneyConfig: {
+                    precision: 2, // Number of decimal places
+                    prefix: '₱ ', // Currency symbol
+                    thousands: ',', // Thousands separator
+                    decimal: '.', // Decimal separator,
+                },
+                accountingEntries: <?= !empty($model->accountingEntries) ? json_encode($model->accountingEntries) : json_encode([]) ?>,
+                advancesItems: <?= !empty($advances['advancesItems']) ? json_encode($advances['advancesItems']) : json_encode([]) ?>,
+                advancesReportTypes: [],
+                fundSourceTypes: [],
+                orsBreakdowns: <?= !empty($model->getBreakdownItems()) ? json_encode($model->getBreakdownItems()) : json_encode([]) ?>
+            },
+            mounted() {
+                this.getAdvancesReportTypes()
+            },
+            updated() {
+                accountingCodesSelect()
+                maskAmount()
+                advancesFundSourceTypeSelect()
+            },
+            methods: {
 
-    async function GetFundSourceTypes() {
-        await $.getJSON(window.location.pathname + '?r=fund-source-type/get-fund-source-types')
-            .then(function(data) {
-                fundSourceTypes = data
-            })
-        FundSourceTypeSelect()
+                getAdvancesReportTypes() {
+                    axios.get(window.location.pathname + '?r=report-type/get-report-type')
+                        .then(res => {
+                            this.advancesReportTypes = res.data
+                        })
+                },
+                changeMainAmount(event, item, attribute) {
+                    item[attribute] = parseFloat($(event.target).maskMoney('unmasked')[0]).toFixed(2)
+                },
+                addEntry() {
+                    this.accountingEntries.push({
+                        current_noncurrent: '',
+                        object_code: '',
+                        debit: 0,
+                        credit: 0
+                    })
+                },
+                removeAccountingEntry(index) {
+                    this.accountingEntries.splice(index, 1)
+                },
+                formatAmount(unitCost) {
+                    unitCost = parseFloat(unitCost)
+                    if (typeof unitCost === 'number' && !isNaN(unitCost)) {
+                        return unitCost.toLocaleString(); // Formats with commas based on user's locale
+                    }
+                    return 0; // If unitCost is not a number, return it as is
+                },
+                addAdvancesItem() {
+                    this.advancesItems.push({
+                        reporting_period: '',
+                        fk_advances_report_type_id: '',
+                        fk_fund_source_type_id: '',
+                        fund_source: '',
+                        object_code: '',
+                        amount: 0,
 
-    }
+                    })
+                },
+                removeAdvancesItem(index) {
+                    this.advancesItems.splice(index, 1)
+                },
+                generateOrsBreakdown() {
 
-    function FundSourceTypeSelect() {
+                    let url = "?r=dv-aucs/generate-ors-breakdown"
+                    let data = {
+                        _csrf: '<?= YIi::$app->request->getCsrfToken() ?>',
+                        id: <?= $model->id ?>
+                    }
+                    axios.post(url, data)
+                        .then(res => {
+                            this.orsBreakdowns = res.data
+                        })
+                        .catch(error => {
 
-        $('.fund-source-type-select').select2({
-            data: fundSourceTypes,
-            placeholder: 'Select Fund Source Type'
+                            console.log(error)
+                        });
+                }
 
-        });
-    }
+            },
+            computed: {
 
-    function AdvancesReportTypeSelect() {
-
-        $('.advances-report-type-select').select2({
-            data: reportTypes,
-            placeholder: 'Select Reporty Type'
-
-        });
-    }
-
-    function addAdvancesItem() {
-
-    }
-
-    function updateMainAmt(ths) {
-        const amt = $(ths).maskMoney("unmasked")[0];
-        $(ths).closest('tr').find('.main-amount').val(amt)
-    }
-
-    function RemoveItem(ths) {
-        $(ths).closest('tr').remove();
-    }
-    $(document).ready(() => {
-
-        GetAdvancesReportTypes()
-        GetFundSourceTypes()
-        accountingCodesSelect()
-        ObjectCodesSelect()
-        maskAmount()
-        $('#dvaucs-nature_of_transaction_id ').change(function() {
-            var nature_selected = $(this).children(':selected').text()
-            if (nature_selected == 'CA to SDOs/OPEX') {
-                $('#advances_table').show()
-            } else if (nature_selected == 'CA to Employees') {
-                $('#dv_object_code').show()
-                $('#advances_table').hide()
-            } else {
-                $('#advances_table').hide()
-                $('#dv_object_code').hide()
+                totalDebit() {
+                    return this.accountingEntries.reduce((total, item) => total + parseFloat(item.debit), 0);
+                },
+                totalCredit() {
+                    return this.accountingEntries.reduce((total, item) => total + parseFloat(item.credit), 0);
+                }
             }
         })
-        $('.mask-amount').on('keyup', function() {
-            const amt = $(this).maskMoney("unmasked")[0];
-            $(this).closest('tr').find('.main-amount').val(amt)
+    })
+
+
+
+    function advancesReportTypeSelect() {
+        console.log('qwe')
+        $(`.advances_report_type`).select2({
+            data: report_types,
+            placeholder: "Select Report Type ",
+
+        });
+    }
+
+    function advancesFundSourceTypeSelect() {
+        $(`.advances_fund_source_type`).select2({
+            data: fund_source_type,
+            placeholder: "Select Fund Source Type",
+
+        });
+    }
+
+    function getAccountingCode(object_code) {
+        let return_data = '';
+        $.ajax({
+            type: 'POST',
+            url: window.location.pathname + '?r=chart-of-accounts/search-accounting-code&id=' + object_code,
+            data: {
+                _csrf: "<? Yii::$app->request->csrfToken; ?>"
+            },
+            success: function(data) {
+                const res = JSON.parse(data)
+                return_data = data
+                // console.log(data)
+                return data
+            }
         })
 
-        $('.remove_this_row').click(function() {
-            $(this).closest('tr').remove()
+    }
+
+
+    const transaction = [
+        "Single",
+        "Multiple",
+        "Accounts Payable",
+        "Replacement to Stale Checks",
+        'Replacement of Check Issued'
+    ]
+    let accounting_entry_row = 0
+    let advances_table_counter = 0
+
+    function checkObjectCode(object_code) {
+        let obj = ''
+        let name = ''
+        $('.accounting_entry_object_code').each(function() {
+
+            if ($(this).val() == object_code) {
+                name = $(this).attr('name')
+                obj = $(this).val()
+
+            }
         })
+        return name
+    }
+
+    function checkCreditName(object_code = '', account_title = '', name = '') {
+        let total_amount = 0;
+        $('.due_to_bir').each(function(key, val) {
+            total_amount += parseFloat($(this).val())
+        })
+        if (name == '') {
+            insertEntry(object_code, account_title, total_amount, 0, 'form-control')
+        } else {
+            let index_number = parseInt(name.replace(/[^0-9.]/g, ""));
+            $(`[name='credit[${index_number}]']`).val(total_amount.toFixed(2))
+            $(`[name='credit[${index_number}]']`).parent().find('.mask-amount').val(total_amount.toFixed(2))
+        }
+    }
+
+    function getObjectCodeForTheMonth() {
+
+        $.ajax({
+            type: 'POST',
+            url: window.location.pathname + '?r=dv-aucs/get-object-code',
+            data: {
+                reporting_period: $('#dvaucs-reporting_period').val(),
+                '_csrf': '<?= $csrfToken ?>'
+            },
+            success: function(data) {
+                const res = JSON.parse(data)
+                if (jQuery.isEmptyObject(res)) {
+                    swal({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No Sub Account for the Reporting Period',
+                        type: "error",
+                        timer: 10000,
+                        closeOnConfirm: false,
+                        closeOnCancel: false
+                    })
+                } else {
+                    let name = checkObjectCode(res.object_code)
+                    checkCreditName(res.object_code, res.account_title, name)
+                }
+
+            }
+        })
+    }
+
+    function addEntryForAmountDisbursed(amount_disbursed) {
+        let obj = '';
+        let name = '';
+        const book = $("#book :selected").text().toLowerCase();
+        let base_uacs = '';
+
+        if (book == 'fund 01' || book == 'rapid gop') {
+            base_uacs = 1010404000
+        } else if (
+            book == 'rapid lp' ||
+            book == 'rapid gpa'
+        ) {
+            base_uacs = 1010202024
+        } else if (book == 'fund 07') {
+            base_uacs = 1010406000
+        }
+        $('.accounting_entry_object_code').each(function() {
+
+            if ($(this).val() == base_uacs) {
+                name = $(this).attr('name')
+                obj = $(this).val()
+                return;
+            }
+        })
+        let index_number = parseInt(name.replace(/[^0-9.]/g, ""));
+        if (obj != '') {
+            $(`[name='credit[${index_number}]']`).val(amount_disbursed)
+            $(`[name='credit[${index_number}]']`).parent().find('.mask-amount').val(amount_disbursed)
+        } else {
+            if (base_uacs != '') {
+
+                $.ajax({
+                    type: 'POST',
+                    url: window.location.pathname + '?r=chart-of-accounts/search-accounting-code&id=' + base_uacs,
+                    data: {
+                        _csrf: '<?= $csrfToken ?>'
+                    },
+                    success: function(data) {
+                        const res = JSON.parse(data)
+                        insertEntry(res.object_code, res.account_title, amount_disbursed, )
+
+                    }
+                })
+            }
+
+
+
+        }
+    }
+    $(document).ready(function() {
+        advances_table_counter = <?= $advances_entries_row ?>;
+        accounting_entry_row = <?= $accounting_entry_row ?>;
+
+
+        $('#accountng_entry_table').on('keyup change', '.mask-credit', function() {
+            const debit = $(this)
+            const amount = debit.maskMoney('unmasked')[0]
+            debit.parent().find('.credit').val(amount)
+            getDebitCreditTotal()
+        })
+        $('#accountng_entry_table').on('keyup change', '.mask-debit', function() {
+            const debit = $(this)
+            const amount = debit.maskMoney('unmasked')[0]
+            debit.parent().find('.debit').val(amount)
+            getDebitCreditTotal()
+        })
+        $('#dv_items_table').trigger('keyup', '.mask_amount_disbursed')
+        // add accounting entry on keyup or change sa amount disbursed
+
+        $('#dv_items_table').on('keyup change', '.mask_amount_disbursed', function() {
+            const amount_disbursed = $(this).val()
+            addEntryForAmountDisbursed(parseFloat(amount_disbursed).toFixed(2))
+
+        })
+        let obj_code = '';
+
+        // add accounting entry on keyup or change
+        $('#dv_items_table').on('keyup change', '.mask_vat, .mask_ewt, .mask_compensation', function() {
+            getObjectCodeForTheMonth()
+
+        })
+
+
+        $('#dv_items_table').on('keyup change', '.mask_amount_disbursed', function() {
+            const debit = $(this)
+            const amount = debit.maskMoney('unmasked')[0]
+            debit.parent().find('.amount_disbursed').val(amount)
+        })
+        $('#dv_items_table').on('keyup change', '.mask_vat', function() {
+            const debit = $(this)
+            const amount = debit.maskMoney('unmasked')[0]
+            debit.parent().find('.vat').val(amount)
+        })
+        $('#dv_items_table').on('keyup change', '.mask_ewt', function() {
+            const debit = $(this)
+            const amount = debit.maskMoney('unmasked')[0]
+            debit.parent().find('.ewt').val(amount)
+        })
+
+        $('#dv_items_table').on('keyup change', '.mask_compensation', function() {
+            const debit = $(this)
+            const amount = debit.maskMoney('unmasked')[0]
+            debit.parent().find('.compensation').val(amount)
+        })
+
+        $('#dv_items_table').on('keyup change', '.mask_liabilities', function() {
+            const debit = $(this)
+            const amount = debit.maskMoney('unmasked')[0]
+            debit.parent().find('.liabilities').val(amount)
+        })
+        payeeSelect()
+        maskAmount()
+        accountingCodesSelect()
+
+
+        $('.insert_entry').on('click', function(e) {
+            e.preventDefault()
+
+            insertEntry()
+        })
+        $.getJSON(window.location.pathname + '?r=report-type/get-report-type')
+            .then(function(data) {
+                var array = []
+                $.each(data, function(key, val) {
+                    array.push({
+                        id: val.id,
+                        text: val.name
+                    })
+                })
+                report_types = array
+                advancesReportTypeSelect()
+            })
+
+
+
+
+        $('.remove_this_row').on('click', function(event) {
+            event.preventDefault();
+
+            $(this).closest('tr').remove();
+        });
+        $('#accountng_entry_table').on('click', '.remove_this_accounting_entry_row', function(event) {
+            event.preventDefault();
+            $(this).closest('tr').remove();
+            getDebitCreditTotal()
+
+        });
+
+
+        $('#accountng_entry_table').on('click', '.add_accounting_entry_row', function(event) {
+            event.preventDefault();
+            const source = $(this).closest('tr');
+            source.find('.chart-of-accounts').select2('destroy')
+            const clone = source.clone(true);
+            const debit = clone.find('.debit')
+            const credit = clone.find('.credit')
+            const chart_of_account = clone.find('.chart-of-accounts')
+            clone.find('.mask-debit').val('')
+            clone.find('.mask-credit').val('')
+            chart_of_account.attr('name', `object_code[${accounting_entry_row}]`)
+            debit.attr('name', `debit[${accounting_entry_row}]`)
+            credit.attr('name', `credit[${accounting_entry_row}]`)
+            chart_of_account.val('')
+            debit.val('')
+            credit.val('')
+            $('#accountng_entry_table tbody').append(clone)
+            maskAmount()
+            accountingCodesSelect()
+            accounting_entry_row++;
+        });
+        // add advances entries row
+        $('#advances_table').on('click', '.add_new_row', function(event) {
+
+            source = $(this).closest('tr');
+            source.find('.advances_fund_source_type').select2('destroy');
+            source.find('.advances_report_type').select2('destroy');
+            source.find('.chart-of-accounts').select2('destroy')
+            var clone = source.clone(true);
+            clone.find('.advances_unmask_amount').val(0)
+            clone.find('.advances_amount').val(0)
+            clone.find('.advances_unmask_amount').attr('name', `advances_amount[${advances_table_counter}]`)
+            clone.find('.debit_amount').val(0)
+            clone.find('.advances_reporting_period').val(0)
+            clone.find('.advances_reporting_period').attr('name', 'advances_reporting_period[' + advances_table_counter + ']')
+            clone.find('.advances_report_type').val(0)
+            clone.find('.advances_report_type').attr('name', 'advances_report_type[' + advances_table_counter + ']')
+            clone.find('.advances_fund_source_type').val('')
+            clone.find('.advances_fund_source_type').attr('name', 'advances_fund_source_type[' + advances_table_counter + ']')
+            clone.find('.advances_fund_source').val('')
+            clone.find('.advances_fund_source').attr('name', 'advances_fund_source[' + advances_table_counter + ']')
+            clone.find('.chart-of-accounts').val('')
+            clone.find('.chart-of-accounts').attr('name', 'advances_object_code[' + advances_table_counter + ']')
+            $('#advances_table tbody').append(clone);
+            var spacer = `<tr><td colspan="2"><hr></td></tr>`;
+            $('#advances_table tbody').append(spacer);
+            clone.find('.remove_this_row').removeClass('disabled');
+            advancesReportTypeSelect()
+            // advancesFundSourceTypeSelect()
+            maskAmount()
+            accountingCodesSelect()
+            advancesFundSourceTypeSelect()
+            advances_table_counter++
+
+
+
+        });
+
+        $('#advances_table').on('change keyup', '.advances_amount', function(event) {
+            $(this).parent().find('.advances_unmask_amount').val($(this).maskMoney('unmasked')[0])
+        });
+
+        $('#dvaucs-nature_of_transaction_id ').change(function() {
+
+            var nature_selected = $(this).children(':selected').text()
+            if (nature_selected == 'CA to SDOs/OPEX') {
+
+                document.getElementById('advances_table').style.display = 'block';
+                // $('#advances_table').show()
+            } else if (nature_selected == 'CA to Employees') {
+                document.getElementById('advances_table').style.display = 'none';
+                document.getElementById('dv_object_code').style.display = 'block';
+                // $('#dv_object_code').show()
+                // $('#advances_table').hide()
+            } else {
+                document.getElementById('advances_table').style.display = 'none';
+                document.getElementById('dv_object_code').style.display = 'none';
+                // $('#advances_table').hide()
+                // $('#dv_object_code').hide()
+            }
+        })
+        $('#dvaucs-nature_of_transaction_id').trigger('change')
+
+
+
+        checkDueToBir()
+        $('#reporting_period').change(function() {
+            checkDueToBir()
+            checkAmountDisbursed()
+        })
+        $('#book').change(function() {
+            checkDueToBir()
+            checkAmountDisbursed()
+        })
+        checkAmountDisbursed()
+        getDebitCreditTotal()
+
+
     })
+
+    function checkDueToBir() {
+        let total_amount = 0;
+        $('.due_to_bir').each(function(key, val) {
+            total_amount += parseFloat($(this).val())
+        })
+        if (total_amount != 0) {
+            getObjectCodeForTheMonth()
+        }
+        getDebitCreditTotal()
+    }
+
+    function checkAmountDisbursed() {
+        let total_amount = 0;
+        $('.amount_disbursed').each(function(key, val) {
+            total_amount += parseFloat($(this).val())
+        })
+        if (total_amount != 0) {
+
+            addEntryForAmountDisbursed(parseFloat(total_amount).toFixed(2))
+        }
+        getDebitCreditTotal()
+    }
+
+
+    function getDebitCreditTotal() {
+        var total_credit = 0.00;
+        var total_debit = 0.00;
+        $(".credit").each(function() {
+            total_credit += Number($(this).val());
+        })
+        $(".debit").each(function() {
+            total_debit += Number($(this).val());
+        })
+        $("#d_total").text(thousands_separators(total_debit))
+        $("#c_total").text(thousands_separators(total_credit))
+    }
 </script>
+
+
+<?php
+SweetAlertAsset::register($this);
+$js = <<< JS
+$("#DvAucs").on("beforeSubmit", function (event) {
+    event.preventDefault();
+    var form = $(this);
+    $.ajax({
+        url: form.attr("action"),
+        type: form.attr("method"),
+        data: form.serialize(),
+        success: function (data) {
+            let res = JSON.parse(data)
+            swal({
+                icon: 'error',
+                title: res.error,
+                type: "error",
+                timer: 3000,
+                closeOnConfirm: false,
+                closeOnCancel: false
+            })
+        },
+        error: function (data) {
+     
+        }
+    });
+    return false;
+});
+JS;
+$this->registerJs($js);
+?>

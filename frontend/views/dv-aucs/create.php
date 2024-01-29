@@ -19,7 +19,7 @@ $particular = $model->particular;
 <div class="dv-aucs-create">
 
 
-  <?= $this->render('_form_new', [
+  <?= $this->render('_form', [
     'dataProvider' => $dataProvider,
     'searchModel' => $searchModel,
     'model' => $model,

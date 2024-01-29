@@ -46,19 +46,16 @@ class DvAucsEntries extends \yii\db\ActiveRecord
         return [
             [['dv_aucs_id',], 'required'],
             [['dv_aucs_id', 'raoud_id'], 'integer'],
-            [['amount_disbursed', 'vat_nonvat', 'ewt_goods_services', 'compensation', 'other_trust_liabilities', 'total_withheld'], 'number'],
             [[
-                'id',
-                'dv_aucs_id',
-                'raoud_id',
                 'amount_disbursed',
                 'vat_nonvat',
                 'ewt_goods_services',
                 'compensation',
                 'other_trust_liabilities',
                 'total_withheld',
-                'process_ors_id',
-            ], 'filter', 'filter' => '\yii\helpers\HtmlPurifier::process'],
+                'liquidation_damage',
+                'tax_portion_of_post',
+            ], 'number'],
             [['dv_aucs_id'], 'exist', 'skipOnError' => true, 'targetClass' => DvAucs::class, 'targetAttribute' => ['dv_aucs_id' => 'id']],
             [['raoud_id'], 'exist', 'skipOnError' => true, 'targetClass' => Raouds::class, 'targetAttribute' => ['raoud_id' => 'id']],
         ];
@@ -79,6 +76,9 @@ class DvAucsEntries extends \yii\db\ActiveRecord
             'compensation' => 'Compensation',
             'other_trust_liabilities' => 'Other Trust Liabilities',
             'total_withheld' => 'Total Withheld',
+            'liquidation_damage' => 'Liquidation Damage',
+            'tax_portion_of_post' => 'Tax Portion',
+
         ];
     }
 
