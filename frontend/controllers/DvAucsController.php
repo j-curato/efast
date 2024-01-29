@@ -385,6 +385,8 @@ class DvAucsController extends Controller
                 $dv_itm->ewt_goods_services = !empty($itm['ewt_goods_services']) ? $itm['ewt_goods_services'] : 0;
                 $dv_itm->compensation = !empty($itm['compensation']) ? $itm['compensation'] : 0;
                 $dv_itm->other_trust_liabilities = !empty($itm['other_trust_liabilities']) ? $itm['other_trust_liabilities'] : 0;
+                $dv_itm->liquidation_damage = !empty($itm['liquidation_damage']) ? $itm['liquidation_damage'] : 0;
+                $dv_itm->tax_portion_of_post = !empty($itm['tax_portion_of_post']) ? $itm['tax_portion_of_post'] : 0;
                 $dv_itm->process_ors_id = !empty($itm['process_ors_id']) ? $itm['process_ors_id'] : null;
                 if (!$dv_itm->validate()) {
                     throw new ErrorException(json_encode($dv_itm->errors));
@@ -411,6 +413,8 @@ class DvAucsController extends Controller
         dv_aucs_entries.ewt_goods_services,
         dv_aucs_entries.compensation,
         dv_aucs_entries.other_trust_liabilities,
+        dv_aucs_entries.liquidation_damage,
+        dv_aucs_entries.tax_portion_of_post,
         total_obligated.total
         FROM dv_aucs_entries
         LEFT JOIN process_ors ON dv_aucs_entries.process_ors_id = process_ors.id
@@ -762,58 +766,71 @@ class DvAucsController extends Controller
             'mrd_classification_id'
         ];
         $model->validators[] = $validator;
-        // if ($model->load(Yii::$app->request->post())) {
-        //     $items = !empty(Yii::$app->request->post('items')) ? Yii::$app->request->post('items') : [];
-        //     $dvAccItems = !empty(Yii::$app->request->post('dvAccItems')) ? Yii::$app->request->post('dvAccItems') : [];
-        //     $advances = Yii::$app->request->post('advances') ?? [];
-        //     $advancesItems = Yii::$app->request->post('advancesItems') ?? [];
-        //     try {
-        //         $transaction = Yii::$app->db->beginTransaction();
-        //         $t_type = strtolower(DvTransactionType::findOne($model->fk_dv_transaction_type_id)->name);
-        //         $model->transaction_type = $t_type;
-        //         if (count($items) < 1) {
-        //             throw new ErrorException('DV items Must Be More Than or Equal to 1');
-        //         }
-        //         if ($t_type === 'single' && count($items) > 1) {
-        //             throw new ErrorException('Transaction Type is Single ORS Cannot Be More than 1');
-        //         }
-        //         if (!$model->validate()) {
-        //             throw new ErrorException(json_encode($model->errors));
-        //         }
-        //         if (!$model->save(false)) {
-        //             throw new ErrorException('Model Save Fail');
-        //         }
-        //         $ins_itm = $this->insertDvItm($model->id, $items, 'update');
-        //         if ($ins_itm !== true) {
-        //             throw new ErrorException($ins_itm);
-        //         }
-        //         $ins_acc_entries  = $this->insertDvAccItems($model->id, $dvAccItems, true);
-        //         if ($ins_acc_entries !== true) {
-        //             throw new ErrorException($ins_acc_entries);
-        //         }
+        if ($model->load(Yii::$app->request->post())) {
+            $items = !empty(Yii::$app->request->post('dvItems')) ? Yii::$app->request->post('dvItems') : [];
+            $dvAccItems = !empty(Yii::$app->request->post('dvAccountingEntries')) ? Yii::$app->request->post('dvAccountingEntries') : [];
+            $advances = Yii::$app->request->post('advances') ?? [];
+            $advancesItems = Yii::$app->request->post('advancesItems') ?? [];
+            $orsBreakdownItems = Yii::$app->request->post('orsBreakdownItems') ?? [];
+            // return json_encode($orsBreakdownItems);
+            try {
+                $transaction = Yii::$app->db->beginTransaction();
+                $t_type = strtolower(DvTransactionType::findOne($model->fk_dv_transaction_type_id)->name);
+                $model->transaction_type = $t_type;
+                if (count($items) < 1) {
+                    throw new ErrorException('DV items Must Be More Than or Equal to 1');
+                }
+                if ($t_type === 'single' && count($items) > 1) {
+                    throw new ErrorException('Transaction Type is Single ORS Cannot Be More than 1');
+                }
+                if (!$model->validate()) {
+                    throw new ErrorException(json_encode($model->errors));
+                }
+                if (!$model->save(false)) {
+                    throw new ErrorException('Model Save Fail');
+                }
+                $insertItems = $model->insertItems($items);
+                if ($insertItems !== true) {
+                    throw new ErrorException($insertItems);
+                }
+                $insertAccountingEntries  = $model->insertAccountingEntries($dvAccItems);
+                if ($insertAccountingEntries !== true) {
+                    throw new ErrorException($insertAccountingEntries);
+                }
+                $insertBreakdownItems  = $model->insertBreakdownItems($orsBreakdownItems);
+                if ($insertBreakdownItems !== true) {
+                    throw new ErrorException($insertBreakdownItems);
+                }
 
-        //         if (strtolower($model->natureOfTransaction->name) === 'ca to sdos/opex') {
-        //             $insAdvances = $this->insAdvances($model->id, $advancesModel->id, $advances, $advancesItems);
-        //             if ($insAdvances !== true) {
-        //                 throw new ErrorException($insAdvances);
-        //             }
-        //         }
+                if (strtolower($model->natureOfTransaction->name) === 'ca to sdos/opex') {
 
-        //         $transaction->commit();
-        //     } catch (ErrorException $e) {
-        //         $transaction->rollBack();
-        //         return json_encode(['error' => $e->getMessage()]);
-        //     }
-        //     return $this->redirect(['view', 'id' => $model->id]);
-        // }
-        // return $this->render('update', [
-        //     'model' => $model,
-        //     'items' => $this->getDvItems($id),
-        //     'accItems' => $this->getDVAccEntries($id),
-        //     'advancesModel' => $advancesModel,
-        //     'advancesItems' => !empty($advancesModel->id) ? $this->getAdvancesItems($advancesModel->id) : []
+                    if (empty($advances) || $advancesItems) {
+                        throw new ErrorException('Advances is Required');
+                    }
+                    $advancesModel = !empty($advances['id']) ? Advances::findOne($advances['id']) : new Advances();
+                    $advancesModel->attributes = $advances;
+                    $advancesModel->dv_aucs_id = $model->id;
+                    $advancesModel->province = $advancesModel->office->office_name ?? '';
+                    if (!$advancesModel->validate()) {
+                        throw new ErrorException(json_encode($advancesModel->errors));
+                    }
+                    if (!$advancesModel->save(false)) {
+                        throw new ErrorException("Advances Model Save Failed");
+                    }
+                    $insertAdvancesItems = $advancesModel->insertItems($advancesItems, $model->book_id);
+                    if ($insertAdvancesItems !== true) {
+                        throw new ErrorException($insertAdvancesItems);
+                    }
+                }
 
-        // ]);
+                $transaction->commit();
+            } catch (ErrorException $e) {
+                $transaction->rollBack();
+                return json_encode(['error' => $e->getMessage()]);
+            }
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+
         if ($_POST) {
             $transaction = YIi::$app->db->beginTransaction();
             $reporting_period = !empty($_POST['reporting_period']) ? $_POST['reporting_period'] : null;
@@ -2571,15 +2588,15 @@ class DvAucsController extends Controller
 
                 $sheet->setCellValue(
                     [1, $row],
-                    $val['dv_number']
+                    !empty($val['dv_number']) ? $val['dv_number'] : ''
                 );
                 $sheet->setCellValue(
                     [2, $row],
-                    $val['reporting_period']
+                    !empty($val['reporting_period']) ? $val['reporting_period'] : ''
                 );
                 $sheet->setCellValue(
                     [3, $row],
-                    $val['check_or_ada_no']
+                    !empty($val['check_or_ada_no']) ? $val['check_or_ada_no'] : ''
                 );
                 $sheet->setCellValue(
                     [4, $row],
@@ -2587,71 +2604,71 @@ class DvAucsController extends Controller
                 );
                 $sheet->setCellValue(
                     [5, $row],
-                    $val['total_disbursed']
+                    !empty($val['total_disbursed']) ? $val['total_disbursed'] : ''
                 );
                 $sheet->setCellValue(
                     [6, $row],
-                    $val['ors_number']
+                    !empty($val['ors_number']) ? $val['ors_number'] : ''
                 );
                 $sheet->setCellValue(
                     [7, $row],
-                    $val['ors_amt']
+                    !empty($val['ors_amt']) ? $val['ors_amt'] : ''
                 );
                 $sheet->setCellValue(
                     [8, $row],
-                    $val['payee']
+                    !empty($val['payee']) ? $val['payee'] : ''
                 );
                 $sheet->setCellValue(
                     [9, $row],
-                    $val['particular']
+                    !empty($val['particular']) ? $val['particular'] : ''
                 );
                 $sheet->setCellValue(
                     [10, $row],
-                    $val['amount_disbursed']
+                    !empty($val['amount_disbursed']) ? $val['amount_disbursed'] : ''
                 );
                 $sheet->setCellValue(
                     [11, $row],
-                    $val['vat_nonvat']
+                    !empty($val['vat_nonvat']) ? $val['vat_nonvat'] : ''
                 );
                 $sheet->setCellValue(
                     [12, $row],
-                    $val['ewt_goods_services']
+                    !empty($val['ewt_goods_services']) ? $val['ewt_goods_services'] : ''
                 );
                 $sheet->setCellValue(
                     [13, $row],
-                    $val['compensation']
+                    !empty($val['compensation']) ? $val['compensation'] : ''
                 );
                 $sheet->setCellValue(
                     [14, $row],
 
-                    $val['other_trust_liabilities']
+                    !empty($val['other_trust_liabilities']) ? $val['other_trust_liabilities'] : ''
                 );
 
                 $sheet->setCellValue(
                     [15, $row],
-                    $val['nature_of_transaction']
+                    !empty($val['nature_of_transaction']) ? $val['nature_of_transaction'] : ''
                 );
 
 
                 $sheet->setCellValue(
                     [16, $row],
-                    $val['mrd_classification']
+                    !empty($val['mrd_classification']) ? $val['mrd_classification'] : ''
                 );
 
                 $sheet->setCellValue(
                     [17, $row],
-                    $val['is_cancelled']
+                    !empty($val['is_cancelled']) ? $val['is_cancelled'] : ''
                 );
 
 
                 $sheet->setCellValue(
                     [18, $row],
-                    $val['payable']
+                    !empty($val['payable']) ? $val['payable'] : ''
                 );
 
                 $sheet->setCellValue(
                     [19, $row],
-                    $val['book_name']
+                    !empty($val['book_name']) ? $val['book_name'] : ''
                 );
 
 
@@ -2676,5 +2693,14 @@ class DvAucsController extends Controller
             exit();
         }
         return $this->render('export_detailed_dvs');
+    }
+    public function actionGenerateOrsBreakdown()
+    {
+
+        if (Yii::$app->request->post()) {
+            $id = YIi::$app->request->post('id');
+            $model = $this->findModel($id);
+            return json_encode($model->orsBreakdown);
+        }
     }
 }
