@@ -183,7 +183,7 @@ if (!empty($model->authorized_by)) {
                         <span>__________________ Kms</span> <br>
                         <span>TOTAL DIST.</span>
                         <span>__________________ Kms</span> <br>
-                        <span>TRAVELLED:</span>
+                        <span>TRAVELED:</span>
                         <span>__________________ Kms</span> <br>
 
 
