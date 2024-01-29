@@ -79,11 +79,11 @@ class FmiSubprojects extends \yii\db\ActiveRecord
             [[
                 'id', 'fk_province_id',
                 'fk_bank_branch_detail_id',
-                'fk_municipality_id', 'fk_barangay_id', 'fk_fmi_batch_id', 'project_duration', 'project_road_length', 'fk_office_id'
+                'fk_municipality_id', 'fk_barangay_id', 'fk_fmi_batch_id', 'project_duration', 'fk_office_id'
             ], 'integer'],
             [['purok', 'serial_number'], 'string'],
             [['project_start_date', 'created_at'], 'safe'],
-            [['grant_amount', 'equity_amount'], 'number'],
+            [['grant_amount', 'equity_amount', 'project_road_length'], 'number'],
             [['project_name'], 'string'],
             [['bank_account_name', 'bank_account_number'], 'string', 'max' => 255],
             [['id'], 'unique'],
