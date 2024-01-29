@@ -1628,24 +1628,24 @@ class LiquidationController extends Controller
 
             foreach ($query  as  $val) {
 
-                $sheet->setCellValueByColumnAndRow(1, $row,  $val['id']);
-                $sheet->setCellValueByColumnAndRow(2, $row,  $val['reporting_period']);
-                $sheet->setCellValueByColumnAndRow(3, $row,  $val['dv_number']);
-                $sheet->setCellValueByColumnAndRow(4, $row,  $val['check_date']);
-                $sheet->setCellValueByColumnAndRow(5, $row,  $val['check_number']);
-                $sheet->setCellValueByColumnAndRow(6, $row,  $val['fund_source']);
-                $sheet->setCellValueByColumnAndRow(7, $row,  $val['particular']);
-                $sheet->setCellValueByColumnAndRow(8, $row,  $val['payee']);
-                $sheet->setCellValueByColumnAndRow(9, $row,  $val['object_code']);
-                $sheet->setCellValueByColumnAndRow(10, $row,  $val['account_title']);
-                $sheet->setCellValueByColumnAndRow(11, $row,  $val['withdrawals']);
-                $sheet->setCellValueByColumnAndRow(12, $row,  $val['vat_nonvat']);
-                $sheet->setCellValueByColumnAndRow(13, $row,  $val['expanded_tax']);
-                $sheet->setCellValueByColumnAndRow(14, $row,  $val['liquidation_damage']);
-                $sheet->setCellValueByColumnAndRow(15, $row,  $val['gross_payment']);
-                $sheet->setCellValueByColumnAndRow(16, $row,  $val['province']);
-                $sheet->setCellValueByColumnAndRow(17, $row,  $val['orig_reporting_period']);
-                $sheet->setCellValueByColumnAndRow(18, $row,  $val['bank_account']);
+                $sheet->setCellValue([1, $row],  $val['id']);
+                $sheet->setCellValue([2, $row],  $val['reporting_period']);
+                $sheet->setCellValue([3, $row],  $val['dv_number']);
+                $sheet->setCellValue([4, $row],  $val['check_date']);
+                $sheet->setCellValue([5, $row],  $val['check_number']);
+                $sheet->setCellValue([6, $row],  $val['fund_source']);
+                $sheet->setCellValue([7, $row],  $val['particular']);
+                $sheet->setCellValue([8, $row],  $val['payee']);
+                $sheet->setCellValue([9, $row],  $val['object_code']);
+                $sheet->setCellValue([10, $row],  $val['account_title']);
+                $sheet->setCellValue([11, $row],  $val['withdrawals']);
+                $sheet->setCellValue([12, $row],  $val['vat_nonvat']);
+                $sheet->setCellValue([13, $row],  $val['expanded_tax']);
+                $sheet->setCellValue([14, $row],  $val['liquidation_damage']);
+                $sheet->setCellValue([15, $row],  $val['gross_payment']);
+                $sheet->setCellValue([16, $row],  $val['province']);
+                $sheet->setCellValue([17, $row],  $val['orig_reporting_period']);
+                $sheet->setCellValue([18, $row],  $val['bank_account']);
 
                 $row++;
             }
