@@ -13,9 +13,9 @@ $this->params['breadcrumbs'][] = $this->title;
 $excelFileName  = "PMR " . $model->office->office_name . "-" . $model->reporting_period;
 ?>
 <div class="pmr-view d-none" id="mainVue">
-    <div class="card p-2">
+    <div class="card p-2 buttons">
         <span>
-            <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+            <?= Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
             <button type="button" class="btn btn-success" @click='exportData'><i class="fa fa-file-export"></i> Export</button>
         </span>
     </div>
@@ -128,8 +128,18 @@ $excelFileName  = "PMR " . $model->office->office_name . "-" . $model->reporting
         width: 100%;
         max-width: 100%;
         overflow-x: auto;
+        overflow-y: auto;
+
         /* Enable horizontal scrollbar when table exceeds screen width */
         /* Add some margin for better appearance */
+    }
+
+    @media print {
+
+        .buttons,
+        .main-footer {
+            display: none;
+        }
     }
 </style>
 <script>

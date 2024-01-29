@@ -14,39 +14,41 @@ use yii\bootstrap4\ActiveForm;
 <div class="pmr-form" id="mainVue">
 
     <?php $form = ActiveForm::begin(); ?>
+    <div class="card p-2">
 
-    <div class="row">
-        <div class="col-3">
-            <?= $form->field($model, 'fk_office_id')->dropDownList(
-                ArrayHelper::map(Office::getOfficesA(), 'id', 'office_name'),
-                [
-                    'prompt' => 'Select Office',
-                    'v-model' => 'officeId'
-                ]
-            ) ?>
-        </div>
-        <div class="col-3">
-            <?= $form->field($model, 'reporting_period')->widget(DatePicker::class, [
-                'pluginOptions' => [
-                    'format' => 'yyyy-mm',
-                    'autoclose' => true,
-                    'minViewMode' => 'months'
-                ]
-            ]) ?>
-        </div>
+        <div class="row">
+            <div class="col-3">
+                <?= $form->field($model, 'fk_office_id')->dropDownList(
+                    ArrayHelper::map(Office::getOfficesA(), 'id', 'office_name'),
+                    [
+                        'prompt' => 'Select Office',
+                        'v-model' => 'officeId'
+                    ]
+                ) ?>
+            </div>
+            <div class="col-3">
+                <?= $form->field($model, 'reporting_period')->widget(DatePicker::class, [
+                    'pluginOptions' => [
+                        'format' => 'yyyy-mm',
+                        'autoclose' => true,
+                        'minViewMode' => 'months'
+                    ]
+                ]) ?>
+            </div>
 
-        <div class="form-group col-3">
-            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
-            <button class="btn btn-success" type="button" @click.prevent="generatePmr">Generate</button>
+            <div class="form-group col-3 pt-4 mt-1">
+                <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+                <button class="btn btn-primary" type="button" @click.prevent="generatePmr">Generate</button>
+            </div>
+
         </div>
 
     </div>
 
 
-
     <?php ActiveForm::end(); ?>
 
-    <div class="card p-2 table-container">
+    <div class="card p-2 table-container" style="max-width: 98%;">
         <table>
             <tr>
 
@@ -144,7 +146,7 @@ use yii\bootstrap4\ActiveForm;
     }
 
     .table-container {
-        width: 100%;
+        width: calc(100vw - 50px);
         max-width: 100%;
         overflow-x: auto;
         /* Enable horizontal scrollbar when table exceeds screen width */
