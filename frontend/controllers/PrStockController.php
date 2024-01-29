@@ -379,9 +379,9 @@ class PrStockController extends Controller
                 ->from('pr_stock')
                 ->where(['like', 'stock_title', $q])
                 ->andWhere('is_disabled = 0')
-                ->andwhere('pr_stock.cse_type = :cse_type', ['cse_type' => $cse_type]);
+                ->andWhere('pr_stock.cse_type = :cse_type', ['cse_type' => $cse_type]);
             if ($cse_type === 'cse') {
-                $query->andwhere('pr_stock.budget_year = :budget_year', ['budget_year' => $budget_year]);
+                $query->andWhere('pr_stock.budget_year = :budget_year', ['budget_year' => $budget_year]);
             }
             $query->offset($offset)
                 ->limit($limit);
