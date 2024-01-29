@@ -40,9 +40,21 @@ class AdvancesEntries extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['advances_id', 'cash_disbursement_id', 'sub_account1_id', 'is_deleted'], 'integer'],
+            [[
+                'advances_id', 'cash_disbursement_id', 'sub_account1_id', 'is_deleted',
+                'fk_fund_source_type_id',
+                'fk_advances_report_type_id',
+            ], 'integer'],
             [['amount'], 'number'],
-            [['reporting_period'], 'required'],
+            [[
+                'reporting_period',
+                'advances_id',
+                'fund_source',
+                'object_code',
+                'amount',
+                'fk_fund_source_type_id',
+                'fk_advances_report_type_id',
+            ], 'required'],
 
 
             [['advances_id'], 'exist', 'skipOnError' => true, 'targetClass' => Advances::class, 'targetAttribute' => ['advances_id' => 'id']],
@@ -71,6 +83,10 @@ class AdvancesEntries extends \yii\db\ActiveRecord
             'division' => 'Division',
             'advances_type' => 'Advances Type',
             'report_type' => 'Report Type',
+            'is_deleted' => 'Is Deleted',
+            'fk_fund_source_type_id' => 'FK Fund  Source Type',
+            'fk_advances_report_type_id' => 'FK advances Report Type'
+
         ];
     }
 
@@ -82,6 +98,14 @@ class AdvancesEntries extends \yii\db\ActiveRecord
     public function getAdvances()
     {
         return $this->hasOne(Advances::class, ['id' => 'advances_id']);
+    }
+    public function getFundSourceType()
+    {
+        return $this->hasOne(FundSourceType::class, ['id' => 'fk_fund_source_type_id']);
+    }
+    public function getAdvancesReportType()
+    {
+        return $this->hasOne(AdvancesReportTypes::class, ['id' => 'fk_advances_report_type_id']);
     }
 
     /**
