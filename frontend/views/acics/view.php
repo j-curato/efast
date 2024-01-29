@@ -134,8 +134,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     <th colspan="3" class="ctr">CANCELLED CHECK</th>
                     <td rowspan="12" class="asig ctr">
                         <span class="flt-lft">Certified Correct By:</span><br><br><br>
-                        <span> <b> <u>&emsp;MARRY ANN L. PASCUAL&emsp;</u></b><br>
-                            <span>Administrative Officer V</span></span><br>
+                        <span> <b class="text-uppercase"> <u>&emsp;Rosie R. Vellesco &emsp;</u></b><br>
+                            <span>Administrative Officer III</span></span><br>
                         <span>Signature over Printed Name of Disbursing <br> Officer/Cashier/Head of Cash /Treasurey <br> Unit</span><br><br>
                         <span class="flt-lft">Approved By:</span><br><br>
                         <span>___________________________</span><br>
@@ -190,8 +190,8 @@ $this->params['breadcrumbs'][] = $this->title;
                     <td colspan="6" class="ctr">
                         <div style='width:50%' class="flt-lft">
                             <span class="flt-lft">Certified Correct by:</span><br><br>
-                            <u><b>MARRY ANN L. PASCUAL</b></u><br>
-                            <span>Administrative Officer V</span><br>
+                            <u><b class="text-uppercase">Rosie R. Vellesco</b></u><br>
+                            <span>Administrative Officer III</span><br>
                             <span>Signature over Printed Name of Disbursing <br> Officer/Cashier/Head of Cash/ Treasury Unit</span>
                         </div>
                         <div style='width:50%' class="flt-lft">
