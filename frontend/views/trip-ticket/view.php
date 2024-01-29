@@ -196,7 +196,7 @@ if (!empty($model->authorized_by)) {
                     <td class=" no-border"></td>
                     <td colspan="2" style="text-align: center;" class=" no-border">
 
-                        <span class="underlined"><?= $driver ?></span>
+                        <span class="underlined text-uppercase"><?= $driver ?></span>
                         <br>
                         <span>Driver</span>
                     </td>
