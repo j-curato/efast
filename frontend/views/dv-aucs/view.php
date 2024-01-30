@@ -242,7 +242,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </thead>
 
             <tr v-for="item in orsBreakdown">
-                <td></td>
+                <td>{{item.serial_number}}</td>
                 <td>{{item.uacs}}</td>
                 <td>{{item.general_ledger}}</td>
                 <td class="text-center">{{formatAmount(item.amount_disbursed)}}</td>

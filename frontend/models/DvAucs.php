@@ -490,6 +490,8 @@ class DvAucs extends \yii\db\ActiveRecord
                 "process_ors_entries.id as ors_entry_id",
                 "process_ors.serial_number as ors_number",
                 "process_ors_entries.amount",
+                "process_ors_entries.serial_number",
+
 
             ])
 
@@ -500,5 +502,73 @@ class DvAucs extends \yii\db\ActiveRecord
             ->andWhere(['tbl_dv_aucs_ors_breakdown.fk_dv_aucs_id' => $this->id])
             ->asArray()
             ->all();
+    }
+    public static function getDetailedDvs($yr)
+    {
+        return Yii::$app->db->createCommand("  WITH cte_gd_cash as (
+            SELECT
+                cash_disbursement_items.fk_dv_aucs_id,
+              cash_disbursement.reporting_period,
+              cash_disbursement.issuance_date,
+              books.`name` as book_name,
+              mode_of_payments.`name` as mode_name,
+              cash_disbursement.check_or_ada_no,
+              cash_disbursement.ada_number
+            FROM cash_disbursement
+            JOIN cash_disbursement_items ON cash_disbursement.id = cash_disbursement_items.fk_cash_disbursement_id
+            LEFT JOIN books ON cash_disbursement.book_id = books.id
+            LEFT JOIN mode_of_payments ON cash_disbursement.fk_mode_of_payment_id  = mode_of_payments.id
+            WHERE 
+            cash_disbursement.is_cancelled = 0
+            AND cash_disbursement_items.is_deleted  = 0
+            AND NOT EXISTS (SELECT cncl_chks.parent_disbursement
+            FROM cash_disbursement as cncl_chks 
+            WHERE cncl_chks.parent_disbursement = cash_disbursement.id 
+            AND cncl_chks.is_cancelled = 1 
+            AND cncl_chks.parent_disbursement IS NOT NULL) 
+            )
+            SELECT 
+                dv_aucs.dv_number,
+                dv_aucs.reporting_period,
+              cte_gd_cash.check_or_ada_no as check_number,
+              cte_gd_cash.ada_number,
+                record_allotments.serial_number as allotment_number,
+                allotment_chart_of_accounts.uacs as allotment_object_code,
+                allotment_chart_of_accounts.general_ledger as allotment_account_title,
+              process_ors.serial_number as ors_number,
+                ors_chart_of_accounts.uacs as ors_object_code,
+                ors_chart_of_accounts.general_ledger as ors_account_title,
+                process_ors_entries.serial_number as ors_id,
+                process_ors_entries.amount as ors_amount,
+              payee.account_name as payee,
+              dv_aucs.particular,
+              good_ors_breakdowns.amount_disbursed,
+              good_ors_breakdowns.vat_nonvat,
+              good_ors_breakdowns.ewt_goods_services,
+              good_ors_breakdowns.compensation,
+              good_ors_breakdowns.other_trust_liabilities,
+                good_ors_breakdowns.liquidation_damage,
+                good_ors_breakdowns.tax_portion_of_post,
+              nature_of_transaction.`name` as nature_of_transaction,
+              mrd_classification.`name` as mrd_classification,
+              IF(dv_aucs.is_cancelled=1,'Cancelled','Good') as cancelled,
+              IF(dv_aucs.is_payable=1,'Yes','No') as payable,
+              books.`name` as book_name
+            FROM dv_aucs
+            LEFT JOIN (SELECT * FROM tbl_dv_aucs_ors_breakdown WHERE  tbl_dv_aucs_ors_breakdown.is_deleted = 0 ) as good_ors_breakdowns ON dv_aucs.id  = good_ors_breakdowns.fk_dv_aucs_id
+            LEFT JOIN payee ON dv_aucs.payee_id = payee.id
+            LEFT JOIN nature_of_transaction ON dv_aucs.nature_of_transaction_id = nature_of_transaction.id
+            LEFT JOIN mrd_classification ON dv_aucs.mrd_classification_id = mrd_classification.id
+            LEFT JOIN books ON dv_aucs.book_id = books.id
+            LEFT JOIN process_ors_entries ON good_ors_breakdowns.fk_process_ors_entry_id = process_ors_entries.id
+            LEFT JOIN process_ors ON process_ors_entries.process_ors_id  = process_ors.id
+            LEFT JOIN cte_gd_cash ON dv_aucs.id = cte_gd_cash.fk_dv_aucs_id
+            LEFT JOIN record_allotment_entries ON process_ors_entries.record_allotment_entries_id = record_allotment_entries.id
+            LEFT JOIN record_allotments ON record_allotment_entries.record_allotment_id = record_allotments.id
+            LEFT JOIN chart_of_accounts as allotment_chart_of_accounts ON record_allotment_entries.chart_of_account_id = allotment_chart_of_accounts.id
+            LEFT JOIN chart_of_accounts as ors_chart_of_accounts ON process_ors_entries.chart_of_account_id = ors_chart_of_accounts.id
+            WHERE dv_aucs.reporting_period LIKE CONCAT(:yr,'%');")
+            ->bindValue(":yr", $yr)
+            ->queryAll();
     }
 }
