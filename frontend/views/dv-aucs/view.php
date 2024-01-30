@@ -148,7 +148,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 </div>
             </div>
         </div>
-        <table class="">
+        <table class=" table table-hover">
 
             <tbody>
                 <thead>
@@ -170,104 +170,103 @@ $this->params['breadcrumbs'][] = $this->title;
             <tbody>
 
                 <?php
+                foreach ($model->dvAucsEntries as $val) :
 
-                foreach ($model->dvAucsEntries as $val) {
-                    if (intval($val->is_deleted) != 1) {
-
-                        $total_withheld = $val->compensation + $val->ewt_goods_services + $val->vat_nonvat;
-                        $ors_serial_number = '';
-                        $ors_serial_number = !empty($val->process_ors_id) ? $val->processOrs->serial_number : '';
-                        $t = '';
-
-
-                        echo "
-                    <tr>
-                    <td>
-                        {$ors_serial_number}
-                    </td>
-                    <td>
-                        {$val->dvAucs->dv_number}
-                    </td>
-                    <td>
-                        {$val->dvAucs->reporting_period}
-                    </td>
-                    <td>
-                        {$val->dvAucs->payee->account_name}
-                    </td>
-                    <td>
-                        {$val->dvAucs->particular}
-                    </td>
-                    <td  class='amount'>"
-                            . number_format($val->amount_disbursed, 2) .
-                            "</td>
-                    <td class='amount'>
-                        " . number_format($val->vat_nonvat, 2) . "
-                    </td>
-                    <td class='amount'>
-                       " . number_format($val->ewt_goods_services, 2) . " 
-                    </td>
-                    <td class='amount'>
-                       " . number_format($val->compensation, 2) . " 
-                    </td>
-                    <td class='amount'>
-                        " . number_format($total_withheld, 2) . "
-                    </td>
-                    <td class='amount'>
-                        " . number_format($val->other_trust_liabilities, 2) . "
-                    </td>
-                    <td class='amount'>
-                        " . number_format($val->liquidation_damage, 2) . "
-                    </td>
-                    <td class='amount'>
-                        " . number_format($val->tax_portion_of_post, 2) . "
-                    </td>
-                    <td class='link'>" .
-
-                            Html::a('ORS', $t, ['class' => ' btn btn-xs btn-success '])
-                            . "
-                
-                </td>
-                    </tr>
-                    ";
-                    }
-                }
-
+                    $total_withheld = $val->compensation + $val->ewt_goods_services + $val->vat_nonvat;
+                    $ors_serial_number = '';
+                    $ors_serial_number = !empty($val->process_ors_id) ? $val->processOrs->serial_number : '';
+                    $t = '';
                 ?>
-            </tbody>
+
+                    <tr>
+                        <td><?= $ors_serial_number ?></td>
+                        <td><?= $val->dvAucs->dv_number ?></td>
+                        <td><?= $val->dvAucs->reporting_period ?></td>
+                        <td><?= $val->dvAucs->payee->account_name ?></td>
+                        <td><?= $val->dvAucs->particular ?></td>
+                        <td class='text-right'><?= number_format($val->amount_disbursed, 2) ?></td>
+                        <td class='text-right'>
+                            <?= number_format($val->vat_nonvat, 2) ?>
+                        </td>
+                        <td class='text-right'>
+                            <?= number_format($val->ewt_goods_services, 2) ?>
+                        </td>
+                        <td class='text-right'>
+                            <?= number_format($val->compensation, 2) ?>
+                        </td>
+                        <td class='text-right'>
+                            <?= number_format($total_withheld, 2) ?>
+                        </td>
+                        <td class='text-right'>
+                            <?= number_format($val->other_trust_liabilities, 2) ?>
+                        </td>
+                        <td class='text-right'>
+                            <?= number_format($val->liquidation_damage, 2) ?>
+                        </td>
+                        <td class='text-right'>
+                            <?= number_format($val->tax_portion_of_post, 2) ?>
+                        </td>
+                        <td class=''>
+                            <?= Html::a('ORS', ['process-ors/view', 'id' => $val->process_ors_id], ['class' => ' btn btn-xs btn-link ']) ?>
+                        </td>
+                    </tr>
+
+                <?php endforeach; ?>
 
             </tbody>
+
         </table>
 
     </div>
     <div class="card p-2 " id="vueContainer">
-        <table class="table">
-            <tr>
-                <th colspan="11" class="table-info">ORS Breakdown</th>
-            </tr>
-            <tr>
-                <th class="text-center">Object Code</th>
-                <th class="text-center">Account Title</th>
-                <th class="text-center">Amount Disbursed</th>
-                <th class="text-center">2306 (VAT / Non-Vat)</th>
-                <th class="text-center">2307 (EWT Goods / Services)</th>
-                <th class="text-center">1601C (Compensation)</th>
-                <th class="text-center">Tax Withheld</th>
-                <th class="text-center">Other Trust Liabilities</th>
-                <th class="text-center">Liquidation Damage</th>
-                <th class="text-center">Tax Portion of Pos</th>
-            </tr>
+        <table class="table table-hover">
+            <thead>
+
+                <tr>
+                    <th colspan="11" class="table-info">ORS Breakdown</th>
+                </tr>
+                <tr>
+
+                    <th class="text-center">ORS ID</th>
+                    <th class="text-center">Object Code</th>
+                    <th class="text-center">Account Title</th>
+                    <th class="text-center">Amount Disbursed</th>
+                    <th class="text-center">2306 (VAT / Non-Vat)</th>
+                    <th class="text-center">2307 (EWT Goods / Services)</th>
+                    <th class="text-center">1601C (Compensation)</th>
+                    <th class="text-center">Tax Withheld</th>
+                    <th class="text-center">Other Trust Liabilities</th>
+                    <th class="text-center">Liquidation Damage</th>
+                    <th class="text-center">Tax Portion of Pos</th>
+                </tr>
+            </thead>
+
             <tr v-for="item in orsBreakdown">
+                <td></td>
                 <td>{{item.uacs}}</td>
                 <td>{{item.general_ledger}}</td>
-                <td class="text-right">{{formatAmount(item.amount_disbursed)}}</td>
-                <td class="text-right">{{formatAmount(item.vat_nonvat)}}</td>
-                <td class="text-right">{{formatAmount(item.ewt_goods_services)}}</td>
-                <td class="text-right">{{formatAmount(item.compensation)}}</td>
+                <td class="text-center">{{formatAmount(item.amount_disbursed)}}</td>
+                <td class="text-center">{{formatAmount(item.vat_nonvat)}}</td>
+                <td class="text-center">{{formatAmount(item.ewt_goods_services)}}</td>
+                <td class="text-center">{{formatAmount(item.compensation)}}</td>
                 <td class="text-center">{{formatAmount(parseFloat(item.vat_nonvat) + parseFloat(item.ewt_goods_services)+parseFloat(item.compensation)) }}</td>
-                <td class="text-right">{{formatAmount(item.other_trust_liabilities)}}</td>
-                <td class="text-right">{{formatAmount(item.liquidation_damage)}}</td>
-                <td class="text-right">{{formatAmount(item.tax_portion_of_post)}}</td>
+                <td class="text-center">{{formatAmount(item.other_trust_liabilities)}}</td>
+                <td class="text-center">{{formatAmount(item.liquidation_damage)}}</td>
+                <td class="text-center">{{formatAmount(item.tax_portion_of_post)}}</td>
             </tr>
+            <tfoot>
+                <tr>
+                    <th colspan="3" class="text-center">Total</th>
+                    <th class="text-center">{{orsBreakdownTotal('amount_disbursed')}}</th>
+                    <th class="text-center">{{orsBreakdownTotal('vat_nonvat')}}</th>
+                    <th class="text-center">{{orsBreakdownTotal('ewt_goods_services')}}</th>
+                    <th class="text-center">{{orsBreakdownTotal('compensation')}}</th>
+                    <th class="text-center">{{orsBreakdownTotal('total_tax_withheld')}}</th>
+                    <th class="text-center">{{orsBreakdownTotal('other_trust_liabilities')}}</th>
+                    <th class="text-center">{{orsBreakdownTotal('liquidation_damage')}}</th>
+                    <th class="text-center">{{orsBreakdownTotal('tax_portion_of_post')}}</th>
+                </tr>
+            </tfoot>
         </table>
     </div>
     <?php
@@ -596,6 +595,13 @@ $this->params['breadcrumbs'][] = $this->title;
                     }
                     return 0; // If unitCost is not a number, return it as is
                 },
+                orsBreakdownTotal(attrib) {
+                    const total =
+                        attrib == 'total_tax_withheld' ?
+                        this.orsBreakdown.reduce((total, item) => (total + parseFloat(item.vat_nonvat) + parseFloat(item.ewt_goods_services) + parseFloat(item.compensation)), 0) :
+                        this.orsBreakdown.reduce((total, item) => total + parseFloat(item[attrib]), 0);
+                    return this.formatAmount(total)
+                }
             }
         })
         $('#download_soft_copy').click((e) => {

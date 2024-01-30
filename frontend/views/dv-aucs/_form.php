@@ -172,7 +172,7 @@ if (!empty($model->object_code)) {
     </div>
     <div class="card p-3">
 
-        <table id="dv_items_table" class="table table-striped">
+        <table id="dv_items_table" class="table table-hover">
             <thead>
                 <th>Serial Number</th>
                 <th>Particular</th>
@@ -183,6 +183,8 @@ if (!empty($model->object_code)) {
                 <th>2307 (EWT Goods/Services)</th>
                 <th>1601C (Compensation)</th>
                 <th>Other Trust Liabilities</th>
+                <th>Liquidation Damages</th>
+                <th>Tax Portion of Pos</th>
             </thead>
             <tbody>
 
@@ -202,8 +204,6 @@ if (!empty($model->object_code)) {
                         {{item.particular}}
                     </td>
                     <td> {{item.payee}}</td>
-
-
 
                     <td> </td>
                     <td style="width: 300px;">
@@ -241,60 +241,47 @@ if (!empty($model->object_code)) {
             </tbody>
             <tfoot>
                 <th colspan="4" class="text-center">Total</th>
-                <th>
-                    <div id="total_disbursed">
-                        <?php echo  number_format($total_disbursed, 2) ?>
-                    </div>
-                </th>
-                <th>
-                    <div id="total_vat">
-                        <?php echo  number_format($total_vat, 2) ?>
-                    </div>
-                </th>
-                <th>
-                    <div id="total_ewt">
-                        <?php echo  number_format($total_ewt, 2) ?>
-                    </div>
-                </th>
-                <th>
-                    <div id="total_compensation">
-                        <?php echo number_format($total_compensation, 2) ?>
-                    </div>
-                </th>
-                <th>
-                    <div id="total_liabilities">
-                        <?php echo number_format($total_liabilities, 2) ?>
-                    </div>
-                </th>
+                <th class="text-center">{{dvItemsTotal('amount_disbursed')}}</th>
+                <th class="text-center">{{dvItemsTotal('vat_nonvat')}}</th>
+                <th class="text-center">{{dvItemsTotal('ewt_goods_services')}}</th>
+                <th class="text-center">{{dvItemsTotal('compensation')}}</th>
+                <th class="text-center">{{dvItemsTotal('other_trust_liabilities')}}</th>
+                <th class="text-center">{{dvItemsTotal('liquidation_damage')}}</th>
+                <th class="text-center">{{dvItemsTotal('tax_portion_of_post')}}</th>
+
 
             </tfoot>
         </table>
     </div>
     <div class="card p-2">
 
-        <table class="table">
-            <tr class="table-info">
-                <th class="text-center" colspan="12">ORS Breakdown</th>
-            </tr>
-            <tr>
-                <td>
-                    <button class="btn btn-success" type="button" @click="generateOrsBreakdown">Generate</button>
-                </td>
-            </tr>
-            <tr>
-                <th class="text-center">Ors Number</th>
-                <th class="text-center">Object Code</th>
-                <th class="text-center">Account Title</th>
-                <th class="text-center">Amount</th>
-                <th class="text-center">Amount Disbursed</th>
-                <th class="text-center">2306 (VAT / Non-Vat)</th>
-                <th class="text-center">2307 (EWT Goods / Services)</th>
-                <th class="text-center">1601C (Compensation)</th>
-                <th class="text-center">Tax Withheld</th>
-                <th class="text-center">Other Trust Liabilities</th>
-                <th class="text-center">Liquidation Damage</th>
-                <th class="text-center">Tax Portion of Pos</th>
-            </tr>
+        <table class="table table-hover">
+            <thead>
+
+                <tr class="table-info">
+                    <th class="text-center" colspan="12">ORS Breakdown</th>
+                </tr>
+                <tr>
+                    <td>
+                        <button class="btn btn-success" type="button" @click="generateOrsBreakdown">Generate</button>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-center">Ors Number</th>
+                    <th class="text-center">Object Code</th>
+                    <th class="text-center">Account Title</th>
+                    <th class="text-center">Balance ORS Amount</th>
+                    <th class="text-center">Amount Disbursed</th>
+                    <th class="text-center">2306 (VAT / Non-Vat)</th>
+                    <th class="text-center">2307 (EWT Goods / Services)</th>
+                    <th class="text-center">1601C (Compensation)</th>
+                    <th class="text-center">Tax Withheld</th>
+                    <th class="text-center">Other Trust Liabilities</th>
+                    <th class="text-center">Liquidation Damage</th>
+                    <th class="text-center">Tax Portion of Pos</th>
+                </tr>
+            </thead>
+
             <tr v-for="(orsBreakdown,idx) in orsBreakdowns">
                 <td class="d-none">
                     <input type="hidden" v-if="orsBreakdown.id" v-model="orsBreakdown.id" :name="'orsBreakdownItems['+idx+'][id]'">
@@ -335,27 +322,45 @@ if (!empty($model->object_code)) {
                     <input type="hidden" :name="'orsBreakdownItems['+idx+'][tax_portion_of_post]'" class="main-amount" v-model="orsBreakdown.tax_portion_of_post">
                 </td>
             </tr>
+            <tfoot>
+                <tr>
+                    <th colspan="4" class="text-center">Total</th>
+                    <th class="text-center">{{orsBreakdownTotal('amount_disbursed')}}</th>
+                    <th class="text-center">{{orsBreakdownTotal('vat_nonvat')}}</th>
+                    <th class="text-center">{{orsBreakdownTotal('ewt_goods_services')}}</th>
+                    <th class="text-center">{{orsBreakdownTotal('compensation')}}</th>
+                    <th class="text-center">{{orsBreakdownTotal('total_tax_withheld')}}</th>
+
+                    <th class="text-center">{{orsBreakdownTotal('other_trust_liabilities')}}</th>
+                    <th class="text-center">{{orsBreakdownTotal('liquidation_damage')}}</th>
+                    <th class="text-center">{{orsBreakdownTotal('tax_portion_of_post')}}</th>
+                </tr>
+            </tfoot>
         </table>
 
     </div>
     <div class="card p-2">
-        <table class="table">
-            <tr class="table-info">
-                <th colspan="5" class="text-center">Accounting Entry</th>
-            </tr>
-            <tr>
-                <th colspan="5">
-                    <button class="btn btn-primary " type="button" style="float: right;" @click="addEntry">
-                        <i class="fa fa-plus"></i> Insert Entry</button>
-                </th>
-            </tr>
-            <tr>
-                <th for='chart_of_account'> Chart of Account</th>
-                <th for='isCurrent'>Current/NonCurrent </th>
-                <th for='chart_of_account'> Debit</th>
-                <th for='chart_of_account'> Credit</th>
-                <th for='chart_of_account'> </th>
-            </tr>
+        <table class="table table-hover">
+            <thead>
+
+                <tr class="table-info">
+                    <th colspan="5" class="text-center">Accounting Entry</th>
+                </tr>
+                <tr>
+                    <th colspan="5">
+                        <button class="btn btn-primary " type="button" style="float: right;" @click="addEntry">
+                            <i class="fa fa-plus"></i> Insert Entry</button>
+                    </th>
+                </tr>
+                <tr>
+                    <th for='chart_of_account'> Chart of Account</th>
+                    <th for='isCurrent'>Current/NonCurrent </th>
+                    <th for='chart_of_account'> Debit</th>
+                    <th for='chart_of_account'> Credit</th>
+                    <th for='chart_of_account'> </th>
+                </tr>
+            </thead>
+
             <tbody>
                 <tr v-for="(item,idx) in accountingEntries">
                     <td class="d-none">
@@ -768,6 +773,14 @@ SweetAlertAsset::register($this);
 
                             console.log(error)
                         });
+                },
+                dvItemsTotal(attrib) {
+                    const total = this.dvItems.reduce((total, item) => total + parseFloat(item[attrib]), 0);
+                    return this.formatAmount(total)
+                },
+                orsBreakdownTotal(attrib) {
+                    const total = attrib == 'total_tax_withheld' ? this.orsBreakdowns.reduce((total, item) => (total + parseFloat(item.vat_nonvat) + parseFloat(item.ewt_goods_services) + parseFloat(item.compensation)), 0) : this.orsBreakdowns.reduce((total, item) => total + parseFloat(item[attrib]), 0);
+                    return this.formatAmount(total)
                 }
 
             },

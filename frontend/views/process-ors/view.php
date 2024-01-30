@@ -26,8 +26,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="card container" style="background-color: white;">
         <h4 style=""><?= Html::encode($this->title) ?></h4>
         <p>
-            <?= Html::a('Create Process Ors', ['create'], ['class' => 'btn btn-success']) ?>
-            <?= Html::a('Update/Re-Align', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
+            <?= Html::a('<i class="fa fa-plus"></i> Create', ['create'], ['class' => 'btn btn-success']) ?>
+            <?= Html::a('<i class="fa fa-pencil-alt"></i> Update/Re-Align', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
 
             <?php
             if ($ors->is_cancelled) {
@@ -44,17 +44,14 @@ $this->params['breadcrumbs'][] = $this->title;
                 ";
             }
             echo "<input type='text' id='cancel_id' value='$ors->id' style='display:none'/>";
-            $t = yii::$app->request->baseUrl . "/index.php?r=transaction/view&id=$ors->transaction_id";
-            echo  Html::a('Transaction', $t, ['class' => 'btn btn-info']);
+            echo  Html::a('Transaction', ['transaction/view', 'id' => $ors->transaction_id], ['class' => 'btn btn-info']);
             $adjust = yii::$app->request->baseUrl . "/index.php?r=process-ors-entries/re-align&id=$model->id";
             ?>
         </p>
-        <table class="table" style="margin-bottom: 2rem;">
+        <table class="table table-hover mb-3">
             <thead>
-                <tr class="info ">
-                    <th colspan="9" class="center">
-                        <h4> <b>Transaction Allotments </b></h4>
-                    </th>
+                <tr class="table-info ">
+                    <th colspan="9" class="text-center">Transaction Allotments </th>
                 </tr>
                 <th>Responsible Center</th>
                 <th>Particular</th>
@@ -107,82 +104,24 @@ $this->params['breadcrumbs'][] = $this->title;
                 </tr>
             </tfoot>
         </table>
-        <table class="table table-striped">
-
+        <table class="table table-hover">
             <thead>
-                <tr class="info ">
-                    <th colspan="9" class="center">
-                        <h4> <b>ORS Entries </b></h4>
-                    </th>
+                <tr class="table-info ">
+                    <th colspan="9" class="text-center">ORS Entries</th>
                 </tr>
 
-                <th>
-                    Reporting Period
-                </th>
-                <th>
-                    Allotment Number
-                </th>
+                <th>Reporting Period</th>
+                <th>Allotment Number</th>
                 <th>MFO/PAP</th>
                 <th>Fund Source</th>
-                <th>
-                    Allotment UACS
-                </th>
-                <th>
-                    Entry UACS
-                </th>
-
-                <th style='text-align:right'>
-                    Amount
-                </th>
+                <th>Allotment UACS</th>
+                <th>Entry UACS</th>
+                <th class="text-right">Amount</th>
             </thead>
             <tbody>
                 <?php
                 $orsItmTtl = 0;
-                // foreach ($entries as $key => $val) {
-                //     $count = $key + 1;
-                //     echo "
-                // <tr>
-                //     <td>
-                //        {$count}
-                //     </td>
-                //     <td>
-                //        {$val->reporting_period}
-                //     </td>
-                //     <td>
-                //        {$val->reporting_period}
-                //     </td>
-                //     <td>
-                //        {$val->payee}
-                //     </td>
-                //     <td>
-                //        {$val->particular}
-                //     </td>
-                //     <td>
-                //        {$val->allotment_uacs}
-                //     </td>
 
-                //     <td>
-                //        {$val->allotment_account_title}
-                //     </td>
-
-                //     <td>
-                //        {$val->ors_uacs}
-                //     </td>
-
-                //     <td>
-                //        {$val->ors_account_title}
-                //     </td>
-
-                //     <td class='amount'>" . number_format($val->amount, 2) . "
-
-                //     </td>
-
-
-                // </tr>
-
-                // ";
-                //     $total += $val->amount;
-                // }
                 foreach ($GetOrsItems as $orsItm) {
                     echo "<tr>
                             <td>{$orsItm['reporting_period']}</td>
@@ -206,34 +145,34 @@ $this->params['breadcrumbs'][] = $this->title;
             </tbody>
         </table>
     </div>
-    <div class="container dv_links">
-
-
-        <h4>List of DV's Using This <?= strtoupper($model->type) ?></h4>
-        <table class="table">
+    <div class="container card">
+        <table class="table table-hover">
             <thead>
-                <th>
-                    DV Number
-                </th>
-                <th>
-                    Link
-                </th>
+                <tr class="table-info">
+                    <th colspan="5" class="text-center">
+                        List of DV's Using This <?= strtoupper($model->type) ?>
+                    </th>
+                </tr>
+                <th class="text-center">DV Number</th>
+                <th class="text-center">Payee</th>
+                <th class="text-center">Particular</th>
+                <th class="text-center">Gross Amount</th>
+                <th class="text-center">Link</th>
             </thead>
             <tbody>
 
                 <?php
-                if (!empty($ors->dvAucsEntries)) {
-                    $dv_id = 0;
-                    foreach ($ors->dvAucsEntries as $val) {
-                        if (intval($val->is_deleted) === 0) {
+                foreach ($ors->dvs as $val) {
 
-                            $url  =   Html::a('Dv Link', Url::to(['dv-aucs/view', 'id' => $val->dvAucs->id]), ['class' => 'btn btn-link ']);
-                            echo "<tr>
-                            <td>{$val->dvAucs->dv_number}</td>
-                            <td>$url</td>
+                    $url  =   Html::a('Dv Link', Url::to(['dv-aucs/view', 'id' => $val['id']]), ['class' => 'btn btn-link ']);
+                    $amount = number_format($val['gross_amount'], 2);
+                    echo "<tr>
+                            <td class='text-center'>{$val['dv_number']}</td>
+                            <td class='text-center'>{$val['payee_name']}</td>
+                            <td class='text-center'>{$val['particular']}</td>
+                            <td class='text-center'>$amount</td>
+                            <td class='text-center'>$url</td>
                         </tr>";
-                        }
-                    }
                 }
                 ?>
             </tbody>

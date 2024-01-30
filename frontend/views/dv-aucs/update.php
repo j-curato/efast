@@ -8,7 +8,7 @@ use yii\helpers\Html;
 
 $this->title = 'Update Dv Aucs: ' . $model->dv_number;
 $this->params['breadcrumbs'][] = ['label' => 'Dv Aucs', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = ['label' => $model->dv_number, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Update';
 
 $reporting_period = $model->reporting_period;

@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use app\behaviors\HistoryLogsBehavior;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "process_ors".
@@ -134,5 +135,32 @@ class ProcessOrs extends \yii\db\ActiveRecord
     public function getBook()
     {
         return $this->hasOne(Books::class, ['id' => 'book_id']);
+    }
+    public function getDvs()
+    {
+        return DvAucs::find()
+            ->addSelect([
+                "dv_aucs.id",
+                "dv_aucs.dv_number",
+                "dv_aucs.particular",
+                new Expression("payee.registered_name as payee_name"),
+                new Expression("COALESCE(dv_aucs_entries.amount_disbursed,0) +
+                COALESCE(dv_aucs_entries.compensation,0) +
+                COALESCE(dv_aucs_entries.vat_nonvat,0) +
+                COALESCE(dv_aucs_entries.ewt_goods_services,0) +
+                COALESCE(dv_aucs_entries.liquidation_damage,0) +
+                COALESCE(dv_aucs_entries.other_trust_liabilities,0) +
+                COALESCE(dv_aucs_entries.tax_portion_of_post,0) as gross_amount")
+            ])
+            ->join("JOIN", "dv_aucs_entries", "dv_aucs.id = dv_aucs_entries.dv_aucs_id")
+            ->join("LEFT JOIN", "payee", "dv_aucs.payee_id = payee.id")
+            ->andWhere([
+                "dv_aucs_entries.is_deleted" => false
+            ])
+            ->andWhere([
+                'dv_aucs_entries.process_ors_id' => $this->id
+            ])
+            ->asArray()
+            ->all();
     }
 }
