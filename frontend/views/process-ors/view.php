@@ -145,7 +145,7 @@ $this->params['breadcrumbs'][] = $this->title;
             </tbody>
         </table>
     </div>
-    <div class="container card">
+    <div class="container card dv_links">
         <table class="table table-hover">
             <thead>
                 <tr class="table-info">
