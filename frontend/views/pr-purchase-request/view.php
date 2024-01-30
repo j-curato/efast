@@ -233,9 +233,10 @@ SweetAlertAsset::register($this);
                                                 ?>
                                             </span>
                                             <br>
-                                            <span><?php
-                                                    echo $name = $model->requestedBy->position;
-                                                    ?></span>
+                                            <span><?= $name = $model->requestedBy->position ?></span>
+                                            <br>
+                                            <br>
+                                            <span>Date:______________________</span>
                                         </td>
                                         <td class="center">
                                             <span class="center"></span>
@@ -255,6 +256,9 @@ SweetAlertAsset::register($this);
                                                 echo $name = $model->approvedBy->position
                                                 ?>
                                             </span>
+                                            <br>
+                                            <br>
+                                            <span>Date:______________________</span>
 
                                         </td>
                                     </tr>
