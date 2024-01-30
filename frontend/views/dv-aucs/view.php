@@ -70,30 +70,27 @@ $this->params['breadcrumbs'][] = $this->title;
         <span>
             <?= Html::a('<i class="fa fa-print"></i> Print', ['dv-form', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
             <?= Yii::$app->user->can('update_dv_aucs') ? Html::a('<i class="fa fa-pencil-alt"></i> Update', ['update', 'id' => $model->id], ['class' => ' btn btn-primary']) : '' ?>
+            <?= !empty($cashIds) ? Html::button('Cash Disbursement Links', ['class' => 'btn btn-info', 'data-target' => "#cashLInksModal", 'data-toggle' => "modal"]) : '' ?>
+
             <?php
-            if (!empty($cashIds)) {
-                echo Html::button('Cash Disbursement Links', ['class' => 'btn btn-info', 'data-target' => "#cashLInksModal", 'data-toggle' => "modal"]);
-            }
-            if ($model->is_cancelled) {
-                echo "<button class='btn btn-success' id='cancel' >Activate</button>";
-            } else {
-                echo "<button class='btn btn-danger' id='cancel' >Cancel</button>";
-            }
-            echo "<input type='text' id='cancel_id' value='$model->id' style='display:none;'/>";
+
+            $cancelledButtonText = $model->is_cancelled ? 'Activate' : 'Cancel';
+            $cancelledButtonClr = $model->is_cancelled ? 'btn-success' : 'btn-danger';
+            echo Html::button($cancelledButtonText, ['class' => "btn $cancelledButtonClr", 'id' => 'cancel']);
+            ?>
+            <?php
+            echo "<input type='hidden' id='cancel_id' value='$model->id' style='display:none;'/>";
             $dv_link = '';
             if (!empty($model->dv_link)) {
                 $dv_link = $model->dv_link;
                 echo Html::a('Soft Copy Link', $dv_link, ['class' => 'btn btn-info ']);
             }
-
             ?>
             <?php
             $jev_link = yii::$app->request->baseUrl . "/index.php?r=jev-preparation/dv-to-jev&id={$model->id}";
 
             if ($model->is_payable === 1) {
                 echo "<button class='btn btn-success' id='is_payable' >Not Payable</button>";
-
-
                 $exist  = Yii::$app->db->createCommand("SELECT id FROM jev_preparation WHERE dv_number = :dv_number
                     
                 ")->bindValue(':dv_number', $model->dv_number)
@@ -120,34 +117,34 @@ $this->params['breadcrumbs'][] = $this->title;
 
         </span>
     </div>
-    <div class=" card p-2">
-        <h3><?= Html::encode($this->title) ?></h3>
 
-        <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    </div>
-                    <form id="add_link">
-                        <div class='modal-body'>
-                            <hr>
-                            <label for="ledger"> Insert Link</label>
-
-                            <input type="text " style="display: none;" class="form-control" name="id" value='<?= $model->id ?>'>
-
-                            <input type="text " class="form-control" name="link" value='<?= $dv_link ?>'>
-                        </div>
-                        <div class="row" style="margin: 10px;padding:12px">
-                            <div class="col-sm-3">
-
-                                <button type="submit" id='add_link_save' class="btn btn-success">Save</button>
-                            </div>
-                        </div>
-                    </form>
+    <div class="modal fade" id="uploadmodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 </div>
+                <form id="add_link">
+                    <div class='modal-body'>
+                        <hr>
+                        <label for="ledger"> Insert Link</label>
+
+                        <input type="text " style="display: none;" class="form-control" name="id" value='<?= $model->id ?>'>
+
+                        <input type="text " class="form-control" name="link" value='<?= $dv_link ?>'>
+                    </div>
+                    <div class="row" style="margin: 10px;padding:12px">
+                        <div class="col-sm-3">
+
+                            <button type="submit" id='add_link_save' class="btn btn-success">Save</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
+    </div>
+    <div class=" card p-2">
+        <h3><?= Html::encode($this->title) ?></h3>
         <table class=" table table-hover">
 
             <tbody>
