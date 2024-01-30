@@ -184,7 +184,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/scripts.js
     var target_date = ''
     const province_data = {
         'adn': 'Rosie R. Vellesco',
-        'ads': 'Maria Prescylin C. Lademora',
+        'ads': 'Ferdinand R. Inres',
         'sdn': 'Glenn Michael M. Goloran',
         'sds': 'Sarah P. Estrada',
         'pdi': 'Edmar M. Granada',

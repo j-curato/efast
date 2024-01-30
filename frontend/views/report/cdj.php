@@ -205,7 +205,7 @@ $this->params['breadcrumbs'][] = $this->title;
     var period = ''
     var officer = {
         'adn': 'ROSIE R. VELLESCO',
-        'ads': 'PRESCYLIN C. LADEMORA',
+        'ads': 'Ferdinand R. Inres',
         'sdn': 'FERDINAND R. INRES',
         'pdi': 'VENUS A. CUSTODIO',
         'sds': 'SARAH P. ESTRADA',

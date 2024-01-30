@@ -289,7 +289,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css
     }
     var officer = {
         'adn': 'ROSIE R. VELLESCO',
-        'ads': 'PRESCYLIN C. LADEMORA',
+        'ads': 'Ferdinand R. Inres',
         'sdn': 'FERDINAND R. INRES',
         'pdi': 'VENUS A. CUSTODIO',
         'sds': 'SARAH P. ESTRADA',
