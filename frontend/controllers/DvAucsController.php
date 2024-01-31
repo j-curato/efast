@@ -2555,6 +2555,7 @@ class DvAucsController extends Controller
         if (Yii::$app->request->post()) {
 
             $year = Yii::$app->request->post('year');
+            return json_encode(DvAucs::getDetailedDvs($year));
             $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
             $headers = [
