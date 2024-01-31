@@ -325,8 +325,8 @@ class DvAucs extends \yii\db\ActiveRecord
             ->addSelect([
                 new Expression("CONCAT(dv_accounting_entries.object_code,'-',accounting_codes.account_title) as account_title"),
                 "dv_accounting_entries.object_code",
-                "dv_accounting_entries.debit",
-                "dv_accounting_entries.credit",
+                new Expression("COALESCE(dv_accounting_entries.debit,0) as debit"),
+                new Expression("COALESCE(dv_accounting_entries.credit,0) as credit"),
                 "dv_accounting_entries.id"
             ])
             ->join("LEFT JOIN", "accounting_codes", "dv_accounting_entries.object_code = accounting_codes.object_code ")
@@ -339,6 +339,11 @@ class DvAucs extends \yii\db\ActiveRecord
     public function insertAccountingEntries($items)
     {
         try {
+
+
+            if (array_sum(array_column($items, 'debit')) !== array_sum(array_column($items, 'credit'))) {
+                throw new ErrorException("Debit and Credit is Not Equal");
+            }
             $itemModels = [];
             // $deleteItems = $this->deleteItems(ArrayHelper::getColumn($items, 'id'));
             // if ($deleteItems !== true) {
