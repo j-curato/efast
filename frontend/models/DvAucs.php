@@ -342,7 +342,7 @@ class DvAucs extends \yii\db\ActiveRecord
 
 
             if (array_sum(array_column($items, 'debit')) !== array_sum(array_column($items, 'credit'))) {
-                throw new ErrorException("Debit and Credit is Not Equal");
+                throw new ErrorException("The debit and credit amounts are not equal");
             }
             $itemModels = [];
             // $deleteItems = $this->deleteItems(ArrayHelper::getColumn($items, 'id'));
