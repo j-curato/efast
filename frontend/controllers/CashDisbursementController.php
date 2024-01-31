@@ -183,6 +183,7 @@ class CashDisbursementController extends Controller
        dv_aucs_index.grossAmt,
        dv_aucs_index.orsNums,
        dv_aucs_index.payee,
+       '' as orsBreakdowns,
        IFNULL(dv_aucs_index.bank_name,'') as bank_name,
        IFNULL(dv_aucs_index.account_num,'') as account_num,
        CONCAT(chart_of_accounts.uacs,'-',chart_of_accounts.general_ledger) as chart_of_acc,
@@ -1131,6 +1132,14 @@ class CashDisbursementController extends Controller
                     'cashDisbursementDetails' => $model->getDetails(),
                     'cashDisbursementItems' => $model->getItems()
                 ]);
+        }
+    }
+    public function actionGetDvOrsBreakdowns()
+    {
+
+        if (Yii::$app->request->post()) {
+            $id = Yii::$app->request->post('id');
+            return json_encode(DvAucs::findOne($id)->breakdownItems);
         }
     }
 }

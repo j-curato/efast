@@ -7,18 +7,18 @@ use yii\widgets\DetailView;
 /* @var $this yii\web\View */
 /* @var $model app\models\CashDisbursement */
 
-$this->title = $model->id;
+$this->title = $model->check_or_ada_no;
 $this->params['breadcrumbs'][] = ['label' => 'Cash Disbursements', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 
 ?>
-<div class="cash-disbursement-view">
+<div class="cash-disbursement-view d-none" id="mainVue">
 
-    <div class=" " style="background-color: white;padding:2rem">
+    <div class="card p-2">
 
-        <p>
-            <?= Html::a('Create Cash Disbursement', ['create'], ['class' => 'btn btn-success']) ?>
+        <span>
+            <?= Html::a('<i class="fa fa-plus"></i> Create ', ['create'], ['class' => 'btn btn-success']) ?>
             <?php
             if ($model->is_cancelled != true) {
                 echo Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']);
@@ -34,83 +34,79 @@ $this->params['breadcrumbs'][] = $this->title;
                 $transmittal_link = yii::$app->request->baseUrl . "/index.php?r=transmittal/view&id={$model->transmittal->transmittal_id}";
                 echo  Html::a('Transmittal ', $transmittal_link, ['class' => 'btn btn-link ', 'style' => 'margin:3px']);
             }
-            if (!empty($model->sliie->id)) {
-                echo  Html::a('SLIIE ', ['sliies/view', 'id' => $model->sliie->id], ['class' => 'btn btn-link ', 'style' => 'margin:3px']);
-            }
-            if (!empty($model->lddapAda->id)) {
-                echo  Html::a('LDDAP-ADA ', ['lddap-adas/view', 'id' => $model->lddapAda->id], ['class' => 'btn btn-link ', 'style' => 'margin:3px']);
-            }
-            if (!empty($acic_id)) {
-                echo  Html::a('ACIC ', ['acics/view', 'id' => $acic_id], ['class' => 'btn btn-link ', 'style' => 'margin:3px']);
-            }
-            if (!empty($rci_id)) {
-                echo  Html::a('RCI ', ['rci/view', 'id' => $rci_id], ['class' => 'btn btn-link ', 'style' => 'margin:3px']);
-            }
-
             ?>
-        </p>
-        <table id="check_details_tbl" style="float: left; margin-right:2rem;margin-bottom:4rem">
+            <?= !empty($model->sliie->id) ? Html::a('SLIIE ', ['sliies/view', 'id' => $model->sliie->id], ['class' => 'btn btn-link ', 'style' => 'margin:3px']) : '' ?>
+            <?= !empty($model->lddapAda->id) ? Html::a('LDDAP-ADA ', ['lddap-adas/view', 'id' => $model->lddapAda->id], ['class' => 'btn btn-link ', 'style' => 'margin:3px']) : '' ?>
+            <?= !empty($acic_id) ? Html::a('ACIC ', ['acics/view', 'id' => $acic_id], ['class' => 'btn btn-link ', 'style' => 'margin:3px']) : '' ?>
+            <?= !empty($rci_id) ? Html::a('RCI ', ['rci/view', 'id' => $rci_id], ['class' => 'btn btn-link ', 'style' => 'margin:3px']) : '' ?>
 
-            <th colspan="4" class="ctr">
-                Disbursement Details
-            </th>
+        </span>
+    </div>
+    <div class="card p-2">
 
-            <tr>
-                <th>Reporting Period:</th>
-                <th><?= $model->reporting_period ?></th>
-                <th>Book:</th>
-                <th><?= $model->book->name ?></th>
-
-            </tr>
-            <tr>
-                <th>Mode of Payment:</th>
-                <th><?= $model->modeOfPayment->name ?? '' ?></th>
-                <th>Check No.:</th>
-                <th><?= $model->check_or_ada_no ?></th>
-            </tr>
-            <tr>
-                <th>Issunce Date: </th>
-                <th><?= $model->issuance_date ?></th>
-                <th>ADA No.:</th>
-                <th><?= $model->ada_number ?></th>
-            </tr>
-            <tr>
-                <th>Begin timer:</th>
-                <th><?= date('h:i A', strtotime($model->begin_time)) ?></th>
-                <th>Out Time:</th>
-                <th><?= date('h:i A', strtotime($model->out_time)) ?></th>
-            </tr>
-        </table>
-        <table id="summary_tbl">
-
-            <th colspan="3" class="ctr">
-                Summary per UACS
-            </th>
-            <?php
-
-            foreach ($summary as $sum) {
-
-                echo "<tr>
-                    <th>{$sum['general_ledger']}</th>
-                    <th class='amt'>" . number_format($sum['total'], 2) . "</th>
-                </tr>";
-            }
-            ?>
-        </table>
-
-
-
-
-        <table class=" items_tbl table table striped" style="margin-top: 8rem;">
-
-            <thead>
-                <tr class="success">
-                    <th colspan="11" class="ctr">
-                        <h3>
-                            DV'S
-
-                        </h3>
+        <div class=" row">
+            <div class="col-5">
+                <table id="check_details_tbl" class="table">
+                    <th colspan="4" class="text-center">
+                        Disbursement Details
                     </th>
+                    <tr>
+                        <th>Reporting Period:</th>
+                        <th><?= $model->reporting_period ?></th>
+                        <th>Book:</th>
+                        <th><?= $model->book->name ?></th>
+
+                    </tr>
+                    <tr>
+                        <th>Mode of Payment:</th>
+                        <th><?= $model->modeOfPayment->name ?? '' ?></th>
+                        <th>Check No.:</th>
+                        <th><?= $model->check_or_ada_no ?></th>
+                    </tr>
+                    <tr>
+                        <th>Issuance Date: </th>
+                        <th><?= $model->issuance_date ?></th>
+                        <th>ADA No.:</th>
+                        <th><?= $model->ada_number ?></th>
+                    </tr>
+                    <tr>
+                        <th>Begin timer:</th>
+                        <th><?= date('h:i A', strtotime($model->begin_time)) ?></th>
+                        <th>Out Time:</th>
+                        <th><?= date('h:i A', strtotime($model->out_time)) ?></th>
+                    </tr>
+                </table>
+            </div>
+            <div class="col-3">
+                <table id="summary_tbl">
+                    <th colspan="3" class="text-center">
+                        Summary per UACS
+                    </th>
+                    <tr>
+
+                        <?php
+                        foreach ($summary as $sum) {
+                            echo "<tr>
+                                <th>{$sum['general_ledger']}</th>
+                                <th class='amt'>" . number_format($sum['total'], 2) . "</th>
+                            </tr>";
+                        }
+                        ?>
+                    </tr>
+
+                </table>
+            </div>
+
+        </div>
+
+
+
+    </div>
+    <div class="card p-2">
+        <table class="  table table-hover">
+            <thead>
+                <tr class="table-info">
+                    <th colspan="11" class="text-center">DV'S</th>
                 </tr>
                 <th>Book</th>
                 <th>DV No.</th>
@@ -128,46 +124,142 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
                 <?php
-                $grndTtlAmtDisbursed = 0;
-                $grndTtlTax = 0;
-                $grndGrossAmt = 0;
-                foreach ($items as $itm) {
-                    $grndTtlAmtDisbursed += floatval($itm['ttlAmtDisbursed']);
-                    $grndTtlTax += floatval($itm['ttlTax']);
-                    $grndGrossAmt += floatval($itm['grossAmt']);
-                    echo "<tr>
-                        <td>{$itm['book_name']}</td>
-                        <td>{$itm['dv_number']}</td>
-                        <td>{$itm['particular']}</td>
-                        <td>{$itm['payee']}</td>
-                        <td>{$itm['bank_name']} :#{$itm['account_num']}</td>
-                        <td>{$itm['orsNums']}</td>
-                        <td >
-                            {$itm['chart_of_acc']}
-                        </td>
-         
-                        <td>" . number_format($itm['ttlAmtDisbursed'], 2) . "</td>
-                        <td>" . number_format($itm['ttlTax'], 2) . "</td>
-                        <td>" . number_format($itm['grossAmt'], 2) . "</td>
-                        <td>" . Html::a('link', ['dv-aucs/view', 'id' => $itm['dv_id']], ['class' => 'btn btn-link']) . "</td>
-                    
-                    </tr>";
-                }
-                echo "<tr class='warning'>
-                
-                <th colspan='7' style='text-align:center'>Total</th>
-                <th>" . number_format($grndTtlAmtDisbursed, 2) . "</th>
-                <th>" . number_format($grndTtlTax, 2) . "</th>
-                <th>" . number_format($grndGrossAmt, 2) . "</th>
-                <td></td>
+                //     $grndTtlAmtDisbursed = 0;
+                //     $grndTtlTax = 0;
+                //     $grndGrossAmt = 0;
+                //     foreach ($items as $itm) {
+                //         $grndTtlAmtDisbursed += floatval($itm['ttlAmtDisbursed']);
+                //         $grndTtlTax += floatval($itm['ttlTax']);
+                //         $grndGrossAmt += floatval($itm['grossAmt']);
+                //         echo "<tr>
+                // <td>{$itm['book_name']}</td>
+                //     <td>{$itm['dv_number']}</td>
+                //     <td>{$itm['particular']}</td>
+                //     <td>{$itm['payee']}</td>
+                //     <td>{$itm['bank_name']} :#{$itm['account_num']}</td>
+                //     <td>{$itm['orsNums']}</td>
+                //     <td >
+                //         {$itm['chart_of_acc']}
+                //     </td>
 
-                </tr>";
+                //     <td>" . number_format($itm['ttlAmtDisbursed'], 2) . "</td>
+                //     <td>" . number_format($itm['ttlTax'], 2) . "</td>
+                //     <td>" . number_format($itm['grossAmt'], 2) . "</td>
+                //     <td>" . Html::a('link', ['dv-aucs/view', 'id' => $itm['dv_id']], ['class' => 'btn btn-link']) . "</td>
+
+
+                //         </tr>";
+                //     }
+                //     echo "<tr class='warning'>
+
+                //     <th colspan='7' style='text-align:center'>Total</th>
+                //     <th>" . number_format($grndTtlAmtDisbursed, 2) . "</th>
+                //     <th>" . number_format($grndTtlTax, 2) . "</th>
+                //     <th>" . number_format($grndGrossAmt, 2) . "</th>
+                //     <td></td>
+
+                //     </tr>";
                 ?>
+                <template v-for="(item,idx) in disbursementItems">
+
+                    <tr>
+
+                        <td>{{item.book_name}}</td>
+                        <td>{{item.dv_number}}</td>
+                        <td>{{item.particular}}</td>
+                        <td>{{item.payee}}</td>
+                        <td>{{item.bank_name}} :#{{item.account_num}}</td>
+                        <td>{{item.orsNums}}</td>
+                        <td>{{item.chart_of_acc}}</td>
+                        <td>{{formatAmount(item.ttlAmtDisbursed)}}</td>
+                        <td>{{formatAmount(item.ttlTax)}}</td>
+                        <td>{{formatAmount(item.grossAmt)}}</td>
+                        <td>
+                            <a :href="'/q/index.php?r=dv-aucs/view&id='+item.dv_id" class="btn btn-link">Link</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="11">
+                            <span>
+                                <button @click="getOrsBreakdowns(item)" class="btn btn-link" type="button" data-toggle="collapse" :data-target="'#collapse'+idx" aria-expanded="false" aria-controls="collapseExample">
+                                    Show ORS Breakdown
+                                </button>
+                            </span>
+                            <div class="collapse" :id="'collapse'+idx">
+                                <div class="card p-2">
+                                    <table>
+                                        <thead>
+                                            <tr class="table-primary">
+                                                <th colspan="10" class="text-center">Breakdown</th>
+                                            </tr>
+                                            <tr>
+
+                                                <th class="text-center">Serial Number</th>
+                                                <th class="text-center">UACS</th>
+                                                <th class="text-center">General Ledger</th>
+                                                <th class="text-center">Amount Disbursed</th>
+                                                <th class="text-center">VAT/NON-VAT</th>
+                                                <th class="text-center">EWT</th>
+                                                <th class="text-center">Compensation</th>
+                                                <th class="text-center">Other Trust Liabilities</th>
+                                                <th class="text-center">Liquidation Damage</th>
+                                                <th class="text-center">Tax Portion of Pos</th>
+                                            </tr>
+
+                                        </thead>
+                                        <tbody>
+
+                                            <tr v-for="(orsBreakdown,orsIndex) in  orsBreakdowns[item.dv_id]">
+                                                <td class="text-center">{{orsBreakdown.serial_number}}</td>
+                                                <td class="text-center">{{orsBreakdown.uacs}}</td>
+                                                <td class="text-center">{{orsBreakdown.general_ledger}}</td>
+                                                <td class="text-center">{{formatAmount(orsBreakdown.amount_disbursed)}}</td>
+                                                <td class="text-center">{{formatAmount(orsBreakdown.vat_nonvat)}}</td>
+                                                <td class="text-center">{{formatAmount(orsBreakdown.ewt_goods_services)}}</td>
+                                                <td class="text-center">{{formatAmount(orsBreakdown.compensation)}}</td>
+                                                <td class="text-center">{{formatAmount(orsBreakdown.other_trust_liabilities)}}</td>
+                                                <td class="text-center">{{formatAmount(orsBreakdown.liquidation_damage)}}</td>
+                                                <td class="text-center">{{formatAmount(orsBreakdown.tax_portion_of_post)}}</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th colspan="3" class="text-center">Total</th>
+                                                <th class="text-center">{{orsBreakdownTotal(orsBreakdowns[item.dv_id],'amount_disbursed')}}</th>
+                                                <th class="text-center">{{orsBreakdownTotal(orsBreakdowns[item.dv_id],'vat_nonvat')}}</th>
+                                                <th class="text-center">{{orsBreakdownTotal(orsBreakdowns[item.dv_id],'ewt_goods_services')}}</th>
+                                                <th class="text-center">{{orsBreakdownTotal(orsBreakdowns[item.dv_id],'compensation')}}</th>
+                                                <th class="text-center">{{orsBreakdownTotal(orsBreakdowns[item.dv_id],'other_trust_liabilities')}}</th>
+                                                <th class="text-center">{{orsBreakdownTotal(orsBreakdowns[item.dv_id],'liquidation_damage')}}</th>
+                                                <th class="text-center">{{orsBreakdownTotal(orsBreakdowns[item.dv_id],'tax_portion_of_post')}}</th>
+                                            </tr>
+                                        </tfoot>
+
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </template>
+
+
             </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="7" class="text-center"> Total</th>
+                    <th>{{total('ttlAmtDisbursed')}}</th>
+                    <th>{{total('ttlTax')}}</th>
+                    <th>{{total('grossAmt')}}</th>
+                    <td></td>
+                </tr>
+            </tfoot>
         </table>
+
+
     </div>
 
 </div>
+
 
 <style>
     .amt {
@@ -212,6 +304,67 @@ $this->params['breadcrumbs'][] = $this->title;
         }
     }
 </style>
+
+<script>
+    $(document).ready(function() {
+
+        $("#mainVue").removeClass("d-none")
+        new Vue({
+            el: "#mainVue",
+            data: {
+                disbursementItems: <?= json_encode($items) ?? json_encode([]) ?>,
+                orsBreakdowns: {}
+            },
+            mounted() {
+                // console.log(this.disbursementItems)
+
+            },
+            methods: {
+                formatAmount(unitCost) {
+                    unitCost = parseFloat(unitCost)
+                    if (typeof unitCost === 'number' && !isNaN(unitCost)) {
+                        return unitCost.toLocaleString(); // Formats with commas based on user's locale
+                    }
+                    return 0; // If unitCost is not a number, return it as is
+                },
+                total(attrib) {
+                    const total = this.disbursementItems.reduce((total, item) => total + parseFloat(item[attrib]), 0);
+                    return this.formatAmount(total)
+                },
+                async getOrsBreakdowns(item) {
+                    if (!this.orsBreakdowns[item.dv_id]) {
+                        const url = "?r=cash-disbursement/get-dv-ors-breakdowns"
+                        const data = {
+                            _csrf: '<?= Yii::$app->request->getCsrfToken() ?>',
+                            id: item.dv_id
+
+                        }
+                        await axios.post(url, data)
+                            .then(res => {
+                                Vue.set(this.orsBreakdowns, item.dv_id, res.data);
+                            })
+                            .catch(err => {
+                                console.log(err)
+                            })
+
+                    }
+                },
+                orsBreakdownTotal(item, attrib) {
+
+                    if (item) {
+                        let total = item.reduce((total, item) => {
+                            return total + parseFloat(item[attrib])
+                        }, 0)
+                        return this.formatAmount(total)
+                    }
+                }
+
+
+            }
+
+        })
+    })
+</script>
 <?php
 SweetAlertAsset::register($this);
 $script = <<<JS
@@ -238,7 +391,7 @@ $script = <<<JS
                         },
                         success:function(data){
                             var res = JSON.parse(data)
-                            var cancelled = res.cancelled?"Successfuly Cancelled":"Successfuly Activated";
+                            var cancelled = res.cancelled?"Successfully Cancelled":"Successfully Activated";
                             if(res.isSuccess){
                                 swal({
                                         title:cancelled,
