@@ -126,7 +126,7 @@ class RecordAllotments extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'document_recieve_id' => 'Document Recieve ',
+            'document_recieve_id' => 'Document Receive ',
             'fund_cluster_code_id' => 'Fund Cluster Code ',
             'financing_source_code_id' => 'Financing Source Code ',
             'fund_category_and_classification_code_id' => 'Fund Category And Classification Code ',

@@ -339,10 +339,12 @@ class DvAucs extends \yii\db\ActiveRecord
     public function insertAccountingEntries($items)
     {
         try {
+            $totalDebit = array_sum(array_column($items, 'debit'));
+            $totalCredit = array_sum(array_column($items, 'credit'));
+            $epsilon = 0.0001;
 
-
-            if (array_sum(array_column($items, 'debit')) !== array_sum(array_column($items, 'credit'))) {
-                throw new ErrorException("The debit and credit amounts are not equal");
+            if (abs($totalDebit - $totalCredit) >= $epsilon) {
+                throw new ErrorException("The debit and credit total amounts are not equal ");
             }
             $itemModels = [];
             // $deleteItems = $this->deleteItems(ArrayHelper::getColumn($items, 'id'));
