@@ -831,132 +831,132 @@ class DvAucsController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
 
-        if ($_POST) {
-            $transaction = YIi::$app->db->beginTransaction();
-            $reporting_period = !empty($_POST['reporting_period']) ? $_POST['reporting_period'] : null;
-            $nature_of_transaction = !empty($_POST['nature_of_transaction']) ? $_POST['nature_of_transaction'] : null;
-            $mrd_classification = !empty($_POST['mrd_classification']) ? $_POST['mrd_classification'] : null;
-            $payee = !empty($_POST['payee']) ? $_POST['payee'] : null;
-            $transaction_type = !empty($_POST['transaction_type']) ? $_POST['transaction_type'] : null;
-            $book = !empty($_POST['book']) ? $_POST['book'] : null;
-            $particular = !empty($_POST['particular']) ? $_POST['particular'] : null;
-            $item_ids = !empty($_POST['item_ids']) ? $_POST['item_ids'] : [];
-            if ($oldModel->book_id != $book) {
-                $book_name = Yii::$app->db->createCommand("SELECT `name` FROM books WHERE id = :id")->bindValue(':id', $book)->queryScalar();
-                $dv_number = explode('-', $model->dv_number);
-                $dv_number[0] = $book_name;
-                $new_dv = implode('-', $dv_number);
-                $model->dv_number = $new_dv;
-            }
+        // if ($_POST) {
+        //     $transaction = YIi::$app->db->beginTransaction();
+        //     $reporting_period = !empty($_POST['reporting_period']) ? $_POST['reporting_period'] : null;
+        //     $nature_of_transaction = !empty($_POST['nature_of_transaction']) ? $_POST['nature_of_transaction'] : null;
+        //     $mrd_classification = !empty($_POST['mrd_classification']) ? $_POST['mrd_classification'] : null;
+        //     $payee = !empty($_POST['payee']) ? $_POST['payee'] : null;
+        //     $transaction_type = !empty($_POST['transaction_type']) ? $_POST['transaction_type'] : null;
+        //     $book = !empty($_POST['book']) ? $_POST['book'] : null;
+        //     $particular = !empty($_POST['particular']) ? $_POST['particular'] : null;
+        //     $item_ids = !empty($_POST['item_ids']) ? $_POST['item_ids'] : [];
+        //     if ($oldModel->book_id != $book) {
+        //         $book_name = Yii::$app->db->createCommand("SELECT `name` FROM books WHERE id = :id")->bindValue(':id', $book)->queryScalar();
+        //         $dv_number = explode('-', $model->dv_number);
+        //         $dv_number[0] = $book_name;
+        //         $new_dv = implode('-', $dv_number);
+        //         $model->dv_number = $new_dv;
+        //     }
 
-            $object_codes = !empty($_POST['object_code']) ? $_POST['object_code'] : [];
-            $debits = !empty($_POST['debit']) ? $_POST['debit'] : [];
-            $credits = !empty($_POST['credit']) ? $_POST['credit'] : [];
+        //     $object_codes = !empty($_POST['object_code']) ? $_POST['object_code'] : [];
+        //     $debits = !empty($_POST['debit']) ? $_POST['debit'] : [];
+        //     $credits = !empty($_POST['credit']) ? $_POST['credit'] : [];
 
-            $process_ors_id = !empty($_POST['process_ors_id']) ? $_POST['process_ors_id'] : [];
-            $amount_disbursed = !empty($_POST['amount_disbursed']) ? $_POST['amount_disbursed'] : [];
-            $vat_nonvat = !empty($_POST['vat_nonvat']) ? $_POST['vat_nonvat'] : [];
-            $ewt_goods_services = !empty($_POST['ewt_goods_services']) ? $_POST['ewt_goods_services'] : [];
-            $compensation = !empty($_POST['compensation']) ? $_POST['compensation'] : [];
-            $other_trust_liabilities = !empty($_POST['other_trust_liabilities']) ? $_POST['other_trust_liabilities'] : [];
-            $advances_province = !empty($_POST['advances_province']) ? $_POST['advances_province'] : '';
-            $advances_period = !empty($_POST['advances_parent_reporting_period']) ? $_POST['advances_parent_reporting_period'] : '';
-            $advances_bank_account_id = !empty($_POST['advances_bank_account_id']) ? $_POST['advances_bank_account_id'] : '';
-            $advances_entries_id = !empty($_POST['advances_entries_id']) ? $_POST['advances_entries_id'] : [];
-            $advances_reporting_period = !empty($_POST['advances_reporting_period']) ? $_POST['advances_reporting_period'] : [];
-            $advances_report_type = !empty($_POST['advances_report_type']) ? $_POST['advances_report_type'] : [];
-            $advances_fund_source = !empty($_POST['advances_fund_source']) ? $_POST['advances_fund_source'] : [];
-            $advances_fund_source_type = !empty($_POST['advances_fund_source_type']) ? $_POST['advances_fund_source_type'] : '';
-            $advances_object_code = !empty($_POST['advances_object_code']) ? $_POST['advances_object_code'] : [];
-            $advances_amount = !empty($_POST['advances_amount']) ? $_POST['advances_amount'] : [];
-            $advances_update_id = !empty($_POST['advances_id']) ? $_POST['advances_id'] : '';
-            $dv_object_code = !empty($_POST['dv_object_code']) ? $_POST['dv_object_code'] : '';
+        //     $process_ors_id = !empty($_POST['process_ors_id']) ? $_POST['process_ors_id'] : [];
+        //     $amount_disbursed = !empty($_POST['amount_disbursed']) ? $_POST['amount_disbursed'] : [];
+        //     $vat_nonvat = !empty($_POST['vat_nonvat']) ? $_POST['vat_nonvat'] : [];
+        //     $ewt_goods_services = !empty($_POST['ewt_goods_services']) ? $_POST['ewt_goods_services'] : [];
+        //     $compensation = !empty($_POST['compensation']) ? $_POST['compensation'] : [];
+        //     $other_trust_liabilities = !empty($_POST['other_trust_liabilities']) ? $_POST['other_trust_liabilities'] : [];
+        //     $advances_province = !empty($_POST['advances_province']) ? $_POST['advances_province'] : '';
+        //     $advances_period = !empty($_POST['advances_parent_reporting_period']) ? $_POST['advances_parent_reporting_period'] : '';
+        //     $advances_bank_account_id = !empty($_POST['advances_bank_account_id']) ? $_POST['advances_bank_account_id'] : '';
+        //     $advances_entries_id = !empty($_POST['advances_entries_id']) ? $_POST['advances_entries_id'] : [];
+        //     $advances_reporting_period = !empty($_POST['advances_reporting_period']) ? $_POST['advances_reporting_period'] : [];
+        //     $advances_report_type = !empty($_POST['advances_report_type']) ? $_POST['advances_report_type'] : [];
+        //     $advances_fund_source = !empty($_POST['advances_fund_source']) ? $_POST['advances_fund_source'] : [];
+        //     $advances_fund_source_type = !empty($_POST['advances_fund_source_type']) ? $_POST['advances_fund_source_type'] : '';
+        //     $advances_object_code = !empty($_POST['advances_object_code']) ? $_POST['advances_object_code'] : [];
+        //     $advances_amount = !empty($_POST['advances_amount']) ? $_POST['advances_amount'] : [];
+        //     $advances_update_id = !empty($_POST['advances_id']) ? $_POST['advances_id'] : '';
+        //     $dv_object_code = !empty($_POST['dv_object_code']) ? $_POST['dv_object_code'] : '';
 
 
-            if (empty($mrd_classification)) {
-                return json_encode(['form_error' => [
-                    'mrd_classification' => 'MRD Classification cannot be blank'
-                ]]);
-            }
-            if (empty($nature_of_transaction)) {
-                return json_encode(['form_error' => [
-                    'nature_of_transaction' => 'Nature of Transaction cannot be blank'
-                ]]);
-            }
-            $model->reporting_period = $reporting_period;
-            $model->payee_id = $payee;
-            $model->transaction_type = $transaction_type;
-            $model->nature_of_transaction_id = $nature_of_transaction;
-            $model->mrd_classification_id =  $mrd_classification;
-            $model->book_id = $book;
-            $model->particular = $particular;
-            $model->object_code = $dv_object_code;
-            // return $model->book_id;
-            // Yii::$app->db->createCommand("DELETE FROM dv_accounting_entries WHERE dv_aucs_id = :id ")
-            //     ->bindValue(':id', $model->id)
-            //     ->query();
-            $accounting_entries = !empty($_POST['accounting_entries']) ? $_POST['accounting_entries'] : [];
-            try {
-                $flag = true;
-                if ($model->validate()) {
-                    if (!empty($debits) || !empty($credits)) {
-                        $sum_debits = number_format(floatVal(array_sum($debits)), 2);
-                        $sum_credits = number_format(floatVal(array_sum($credits)), 2);
-                        if ($sum_debits !==  $sum_credits) {
-                            $transaction->rollBack();
-                            return json_encode(['check_error' => "Not Balance $sum_debits :  $sum_credits"]);
-                        }
-                    }
-                    $accounting_entry =   $this->insertAccountingEntries($model->id, $object_codes, $debits, $credits, $accounting_entries);
-                    if ($accounting_entry === false) {
-                        $transaction->rollBack();
-                        return json_encode(['check_error' => 'Error in inserting Accounting entries']);
-                    }
-                    if ($model->save(false)) {
-                        // Yii::$app->db->createCommand("DELETE FROM dv_aucs_entries WHERE dv_aucs_id = :id")
-                        //     ->bindValue(':id', $model->id)
-                        //     ->query();
-                        $this->deleteDvAucsEntries($model->id, $item_ids);
-                        $flag = $this->insertDvItems(
-                            $dv_aucs_id = $model->id,
-                            $process_ors_id,
-                            $amount_disbursed,
-                            $vat_nonvat,
-                            $ewt_goods_services,
-                            $compensation,
-                            $other_trust_liabilities
-                        );
+        //     if (empty($mrd_classification)) {
+        //         return json_encode(['form_error' => [
+        //             'mrd_classification' => 'MRD Classification cannot be blank'
+        //         ]]);
+        //     }
+        //     if (empty($nature_of_transaction)) {
+        //         return json_encode(['form_error' => [
+        //             'nature_of_transaction' => 'Nature of Transaction cannot be blank'
+        //         ]]);
+        //     }
+        //     $model->reporting_period = $reporting_period;
+        //     $model->payee_id = $payee;
+        //     $model->transaction_type = $transaction_type;
+        //     $model->nature_of_transaction_id = $nature_of_transaction;
+        //     $model->mrd_classification_id =  $mrd_classification;
+        //     $model->book_id = $book;
+        //     $model->particular = $particular;
+        //     $model->object_code = $dv_object_code;
+        //     // return $model->book_id;
+        //     // Yii::$app->db->createCommand("DELETE FROM dv_accounting_entries WHERE dv_aucs_id = :id ")
+        //     //     ->bindValue(':id', $model->id)
+        //     //     ->query();
+        //     $accounting_entries = !empty($_POST['accounting_entries']) ? $_POST['accounting_entries'] : [];
+        //     try {
+        //         $flag = true;
+        //         if ($model->validate()) {
+        //             if (!empty($debits) || !empty($credits)) {
+        //                 $sum_debits = number_format(floatVal(array_sum($debits)), 2);
+        //                 $sum_credits = number_format(floatVal(array_sum($credits)), 2);
+        //                 if ($sum_debits !==  $sum_credits) {
+        //                     $transaction->rollBack();
+        //                     return json_encode(['check_error' => "Not Balance $sum_debits :  $sum_credits"]);
+        //                 }
+        //             }
+        //             $accounting_entry =   $this->insertAccountingEntries($model->id, $object_codes, $debits, $credits, $accounting_entries);
+        //             if ($accounting_entry === false) {
+        //                 $transaction->rollBack();
+        //                 return json_encode(['check_error' => 'Error in inserting Accounting entries']);
+        //             }
+        //             if ($model->save(false)) {
+        //                 // Yii::$app->db->createCommand("DELETE FROM dv_aucs_entries WHERE dv_aucs_id = :id")
+        //                 //     ->bindValue(':id', $model->id)
+        //                 //     ->query();
+        //                 $this->deleteDvAucsEntries($model->id, $item_ids);
+        //                 $flag = $this->insertDvItems(
+        //                     $dv_aucs_id = $model->id,
+        //                     $process_ors_id,
+        //                     $amount_disbursed,
+        //                     $vat_nonvat,
+        //                     $ewt_goods_services,
+        //                     $compensation,
+        //                     $other_trust_liabilities
+        //                 );
 
-                        if (!empty($advances_province) && !empty($advances_period) && !empty($advances_bank_account_id)) {
-                            $advances_id = $this->insertAdvances($advances_province, $advances_period, $model->id, $advances_update_id, $advances_bank_account_id);
-                            $this->insertAdvancesEntries(
-                                $advances_id,
-                                $advances_object_code,
-                                $advances_amount,
-                                $advances_fund_source,
-                                $advances_fund_source_type,
-                                $advances_report_type,
-                                $advances_reporting_period,
-                                $advances_entries_id,
-                                $model->book_id
-                            );
-                        }
-                    }
-                } else {
-                    $transaction->rollBack();
-                    return json_encode(['form_error' => $model->errors]);
-                }
-                if ($flag) {
-                    $transaction->commit();
-                    return $this->redirect(['view', 'id' => $model->id]);
-                } else {
-                    $transaction->rollBack();
-                    return json_encode(['check_error' => $flag]);
-                }
-            } catch (ErrorException $e) {
-                return json_encode($e->getMessage());
-            }
-        }
+        //                 if (!empty($advances_province) && !empty($advances_period) && !empty($advances_bank_account_id)) {
+        //                     $advances_id = $this->insertAdvances($advances_province, $advances_period, $model->id, $advances_update_id, $advances_bank_account_id);
+        //                     $this->insertAdvancesEntries(
+        //                         $advances_id,
+        //                         $advances_object_code,
+        //                         $advances_amount,
+        //                         $advances_fund_source,
+        //                         $advances_fund_source_type,
+        //                         $advances_report_type,
+        //                         $advances_reporting_period,
+        //                         $advances_entries_id,
+        //                         $model->book_id
+        //                     );
+        //                 }
+        //             }
+        //         } else {
+        //             $transaction->rollBack();
+        //             return json_encode(['form_error' => $model->errors]);
+        //         }
+        //         if ($flag) {
+        //             $transaction->commit();
+        //             return $this->redirect(['view', 'id' => $model->id]);
+        //         } else {
+        //             $transaction->rollBack();
+        //             return json_encode(['check_error' => $flag]);
+        //         }
+        //     } catch (ErrorException $e) {
+        //         return json_encode($e->getMessage());
+        //     }
+        // }
 
         $searchModel = new ProcessOrsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
