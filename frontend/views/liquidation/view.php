@@ -433,8 +433,8 @@ $total_ewt = 0;
                 ?>
                 <?php if ($totalVat != 0) : ?>
                     <tr>
-                        <td> <?= $vatAccount['account_title'] ?? '' ?></td>
-                        <td colspan='4'> <?= $vatAccount['object_code'] ?? '' ?></td>
+                        <td colspan='4'> <?= $vatAccount['account_title'] ?? '' ?></td>
+                        <td> <?= $vatAccount['object_code'] ?? '' ?></td>
                         <td class="text-right">0</td>
                         <td>
                             <span class="float-right"> <?= number_format($totalVat, 2) ?></span>
@@ -443,8 +443,8 @@ $total_ewt = 0;
                 <?php endif; ?>
                 <?php if ($totalExpanded != 0) : ?>
                     <tr>
-                        <td> <?= $expandedAccount['account_title'] ?? '' ?></td>
-                        <td colspan='4'> <?= $expandedAccount['object_code'] ?? '' ?></td>
+                        <td colspan='4'> <?= $expandedAccount['account_title'] ?? '' ?></td>
+                        <td> <?= $expandedAccount['object_code'] ?? '' ?></td>
                         <td class="text-right">0</td>
                         <td>
                             <span class="float-right"> <?= number_format($totalExpanded, 2) ?></span>
