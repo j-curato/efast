@@ -362,8 +362,8 @@ $total_ewt = 0;
                     <td class='text-center'><?= $model->poTransaction->poResponsibilityCenter->name ?></td>
                     <td colspan="2">
                         <div>
-                            <span>Withdrawals:</span>
-                            <span class="float-right"> <?= number_format($totalWithdrawal, 2) ?></span>
+                            <span>Gross Amount:</span>
+                            <span class="float-right"> <?= number_format($grossAmount, 2) ?></span>
                         </div>
                         <?php if ($totalVat != 0) : ?>
                             <div>
@@ -390,7 +390,7 @@ $total_ewt = 0;
                 <tr>
                     <th class="text-center" colspan="5">Amount Due</th>
                     <th colspan="2" class="text-right">
-                        <?= number_format($grossAmount, 2) ?>
+                        <?= number_format($totalWithdrawal, 2) ?>
                     </th>
                 </tr>
                 <tr>
@@ -433,8 +433,8 @@ $total_ewt = 0;
                 ?>
                 <?php if ($totalVat != 0) : ?>
                     <tr>
-                        <td colspan='4'> <?= $vatAccount['object_code'] ?? '' ?></td>
                         <td> <?= $vatAccount['account_title'] ?? '' ?></td>
+                        <td colspan='4'> <?= $vatAccount['object_code'] ?? '' ?></td>
                         <td class="text-right">0</td>
                         <td>
                             <span class="float-right"> <?= number_format($totalVat, 2) ?></span>
@@ -443,8 +443,8 @@ $total_ewt = 0;
                 <?php endif; ?>
                 <?php if ($totalExpanded != 0) : ?>
                     <tr>
-                        <td colspan='4'> <?= $expandedAccount['object_code'] ?? '' ?></td>
                         <td> <?= $expandedAccount['account_title'] ?? '' ?></td>
+                        <td colspan='4'> <?= $expandedAccount['object_code'] ?? '' ?></td>
                         <td class="text-right">0</td>
                         <td>
                             <span class="float-right"> <?= number_format($totalExpanded, 2) ?></span>
