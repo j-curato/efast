@@ -709,6 +709,7 @@ SweetAlertAsset::register($this);
             },
             mounted() {
                 this.getAdvancesReportTypes()
+                console.log(this.advancesItems)
             },
             updated() {
                 accountingCodesSelect()
@@ -718,7 +719,7 @@ SweetAlertAsset::register($this);
             methods: {
 
                 getAdvancesReportTypes() {
-                    axios.get(window.location.pathname + '?r=report-type/get-report-type')
+                    axios.get(window.location.pathname + '?r=advances-report-types/get-report-types')
                         .then(res => {
                             this.advancesReportTypes = res.data
                             console.log(this.advancesReportTypes)

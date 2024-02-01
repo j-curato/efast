@@ -164,7 +164,7 @@ class AdvancesReportTypesController extends Controller
     public function actionGetReportTypes()
     {
         if (Yii::$app->request->get()) {
-            $qry = Yii::$app->db->createCommand("SELECT id ,`name` as `text` FROM advances_report_types")->queryAll();
+            $qry = Yii::$app->db->createCommand("SELECT * FROM advances_report_types")->queryAll();
             return json_encode($qry);
         }
     }
