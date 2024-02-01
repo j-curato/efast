@@ -721,6 +721,7 @@ SweetAlertAsset::register($this);
                     axios.get(window.location.pathname + '?r=report-type/get-report-type')
                         .then(res => {
                             this.advancesReportTypes = res.data
+                            console.log(this.advancesReportTypes)
                         })
                 },
                 changeMainAmount(event, item, attribute) {
