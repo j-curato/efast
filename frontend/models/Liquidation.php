@@ -166,7 +166,7 @@ class Liquidation extends \yii\db\ActiveRecord
     {
         return Yii::$app->db->createCommand("WITH cte_credits as (
                 SELECT 
-                advances_entries.object_code,
+                SUBSTRING_INDEX(advances_entries.object_code,'_',1) as object_code,
                 0 as debit,
                 SUM(liquidation_entries.withdrawals) as credit
                 FROM  liquidation_entries 
