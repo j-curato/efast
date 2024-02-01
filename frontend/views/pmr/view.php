@@ -111,6 +111,20 @@ $excelFileName  = "PMR " . $model->office->office_name . "-" . $model->reporting
 
 
             </tr>
+            <tr>
+                <td colspan="35" class="pt-5 border-1">
+
+                    <div class=" w-50 float-left pt-5">
+
+                        <u>ELLA RADIEL YONSON</u><br>
+                        <span>Administrative Officer III</span>
+                    </div>
+                    <div class=" w-50 float-left pt-5">
+                        <u>JOHN VOLTAIRE S. ANCLA, CPA</u><br>
+                        <span>Chief Administrative Officer</span>
+                    </div>
+                </td>
+            </tr>
         </table>
     </div>
 
@@ -156,7 +170,34 @@ $excelFileName  = "PMR " . $model->office->office_name . "-" . $model->reporting
                     var wb = XLSX.utils.table_to_book(document.getElementById("pmr"));
                     /* Export to file (start a download) */
                     XLSX.writeFile(wb, "<?= $excelFileName ?>.xlsx");
-                }
+                },
+                // exportToExcel() {
+                //     // Your JSON data
+                //     var jsonData = [{
+                //             Name: "John",
+                //             Age: 25,
+                //             City: "New York"
+                //         },
+                //         {
+                //             Name: "Alice",
+                //             Age: 30,
+                //             City: "San Francisco"
+                //         },
+                //         // Add more data as needed
+                //     ];
+
+                //     // Create a new workbook
+                //     var wb = XLSX.utils.book_new();
+
+                //     // Add a worksheet to the workbook
+                //     var ws = XLSX.utils.json_to_sheet(this.pmrDetails);
+
+                //     // Add the worksheet to the workbook
+                //     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+
+                //     // Save the workbook as an Excel file and trigger download
+                //     XLSX.writeFile(wb, "output.xlsx");
+                // }
             }
         })
     })
