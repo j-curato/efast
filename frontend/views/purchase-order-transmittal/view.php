@@ -94,6 +94,7 @@ $headerTexts = [
             <thead>
                 <tr>
                     <th class="text-center">No.</th>
+                    <th class="text-center">Division</th>
                     <th class="text-center">PO Number</th>
                     <th class="text-center">Payee</th>
                     <th class="text-center">Purpose</th>
@@ -112,6 +113,7 @@ $headerTexts = [
                     $i++;
                     echo "<tr>
                         <td>$i</td>
+                        <td class='text-uppercase'>{$val['division']}</td>
                         <td>{$val['serial_number']}</td>
                         <td>{$val['payee']}</td>
                         <td>{$val['purpose']}</td>

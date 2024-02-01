@@ -159,7 +159,8 @@ class PurchaseOrderTransmittal extends \yii\db\ActiveRecord
                 pr_purchase_order_item.serial_number,
                 payee.account_name as payee,
                 pr_purchase_request.purpose ,
-                SUM(pr_aoq_entries.amount * pr_purchase_request_item.quantity) as total_amount
+                SUM(pr_aoq_entries.amount * pr_purchase_request_item.quantity) as total_amount,
+                divisions.division
                 FROM purchase_order_transmittal_items
                 INNER JOIN pr_purchase_order_item ON  purchase_order_transmittal_items.fk_purchase_order_item_id = pr_purchase_order_item.id
                 LEFT JOIN pr_purchase_order_items_aoq_items ON pr_purchase_order_item.id = pr_purchase_order_items_aoq_items.fk_purchase_order_item_id
@@ -168,6 +169,7 @@ class PurchaseOrderTransmittal extends \yii\db\ActiveRecord
                 LEFT JOIN pr_rfq_item ON pr_aoq_entries.pr_rfq_item_id = pr_rfq_item.id
                 LEFT JOIN pr_purchase_request_item ON pr_rfq_item.pr_purchase_request_item_id = pr_purchase_request_item.id
                 LEFT JOIN pr_purchase_request ON pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id
+                LEFT JOIN divisions ON pr_purchase_request.fk_division_id = divisions.id
                 WHERE purchase_order_transmittal_items.fk_purchase_order_transmittal_id = :id
                 AND purchase_order_transmittal_items.is_deleted = 0
                 GROUP BY 
@@ -175,7 +177,8 @@ class PurchaseOrderTransmittal extends \yii\db\ActiveRecord
                 pr_purchase_order_item.id,
                 pr_purchase_order_item.serial_number,
                 payee.account_name,
-                pr_purchase_request.purpose ")
+                pr_purchase_request.purpose,
+                divisions.division ")
             ->bindValue(':id', $this->id)
             ->queryAll();
     }
