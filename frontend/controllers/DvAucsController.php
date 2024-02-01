@@ -772,7 +772,6 @@ class DvAucsController extends Controller
             $advances = Yii::$app->request->post('advances') ?? [];
             $advancesItems = Yii::$app->request->post('advancesItems') ?? [];
             $orsBreakdownItems = Yii::$app->request->post('orsBreakdownItems') ?? [];
-            // return json_encode($orsBreakdownItems);
             try {
                 $transaction = Yii::$app->db->beginTransaction();
                 $t_type = strtolower(DvTransactionType::findOne($model->fk_dv_transaction_type_id)->name);
@@ -804,7 +803,7 @@ class DvAucsController extends Controller
 
                 if (strtolower($model->natureOfTransaction->name) === 'ca to sdos/opex') {
 
-                    if (empty($advances) || $advancesItems) {
+                    if (empty($advances) || empty($advancesItems)) {
                         throw new ErrorException('Advances is Required');
                     }
                     $advancesModel = !empty($advances['id']) ? Advances::findOne($advances['id']) : new Advances();
