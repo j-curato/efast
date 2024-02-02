@@ -175,7 +175,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <td>{{formatAmount(item.ttlTax)}}</td>
                         <td>{{formatAmount(item.grossAmt)}}</td>
                         <td>
-                            <a :href="'/q/index.php?r=dv-aucs/view&id='+item.dv_id" class="btn btn-link">Link</a>
+                            <a :href="'?r=dv-aucs/view&id='+item.dv_id" class="btn btn-link">Link</a>
                         </td>
                     </tr>
                     <tr>
