@@ -290,7 +290,7 @@ $user_data = User::getUserDetails();
                             $unit_cost = $specItem['unit_cost'];
                             $unit_of_measure = $specItem['unit_of_measure'];
                             $unit_of_measure_id = $specItem['unit_of_measure_id'];
-                            $specification = $specItem['specification'];
+                            $specification = preg_replace('#\[n\]#', "\n",  $specItem['specification']);
                             $item_id = $specItem['item_id'];
                             $cse_type = $specItem['cse_type'];
                             $quantity = $specItem['quantity'];
@@ -342,7 +342,7 @@ $user_data = User::getUserDetails();
                                     <div class='col-sm-12'>
                                         <label for='specs_view'>Specification</label>
                                         <textarea rows='2' class='specs_view form-control' onkeyup='updateMainSpecs(this)'>" . preg_replace("/<br\s*[\/]?>/i", "\n", $specification)  . "</textarea>
-                                        <textarea name='pr_items[$row_number][specification]' class='main-specs' style='display:none'>$specification</textarea>
+                                        <textarea name='pr_items[$row_number][specification]' class='main-specs d-none'>{$specItem['specification']}</textarea>
                                     </div>
                                 </div>
                                 </div>
