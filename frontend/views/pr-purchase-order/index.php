@@ -32,6 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
 
             'po_number',
+            'payee_name',
             'purpose',
             'division',
             'office_name',

@@ -417,7 +417,7 @@ $total_ewt = 0;
                 <?php
                 $totalDebit = 0;
                 $totalCredit = 0;
-                foreach ($model->getDvDebitCredits() as $item) {
+                foreach ($model->dvDebitCredits as $item) {
                     $debit = floatval($item['debit']);
                     $credit = floatval($item['credit']);
                     echo "<tr>

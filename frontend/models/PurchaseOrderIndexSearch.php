@@ -28,6 +28,7 @@ class PurchaseOrderIndexSearch extends PurchaseOrderIndex
                 'is_cancelled',
                 'mode_of_procurement_name',
                 'created_at',
+                'payee_name',
 
             ], 'safe'],
         ];
@@ -79,7 +80,8 @@ class PurchaseOrderIndexSearch extends PurchaseOrderIndex
             ->andFilterWhere(['like', 'office_name', $this->office_name])
             ->andFilterWhere(['like', 'is_cancelled', $this->is_cancelled])
             ->andFilterWhere(['like', 'mode_of_procurement_name', $this->mode_of_procurement_name])
-            ->andFilterWhere(['like', 'created_at', $this->created_at]);
+            ->andFilterWhere(['like', 'created_at', $this->created_at])
+            ->andFilterWhere(['like', 'payee_name', $this->payee_name]);
 
 
         return $dataProvider;

@@ -53,6 +53,7 @@ class PurchaseOrderIndex extends \yii\db\ActiveRecord
             'is_cancelled' => 'Is Cancelled',
             'mode_of_procurement_name' => 'Mode Of Procurement Name',
             'created_at' => 'Created At',
+            'payee_name' => 'Payee',
         ];
     }
 }
