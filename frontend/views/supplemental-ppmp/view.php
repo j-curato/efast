@@ -39,7 +39,7 @@ if (!empty($model->fk_certified_funds_available_by)) {
 }
 
 ?>
-<div class="supplemental-ppmp-view">
+<div class="supplemental-ppmp-view" id="mainVue">
 
     <div class="card" style="background-color: white;padding:1rem;">
 
@@ -265,8 +265,79 @@ if (!empty($model->fk_certified_funds_available_by)) {
         </table>
     </div>
 
+    <div class="card links">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th colspan="2" class="text-center table-primary">Items Purchase Requests</th>
+                </tr>
+                <tr>
+                    <th>Action</th>
+                    <th>Stock</th>
+                </tr>
+            </thead>
+            <tbody>
+                <template v-for="(item,idx) in items">
+                    <tr>
+                        <td>
+                            <button @click="getPurchaseRequests(item)" class="btn btn-link" type="button" data-toggle="collapse" :data-target="'#collapse'+idx" aria-expanded="true" aria-controls="collapseExample">
+                                Show Purchase Requests
+                            </button>
+                        </td>
+                        <td>{{item.stock_title}}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
 
+                            <div class="collapse" :id="'collapse'+idx">
+                                <div class="card p-2">
+                                    <table>
+                                        <thead>
+                                            <tr class="table-info">
+                                                <th colspan="10" class="text-center">Purchase Requests</th>
+                                            </tr>
+                                            <tr>
+
+                                                <th class="text-center">PR No.</th>
+                                                <th class="text-center">Specification</th>
+                                                <th class="text-center">Quantity</th>
+                                                <th class="text-center">Unit Cost</th>
+                                                <th class="text-center">Link</th>
+
+
+
+
+
+
+                                            </tr>
+
+                                        </thead>
+                                        <tbody>
+
+                                            <tr v-for="pr in  itemPrs[item.id]">
+                                                <td class="text-center">{{pr.pr_number}}</td>
+                                                <td class="text-center">{{pr.specification}}</td>
+                                                <td class="text-center">{{pr.quantity}}</td>
+                                                <td class="text-center">{{formatAmount(pr.unit_cost)}}</td>
+                                                <td class="text-center">
+                                                    <a :href="'?r=pr-purchase-request/view&id='+pr.id" class="btn btn-link">Link</a>
+                                                </td>
+
+                                            </tr>
+                                        </tbody>
+
+                                    </table>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+
+    </div>
 </div>
+
 <style>
     #head_table th {
         text-align: center;
@@ -310,10 +381,59 @@ if (!empty($model->fk_certified_funds_available_by)) {
 
     @media print {
 
+        .links,
         .btn,
         .main-footer {
             display: none;
         }
 
+
     }
 </style>
+
+<script>
+    $(document).ready(function() {
+
+
+        new Vue({
+            el: "#mainVue",
+            data: {
+                items: <?= json_encode($items) ?>,
+                itemPrs: {}
+            },
+            mounted() {
+                console.log(this.items)
+            },
+            methods: {
+                getPurchaseRequests(item) {
+                    if (this.itemPrs[item.id]) {
+                        return
+
+                    }
+
+                    let url = "?r=supplemental-ppmp/item-prs"
+                    const data = {
+                        _csrf: "<?= Yii::$app->request->getCsrfToken() ?>",
+                        id: item.id,
+                        type: '<?= $model->cse_type ?>'
+                    }
+                    axios.post(url, data)
+                        .then(res => {
+                            Vue.set(this.itemPrs, item.id, res.data);
+
+                        })
+                        .catch(err => {
+                            console.log(err)
+                        })
+                },
+                formatAmount(unitCost) {
+                    unitCost = parseFloat(unitCost)
+                    if (typeof unitCost === 'number' && !isNaN(unitCost)) {
+                        return unitCost.toLocaleString(); // Formats with commas based on user's locale
+                    }
+                    return 0; // If unitCost is not a number, return it as is
+                },
+            }
+        })
+    })
+</script>

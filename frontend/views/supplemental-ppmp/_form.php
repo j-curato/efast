@@ -372,10 +372,9 @@ $cse_type_data = [
 
                                         </select>
                                     </div>
-                                    <div class='col-sm-1'>
-
-                                        <button class='btn btn-success add_non_cse_row'><i class='fa fa-plus fa-fw'></i></button>
-                                        <button class='btn btn-danger remove_cse_row' type='button'><i class='fa fa-times fa-fw'></i></button>
+                                    <div class='col-sm-1 text-right'>
+                                        <button class='btn-xs btn-success add_non_cse_row'><i class='fa fa-plus fa-fw'></i></button>
+                                        <button class='btn-xs btn-danger remove_cse_row' type='button'><i class='fa fa-times fa-fw'></i></button>
                                     </div>
                                 </div>
                                 <div class='row'>
@@ -468,9 +467,9 @@ $cse_type_data = [
                                 <input type='text' class='form-control mask-amount amt' placeholder='Amount' onkeyup='updateMainAmount(this)' value='$amount'>
                                 <input type='hidden' class='form-control main-amount amt ' name='cse_items[$cse_row_cnt][amount]' placeholder='Amount' value='$amount'>
                             </div>
-                            <div class='col-sm-1 col-sm-offset-2' style='text-align:right;'> 
-                                <button class='btn btn-success add_cse_row' type='button'><i class='fa fa-plus fa-fw'></i></button>
-                                <button class='btn btn-danger remove_cse_row' type='button'><i class='fa fa-times fa-fw'></i></button>
+                            <div class='col-sm-3 col-sm-offset-2 text-right' > 
+                                <button class='btn-xs btn-success add_cse_row' type='button'><i class='fa fa-plus fa-fw'></i></button>
+                                <button class='btn-xs btn-danger remove_cse_row' type='button'><i class='fa fa-times fa-fw'></i></button>
                             </div>
                         </div>
                         <div class='row'>
@@ -645,10 +644,10 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
 
                             </select>
                         </div>
-                        <div class="col-sm-1 ">
+                        <div class="col-sm-1  text-right">
 
-                            <button class="btn btn-success add_non_cse_row"><i class='fa fa-plus fa-fw'></i></button>
-                            <button class="btn btn-danger remove_cse_row" type="button"><i class='fa fa-times fa-fw'></i></button>
+                            <button class="btn-xs btn-success add_non_cse_row"><i class='fa fa-plus fa-fw'></i></button>
+                            <button class="btn-xs btn-danger remove_cse_row" type="button"><i class='fa fa-times fa-fw'></i></button>
                         </div>
                     </div>
                     <div class="row">
@@ -684,7 +683,7 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                                     <label for='description' >Description</label>
                                     <textarea name='ppmp_non_cse[${non_cse_rw_cnt}][items][1][description]' class='form-control description' style='max-width:100%' rows='1' ></textarea>
                                 </td>
-                                <td style='width:100px'>
+                                <td style='width:100px' class='text-right'>
                                     <button class="btn-xs btn-info add_non_cse_item_row"><i class='fa fa-plus fa-fw'></i></button>
                                     <button class="btn-xs btn-warning remove_cse_row" type="button"><i class='fa fa-times fa-fw'></i></button>
                                 </td>
@@ -952,9 +951,9 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
                             <input type='text' class='form-control mask-amount amt' placeholder='Amount' onkeyup='updateMainAmount(this)'>
                             <input type='hidden' class='form-control main-amount amt ' name='cse_items[0][amount]' placeholder='Amount'>
                         </div>
-                        <div class='col-sm-1 col-sm-offset-2' style='text-align:right;'> 
-                                <button class='btn btn-success add_cse_row' type='button'><i class='fa fa-plus fa-fw'></i></button>
-                                <button class='btn btn-danger remove_cse_row' type='button'><i class='fa fa-times fa-fw'></i></button>
+                        <div class='col-sm-3 text-right' > 
+                                <button class='btn-xs btn-success add_cse_row' type='button'><i class='fa fa-plus fa-fw'></i></button>
+                                <button class='btn-xs btn-danger remove_cse_row' type='button'><i class='fa fa-times fa-fw'></i></button>
                         </div>
                     </div>
                     <div class='row'>

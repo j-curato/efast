@@ -120,4 +120,26 @@ class SupplementalPpmpCse extends \yii\db\ActiveRecord
         }
         return false;
     }
+    public function getPurchaseRequestsDataA()
+    {
+        return self::find()
+            ->addSelect([
+                "pr_purchase_request.id",
+                "pr_purchase_request.pr_number",
+                "pr_purchase_request_item.quantity",
+                "pr_purchase_request_item.specification",
+                "pr_purchase_request_item.unit_cost"
+            ])
+
+            ->join("JOIN", "pr_purchase_request_item",   "supplemental_ppmp_cse.id = pr_purchase_request_item.fk_ppmp_cse_item_id")
+            ->join("JOIN", "pr_purchase_request",  "pr_purchase_request_item.pr_purchase_request_id = pr_purchase_request.id")
+            ->andWhere([
+                "pr_purchase_request_item.is_deleted" => false
+            ])
+            ->andWhere([
+                "supplemental_ppmp_cse.id" => $this->id
+            ])
+            ->asArray()
+            ->all();
+    }
 }

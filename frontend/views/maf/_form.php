@@ -101,7 +101,7 @@ use yii\bootstrap4\ActiveForm;
             <table class="table">
                 <thead>
                     <tr class="success">
-                        <th colspan="7" class="ctr">Positive Allotments</th>
+                        <th colspan="7" class="ctr table-info">Positive Allotments</th>
                     </tr>
                     <th>Office</th>
                     <th>Division</th>
@@ -157,7 +157,7 @@ use yii\bootstrap4\ActiveForm;
             <table class="table table-hover text-nowrap">
                 <thead>
                     <tr class="danger">
-                        <th colspan="7" class="ctr">Source Allotments</th>
+                        <th colspan="7" class="table-info">Source Allotments</th>
                     </tr>
                     <th>Office</th>
                     <th>Division</th>

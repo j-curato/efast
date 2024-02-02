@@ -87,6 +87,7 @@ class SupplementalPpmpController extends Controller
     {
 
         return YIi::$app->db->createCommand("SELECT 
+        supplemental_ppmp_non_cse_items.id,
         supplemental_ppmp.budget_year,
         UPPER(REPLACE(supplemental_ppmp.cse_type,'_','-')) as cse_type,
         mfo_pap_code.`code` as mfo_code,
@@ -911,6 +912,20 @@ class SupplementalPpmpController extends Controller
             WHERE pr_stock.id = :id")
                 ->bindValue(':id', $_POST['id'])
                 ->queryOne());
+        }
+    }
+    public function actionItemPrs()
+    {
+
+        if (YIi::$app->request->post()) {
+            $type = Yii::$app->request->post('type');
+            $id = Yii::$app->request->post('id');
+            if (strtolower($type) === 'non_cse') {
+                return json_encode(SupplementalPpmpNonCseItems::findOne($id)->purchaseRequestsDataA);
+            }
+            if (strtolower($type) === 'cse') {
+                return json_encode(SupplementalPpmpCse::findOne($id)->purchaseRequestsDataA);
+            }
         }
     }
 }
