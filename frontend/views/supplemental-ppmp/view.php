@@ -269,11 +269,12 @@ if (!empty($model->fk_certified_funds_available_by)) {
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <th colspan="2" class="text-center table-primary">Items Purchase Requests</th>
+                    <th colspan="3" class="text-center table-primary">Items Purchase Requests</th>
                 </tr>
                 <tr>
                     <th>Action</th>
                     <th>Stock</th>
+                    <th>Specification</th>
                 </tr>
             </thead>
             <tbody>
@@ -285,6 +286,7 @@ if (!empty($model->fk_certified_funds_available_by)) {
                             </button>
                         </td>
                         <td>{{item.stock_title}}</td>
+                        <td>{{item.description}}</td>
                     </tr>
                     <tr>
                         <td colspan="3">
