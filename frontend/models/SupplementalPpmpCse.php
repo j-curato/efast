@@ -139,6 +139,9 @@ class SupplementalPpmpCse extends \yii\db\ActiveRecord
             ->andWhere([
                 "supplemental_ppmp_cse.id" => $this->id
             ])
+            ->andWhere([
+                "pr_purchase_request.is_cancelled" => false
+            ])
             ->asArray()
             ->all();
     }

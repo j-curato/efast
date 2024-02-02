@@ -96,6 +96,9 @@ class SupplementalPpmpNonCseItems extends \yii\db\ActiveRecord
                 "pr_purchase_request_item.is_deleted" => false
             ])
             ->andWhere([
+                "pr_purchase_request.is_cancelled" => false
+            ])
+            ->andWhere([
                 'supplemental_ppmp_non_cse_items.id' => $this->id
             ])
             ->asArray()
