@@ -76,7 +76,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <?php
 
         // if (strtotime(date('Y-m-d')) <= strtotime(date('2023-11-28'))) {
-        echo Html::a('Create Supplemental Ppmp', ['create'], ['class' => 'btn btn-success']);
+        echo Html::a('<i class="fa fa-plus"></i> Create', ['create'], ['class' => 'btn btn-success']);
         // }
 
         ?>

@@ -29,7 +29,7 @@ $certified_funds_available_by = [];
 
 function GetEmployeeData($id)
 {
-    return Yii::$app->db->createCommand("SELECT employee_id,employee_name,position FROM employee_search_view WHERE employee_id = :id")
+    return Yii::$app->db->createCommand("SELECT employee_id, UPPER(employee_name) as employee_name,position FROM employee_search_view WHERE employee_id = :id")
         ->bindValue(':id', $id)
         ->queryAll();
 }
@@ -56,13 +56,13 @@ $cse_type_data = [
 
 ?>
 
-<div class="supplemental-ppmp-form card" style="padding:1rem">
+<div class="supplemental-ppmp-form ">
     <!-- <?= Html::button('<i class="fa fa-pencil-alt"></i> Create', [
                 'value' => Url::to(yii::$app->request->baseUrl . '/index.php?r=supplemental-ppmp/index'),
                 'id' => 'lgmdModal', 'class' => 'btn btn-success', 'data-placement' => 'left', 'data-toggle' => 'tooltip', 'title' => 'Add Sector'
             ]); ?> -->
     <?= Html::beginForm([$action, 'id' => $model->id], 'post', ['id' => 'SupplementalPpmp']); ?>
-    <div class="card">
+    <div class="card p-2">
 
         <div class="row ">
             <div class="col-sm-2">
@@ -339,9 +339,9 @@ $cse_type_data = [
                     $mode_of_procurement_name = $non_cse[$min_key]['mode_of_procurement_name'];
                     $early_procurement_disp = $early_procurement ? 'Yes' : 'No';
                     $show_hide_act_name = $type == 'activity' ? '' : 'display:none;';
-                    echo "<tr>
+                    echo "<tr class='card p-2'>
                             <td >
-                            <div class='card'  style=' padding: 15px;' >
+                            <div  >
                                 <div class='row'>
                                     <div class='col-sm-3'>
                                     <input name='ppmp_non_cse[$non_cse_rw_cnt][non_cse_id]' class='form-control non_cse_id' type='hidden' value='$non_cse_id'>
@@ -613,9 +613,9 @@ $this->registerJsFile(yii::$app->request->baseUrl . "/js/validate.min.js", ['dep
         // fk_fund_source_id
         // proc_act_sched
         let non_cse_row = `
-            <tr>
+            <tr class='card p-2'>
                 <td>
-                <div class='card'  style=' padding: 15px;' >
+                <div  >
                     <div class='row'>
                         <div class='col-sm-3'>
                             <label for="type">Activity/Fixed Expenses</label>

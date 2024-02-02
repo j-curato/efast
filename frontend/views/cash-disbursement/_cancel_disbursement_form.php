@@ -95,11 +95,11 @@ use yii\helpers\Html;
             padding: 12px
         }
 
-        .grid-view td {
+        /* .grid-view td {
             white-space: normal;
             width: 5rem;
             padding: 0;
-        }
+        } */
     </style>
 </div>
 
