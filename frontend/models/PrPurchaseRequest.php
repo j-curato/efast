@@ -195,9 +195,9 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
     // }
     public function getPrItems()
     {
-        return Yii::$app->db->createCommand("CALL GetPrItems(:id)")
-            ->bindValue(':id', $this->id)
-            ->queryAll();
+        // return Yii::$app->db->createCommand("CALL GetPrItems(:id)")
+        //     ->bindValue(':id', $this->id)
+        //     ->queryAll();
         return PrPurchaseRequestItem::find()
             ->addSelect([
                 new Expression("(CASE 
@@ -226,13 +226,29 @@ class PrPurchaseRequest extends \yii\db\ActiveRecord
                 "pr_stock.bac_code",
                 new Expression("pr_purchase_request_item.unit_cost * pr_purchase_request_item.quantity as total_cost"),
                 "pr_purchase_request_item.specification",
-                "supplemental_ppmp.is_supplemental"
+                // "supplemental_ppmp.is_supplemental",
+                // "supplemental_ppmp.id as ppmp_id",
+                new Expression("(CASE 
+                    WHEN pr_purchase_request_item.fk_ppmp_cse_item_id IS NOT NULL THEN cse_ppmp.is_supplemental
+                    WHEN     pr_purchase_request_item.fk_ppmp_non_cse_item_id IS NOT NULL THEN  non_cse_ppmp.is_supplemental 
+                    END
+                    ) as  is_supplemental"),
+
+                new Expression("(CASE 
+                    WHEN pr_purchase_request_item.fk_ppmp_cse_item_id IS NOT NULL THEN cse_ppmp.id
+                    WHEN     pr_purchase_request_item.fk_ppmp_non_cse_item_id IS NOT NULL THEN  non_cse_ppmp.id 
+                    END
+                    ) as  ppmp_id")
+
             ])
             ->join("LEFT JOIN", "unit_of_measure", " pr_purchase_request_item.unit_of_measure_id = unit_of_measure.id")
             ->join("LEFT JOIN", "supplemental_ppmp_non_cse_items", " pr_purchase_request_item.fk_ppmp_non_cse_item_id = supplemental_ppmp_non_cse_items.id")
             ->join("LEFT JOIN", "supplemental_ppmp_cse", " pr_purchase_request_item.fk_ppmp_cse_item_id = supplemental_ppmp_cse.id")
             ->join("LEFT JOIN", "supplemental_ppmp_non_cse", " supplemental_ppmp_non_cse_items.fk_supplemental_ppmp_non_cse_id = supplemental_ppmp_non_cse.id")
-            ->join("LEFT JOIN", "supplemental_ppmp", " supplemental_ppmp_cse.fk_supplemental_ppmp_id = supplemental_ppmp_cse.id or supplemental_ppmp_non_cse . fk_supplemental_ppmp_id = supplemental_ppmp . id")
+            // ->join("LEFT JOIN", "supplemental_ppmp", " supplemental_ppmp_cse.fk_supplemental_ppmp_id = supplemental_ppmp_cse.id or supplemental_ppmp_non_cse . fk_supplemental_ppmp_id = supplemental_ppmp . id")
+            ->join("LEFT JOIN", "supplemental_ppmp  as cse_ppmp", "supplemental_ppmp_cse.fk_supplemental_ppmp_id = cse_ppmp.id")
+            ->join("LEFT JOIN", "supplemental_ppmp  as non_cse_ppmp", "supplemental_ppmp_non_cse.fk_supplemental_ppmp_id = non_cse_ppmp.id")
+
             ->join("LEFT JOIN", "pr_stock", " pr_purchase_request_item.pr_stock_id = pr_stock.id")
             ->andWhere([
                 "pr_purchase_request_item.pr_purchase_request_id" => $this->id

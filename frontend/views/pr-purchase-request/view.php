@@ -113,7 +113,7 @@ SweetAlertAsset::register($this);
                 <tbody>
                     <?php
                     $total = 0;
-                    foreach ($model->getPrItems() as $i => $val) {
+                    foreach ($model->getPrItems() as $i => $val) :
                         $unit_cost = $val['unit_cost'];
                         $quantity = $val['quantity'];
                         $total_cost = intval($quantity) * floatval($unit_cost);
@@ -122,40 +122,34 @@ SweetAlertAsset::register($this);
                         $unit_of_measure = $val['unit_of_measure'];
                         $bac_code = $val['bac_code'];
                         $is_supplemental = intval($val['is_supplemental']) === 1 ? '*' : '';
-
                         $specification  = preg_replace('#\[n\]#', "<br>",  $val['specification']);
-                        echo "<tr>
-                    <td>$is_supplemental {$bac_code}</td>
-                    <td class='center'>{$unit_of_measure}</td>
-                    <td><span class='description'>" .  $stock_title . "</span>" .
-                            "<br><span class='specs'>"
-                            . $specification
-                            . "</specs></td>
-                    <td class='center'>{$quantity}</td>
-                    <td class='amount'>" . number_format($unit_cost, 2) . "</td>
-                    <td class='amount'>" . number_format($total_cost, 2) . "</td>
-                </tr>";
-                    }
-                    // foreach ($model->prItem as $val) {
+                    ?>
+                        <tr>
+                            <td><?= "$is_supplemental $bac_code" ?></td>
+                            <td class='text-center text-capitalize'><?= $unit_of_measure ?></td>
+                            <td>
+                                <b>
+                                    <?= $stock_title ?>
+                                </b>
+                                <br>
+                                <span>
+                                    <?= $specification ?>
+                                </span>
+                            </td>
+                            <td class='text-center'><?= $quantity ?></td>
+                            <td class='text-right'><?= number_format($unit_cost, 2) ?></td>
+                            <td class='text-right'><?= number_format($total_cost, 2) ?></td>
+                            <td class='text-right link  border-0'>
+                                <?= Html::a(
+                                    "Link",
+                                    ['supplemental-ppmp/view', 'id' => $val['ppmp_id']],
+                                    ['class' => 'btn btn-link']
+                                ) ?>
+                            </td>
+                        </tr>
 
-                    //     $total_cost = intval($val->quantity) * floatval($val->unit_cost);
-                    //     $total += $total_cost;
-                    //     $specs = preg_replace('#\[n\]#', "<br>", $val->specification);
-                    //     $bac_code = !empty($val->stock->bac_code) ? $val->stock->bac_code : '';
-                    //     $stock_title = !empty($val->stock->stock_title) ? $val->stock->stock_title : '';
-                    //     echo "<tr>
-                    //         <td>{$bac_code}</td>
-                    //         <td class='center'>{$val->unitOfMeasure->unit_of_measure}</td>
-                    //         <td><span class='description'>" .  $stock_title . "</span>" .
-                    //         "<br><span class='specs'>"
-
-                    //         . $specs
-                    //         . "</specs></td>
-                    //         <td class='center'>{$val->quantity}</td>
-                    //         <td class='amount'>" . number_format($val->unit_cost, 2) . "</td>
-                    //         <td class='amount'>" . number_format($total_cost, 2) . "</td>
-                    //     </tr>";
-                    // }
+                    <?php endforeach; ?>
+                    <?php
                     for ($i = 0; $i < 3; $i++) {
                         echo "<tr>
                             <td style='height: 3rem;'></td>
@@ -402,6 +396,7 @@ SweetAlertAsset::register($this);
 
     @media print {
 
+        .link,
         .main-footer,
         .allotment,
         .tbl-transaction-links,
