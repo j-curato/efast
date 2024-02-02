@@ -404,7 +404,6 @@ if (!empty($model->fk_certified_funds_available_by)) {
                 itemPrs: {}
             },
             mounted() {
-                console.log(this.items)
             },
             methods: {
                 getPurchaseRequests(item) {
