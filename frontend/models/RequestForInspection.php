@@ -124,7 +124,7 @@ class RequestForInspection extends \yii\db\ActiveRecord
                     pr_purchase_request_item.quantity - IFNULL(aoq_items_quantity.quantity,0) as balance_quantity,
                     unit_of_measure.unit_of_measure,
                     pr_aoq_entries.amount as unit_cost,
-                    pr_purchase_order_item.fk_pr_purchase_order_id as po_id
+                    CAST(pr_purchase_order_item.fk_pr_purchase_order_id AS CHAR(50)) as po_id
                    
             FROM 
             request_for_inspection_items						
