@@ -139,7 +139,8 @@ $isProvincialOffice = strtolower($officeName)  === 'ro' ? false : true;
 
                         <?php if (Yii::$app->user->can('ro_procurement_admin') || Yii::$app->user->can('po_procurement_admin')) : ?>
                             <td>
-                                <a :href="'/index.php?r=pr-purchase-order/view&id=' + item.po_id" class='btn btn-link'>PO Link</a>
+                                <!-- ang problem ani kay  -->
+                                <a :href="'index.php?r=pr-purchase-order/view&id=' + item.po_id" class='btn btn-link'>PO Link</a>
                             </td>
                         <?php endif; ?>
                     </tr>
@@ -332,7 +333,7 @@ $this->registerCssFile(yii::$app->request->baseUrl . "/css/customCss.css", ['dep
     new Vue({
         el: '#main',
         data: {
-            withPoItems: <?= Json::encode($model->getWithPoItems()); ?>,
+            withPoItems: <?= Json::encode($model->withPoItems); ?>,
             withoutPoItems: <?= Json::encode($model->getNoPoItems()); ?>,
         },
         mounted() {
