@@ -67,7 +67,6 @@ class CashReceivedSearch extends CashReceived
         $query->andFilterWhere([
             'id' => $this->id,
             'document_recieved_id' => $this->document_recieved_id,
-            'book_id' => $this->book_id,
             'mfo_pap_code_id' => $this->mfo_pap_code_id,
             'amount' => $this->amount,
         ]);
