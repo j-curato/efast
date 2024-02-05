@@ -5,8 +5,8 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\PrRfq */
 
-$this->title = 'Create Pr Rfq';
-$this->params['breadcrumbs'][] = ['label' => 'Pr Rfqs', 'url' => ['index']];
+$this->title = 'Create  RFQ';
+$this->params['breadcrumbs'][] = ['label' => 'RFQ', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="pr-rfq-create">

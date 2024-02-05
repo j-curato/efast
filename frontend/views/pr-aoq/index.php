@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="pr-aoq-index">
 
     <p>
-        <?= Html::a('Create  AOQ', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('<i class="fa fa-plus"></i> Create', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
@@ -51,7 +51,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'label' => 'Action',
                 'format' => 'raw',
                 'value' => function ($model) {
-                    return MyHelper::gridDefaultAction($model->id,'none');
+                    return MyHelper::gridDefaultAction($model->id, 'none');
                 }
             ]
         ],
