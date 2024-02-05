@@ -80,7 +80,7 @@ class VwCashReceivedSearch extends VwCashReceived
                 // echo $query->createCommand()->getRawSql();
                 // die();
             }
-            $query->andWhere('balance> 0 ');
+            // $query->andWhere('balance> 0 ');
         }
 
         if (!$this->validate()) {

@@ -20,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
 
         <?php if (Yii::$app->user->can('liquidation')) {
-            echo Html::a('<i class="fa fa-pencil-alt"></i> Create ', ['create-cancelled'], ['class' => 'btn btn-success mdModal']);
+            echo Html::a('<i class="fa fa-plus"></i> Create ', ['create-cancelled'], ['class' => 'btn btn-success mdModal']);
         }
         ?>
     </p>

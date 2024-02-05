@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Yii::$app->user->can('create_it_maintenance_request') ? Html::a('Create', ['create'], ['class' => 'btn btn-success lrgModal']) : '' ?>
+        <?= Yii::$app->user->can('create_it_maintenance_request') ? Html::a('<i class="fa fa-plus"></i> Create', ['create'], ['class' => 'btn btn-success lrgModal']) : '' ?>
     </p>
 
     <?= GridView::widget([

@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php if (Yii::$app->user->can('liquidation')) { ?>
         <p>
-            <?= Html::a('Create Liquidation', ['create'], ['class' => 'btn btn-success']) ?>
+            <?= Html::a('<i class="fa fa-plus"></i> Create ', ['create'], ['class' => 'btn btn-success']) ?>
             <!-- <button class="btn btn-success" data-target="#uploadmodal" data-toggle="modal">Import</button> -->
 
             <?php
