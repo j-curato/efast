@@ -147,13 +147,15 @@ class MyComponent extends Component
 
             ->execute();
     }
+
     public function cibrCdrHeader($province)
     {
         $prov = [
             'adn' => [
                 'province' => 'Agusan Del Norte',
-                'officer' => 'Rosie R. Vellesco',
+                'officer' => 'Annette F. Anduyan',
                 'location' => 'Butuan City'
+                
             ],
             'sdn' => [
                 'province' => 'Surigao Del Norte',
