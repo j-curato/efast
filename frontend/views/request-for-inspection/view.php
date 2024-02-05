@@ -139,7 +139,7 @@ $isProvincialOffice = strtolower($officeName)  === 'ro' ? false : true;
 
                         <?php if (Yii::$app->user->can('ro_procurement_admin') || Yii::$app->user->can('po_procurement_admin')) : ?>
                             <td>
-                                <a :href="'/q/index.php?r=pr-purchase-order/view&id=' + item.po_id" class='btn btn-link'>PO Link</a>
+                                <a :href="'/index.php?r=pr-purchase-order/view&id=' + item.po_id" class='btn btn-link'>PO Link</a>
                             </td>
                         <?php endif; ?>
                     </tr>
