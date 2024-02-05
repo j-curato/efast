@@ -38,7 +38,10 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             [
                 'label' => "Book",
-                'attribute' => 'book.name'
+                'attribute' => 'book_id',
+                'value' => function ($model) {
+                    return $model->book->name;
+                }
             ],
 
 

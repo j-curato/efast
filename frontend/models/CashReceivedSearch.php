@@ -17,11 +17,12 @@ class CashReceivedSearch extends CashReceived
     public function rules()
     {
         return [
-            [['id', 'document_recieved_id', 'book_id', 'mfo_pap_code_id'], 'integer'],
+            [['id', 'document_recieved_id', 'mfo_pap_code_id'], 'integer'],
             [[
                 'date', 'reporting_period', 'nca_no', 'nta_no', 'nft_no', 'purpose',
                 'valid_from',
                 'valid_to',
+                'book_id',
             ], 'safe'],
             [['amount'], 'number'],
         ];
@@ -46,6 +47,7 @@ class CashReceivedSearch extends CashReceived
     public function search($params)
     {
         $query = CashReceived::find();
+        $query->joinWith('book');
 
         // add conditions that should always apply here
 
@@ -77,7 +79,8 @@ class CashReceivedSearch extends CashReceived
             ->andFilterWhere(['like', 'nft_no', $this->nft_no])
             ->andFilterWhere(['like', 'valid_from', $this->valid_from])
             ->andFilterWhere(['like', 'valid_to', $this->valid_to])
-            ->andFilterWhere(['like', 'purpose', $this->purpose]);
+            ->andFilterWhere(['like', 'purpose', $this->purpose])
+            ->andFilterWhere(['like', 'books.name', $this->book_id]);
 
         return $dataProvider;
     }
