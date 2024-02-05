@@ -16,16 +16,16 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Html::a('Create  Purchase Request', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('<i class="fa fa-plus"></i> Create', ['create'], ['class' => 'btn btn-success']) ?>
         <?php
 
 
-        if ($_SERVER['REMOTE_ADDR'] !== '210.1.103.26') {
+        // if ($_SERVER['REMOTE_ADDR'] !== '210.1.103.26') {
 
-            if (Yii::$app->user->can('ro_procurement_admin')) {
-                echo "<button type='button' class='btn btn-primary'  id ='update_local_purchase_request'>Update Purchase Request</button>";
-            }
-        }
+        //     if (Yii::$app->user->can('ro_procurement_admin')) {
+        //         echo "<button type='button' class='btn btn-primary'  id ='update_local_purchase_request'>Update Purchase Request</button>";
+        //     }
+        // }
         ?>
     </p>
 
