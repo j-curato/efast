@@ -474,6 +474,9 @@ $observers = $model->getObservers()->asArray()->all();
                         });
                 },
                 checkIfBidding() {
+                    if (!this.fk_mode_of_procurement_id) {
+                        return;
+                    }
                     let mode = this.modeOfProcurements.find(item => item.id === this.fk_mode_of_procurement_id)
                     this.observers = []
                     if (parseInt(mode.is_bidding) === 1) {
@@ -495,8 +498,6 @@ $observers = $model->getObservers()->asArray()->all();
                 formatSpecs(specs) {
                     return specs.replace(/\[n\]/g, '\n')
                 }
-
-
 
             },
 
