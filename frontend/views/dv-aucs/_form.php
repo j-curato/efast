@@ -530,8 +530,9 @@ if (!empty($model->object_code)) {
                             </div>
                             <div class="col-sm-4">
                                 <label for="advances_fund_source_type">Fund Source Type</label>
-                                <select :name="'advancesItems['+idx+'][fk_fund_source_type_id]'" class="advances_fund_source_type form-control">
+                                <select :name="'advancesItems['+idx+'][fk_fund_source_type_id]'" class="advances_fund_source_type form-control" v-model="item.fk_fund_source_type_id">
                                     <option disabled selected v-if="!item.fk_fund_source_type_id">Select Fund Source Type</option>
+                                    <option selected v-if="item.fk_fund_source_type_id"></option>
                                 </select>
                             </div>
                             <div class="col-sm-1 text-right">
