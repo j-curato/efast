@@ -30,7 +30,7 @@ if (!empty($model->id)) {
 
 
     <div class="row">
-        <div class="col-sm-3">
+        <div class="col-6">
             <?= $form->field($model, 'date')->widget(DatePicker::class, [
                 'options' => [
                     'readonly' => true,

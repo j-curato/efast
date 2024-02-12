@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="request-for-inspection-index">
 
     <p>
-        <?= Yii::$app->user->can('create_request_for_inspection') ? Html::a('<i class="fa fa-plus"></i >Create ', ['create'], ['class' => 'btn btn-success ']) : '' ?>
+        <?= Yii::$app->user->can('create_request_for_inspection') ? Html::a('<i class="fa fa-plus"></i > Create ', ['create'], ['class' => 'btn btn-success ']) : '' ?>
     </p>
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
     ?>
