@@ -15,11 +15,8 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Yii::$app->user->can('create_books') ? Html::a('<i class="fa fa-plus"></i >Create ', ['create'], ['class' => 'btn btn-success mdModal']) : '' ?>
+        <?= Yii::$app->user->can('create_books') ? Html::a('<i class="fa fa-plus"></i > Create ', ['create'], ['class' => 'btn btn-success mdModal']) : '' ?>
     </p>
-
-    <?php // echo $this->render('_search', ['model' => $searchModel]); 
-    ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,

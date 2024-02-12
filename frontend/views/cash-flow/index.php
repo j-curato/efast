@@ -15,7 +15,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <p>
-        <?= Yii::$app->user->can('create_cash_flow') ? Html::a('Create Cash Flow', ['create'], ['class' => 'btn btn-success mdModal']) : '' ?>
+        <?= Yii::$app->user->can('create_cash_flow') ? Html::a('<i class="fa fa-plus"></i> Create', ['create'], ['class' => 'btn btn-success mdModal']) : '' ?>
     </p>
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); 
@@ -26,7 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'panel' => [
             'type' => 'primary',
-            'heading' => 'Cash Flos'
+            'heading' => 'Cash Flows'
         ],
         'columns' => [
             'specific_cashflow',
