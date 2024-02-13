@@ -206,8 +206,8 @@ class DvAucs extends \yii\db\ActiveRecord
             process_ors_entries.*,
             chart_of_accounts.uacs,
             `chart_of_accounts`.`general_ledger`,
-            COALESCE(dv_ors_breakdowns.dv_total_breadown,0) as dv_total_breadown,
-            COALESCE(process_ors_entries.amount,0) - COALESCE(dv_ors_breakdowns.dv_total_breadown,0) as balance
+            COALESCE(dv_ors_breakdowns.dv_total_breakdown,0) as dv_total_breakdown,
+            COALESCE(process_ors_entries.amount,0) - COALESCE(dv_ors_breakdowns.dv_total_breakdown,0) as balance
             FROM process_ors_entries
             LEFT JOIN (SELECT 
             tbl_dv_aucs_ors_breakdown.fk_process_ors_entry_id,
@@ -216,10 +216,10 @@ class DvAucs extends \yii\db\ActiveRecord
             tbl_dv_aucs_ors_breakdown.vat_nonvat +
             tbl_dv_aucs_ors_breakdown.ewt_goods_services +
             tbl_dv_aucs_ors_breakdown.compensation +
-            tbl_dv_aucs_ors_breakdown.other_trust_liabilities +
+            -- tbl_dv_aucs_ors_breakdown.other_trust_liabilities +
             tbl_dv_aucs_ors_breakdown.liquidation_damage +
             tbl_dv_aucs_ors_breakdown.tax_portion_of_post
-            ) as dv_total_breadown
+            ) as dv_total_breakdown
              FROM  tbl_dv_aucs_ors_breakdown
             WHERE tbl_dv_aucs_ors_breakdown.is_deleted  = 0
             AND tbl_dv_aucs_ors_breakdown.fk_dv_aucs_id != :dv_id 
