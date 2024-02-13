@@ -18,7 +18,7 @@ class m240212_010654_add_constraints_in_advances_entries_table extends Migration
         $this->addForeignKey('fk-fk_fund_source_type_id-advances_entries', 'advances_entries', 'fk_fund_source_type_id', 'fund_source_type', 'id', 'RESTRICT');
 
         $this->createIndex('idx-fk_advances_report_type_id-advances_entries', 'advances_entries', 'fk_advances_report_type_id');
-        $this->addForeignKey('fk-fk_advances_report_type_id-advances_entries', 'advances_entries', 'fk_advances_report_type_id', 'advances_report_type', 'id', 'RESTRICT');
+        $this->addForeignKey('fk-fk_advances_report_type_id-advances_entries', 'advances_entries', 'fk_advances_report_type_id', 'advances_report_types', 'id', 'RESTRICT');
     }
 
     /**
