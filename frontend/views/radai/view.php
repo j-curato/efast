@@ -90,11 +90,11 @@ $checkNumbers = implode(',', ArrayHelper::getColumn($model->getRadaiItemsCheckNu
                 <span> I hereby certify on my official oath that this Report of Checks Issued in _________ sheet(s) is a full, true and correct </span><br>
                 <span> statement of all checks issued by me during the period stated above for which Check Nos. ___________ to _____________ inclusive, </span><br>
                 <span> were actually issued by me in payment for obligations shown in the attached disbursement vouchers/payroll. </span><br><br><br>
-                <u><b>MARRY ANN L. PASCUAL</b></u><br>
+                <u><b class="text-uppercase">rosie R. vellesco</b></u><br>
 
                 <br>
                 <span>Name and Signature of Disbursing Officer/Cashier</span> <br><br>
-                <span>Administrative Officer V</span><br>
+                <span>Administrative Officer III</span><br>
                 <span>Official Designation</span><br><br>
                 <span>_______________________</span><br>
                 <span>Date</span><br>
