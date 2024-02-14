@@ -529,10 +529,11 @@ if (!empty($model->object_code)) {
                                 </select>
                             </div>
                             <div class="col-sm-4">
+
                                 <label for="advances_fund_source_type">Fund Source Type</label>
-                                <select :name="'advancesItems['+idx+'][fk_fund_source_type_id]'" class="advances_fund_source_type form-control" v-model="item.fk_fund_source_type_id">
+                                <select :name="'advancesItems['+idx+'][fk_fund_source_type_id]'" class="advances_fund_source_type form-control">
                                     <option disabled selected v-if="!item.fk_fund_source_type_id">Select Fund Source Type</option>
-                                    <option selected v-if="item.fk_fund_source_type_id"></option>
+                                    <option selected v-if="item.fk_fund_source_type_id">{{item.fund_source_type_name}}</option>
                                 </select>
                             </div>
                             <div class="col-sm-1 text-right">
@@ -723,7 +724,6 @@ SweetAlertAsset::register($this);
                     axios.get(window.location.pathname + '?r=advances-report-types/get-report-types')
                         .then(res => {
                             this.advancesReportTypes = res.data
-                            console.log(this.advancesReportTypes)
                         })
                 },
                 changeMainAmount(event, item, attribute) {
@@ -802,7 +802,6 @@ SweetAlertAsset::register($this);
 
 
     function advancesReportTypeSelect() {
-        console.log('qwe')
         $(`.advances_report_type`).select2({
             data: report_types,
             placeholder: "Select Report Type ",

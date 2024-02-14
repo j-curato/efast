@@ -412,10 +412,12 @@ class DvAucs extends \yii\db\ActiveRecord
                 advances_entries.fk_fund_source_type_id,
                 advances_entries.fk_advances_report_type_id,
                 advances_entries.amount,
-                accounting_codes.account_title
+                accounting_codes.account_title,
+                fund_source_type.`name` as fund_source_type_name
             FROM advances
             LEFT JOIN advances_entries ON advances.id  = advances_entries.advances_id
             LEFT JOIN accounting_codes ON advances_entries.object_code = accounting_codes.object_code
+            LEFT JOIN fund_source_type ON advances_entries.fk_fund_source_type_id =fund_source_type.id 
             WHERE advances.dv_aucs_id = :dv_id
             AND advances_entries.is_deleted !=1")
             ->bindValue(":dv_id", $this->id)
