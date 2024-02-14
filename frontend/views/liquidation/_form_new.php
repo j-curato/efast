@@ -544,7 +544,8 @@ SweetAlertAsset::register($this);
             total_vat += parseFloat($(this).val().split(",").join("")) || 0;
         });
         $(".expanded_tax_main").each(function() {
-            total_expanded += parseFloat($(this).val())
+            // console.log($(this).val())
+            total_expanded += !isNaN(parseFloat($(this).val())) ? parseFloat($(this).val()) : 0
         });
         total_liquidation = !isNaN(total_liquidation) ? total_liquidation.toFixed(2) : 0
         total_withdrawal = !isNaN(total_withdrawal) ? total_withdrawal.toFixed(2) : 0
