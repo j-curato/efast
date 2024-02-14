@@ -67,7 +67,7 @@ $this->params['breadcrumbs'][] = $this->title;
                         <th>Issuance Date: </th>
                         <th><?= $model->issuance_date ?></th>
                         <th>ADA No.:</th>
-                        <th><?= $model->ada_number ?></th>
+                        <th><?= $model->lddapAda->serial_number ?? null ?></th>
                     </tr>
                     <tr>
                         <th>Begin timer:</th>
