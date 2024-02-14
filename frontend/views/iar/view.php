@@ -89,7 +89,7 @@ $date_generated = !empty($model->date_generated) ? DateTime::createFromFormat('Y
         <p>
             <?= Yii::$app->user->can('update_iar') ? Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary mdModal']) : '' ?>
 
-            <?= Html::a('IR Link', ['inspection-report/view', 'id' => $model->fk_ir_id], ['class' => 'btn btn-link', 'style' => 'margin-bottom:2rem']) ?>
+            <?= Html::a('IR Link', ['inspection-report/view', 'id' => $model->fk_ir_id], ['class' => 'btn btn-link',]) ?>
             <!-- <?= Html::a('Add End-User', ['update', 'id' => $model->id], ['class' => 'btn btn-primary', 'title' => 'Update', 'style' => 'margin-bottom:2rem']); ?> -->
         </p>
 
