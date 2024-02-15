@@ -108,7 +108,6 @@ use yii\bootstrap4\ActiveForm;
 </style>
 
 <?php
-$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/roAlphalistJs.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 <script>

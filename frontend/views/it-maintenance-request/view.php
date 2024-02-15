@@ -171,8 +171,5 @@ $approvedBy = MyHelper::getEmployee($model->fk_approved_by, 'one');
     }
 </style>
 <?php
-$this->registerJsFile(
-    '@web/frontend/web/js/globalFunctions.js',
-    ['depends' => [\yii\web\JqueryAsset::class]]
-)
+
 ?>

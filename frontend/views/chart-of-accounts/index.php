@@ -243,7 +243,6 @@ $this->params['breadcrumbs'][] = $this->title;
 </style>
 
 <?php
-$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => [\yii\web\JqueryAsset::class]]);
 SweetAlertAsset::register($this);
 // $script = <<<JS
 //             $('#mdModal').click(function(){

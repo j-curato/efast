@@ -655,9 +655,3 @@ $client = MyHelper::getEmployee($model->maintenanceRequest->fk_requested_by, 'on
         }
     }
 </style>
-<?php
-$this->registerJsFile(
-    '@web/frontend/web/js/globalFunctions.js',
-    ['depends' => [\yii\web\JqueryAsset::class]]
-)
-?>

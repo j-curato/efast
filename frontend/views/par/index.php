@@ -95,5 +95,4 @@ $columns = [
 </style>
 <?php
 
-$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => JqueryAsset::class]);
 ?>

@@ -313,7 +313,6 @@ $property_custodians = ArrayHelper::map(MyHelper::getPropertyCustodians(), 'empl
     }
 </style>
 <?php
-$this->registerJsfile('@web/frontend/web/js/globalFunctions.js', ['depeneds' => [JqueryAsset::class]]);
 ?>
 <script>
 

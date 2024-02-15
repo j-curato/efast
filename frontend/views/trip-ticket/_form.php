@@ -229,7 +229,6 @@ $row_number = 1;
 
 </div>
 <?php
-$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 
 ?>
 <script>

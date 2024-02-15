@@ -338,10 +338,3 @@ $this->registerJs($js);
 
 ?>
 
-<?php
-
-$this->registerJsFile(
-    '@web/frontend/web/js/globalFunctions.js',
-    ['depends' => [JqueryAsset::class]]
-)
-?>

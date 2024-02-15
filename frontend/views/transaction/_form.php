@@ -640,7 +640,6 @@ $approvedBy = !empty($model->fk_approved_by) ? $model->approvedBy->getEmployeeDe
     }
 </style>
 <?php
-$this->registerJsFile("@web/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile("@web/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile("@web/js/validate.min.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 

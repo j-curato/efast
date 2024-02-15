@@ -345,7 +345,6 @@ $entry_row = 1;
 <?php
 
 // $csrfTokenName = Yii::$app->request->csrfTokenName;
-$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $this->registerJsFile(yii::$app->request->baseUrl . "/js/maskMoney.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 $csrfToken = Yii::$app->request->csrfToken;
 SweetAlertAsset::register($this);

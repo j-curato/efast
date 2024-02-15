@@ -235,7 +235,6 @@ if (!empty($model->fk_property_id)) {
     }
 </style>
 <?php
-$this->registerJsFile("@web/frontend/web/js/globalFunctions.js", ['depends' => [JqueryAsset::class]]);
 $this->registerJsFile("@web/js/maskMoney.js", ['depends' => [JqueryAsset::class]]);
 $this->registerJsFile("@web/js/moment.min.js", ['depends' => [JqueryAsset::class]]);
 $this->registerJsFile("@web/frontend/views/other-property-details/otherPropertyDetailsJs.js", ['depends' => [JqueryAsset::class]]);

@@ -231,7 +231,6 @@ use yii\bootstrap4\ActiveForm;
 <?php
 $csrfToken = Yii::$app->request->csrfToken;
 $this->registerJsFile("@web/js/maskMoney.js", ['depends' => \yii\web\JqueryAsset::class]);
-$this->registerJsFile("@web/frontend/web/js/globalFunctions.js", ['depends' => \yii\web\JqueryAsset::class]);
 $this->registerJsFile("@web/js/select2.min.js", ['depends' => \yii\web\JqueryAsset::class]);
 $this->registerJsFile("@web/js/v-money.min.js");
 // $this->registerCssFile("https://cdn.jsdelivr.net/npm/vue-select@latest/dist/vue-select.css");

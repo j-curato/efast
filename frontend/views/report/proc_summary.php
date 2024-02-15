@@ -289,7 +289,6 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 </style>
 <?php
-$this->registerJsFile(yii::$app->request->baseUrl . "/frontend/web/js/globalFunctions.js", ['depends' => [\yii\web\JqueryAsset::class]]);
 ?>
 <script>
     $(document).ready(function() {

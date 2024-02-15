@@ -111,10 +111,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <?php
 
-$this->registerJsFile(
-    '@web/frontend/web/js/globalFunctions.js',
-    ['depends' => [\yii\web\JqueryAsset::class]]
-)
+
 ?>
 </div>
 <script>

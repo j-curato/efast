@@ -66,5 +66,4 @@ $this->params['breadcrumbs'][] = $this->title;
 
 </div>
 <?php
-$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depends' => JqueryAsset::class])
 ?>

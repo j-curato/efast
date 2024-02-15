@@ -157,7 +157,6 @@ $this->params['breadcrumbs'][] = $this->title;
 </style>
 <?php
 
-$this->registerJsFile('@web/frontend/web/js/globalFunctions.js', ['depeneds' => [JqueryAsset::class]]);
 $this->registerCssFile(yii::$app->request->baseUrl . "/frontend/web/css/site.css");
 
 ?>

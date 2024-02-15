@@ -318,8 +318,5 @@ $accounting_head = !empty($model->fk_accounting_head) ?  $accounting_head =  $em
 </style>
 <?php
 
-$this->registerJsFile(
-    '@web/frontend/web/js/globalFunctions.js',
-    ['depends' => [JqueryAsset::class]]
-)
+
 ?>
