@@ -67,7 +67,7 @@ class RoCheckRangesController extends Controller
             ],
         ];
     }
-    private function validateLbpCheckRange($from, $to, $model_id = null)
+    private function validateLbpCheckRange($from, $to, $model_id = null, $book_id)
     {
         $sql  = '';
         $params = [];
@@ -81,13 +81,14 @@ class RoCheckRangesController extends Controller
         FROM ro_check_ranges
         WHERE 
        ( ( :_from BETWEEN ro_check_ranges.`from` AND ro_check_ranges.`to`) OR  ( :_to BETWEEN ro_check_ranges.`from` AND ro_check_ranges.`to`))
+         AND ro_check_ranges.fk_book_id = :book_id
         $sql
         LIMIT 1)
         ", $params)
             ->bindValue(':_from', $from)
             ->bindValue(':_to', $to)
+            ->bindValue(':book_id', $book_id)
             ->queryScalar();
-
         if ($qry) {
             return  'Check Range exists a case where either the `From` or `To` values are in between other Check Range';
         }
@@ -141,7 +142,7 @@ class RoCheckRangesController extends Controller
                     throw new ErrorException('`To` Check Number Cannot be less than `From`');
                 }
                 if (intval($model->check_type) === 1) {
-                    $vldt = $this->validateLbpCheckRange($model->from, $model->to);
+                    $vldt = $this->validateLbpCheckRange($model->from, $model->to, $model->fk_book_id);
                     if ($vldt !== true) {
                         throw new ErrorException($vldt);
                     }
