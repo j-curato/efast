@@ -20,7 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a(
-            '<i class="fa fa-pencil-alt"></i> Create',
+            '<i class="fa fa-pencil-plus"></i> Create',
             ['create'],
             ['class' => 'btn btn-success mdModal']
         ); ?>
@@ -69,13 +69,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 </div>
-<?php
 
-$this->registerJsFile(
-    '@web/frontend/web/js/globalFunctions.js',
-    ['depends' => [JqueryAsset::class]]
-)
-?>
 <?php
 $script = <<<JS
         //     var i=false;
