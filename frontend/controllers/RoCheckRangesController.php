@@ -142,7 +142,7 @@ class RoCheckRangesController extends Controller
                     throw new ErrorException('`To` Check Number Cannot be less than `From`');
                 }
                 if (intval($model->check_type) === 1) {
-                    $vldt = $this->validateLbpCheckRange($model->from, $model->to, $model->fk_book_id);
+                    $vldt = $this->validateLbpCheckRange($model->from, $model->to, null, $model->fk_book_id);
                     if ($vldt !== true) {
                         throw new ErrorException($vldt);
                     }
@@ -184,7 +184,7 @@ class RoCheckRangesController extends Controller
                     throw new ErrorException('`To` Check Number Cannot be less than `From`');
                 }
                 if (intval($model->check_type) === 1) {
-                    $vldt = $this->validateLbpCheckRange($model->from, $model->to, $model->id);
+                    $vldt = $this->validateLbpCheckRange($model->from, $model->to, $model->id, $model->fk_book_id);
                     if ($vldt !== true) {
                         throw new ErrorException($vldt);
                     }
