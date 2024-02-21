@@ -3,9 +3,9 @@ return [
     'components' => [
         'db' => [
             'class' => 'yii\db\Connection',
-            'dsn' => 'mysql:host=localhost; dbname=afms',
-            'username' => 'root',
-            'password' => '',
+            'dsn' => 'mysql:host=db-efast.cur0n7vldhz5.ap-southeast-1.rds.amazonaws.com;dbname=efast',
+            'username' => 'efastadmin',
+            'password' => 'Dticaraga13',
             'charset' => 'utf8',
         ],
         // 'db' => [
