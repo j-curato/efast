@@ -1016,14 +1016,14 @@ class DvAucsController extends Controller
     }
     public function insertAdvancesEntries(
         $advances_id,
+        $book_id,
         $object_codes = [],
         $amounts = [],
         $fund_source = [],
         $fund_source_type = [],
         $report_type = [],
         $reporting_periods = [],
-        $advances_entries_id = [],
-        $book_id
+        $advances_entries_id = []
 
     ) {
         // var_dump($book_id);
