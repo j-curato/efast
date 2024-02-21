@@ -43,9 +43,9 @@
     "softark/yii2-mb-captcha": "dev-master",
     "kartik-v/yii2-icons": "@dev",
     "kartik-v/yii2-password": "@dev",
-    "lavrentiev/yii2-toastr": "^2.0",
     "yiisoft/yii2-symfonymailer": "~2.0.0",
-    "kartik-v/yii2-bootstrap4-dropdown": "@dev"
+    "kartik-v/yii2-bootstrap4-dropdown": "@dev",
+    "kartik-v/yii2-tabs-x": "dev-master"
   },
   "require-dev": {
     "yiisoft/yii2-debug": "~2.1.0",
