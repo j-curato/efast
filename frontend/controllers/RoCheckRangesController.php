@@ -67,7 +67,7 @@ class RoCheckRangesController extends Controller
             ],
         ];
     }
-    private function validateLbpCheckRange($from, $to, $model_id = null, $book_id)
+    private function validateLbpCheckRange($from, $to, $book_id, $model_id = null)
     {
         $sql  = '';
         $params = [];
