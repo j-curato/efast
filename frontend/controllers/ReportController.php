@@ -4512,7 +4512,7 @@ class ReportController extends \yii\web\Controller
         WHERE 
         cash_disbursement.is_cancelled !=1 
         AND EXISTS (SELECT transmittal_entries.cash_disbursement_id FROM transmittal_entries WHERE transmittal_entries.cash_disbursement_id=  cash_disbursement.id GROUP BY transmittal_entries.cash_disbursement_id) 
-        AND reporting_period = :reporting_period
+        AND cash_disbursement.reporting_period = :reporting_period
         ORDER BY cash_disbursement.check_or_ada_no")
             ->bindValue(':reporting_period', $reporting_period)
             ->queryAll();
