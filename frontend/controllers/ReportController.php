@@ -1653,7 +1653,7 @@ class ReportController extends \yii\web\Controller
             $q4 = $query->createCommand()->getRawSql();
             $final_query  = Yii::$app->db->createCommand(
                 "SELECT
-                    qq1.*,IFNULL(current_liquidationd.total_withdrawals,0) as total_withdrawals,
+                    qq1.*,IFNULL(.total_withdrawals,0) as total_withdrawals,
                     IFNULL(current_advances.current_advances_amount,0) as current_advances_amount ,
                     IFNULL(prev_advances.prev_amount,0) as prev_amount,
                     (IFNULL(current_advances.current_advances_amount,0) + IFNULL(prev_advances.prev_amount,0))
@@ -4510,8 +4510,9 @@ class ReportController extends \yii\web\Controller
         cash_disbursement 
         INNER JOIN dv_aucs on cash_disbursement.dv_aucs_id = dv_aucs.id
         WHERE 
-        cash_disbursement.is_cancelled !=1
+        cash_disbursement.is_cancelled !=1 
         AND EXISTS (SELECT transmittal_entries.cash_disbursement_id FROM transmittal_entries WHERE transmittal_entries.cash_disbursement_id=  cash_disbursement.id GROUP BY transmittal_entries.cash_disbursement_id) 
+        AND reporting_period = :reporting_period   
         ORDER BY cash_disbursement.check_or_ada_no")
             ->bindValue(':reporting_period', $reporting_period)
             ->queryAll();
