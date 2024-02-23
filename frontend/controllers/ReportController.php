@@ -4513,7 +4513,7 @@ class ReportController extends \yii\web\Controller
         cash_disbursement.is_cancelled !=1 
         AND EXISTS (SELECT transmittal_entries.cash_disbursement_id FROM transmittal_entries WHERE transmittal_entries.cash_disbursement_id=  cash_disbursement.id GROUP BY transmittal_entries.cash_disbursement_id) 
         ORDER BY cash_disbursement.check_or_ada_no")
-            //->bindValue(':reporting_period', $reporting_period)
+            ->bindValue(':reporting_period', $reporting_period)
             ->queryAll();
         return $this->render('detailed_transmittal_summary', [
             'not_transmitted' => $not_transmitted_query,
