@@ -1064,7 +1064,7 @@ class DvAucsController extends Controller
         }
         return true;
     }
-    public function insertAdvances($province, $reporting_period, $dv_aucs_id, $advances_update_id = '', $advances_bank_account_id)
+    public function insertAdvances($province, $reporting_period, $dv_aucs_id, $advances_bank_account_id, $advances_update_id = '' )
     {
 
         if (empty($advances_update_id)) {
