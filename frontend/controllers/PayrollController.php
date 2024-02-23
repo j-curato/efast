@@ -169,7 +169,7 @@ class PayrollController extends Controller
             ->queryScalar();
         return $normal_balance;
     }
-    public function insertDvAccountingEntries($remittance_payee_id = null, $debit = 0, $credit = 0, $payroll_id, $object_code)
+    public function insertDvAccountingEntries($payroll_id, $object_code, $remittance_payee_id = null, $debit = 0, $credit = 0 )
     {
         $items = new DvAccountingEntries();
         $items->remittance_payee_id = $remittance_payee_id;
