@@ -194,8 +194,8 @@ $officerInCharge  = !empty($model->fk_officer_in_charge) ? $model->officerInChar
 
                 foreach ($items as $i => $itm) {
 
-                    $qwe = '';
-                    $display = 'display:none;';
+/*                     $qwe = '';
+                    $display = 'display:none;'; */
                     echo "<tr>
                         <td>$q</td>
                         <td>{$itm['dv_number']}</td>
@@ -210,25 +210,38 @@ $officerInCharge  = !empty($model->fk_officer_in_charge) ? $model->officerInChar
                         $status = 'Remove';
                         $color = 'btn-danger';
                         if ($itm['is_returned'] == 1) {
-                            $status = 'Ibalik';
+                            $status = 'Return';
                             $color = 'btn-success';
                         }
-                        $qwe = Html::a($status, ['return', 'id' => $itm['item_id']], [
-                            'class' => "btn $color ",
-                            'data' => [
-                                'confirm' => "Are you sure you want to  this item?",
-                                'method' => 'post',
-                            ],
-                        ]);
-                        echo "  <td class='status'>" . $qwe . " </td>";
-                    }
-                    if ($itm['is_returned'] == 1) {
-                        echo "<td class='status'> Returned</td>";
-                    }
-                    echo " </tr>";
-                    $total += floatval($itm['total_withdrawal']);
-                    $q++;
-                }
+
+                         // Define the URL for the Remove action, passing the 'liquidation_id' as the parameter
+                        $removeUrl = ['remove', 'id' => $itm['liquidation_id']];
+            
+                        // Generate the Remove button
+                        $removeButton = Html::a( $status,
+                        $removeUrl,
+                        [
+                        'class' => "btn $color",
+                        'data' => [
+                        'confirm' => "Are you sure you want to remove this item?",
+                        'method' => 'post', // Ensure the Remove action uses POST method
+                    ],
+                ]
+            );
+
+            // Output the Remove button
+            echo "<td class='status'>$removeButton</td>";
+        }
+
+        // Display status
+        if ($itm['is_returned'] == 1) {
+            echo "<td class='status'> Returned</td>";
+        }
+
+        echo "</tr>";
+        $total += floatval($itm['total_withdrawal']);
+        $q++;
+    }
                 // }
                 ?>
                 <tr>
