@@ -291,7 +291,7 @@ class AcicsController extends Controller
             return $e->getMessage();
         }
     }
-    private function checkCashReceiveBal($cash_rcv_id, $acic_item_id = '', $amt)
+    private function checkCashReceiveBal($cash_rcv_id, $amt, $acic_item_id = '' )
     {
         $sql = '';
         $params = [];

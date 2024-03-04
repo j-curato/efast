@@ -1016,14 +1016,14 @@ class DvAucsController extends Controller
     }
     public function insertAdvancesEntries(
         $advances_id,
+        $book_id,
         $object_codes = [],
         $amounts = [],
         $fund_source = [],
         $fund_source_type = [],
         $report_type = [],
         $reporting_periods = [],
-        $advances_entries_id = [],
-        $book_id
+        $advances_entries_id = []
 
     ) {
         // var_dump($book_id);
@@ -1064,7 +1064,7 @@ class DvAucsController extends Controller
         }
         return true;
     }
-    public function insertAdvances($province, $reporting_period, $dv_aucs_id, $advances_update_id = '', $advances_bank_account_id)
+    public function insertAdvances($province, $reporting_period, $dv_aucs_id, $advances_bank_account_id, $advances_update_id = '' )
     {
 
         if (empty($advances_update_id)) {

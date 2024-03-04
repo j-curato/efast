@@ -1653,7 +1653,7 @@ class ReportController extends \yii\web\Controller
             $q4 = $query->createCommand()->getRawSql();
             $final_query  = Yii::$app->db->createCommand(
                 "SELECT
-                    qq1.*,IFNULL(current_liquidationd.total_withdrawals,0) as total_withdrawals,
+                    qq1.*,IFNULL(.total_withdrawals,0) as total_withdrawals,
                     IFNULL(current_advances.current_advances_amount,0) as current_advances_amount ,
                     IFNULL(prev_advances.prev_amount,0) as prev_amount,
                     (IFNULL(current_advances.current_advances_amount,0) + IFNULL(prev_advances.prev_amount,0))

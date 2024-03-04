@@ -87,7 +87,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <tr>
 
                     <td colspan="8" style="text-align: center;font-weight:bold">Total</td>
-                    <td style="text-align: right;font-weigth:bold"> <?php echo number_format($total, 2); ?></td>
+                    <td style="text-align: right;font-weigth efast:bold"> <?php echo number_format($total, 2); ?></td>
                 </tr>
 
             </tbody>

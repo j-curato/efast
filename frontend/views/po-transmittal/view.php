@@ -163,7 +163,7 @@ $officerInCharge  = !empty($model->fk_officer_in_charge) ? $model->officerInChar
                 <?php
                 $total = 0;
                 $q = 1;
-                $query  = Yii::$app->db->createCommand("SELECT 
+                $query  = Yii::$app->db->createCommand("SELECT DISTINCT 
                 liquidation.dv_number,
                 liquidation.check_number,
                 liquidation.check_date,

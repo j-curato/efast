@@ -18,9 +18,6 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Yii::$app->user->can('create_cash_flow') ? Html::a('<i class="fa fa-plus"></i> Create', ['create'], ['class' => 'btn btn-success mdModal']) : '' ?>
     </p>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); 
-    ?>
-
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
@@ -46,11 +43,3 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 </div>
-<?php
-$this->registerJsFile(
-    '@web/frontend/web/js/globalFunctions.js',
-    [
-        'depends' => [\yii\web\JqueryAsset::class]
-    ]
-)
-?>
