@@ -959,15 +959,16 @@ SweetAlertAsset::register($this);
 
 
         $('#accountng_entry_table').on('keyup change', '.mask-credit', function() {
-            const debit = $(this)
-            const amount = debit.maskMoney('unmasked')[0]
-            debit.parent().find('.credit').val(amount)
-            getDebitCreditTotal()
-        })
+            const debit = $(this).parent().prev().find('.mask-debit');
+            const amount = $(this).maskMoney('unmasked')[0];
+            debit.val('');
+            getDebitCreditTotal();
+        });
+
         $('#accountng_entry_table').on('keyup change', '.mask-debit', function() {
-            const debit = $(this)
-            const amount = debit.maskMoney('unmasked')[0]
-            debit.parent().find('.debit').val(amount)
+            const debit = $(this).parent().next().find('.mask-credit');
+            const amount = debit.maskMoney('unmasked')[0];
+            credit.val('');
             getDebitCreditTotal()
         })
         $('#dv_items_table').trigger('keyup', '.mask_amount_disbursed')
@@ -1182,12 +1183,12 @@ SweetAlertAsset::register($this);
         var total_debit = 0.00;
         $(".credit").each(function() {
             total_credit += Number($(this).val());
-        })
+        });
         $(".debit").each(function() {
             total_debit += Number($(this).val());
-        })
-        $("#d_total").text(thousands_separators(total_debit))
-        $("#c_total").text(thousands_separators(total_credit))
+        });
+        $("#d_total").text(thousands_separators(total_debit));
+        $("#c_total").text(thousands_separators(total_credit));
     }
 </script>
 

@@ -209,41 +209,47 @@ if (!empty($model->fk_dv_aucs_id)) {
     <table class="table" id='entry_table'>
         <tbody>
             <?php
+            $uniqueEntries = [];
             foreach ($entries as $val) {
+                $key = $val['object_code'] . $val['debit'] . $val['credit'];
+                if (!isset($uniqueEntries[$key])) {
+                    $uniqueEntries[$key] = $val;
+                }
+            }
+
+            foreach ($uniqueEntries as $val) {
                 $debit = $val['debit'];
                 $credit = $val['credit'];
                 $object_code = $val['object_code'];
                 $account_title = $val['account_title'];
                 echo "<tr>
-                        <td style='width: 300px;max-width:300px'>";
+            <td style='width: 300px;max-width:300px'>";
                 echo !empty($val['item_id']) ? "  <input type='hidden' name='items[$entry_row][item_id]' value='{$val['item_id']}'>" : '';
                 echo   "
-                            <div>
-                                <label for='chart-of-accounts'>UACS</label>
-                                <select required name='items[$entry_row][object_code]' class='chart-of-accounts' style='width: 100%'>
-                                    <option value='$object_code' selected>$object_code - $account_title</option>
-                                </select>
-                            </div>
-                        </td>
-                        <td style='width: 150px;'>
-                             <label for='debit'>Debit</label>
-                            <input type='text' class='  mask-amount' placeholder='Debit' value='" . number_format($debit, 2) . "'>
-                            <input type='hidden' name='items[$entry_row][debit]' class='debit main_amount' placeholder='Debit' value='$debit'>
-                        </td>
-                        <td style='width: 150px;'>
-                        <label for='credit'>Credit</label>
-                            <input type='text' class='  mask-amount' placeholder='Credit' value='" . number_format($credit, 2) . "'>
-                            <input type='hidden' name='items[$entry_row][credit]' class='credit main_amount' placeholder='Credit' value='$credit'>
-                        </td>
-                        <td style='width: 50px;'>
-                            <button type='button' class='remove btn btn-danger btn-xs' style=' text-align: center; float:right;'><i class='fa fa-times'></i></button>
-                            <button type='button' class='add btn btn-success btn-xs' style=' text-align: center; float:right;margin-right:5px'><i class='fa fa-plus'></i></button> 
-                        </td>
-                    </tr>";
+                <div>
+                    <label for='chart-of-accounts'>UACS</label>
+                    <select required name='items[$entry_row][object_code]' class='chart-of-accounts' style='width: 100%'>
+                        <option value='$object_code' selected>$object_code - $account_title</option>
+                    </select>
+                </div>
+            </td>
+            <td style='width: 150px;'>
+                 <label for='debit'>Debit</label>
+                <input type='text' class='  mask-amount' placeholder='Debit' value='" . number_format($debit, 2) . "'>
+                <input type='hidden' name='items[$entry_row][debit]' class='debit main_amount' placeholder='Debit' value='$debit'>
+            </td>
+            <td style='width: 150px;'>
+            <label for='credit'>Credit</label>
+                <input type='text' class='  mask-amount' placeholder='Credit' value='" . number_format($credit, 2) . "'>
+                <input type='hidden' name='items[$entry_row][credit]' class='credit main_amount' placeholder='Credit' value='$credit'>
+            </td>
+            <td style='width: 50px;'>
+                <button type='button' class='remove btn btn-danger btn-xs' style=' text-align: center; float:right;'><i class='fa fa-times'></i></button>
+                <button type='button' class='add btn btn-success btn-xs' style=' text-align: center; float:right;margin-right:5px'><i class='fa fa-plus'></i></button> 
+            </td>
+        </tr>";
                 $entry_row++;
             }
-
-
             ?>
 
         </tbody>

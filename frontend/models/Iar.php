@@ -65,7 +65,45 @@ class Iar extends \yii\db\ActiveRecord
         }
         return false;
     }
+
     private function generateSerialNum()
+    {
+        // Get the current year and month
+        $currentYear = date('Y');
+        $currentMonth = date('m');
+    
+        // Check if the month is January and if the previous year's last IAR exists
+        if ($currentMonth === '01') {
+            $lastYear = $currentYear - 1;
+            $lastIAR = Yii::$app->db->createCommand("
+                SELECT MAX(SUBSTRING_INDEX(iar_number, '-', -1)) AS last_num
+                FROM iar
+                WHERE iar_number LIKE :office
+            ")
+            ->bindValue(':office', strtoupper($this->office_name) . "-$lastYear-__")
+            ->queryScalar();
+    
+            $nextNumber = $lastIAR !== null ? intval($lastIAR) + 1 : 1;
+        } else {
+            // Get the next series number for the current year and month
+            $currentIAR = Yii::$app->db->createCommand("
+                SELECT MAX(SUBSTRING_INDEX(iar_number, '-', -1)) AS last_num
+                FROM iar
+                WHERE iar_number LIKE :office
+            ")
+            ->bindValue(':office', strtoupper($this->office_name) . "-$currentYear-$currentMonth-%")
+            ->queryScalar();
+    
+            $nextNumber = $currentIAR !== null ? intval($currentIAR) + 1 : 1;
+        }
+    
+        // Construct the new serial number
+        $serialNumber = strtoupper($this->office_name) . '-' . date('Y-m') . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+    
+        return $serialNumber;
+    }
+    
+/*     private function generateSerialNum()
     {
         $query = Yii::$app->db->createCommand("SELECT CAST(SUBSTRING_INDEX(iar_number,'-',-1) AS UNSIGNED) as last_num
          FROM iar 
@@ -76,7 +114,7 @@ class Iar extends \yii\db\ActiveRecord
             ->queryScalar();
         $nxtNum = !empty($query) ? intval($query) + 1 : 1;
         return strtoupper($this->office_name) . '-' . date('Y') . '-' . str_pad($nxtNum, 4, '0', STR_PAD_LEFT);
-    }
+    } */
     /**
      * {@inheritdoc}
      */

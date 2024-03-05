@@ -142,18 +142,35 @@ Select2Asset::register($this);
                 <?php
                 $total_credit = 0;
                 $total_debit = 0;
+                $uniqueEntries = []; // Array to store unique entries
+
                 foreach ($model->getItems() as $itm) {
-                    $total_credit += floatval($itm['credit']);
-                    $total_debit += floatval($itm['debit']);
-                    echo "<tr>
-                            <td></td>
-                            <td>{$itm['account_title']}</td>
-                            <td>{$itm['object_code']}</td>
-                            <td style='text-align:right'>" . number_format($itm['debit'], 2) . " </td>
-                            <td style='text-align:right'>" . number_format($itm['credit'], 2) . "</td>         
-                        </tr>";
+                    // Construct a unique identifier for each entry
+                    $identifier = $itm['account_title'] . $itm['object_code'] . $itm['debit'] . $itm['credit'];
+
+                    // Check if the identifier already exists in the array of unique entries
+                    if (!isset($uniqueEntries[$identifier])) {
+                        // If not, add the entry to the unique entries array and display it
+                        $uniqueEntries[$identifier] = true;
+                        $total_credit += floatval($itm['credit']);
+                        $total_debit += floatval($itm['debit']);
+                        echo "<tr>
+                <td></td>
+                <td>{$itm['account_title']}</td>
+                <td>{$itm['object_code']}</td>
+                <td style='text-align:right'>" . number_format($itm['debit'], 2) . " </td>
+                <td style='text-align:right'>" . number_format($itm['credit'], 2) . "</td>         
+            </tr>";
+                    }
                 }
                 ?>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <th class="ctr">Total</th>
+                    <th class="amount"><?= number_format($total_debit, 2); ?></th>
+                    <th class="amount"><?= number_format($total_credit, 2); ?></th>
+                </tr>
 
                 <tr>
                     <td>DV# </td>

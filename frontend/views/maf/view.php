@@ -52,7 +52,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 <td colspan="7" class="no-bdr">
                     <br>
                     <p>Funding Source: Regular Agency Fund-New General Appropriations-Specific Budgets of National Government Agencies.</p>
-                    <span> Legal Basis: FY 2022 GAA RA 11639</span><br>
+                    <span> Legal Basis: FY 2024 GAA RA 11975</span><br>
                     <b>DEFICIENT ITEMS (TO):</b>
                 </td>
             </tr>
