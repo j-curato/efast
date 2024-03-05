@@ -4510,9 +4510,9 @@ class ReportController extends \yii\web\Controller
         cash_disbursement 
         INNER JOIN dv_aucs on cash_disbursement.dv_aucs_id = dv_aucs.id
         WHERE 
-        cash_disbursement.is_cancelled !=1 
-        AND EXISTS (SELECT transmittal_entries.cash_disbursement_id FROM transmittal_entries WHERE transmittal_entries.cash_disbursement_id = cash_disbursement.id GROUP BY transmittal_entries.cash_disbursement_id)
-        AND cash_disbursement.reporting_period = :reporting_period
+        cash_disbursement.is_cancelled !=1
+        AND EXISTS (SELECT transmittal_entries.cash_disbursement_id FROM transmittal_entries WHERE transmittal_entries.cash_disbursement_id=  cash_disbursement.id GROUP BY transmittal_entries.cash_disbursement_id)
+        AND cash_disbursement.reporting_period = :reporting_period 
         ORDER BY cash_disbursement.check_or_ada_no")
             ->bindValue(':reporting_period', $reporting_period)
             ->queryAll();

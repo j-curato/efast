@@ -450,10 +450,12 @@ class PrPurchaseOrderController extends Controller
             if ($model->save(false)) {
             }
         }
-    }    
-    
-     public function generatePoNumber($contract_id, $date, $office_id)
+    }
+
+    public function generatePoNumber($contract_id, $date, $office_id)
+
     {
+        
         $yearMonth = date('Y-m', strtotime($date));
         $year = date('Y', strtotime($date));
         $month = date('m', strtotime($date));
@@ -477,7 +479,7 @@ class PrPurchaseOrderController extends Controller
         $formatted_number = str_pad($next_number, 4, '0', STR_PAD_LEFT);
     
         return strtoupper($office->office_name) . '-' . strtoupper($contract_type) . '-' . $yearMonth . '-' . $formatted_number;
-    } 
+    }
 
 /*      public function generatePoNumber($contract_id, $date, $office_id)
     {
@@ -505,7 +507,7 @@ class PrPurchaseOrderController extends Controller
         }
         return strtoupper($office->office_name) . '-' . strtoupper($contract_type) . '-' . $date . '-' . $zero . $last_number;
     } */
-    
+
     public function actionSearchPurchaseOrder($q = null, $id = null, $province = null)
     {
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;

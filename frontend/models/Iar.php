@@ -67,6 +67,28 @@ class Iar extends \yii\db\ActiveRecord
     }
 
     private function generateSerialNum()
+{
+    $currentYear = date('Y');
+    $currentMonth = date('m');
+
+    $query = Yii::$app->db->createCommand("
+        SELECT CAST(SUBSTRING_INDEX(iar_number,'-',-1) AS UNSIGNED) as last_num
+        FROM iar 
+        WHERE iar_number LIKE :office
+        ORDER BY last_num DESC LIMIT 1
+    ")
+    ->bindValue(':office', $this->office_name . '%')
+    ->queryScalar();
+
+    $lastNumYear = substr($query, 3, 4);
+    $resetSeries = ($currentYear !== $lastNumYear || ($currentYear === $lastNumYear && $currentMonth === '01'));
+
+    $nextNumber = $resetSeries ? 1 : intval($query) + 1;
+    
+    return strtoupper($this->office_name) . '-' . date('Y-m') . '-' . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+}
+
+/*     private function generateSerialNum()
     {
         // Get the current year and month
         $currentYear = date('Y');
