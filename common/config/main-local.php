@@ -10,7 +10,7 @@ return [
         //],
          'db' => [
              'class' => 'yii\db\Connection',
-             'dsn' => 'mysql:host=dtilocalserver;dbname=efast',
+             'dsn' => 'mysql:host=dtilocalserver;dbname=efast', // j-curato first commit efast repo
              'username' => 'dbadmin2',
              'password' => 'password',
              'charset' => 'utf8',
